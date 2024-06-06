@@ -1,0 +1,8 @@
+<h1><%= @establishment.raison_sociale %></h1>
+
+<p>
+  <strong>Etablissement:</strong>
+  <%= @establishment.company? ? 'Yes' : 'No' %>
+</p>
+
+<%= link_to 'Retour à la liste', establishments_path %>

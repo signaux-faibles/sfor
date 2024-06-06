@@ -1,0 +1,21 @@
+<h1>Etablissements</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Nom</th>
+    <th>Siège ?</th>
+    <th colspan="1">Actions</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @establishments.each do |establishment| %>
+    <tr>
+      <td><%= establishment.raison_sociale %></td>
+      <td><%= establishment.company? ? 'Yes' : 'No' %></td>
+      <td><%= link_to 'Voir', establishment %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
