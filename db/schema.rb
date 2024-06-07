@@ -10,9 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_06_093902) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_07_144415) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "campaign_memberships", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.bigint "establishment_id", null: false
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_campaign_memberships_on_campaign_id"
+    t.index ["establishment_id"], name: "index_campaign_memberships_on_establishment_id"
+  end
+
+  create_table "campaigns", force: :cascade do |t|
+    t.string "name"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "establishments", force: :cascade do |t|
     t.text "roles"
@@ -77,4 +95,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_06_093902) do
     t.index ["parent_company_id"], name: "index_establishments_on_parent_company_id"
   end
 
+  add_foreign_key "campaign_memberships", "campaigns"
+  add_foreign_key "campaign_memberships", "establishments"
 end
