@@ -12,6 +12,7 @@
  */
 
 @import "dsfr.min";
+@import "utility.min";
 
 /*
  *= require_tree .
