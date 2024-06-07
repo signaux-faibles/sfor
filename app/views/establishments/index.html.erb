@@ -1,21 +1,24 @@
 <h1>Etablissements</h1>
 
-<table>
-  <thead>
-  <tr>
-    <th>Nom</th>
-    <th>Siège ?</th>
-    <th colspan="1">Actions</th>
-  </tr>
-  </thead>
-
-  <tbody>
-  <% @establishments.each do |establishment| %>
+<div class="fr-table fr-table--bordered">
+  <table>
+    <caption>Liste des entreprises</caption>
+    <thead>
     <tr>
-      <td><%= establishment.raison_sociale %></td>
-      <td><%= establishment.company? ? 'Yes' : 'No' %></td>
-      <td><%= link_to 'Voir', establishment %></td>
+      <th scope="col">Nom</th>
+      <th scope="col">Siège ?</th>
+      <th scope="col">Actions</th>
     </tr>
-  <% end %>
-  </tbody>
-</table>
+    </thead>
+
+    <tbody>
+    <% @establishments.each do |establishment| %>
+      <tr>
+        <td><%= establishment.raison_sociale %></td>
+        <td><%= establishment.company? ? 'Yes' : 'No' %></td>
+        <td><%= link_to 'Voir', establishment %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
