@@ -76,4 +76,7 @@ Rails.application.configure do
 
   # Allow the web console to work in a docker env
   config.web_console.permissions = '192.168.65.1'
+
+  # Devise conf (required by the devise installer) :
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 end
