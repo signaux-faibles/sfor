@@ -1,4 +1,5 @@
 class Establishment < ApplicationRecord
+  belongs_to :department, optional: false
   belongs_to :parent_company, class_name: 'Establishment', optional: true
   has_many :sub_establishments, class_name: 'Establishment', foreign_key: 'parent_company_id'
 

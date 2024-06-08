@@ -1,17 +1,22 @@
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
+
 require 'faker'
+
+require_relative 'seeds/departments_seeds'
 
 # Create companies (parent establishments)
 10.times do
+  department = Department.order('RANDOM()').first
+  siren = Faker::Number.unique.number(digits: 9).to_s
+  siret = "#{siren}#{Faker::Number.number(digits: 5)}"
+
   company = Establishment.create!(
+    department: department,
     raison_sociale: Faker::Company.name,
-    siret: Faker::Number.unique.number(digits: 14).to_s,
-    siren: Faker::Number.unique.number(digits: 9).to_s,
+    siren: siren,
+    siret: siret,
     commune: Faker::Address.city,
     libelle_departement: Faker::Address.state,
     code_departement: Faker::Address.zip_code,
@@ -68,10 +73,13 @@ require 'faker'
 
   # Create establishments for each company
   5.times do
+    department = Department.order('RANDOM()').first
+
     Establishment.create!(
+      department: department,
       raison_sociale: Faker::Company.name,
-      siret: Faker::Number.unique.number(digits: 14).to_s,
-      siren: Faker::Number.unique.number(digits: 9).to_s,
+      siret: "#{company.siren}#{Faker::Number.number(digits: 5)}",
+      siren: siren,
       commune: Faker::Address.city,
       libelle_departement: Faker::Address.state,
       code_departement: Faker::Address.zip_code,
@@ -91,7 +99,7 @@ require 'faker'
       exercice_diane: Faker::Number.between(from: 1, to: 10),
       variation_ca: Faker::Number.decimal(l_digits: 2),
       resultat_expl: Faker::Number.decimal(l_digits: 2),
-      prev_resultat_expl: Faker::Number.decimal(l_digits: 2),
+      resultat_expl: Faker::Number.decimal(l_digits: 2),
       excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
       prev_excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
       effectif: Faker::Number.between(from: 1, to: 100),
