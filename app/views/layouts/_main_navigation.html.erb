@@ -8,12 +8,12 @@
     <nav class="fr-nav" id="header-navigation" role="navigation" aria-label="Menu principal">
       <ul class="fr-nav__list">
         <li class="fr-nav__item">
-          <%= link_to "Accueil", class: "fr-nav__link", 'aria-controls': "modal-header__menu" do %>
+          <%= link_to root_path, class: "fr-nav__link", 'aria-controls': "modal-header__menu", 'aria-current': current?("page", root_path) do %>
             Accueil
           <% end %>
         </li>
         <li class="fr-nav__item">
-          <%= link_to "#Etablissements", class: 'fr-nav__link', 'aria-current': true do %>
+          <%= link_to establishments_path, class: 'fr-nav__link', 'aria-current': current?("page", establishments_path) do %>
             Etablissements
           <% end %>
         </li>
