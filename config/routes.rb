@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   resources :establishments, only: [:index, :show], path: 'entreprises'
   resources :campaigns, only: [:index, :show], path: 'campagnes'
+  resources :establishment_followers, only: [:create, :destroy], path: 'suivis-entreprises'
 
   # Defines the root path route ("/")
   root "pages#home"

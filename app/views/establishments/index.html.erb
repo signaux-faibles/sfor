@@ -35,7 +35,6 @@
             <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>
           <% end %>
         </td>
-
         <td>
           <%= establishment.resultat_expl %> (<%= establishment.arrete_bilan.year %>)
           <% if establishment.resultat_expl.nil? || establishment.prev_resultat_expl.nil? %>
@@ -46,7 +45,6 @@
             <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>
           <% end %>
         </td>
-
         <td>
           <%= establishment.excedent_brut_d_exploitation %> (<%= establishment.arrete_bilan.year %>)
           <% if establishment.excedent_brut_d_exploitation.nil? || establishment.excedent_brut_d_exploitation.nil? %>

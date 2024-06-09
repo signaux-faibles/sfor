@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_08_200613) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_09_184714) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -37,6 +37,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_08_200613) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "establishment_followers", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "establishment_id", null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_id"], name: "index_establishment_followers_on_establishment_id"
+    t.index ["user_id"], name: "index_establishment_followers_on_user_id"
   end
 
   create_table "establishments", force: :cascade do |t|
@@ -125,5 +137,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_08_200613) do
 
   add_foreign_key "campaign_memberships", "campaigns"
   add_foreign_key "campaign_memberships", "establishments"
+  add_foreign_key "establishment_followers", "establishments"
+  add_foreign_key "establishment_followers", "users"
   add_foreign_key "establishments", "departments"
 end
