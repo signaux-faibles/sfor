@@ -5,4 +5,8 @@
   <%= @establishment.company? ? 'Yes' : 'No' %>
 </p>
 
+<%= turbo_frame_tag 'follow_button' do %>
+  <%= render 'establishments/follow', establishment: @establishment %>
+<% end %>
+
 <%= link_to 'Retour à la liste', establishments_path %>

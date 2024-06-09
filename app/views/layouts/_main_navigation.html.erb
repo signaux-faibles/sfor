@@ -18,7 +18,7 @@
           <% end %>
         </li>
         <li class="fr-nav__item">
-          <%= link_to establishments_path, class: 'fr-nav__link' do %>
+          <%= link_to my_establishments_path, class: 'fr-nav__link', 'aria-current': current?("page", my_establishments_path) do %>
             Mes Etablissements
           <% end %>
         </li>
