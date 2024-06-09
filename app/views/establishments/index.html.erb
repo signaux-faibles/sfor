@@ -27,7 +27,9 @@
         <td><%= "#{establishment.department.name} (#{establishment.department.code})" %></td>
         <td>
           <%= establishment.chiffre_affaire %> (<%= establishment.arrete_bilan.year %>)
-          <% if establishment.chiffre_affaire > establishment.prev_chiffre_affaire %>
+          <% if establishment.chiffre_affaire.nil? || establishment.prev_chiffre_affaire.nil? %>
+            <span>-</span>
+          <% elsif establishment.chiffre_affaire > establishment.prev_chiffre_affaire %>
             <span class="fr-icon-arrow-up-s-line" aria-hidden="true"></span>
           <% else %>
             <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>
@@ -36,7 +38,9 @@
 
         <td>
           <%= establishment.resultat_expl %> (<%= establishment.arrete_bilan.year %>)
-          <% if establishment.resultat_expl > establishment.prev_resultat_expl %>
+          <% if establishment.resultat_expl.nil? || establishment.prev_resultat_expl.nil? %>
+            <span>-</span>
+          <% elsif establishment.resultat_expl > establishment.prev_resultat_expl %>
             <span class="fr-icon-arrow-up-s-line" aria-hidden="true"></span>
           <% else %>
             <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>
@@ -45,7 +49,9 @@
 
         <td>
           <%= establishment.excedent_brut_d_exploitation %> (<%= establishment.arrete_bilan.year %>)
-          <% if establishment.excedent_brut_d_exploitation > establishment.prev_excedent_brut_d_exploitation %>
+          <% if establishment.excedent_brut_d_exploitation.nil? || establishment.excedent_brut_d_exploitation.nil? %>
+            <span>-</span>
+          <% elsif establishment.excedent_brut_d_exploitation > establishment.excedent_brut_d_exploitation %>
             <span class="fr-icon-arrow-up-s-line" aria-hidden="true"></span>
           <% else %>
             <span class="fr-icon-arrow-down-s-line" aria-hidden="true"></span>

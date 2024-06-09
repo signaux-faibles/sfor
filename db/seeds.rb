@@ -5,6 +5,7 @@
 require 'faker'
 
 require_relative 'seeds/departments_seeds'
+require_relative 'seeds/users_seeds'
 
 # Create companies (parent establishments)
 10.times do
