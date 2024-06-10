@@ -23,11 +23,11 @@
           <% end %>
         </li>
           <li class="fr-nav__item">
-            <button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-774">Administration</button>
+            <button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-774"  <%= (['/admin/campagnes'].include? request.path) ? "aria-current=true" : nil %>>Administration</button>
             <div class="fr-collapse fr-menu" id="menu-774">
               <ul class="fr-menu__list">
                 <li>
-                  <%= link_to "#Test", class: 'fr-nav__link', 'aria-current': true do %>
+                  <%= link_to admin_campaigns_path, class: 'fr-nav__link', 'aria-current': current?("page", admin_campaigns_path) do %>
                     Gestion des campagnes
                   <% end %>
                 </li>

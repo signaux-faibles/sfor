@@ -3,6 +3,7 @@ class EstablishmentsController < ApplicationController
 
   def index
     @establishments = Establishment.all
+    @establishments = @establishments.by_campaign(params[:campaign_id])
   end
 
   def show

@@ -6,9 +6,12 @@ class Establishment < ApplicationRecord
   has_many :establishment_followers
   has_many :users, through: :establishment_followers
 
+  has_many :campaign_memberships
+  has_many :campaigns, through: :campaign_memberships
+
   # Scope to find only companies
   scope :companies, -> { where(parent_company_id: nil) }
-
+  scope :by_campaign, -> (campaign_id) { joins(:campaign_memberships).where(campaign_memberships: { campaign_id: campaign_id }) if campaign_id.present? }
   def company?
     parent_company_id.nil?
   end

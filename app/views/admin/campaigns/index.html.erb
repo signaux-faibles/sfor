@@ -1,0 +1,31 @@
+<!-- app/views/admin/campaigns/index.html.erb -->
+
+<h1>Campagnes</h1>
+
+<div class="fr-table">
+  <table>
+    <caption>Liste des campagnes</caption>
+    <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Nom</th>
+      <th scope="col">Début</th>
+      <th scope="col">Fin</th>
+      <th scope="col">Nombre d'établissements</th>
+      <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @campaigns.each do |campaign| %>
+      <tr>
+        <td><%= campaign.id %></td>
+        <td><%= campaign.name %></td>
+        <td><%= campaign.start_date.strftime('%d/%m/%Y') %></td>
+        <td><%= campaign.end_date.strftime('%d/%m/%Y') %></td>
+        <td><%= campaign.instance_variable_get(:@establishment_count) %></td>
+        <td><%= link_to 'Voir', admin_campaign_path(campaign) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

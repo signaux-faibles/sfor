@@ -6,8 +6,10 @@ require 'faker'
 
 require_relative 'seeds/departments_seeds'
 require_relative 'seeds/users_seeds'
+require_relative 'seeds/campaigns_seeds'
 
-# Create companies (parent establishments)
+
+# Create establishments and companies (parent establishments)
 10.times do
   department = Department.order('RANDOM()').first
   siren = Faker::Number.unique.number(digits: 9).to_s
@@ -100,7 +102,6 @@ require_relative 'seeds/users_seeds'
       exercice_diane: Faker::Number.between(from: 1, to: 10),
       variation_ca: Faker::Number.decimal(l_digits: 2),
       resultat_expl: Faker::Number.decimal(l_digits: 2),
-      resultat_expl: Faker::Number.decimal(l_digits: 2),
       excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
       prev_excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
       effectif: Faker::Number.between(from: 1, to: 100),
@@ -136,4 +137,16 @@ require_relative 'seeds/users_seeds'
       parent_company_id: company.id
     )
   end
+end
+
+
+# Assign companies to campaigns
+campaigns = Campaign.all
+establishments = Establishment.all.sample((0.8 * Establishment.count).round)
+
+establishments.each do |establishment|
+  CampaignMembership.create!(
+    campaign: campaigns.sample,
+    establishment: establishment
+  )
 end
