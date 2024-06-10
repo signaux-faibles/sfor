@@ -1,12 +1,21 @@
 <h1><%= @establishment.raison_sociale %></h1>
 
+<%= turbo_frame_tag 'follow_button' do %>
+  <%= render 'establishments/follow', establishment: @establishment %>
+<% end %>
+
 <p>
   <strong>Etablissement:</strong>
   <%= @establishment.company? ? 'Oui' : 'Non' %>
 </p>
 
-<%= turbo_frame_tag 'follow_button' do %>
-  <%= render 'establishments/follow', establishment: @establishment %>
-<% end %>
+<p>
+  Lorem Ipsum plein de données très intéressantes sur cet établissement
+</p>
+
+<p>
+  Une section commentaires avec tous les commentaires fait par les agents
+
+</p>
 
 <%= link_to 'Retour à la liste', establishments_path %>

@@ -2,12 +2,11 @@
 
 <div class="fr-grid-row fr-grid-row--center">
   <div class="fr-col-12">
-
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-4">
           <%= form_with(url: establishments_path, method: :get, data: { controller: 'submit-on-change' }) do |f| %>
             <%= f.label :campaign_id, 'Choisir une campagne', class: 'fr-label' %>
-            <%= f.collection_select :campaign_id, Campaign.all, :id, :name, {prompt: 'Toutes les campagnes', selected: params[:campaign_id]}, { class: 'fr-select', data: { 'submit-on-change-target': 'select' } } %>
+          <%= f.select :campaign_id, options_for_select([['Toutes les campagnes', nil]] + Campaign.all.map { |c| [c.name, c.id] }, params[:campaign_id]), {}, {class: 'fr-select', data: { 'submit-on-change-target': 'select' }} %>
           <% end %>
       </div>
     </div>

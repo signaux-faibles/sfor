@@ -2,20 +2,23 @@ class EstablishmentsController < ApplicationController
   before_action :set_establishment, only: %i[show follow unfollow]
 
   def index
-    @establishments = Establishment.all
-    @establishments = @establishments.by_campaign(params[:campaign_id])
+    if params[:campaign_id].present?
+      @establishments = Establishment.by_campaign(params[:campaign_id])
+    else
+      @establishments = Establishment.all
+    end
   end
 
   def show
   end
 
   def my_establishments
-    @establishments = current_user.establishments
+    @establishments_followed = current_user.establishments_followed
   end
 
   def follow
     establishment = Establishment.find(params[:id])
-    current_user.establishment_followers.create!(establishment: establishment, status: 'in progress')
+    current_user.establishment_followers.create!(establishment: establishment, status: 'in progress', start_date: Date.today)
 
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream.replace('follow_button', partial: 'establishments/unfollow', locals: { establishment: establishment }) }

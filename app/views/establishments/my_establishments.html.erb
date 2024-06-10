@@ -1,4 +1,28 @@
-<% @establishments.each do |establishment| %>
-  <p><%= establishment.raison_sociale %></p>
-  <!-- Add more establishment details here -->
-<% end %>
+<div class="fr-table fr-table--bordered fr-mt-4w">
+  <table>
+    <thead>
+    <tr>
+      <th>Siret</th>
+      <th>Siren</th>
+      <th>Raison Sociale</th>
+      <th>Début du suivi</th>
+      <th>Fin du suivi</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @establishments_followed.each do |followed| %>
+      <tr>
+        <td><%= followed.establishment.siret %></td>
+        <td><%= followed.establishment.siren %></td>
+        <td><%= followed.establishment.raison_sociale %></td>
+        <td><%= followed.start_date.present? ? followed.start_date.strftime('%d/%m/%Y') : '-' %></td>
+        <td><%= followed.end_date.present? ? followed.end_date.strftime('%d/%m/%Y') : '-' %></td>
+        <td><%= followed.status %></td>
+        <td><%= link_to 'Voir', establishment_path(followed.establishment) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

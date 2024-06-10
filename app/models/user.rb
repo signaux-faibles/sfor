@@ -7,4 +7,8 @@ class User < ApplicationRecord
 
   has_many :establishment_followers
   has_many :establishments, through: :establishment_followers
+
+  def establishments_followed
+    EstablishmentFollower.where(user: self).includes(:establishment)
+  end
 end
