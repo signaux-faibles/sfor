@@ -69,4 +69,9 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "devise", "~> 4.9"
+# Authentication (OIDC + Devise, using keycloak as the provider)
+gem "devise"
+gem 'omniauth'
+gem 'omniauth_openid_connect'
+gem 'omniauth-rails_csrf_protection'
+

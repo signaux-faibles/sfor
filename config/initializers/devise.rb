@@ -271,8 +271,19 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-
+  config.omniauth :openid_connect, {
+    strategy_class: OmniAuth::Strategies::OpenIDConnect,
+    name: :openid_connect,
+    scope: [:openid],
+    response_type: :code,
+    discovery: true,
+    issuer: 'https://testing.signaux-faibles.dev/auth/realms/master',
+    uid_field: "uid",
+    client_options: {
+      identifier: 'signauxfaibles',
+      redirect_uri: 'http://localhost:3001/users/auth/openid_connect/callback',
+    }
+  }
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
@@ -294,7 +305,7 @@ Devise.setup do |config|
   #
   # When using OmniAuth, Devise cannot automatically set OmniAuth path,
   # so you need to do it manually. For the users scope, it would be:
-  # config.omniauth_path_prefix = '/my_engine/users/auth'
+  config.omniauth_path_prefix = '/users/auth'
 
   # ==> Hotwire/Turbo configuration
   # When using Devise with Hotwire/Turbo, the http status for error responses
