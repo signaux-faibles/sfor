@@ -1,4 +1,4 @@
-# README
+# Signaux-Faibles On Rails
 
 # Local Development
 
