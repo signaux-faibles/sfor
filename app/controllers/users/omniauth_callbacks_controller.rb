@@ -1,7 +1,5 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def openid_connect
-    Rails.logger.info("OmniAuth Callback Initiated for OpenID Connect")
-    Rails.logger.info("Request env: #{request.env['omniauth.auth'].inspect}")
     @user = User.from_omniauth(request.env['omniauth.auth'])
 
     if @user.persisted?
@@ -14,6 +12,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def failure
+    Rails.logger.error("OmniAuth Callback Failed")
     redirect_to root_path
   end
 end
