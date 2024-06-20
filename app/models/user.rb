@@ -13,9 +13,7 @@ class User < ApplicationRecord
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email
       user.password = Devise.friendly_token[0, 20]
-
-      # Voir avec Josquin, déterminer ce qu'on veut dans le user en base côté Rails
-      # user.email = auth.info.email
+      user.id_token = auth.credentials.id_token # store the ID token (used by logout to destroy keykloak's session)
     end
   end
 

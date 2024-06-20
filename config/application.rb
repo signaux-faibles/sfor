@@ -28,5 +28,9 @@ module SignauxFaiblesV2
 
     # Add custom middleware to serve assets from desired paths
     # config.middleware.use Middleware::StaticAssets
+
+    # Localisation
+    config.i18n.default_locale = :fr
+    config.i18n.available_locales = [:fr]
   end
 end

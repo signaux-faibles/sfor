@@ -1,9 +1,15 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Authentication
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions'}
 
+  devise_scope :user do
+    # Handle OmniAuth failures
+    get '/users/auth/failure', to: 'users/omniauth_callbacks#failure'
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :establishments, only: [:index, :show], path: 'entreprises' do
@@ -17,7 +23,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :campaigns, only: [:index, :show], path: 'campagnes'
-    # Add here all the admin routes. This will be protected by Pundit
+    # Add here all the admin routes. This will be protected by Pundit and only accessible to users with the 'admin' role
   end
 
   # Defines the root path route ("/")

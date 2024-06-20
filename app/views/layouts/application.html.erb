@@ -11,18 +11,14 @@
   </head>
 
   <body>
-  <% if user_signed_in? %>
-    <%= render 'layouts/header' %>
-  <% end %>
-  <%= link_to "Signin", new_user_session_path, data: { turbo_method: :post } %>
-
-  <%= form_tag user_openid_connect_omniauth_authorize_path, method: :post do %>
-    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-    <%= submit_tag "Login with OpenID Connect" %>
+  <%= render 'layouts/header' %>
+  <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
+  <% flash.delete(:timedout).each do |type, msg| %>
+    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm">
+      <p><%= msg %></p>
+    </div>
   <% end %>
 
-  <p class="notice"><%= notice %></p>
-  <p class="alert"><%= alert %></p>
   <main class="fr-container fr-pt-4w">
       <%= yield %>
     </main>

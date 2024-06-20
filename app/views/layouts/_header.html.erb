@@ -37,9 +37,9 @@
               <li>
                 <%= link_to 'Mon profil',"#", class: 'fr-btn fr-icon-account-circle-fill' %>
               </li>
-              <li>
-                <%= link_to 'Se déconnecter', "#", class: 'fr-btn fr-icon-logout-box-r-fill' %>
-              </li>
+              <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
+                <%= submit_tag 'Se déconnecter', class: 'fr-btn fr-icon-logout-box-r-fill' %>
+              <% end %>
             </ul>
           </div>
         </div>

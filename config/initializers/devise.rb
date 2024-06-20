@@ -274,14 +274,15 @@ Devise.setup do |config|
   config.omniauth :openid_connect, {
     strategy_class: OmniAuth::Strategies::OpenIDConnect,
     name: :openid_connect,
-    scope: [:openid],
+    scope: [:openid, :email],
     response_type: :code,
     discovery: true,
-    issuer: 'https://testing.signaux-faibles.dev/auth/realms/master',
+    issuer: "https://#{ENV['KEYCLOAK_HOST']}/auth/realms/#{ENV['KEYCLOAK_REALM']}",
     uid_field: "uid",
+    post_logout_redirect_uri: ENV['KEYCLOAK_POST_LOGOUT_REDIRECT_URI'],
     client_options: {
       identifier: 'signauxfaibles',
-      redirect_uri: 'http://localhost:3001/users/auth/openid_connect/callback',
+      redirect_uri: ENV['KEYCLOAK_POST_LOGIN_CALLBACK_URI'],
     }
   }
   # ==> Warden configuration
