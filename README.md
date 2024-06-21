@@ -63,3 +63,37 @@ This is because rails sees the ip trying to access the rails web console as some
 and rails does not authorize ips other than localhost to access the rails web console for security reasons.
 
 
+# DSFR (js + css)
+The design and layout uses the [dsfr](https://www.systeme-de-design.gouv.fr/). 
+Since the dsfr is not available through a CDN and we want to use importmaps (which means no usage of node and npm) then we directly use the dsfr static files.
+
+On the javascript side we use importmap to import the dsfr as a javascript module file :
+
+The module file is here :
+`app/javascript/dsfr.module.min.js`
+
+```ruby
+# config/importmap.rb
+pin "dsfr", to: "dsfr.module.min.js"
+```
+and then
+
+```ruby
+# app/javascript/application.js
+import "dsfr"
+```
+
+But for browsers not supporting ES6 modules we also serve the file using sprockets :
+
+The non-module file is here :
+`vendor/javascript/dsfr.nomodule.min.js`
+
+and
+
+```html
+<!-- app/views/layouts/application.html.erb -->
+<script src="<%= asset_path 'dsfr.nomodule.min.js' %>" nomodule></script>
+```
+
+On the CSS side, the minified dsfr css files are in the `app/assets` directory and referenced in `app/assets/config/manifest.js`.
+This means rails assets pipeline `Sprockets` will handle concatenation, compression, and cache-busting of the CSS files, which will improve the application's performance and maintainability.
