@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :establishment_followers
   has_many :establishments, through: :establishment_followers
 
+  validates :email, presence: true, uniqueness: true
 
   def self.from_omniauth(auth)
     where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
