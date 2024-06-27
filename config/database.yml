@@ -2,10 +2,10 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  database: {{ datapi_db_dbname }}
-  host: {{ vm_database_private_ip }}
+  database: toto
+  host: toto
   username: postgres
-  password: {{ credentials_datapi_db_secret }}
+  password: toto
 
 development:
   <<: *default

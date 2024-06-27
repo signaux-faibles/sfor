@@ -27,5 +27,7 @@ module SignauxFaiblesV2
     # Localisation
     config.i18n.default_locale = :fr
     config.i18n.available_locales = [:fr]
+
+    config.assets.initialize_on_precompile = false
   end
 end
