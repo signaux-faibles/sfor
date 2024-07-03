@@ -277,7 +277,7 @@ Devise.setup do |config|
     scope: [:openid, :email],
     response_type: :code,
     discovery: true,
-    issuer: "https://#{ENV['KEYCLOAK_HOST']}/auth/realms/#{ENV['KEYCLOAK_REALM']}",
+    issuer: "#{ENV['KEYCLOAK_HOST']}/auth/realms/#{ENV['KEYCLOAK_REALM']}",
     uid_field: "uid",
     post_logout_redirect_uri: ENV['KEYCLOAK_POST_LOGOUT_REDIRECT_URI'],
     client_options: {
