@@ -281,6 +281,7 @@ Devise.setup do |config|
     uid_field: "uid",
     post_logout_redirect_uri: ENV['KEYCLOAK_POST_LOGOUT_REDIRECT_URI'],
     client_options: {
+      scheme: 'http',
       identifier: 'signauxfaibles',
       redirect_uri: ENV['KEYCLOAK_POST_LOGIN_CALLBACK_URI'],
     }
