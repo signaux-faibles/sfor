@@ -10,6 +10,7 @@ export default class extends Controller {
         const logoutUrl = new URL('/auth/realms/master/protocol/openid-connect/logout', this.keycloakHostValue)
         logoutUrl.searchParams.set('id_token_hint', this.idTokenValue)
         logoutUrl.searchParams.set('post_logout_redirect_uri', this.redirectUriValue)
+        logoutUrl.protocol = 'http:'
         window.location.href = logoutUrl.toString()
     }
 }
