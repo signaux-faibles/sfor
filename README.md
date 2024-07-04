@@ -97,3 +97,19 @@ and
 
 On the CSS side, the minified dsfr css files are in the `app/assets` directory and referenced in `app/assets/config/manifest.js`.
 This means rails assets pipeline `Sprockets` will handle concatenation, compression, and cache-busting of the CSS files, which will improve the application's performance and maintainability.
+
+# Import Wekan data
+
+You can import data from signaux faibles wekan into the rails app.
+To do so, you must open a terminal in the rails web container and run the following rake tasks all located in the `import_from_wekan` rake namespace for clarity :
+
+## Users
+```shell
+# Import the users from wekan
+rake import_from_wekan:users
+```
+
+## Companies
+
+
+

@@ -315,7 +315,7 @@
     </entry>
     <entry key="test/mailers/previews">
       <value>file://$MODULE_DIR$/test/mailers/previews</value>
-      <value>file://$MODULE_DIR$/test/mailers/previews</value>
+      <value>file:///opt/project/test/mailers/previews</value>
     </entry>
     <entry key="tmp">
       <value>file://$MODULE_DIR$/tmp</value>
@@ -499,6 +499,11 @@
                 </subtasks>
               </RakeTaskImpl>
               <RakeTaskImpl description="" fullCommand="db:truncate_all" id="truncate_all" />
+            </subtasks>
+          </RakeTaskImpl>
+          <RakeTaskImpl id="import_from_wekan">
+            <subtasks>
+              <RakeTaskImpl description="Import user data from wekan (MongoDB) to rails users table (PostgreSQL)" fullCommand="import_from_wekan:users" id="users" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl id="importmap">

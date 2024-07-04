@@ -8,7 +8,7 @@ namespace :import_from_wekan do
   desc "Import user data from wekan (MongoDB) to rails users table (PostgreSQL)"
   task users: :environment do
     # MongoDB connection setup
-    mongo_host = ENV['MONGO_DB_HOST'] || 'wekandb' # The name of the wekan db podman service in local dev mode
+    mongo_host = ENV['MONGO_DB_HOST'] || 'wekan-db' # The name of the wekan db podman container in local dev mode
     mongo_port = ENV['MONGO_DB_PORT'] || '27017'
     mongo_db_name = ENV['MONGO_DB_NAME'] || 'test'
 
