@@ -1,20 +1,46 @@
 class Users::SessionsController < Devise::SessionsController
-  skip_before_action :verify_authenticity_token, only: :destroy
-  def new
-    respond_to do |format|
-      format.html { render 'users/sessions/new' }
+  skip_before_action :verify_authenticity_token, only: [:create]
+
+  def create
+    token = params[:token]
+    decoded_token = decode_token(token)
+    if decoded_token
+      user = find_or_create_user(decoded_token)
+      sign_in(resource_name, user)
+      render json: { success: true }
+    else
+      render json: { error: 'Invalid token' }, status: :unauthorized
     end
   end
 
-  def destroy
-    id_token = current_user.id_token
-    # Signing out from Rails/Devise
-    sign_out(current_user)
-    @id_token = id_token
-    @redirect_uri = ENV['KEYCLOAK_POST_LOGOUT_REDIRECT_URI']
-    @keycloak_host = "https://#{ENV['KEYCLOAK_HOST']}"
-    # Rendering a view which includes javascript which will make the call to keycloak
-    # This way rails won't be able to add its csrf and turbo headers which keycloak don't like
-    render 'users/sessions/redirect_to_keycloak_logout'
+  private
+
+  def decode_token(token)
+    JWT.decode(token, nil, false).first
+  rescue JWT::DecodeError
+    nil
+  end
+
+  def find_or_create_user(decoded_token)
+    user_info = {
+      email: decoded_token['email'],
+      first_name: decoded_token['given_name'],
+      last_name: decoded_token['family_name']
+    }
+
+    user = User.find_or_create_by(email: user_info[:email]) do |user|
+      user.first_name = user_info[:first_name]
+      user.last_name = user_info[:last_name]
+      user.password = Devise.friendly_token[0, 20]
+    end
+
+    update_user_roles(user, decoded_token)
+    user
+  end
+
+  def update_user_roles(user, decoded_token)
+    roles = decoded_token.dig('resource_access', 'signauxfaibles', 'roles') || []
+    roles_from_db = Role.where(name: roles)
+    user.roles = roles_from_db
   end
 end

@@ -16,3 +16,5 @@ Campaign.create!([
      end_date: three_months_later
    },
  ])
+
+puts "Campaigns seeded"

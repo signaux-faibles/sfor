@@ -105,3 +105,6 @@ departments = [
 departments.each do |department_hash|
   Department.create!(department_hash)
 end
+
+
+puts "Departments seeded"

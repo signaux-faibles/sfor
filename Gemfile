@@ -47,6 +47,12 @@ gem "bootsnap", require: false
 # Import wekan data
 gem "mongo"
 
+# Decode keycloak tokens
+gem 'jwt'
+
+# Allow requests from legacy vue app
+gem 'rack-cors'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
@@ -73,8 +79,6 @@ group :test do
   gem "selenium-webdriver"
 end
 
-# Authentication (OIDC + Devise, using keycloak as the provider)
+# Authentication
 gem "devise"
-gem 'omniauth'
-gem 'omniauth-rails_csrf_protection'
-gem 'omniauth_openid_connect'
+
