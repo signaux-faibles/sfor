@@ -11,9 +11,6 @@
  * It is generally better to create a new file per style scope.
  */
 
-@import "dsfr.min";
-@import "utility.min";
-
 /*
  *= require_tree .
  *= require_self
