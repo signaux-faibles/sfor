@@ -271,22 +271,6 @@ Devise.setup do |config|
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
-  config.omniauth :openid_connect, {
-    strategy_class: OmniAuth::Strategies::OpenIDConnect,
-    name: :openid_connect,
-    scope: [:openid, :email],
-    response_type: :code,
-    discovery: true,
-    issuer: "#{ENV['KEYCLOAK_HOST']}/auth/realms/#{ENV['KEYCLOAK_REALM']}",
-    uid_field: "uid",
-    post_logout_redirect_uri: ENV['KEYCLOAK_POST_LOGOUT_REDIRECT_URI'],
-    client_options: {
-      port: 8080,
-      scheme: 'http',
-      identifier: 'signauxfaibles',
-      redirect_uri: ENV['KEYCLOAK_POST_LOGIN_CALLBACK_URI'],
-    }
-  }
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
@@ -308,7 +292,7 @@ Devise.setup do |config|
   #
   # When using OmniAuth, Devise cannot automatically set OmniAuth path,
   # so you need to do it manually. For the users scope, it would be:
-  config.omniauth_path_prefix = '/users/auth'
+  # config.omniauth_path_prefix = '/users/auth'
 
   # ==> Hotwire/Turbo configuration
   # When using Devise with Hotwire/Turbo, the http status for error responses

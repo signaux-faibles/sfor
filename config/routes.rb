@@ -2,11 +2,12 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Authentication
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions'}
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
 
   devise_scope :user do
-    # Handle OmniAuth failures
-    get '/users/auth/failure', to: 'users/omniauth_callbacks#failure'
+    post 'authenticate', to: 'users/sessions#create'
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

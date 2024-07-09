@@ -9,6 +9,8 @@ class Establishment < ApplicationRecord
   has_many :campaign_memberships
   has_many :campaigns, through: :campaign_memberships
 
+  validates :siret, presence: true, uniqueness: true
+
   # Scope to find only companies
   scope :companies, -> { where(parent_company_id: nil) }
   scope :by_campaign, -> (campaign_id) { joins(:campaign_memberships).where(campaign_memberships: { campaign_id: campaign_id }) if campaign_id.present? }

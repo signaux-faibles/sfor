@@ -7,7 +7,7 @@ require 'faker'
 require_relative 'seeds/departments_seeds'
 require_relative 'seeds/users_seeds'
 require_relative 'seeds/campaigns_seeds'
-
+require_relative 'seeds/roles_seeds'
 
 # Create establishments and companies (parent establishments)
 10.times do
@@ -150,3 +150,5 @@ establishments.each do |establishment|
     establishment: establishment
   )
 end
+
+puts "Database seeded"

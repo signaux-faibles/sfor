@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_06_20_124213) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_04_190257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,6 +114,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_20_124213) do
     t.bigint "department_id", null: false
     t.index ["department_id"], name: "index_establishments_on_department_id"
     t.index ["parent_company_id"], name: "index_establishments_on_parent_company_id"
+    t.index ["siret"], name: "index_establishments_on_siret", unique: true
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "roles_users", id: false, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "role_id", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -134,6 +146,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_20_124213) do
     t.string "provider"
     t.string "uid"
     t.string "id_token"
+    t.string "wekan_document_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
