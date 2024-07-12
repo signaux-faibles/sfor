@@ -5,9 +5,11 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable
 
-  has_many :establishment_followers
-  has_many :establishments, through: :establishment_followers
   has_and_belongs_to_many :roles
+
+  has_many :created_trackings, class_name: 'EstablishmentTracking', foreign_key: 'creator_id'
+  has_many :tracking_participants
+  has_many :participated_trackings, through: :tracking_participants, source: :establishment_tracking
 
   validates :email, presence: true, uniqueness: true
 
@@ -23,10 +25,6 @@ class User < ApplicationRecord
     user
   end
 
-  def establishments_followed
-    EstablishmentFollower.where(user: self).includes(:establishment)
-  end
-
   def update_roles(auth)
     puts "auth credentials"
     puts auth.credentials
@@ -34,6 +32,10 @@ class User < ApplicationRecord
     puts roles.inspect
     self.roles = roles.map { |role_name| Role.find_or_create_by(name: role_name) }
     save!
+  end
+
+  def full_name
+    "#{first_name} #{last_name}"
   end
 
   private

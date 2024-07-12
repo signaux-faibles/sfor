@@ -284,7 +284,7 @@
       <value>file://$MODULE_DIR$/lib/templates</value>
     </entry>
     <entry key="log">
-      <value>file://$MODULE_DIR$/log/development.log</value>
+      <value>file://$MODULE_DIR$/log/production.log</value>
     </entry>
     <entry key="public">
       <value>file://$MODULE_DIR$/public</value>

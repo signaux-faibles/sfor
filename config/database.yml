@@ -2,9 +2,9 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: sfor_db_1
-  port: 5433
-  database: postgres
+  host: db
+  port: 5432
+  database: signaux_faibles_v2_development
   username: postgres
   password: password
 
