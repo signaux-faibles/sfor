@@ -1,0 +1,40 @@
+<h1>Ajouter un nouveau suivi pour <%= @establishment.raison_sociale %></h1>
+
+<%= form_with(model: @tracking, local: true) do |form| %>
+  <% if @tracking.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@tracking.errors.count, "error") %> empêchent la création de ce suivi :</h2>
+      <ul>
+        <% @tracking.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :start_date %>
+    <%= form.date_field :start_date %>
+  </div>
+
+  <div class="field">
+    <%= form.label :end_date %>
+    <%= form.date_field :end_date %>
+  </div>
+
+  <div class="field">
+    <%= form.label :status %>
+    <%= form.text_field :status %>
+  </div>
+
+  <div class="field">
+    <%= form.label :Participants %>
+    <%= form.collection_select :participant_ids, User.all, :id, :full_name, {}, { multiple: true } %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit 'Créer Suivi', class: 'fr-btn' %>
+  </div>
+<% end %>
+
+<%= link_to 'Retour', @establishment %>

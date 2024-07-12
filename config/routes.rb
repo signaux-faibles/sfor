@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'trackings/new'
+  get 'trackings/create'
+  get 'trackings/show'
+  get 'trackings/destroy'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Authentication
@@ -14,13 +18,10 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :establishments, only: [:index, :show], path: 'entreprises' do
-    post 'follow', on: :member
-    delete 'unfollow', on: :member
+    resources :trackings, only: [:new, :create, :show, :destroy]
   end
-  get 'my_establishments', to: 'establishments#my_establishments'
 
   resources :campaigns, only: [:index, :show], path: 'campagnes'
-  resources :establishment_followers, only: [:create, :destroy], path: 'suivis-entreprises'
 
   namespace :admin do
     resources :campaigns, only: [:index, :show], path: 'campagnes'

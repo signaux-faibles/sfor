@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_04_190257) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_12_093006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -39,16 +39,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_190257) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "establishment_followers", force: :cascade do |t|
-    t.bigint "user_id", null: false
+  create_table "establishment_trackings", force: :cascade do |t|
+    t.bigint "creator_id", null: false
     t.bigint "establishment_id", null: false
     t.date "start_date"
     t.date "end_date"
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["establishment_id"], name: "index_establishment_followers_on_establishment_id"
-    t.index ["user_id"], name: "index_establishment_followers_on_user_id"
+    t.index ["creator_id"], name: "index_establishment_trackings_on_creator_id"
+    t.index ["establishment_id"], name: "index_establishment_trackings_on_establishment_id"
   end
 
   create_table "establishments", force: :cascade do |t|
@@ -128,6 +128,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_190257) do
     t.bigint "role_id", null: false
   end
 
+  create_table "tracking_participants", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "establishment_tracking_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_tracking_id"], name: "index_tracking_participants_on_establishment_tracking_id"
+    t.index ["user_id"], name: "index_tracking_participants_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -153,7 +162,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_190257) do
 
   add_foreign_key "campaign_memberships", "campaigns"
   add_foreign_key "campaign_memberships", "establishments"
-  add_foreign_key "establishment_followers", "establishments"
-  add_foreign_key "establishment_followers", "users"
+  add_foreign_key "establishment_trackings", "establishments"
+  add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "establishments", "departments"
+  add_foreign_key "tracking_participants", "establishment_trackings"
+  add_foreign_key "tracking_participants", "users"
 end

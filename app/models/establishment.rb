@@ -3,8 +3,7 @@ class Establishment < ApplicationRecord
   belongs_to :parent_company, class_name: 'Establishment', optional: true
   has_many :sub_establishments, class_name: 'Establishment', foreign_key: 'parent_company_id'
 
-  has_many :establishment_followers
-  has_many :users, through: :establishment_followers
+  has_many :establishment_trackings
 
   has_many :campaign_memberships
   has_many :campaigns, through: :campaign_memberships
