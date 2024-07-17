@@ -13,15 +13,15 @@
   </head>
 
   <body>
-  <%= render 'layouts/header' %>
-  <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
-  <% flash.delete(:timedout).each do |type, msg| %>
-    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm">
-      <p><%= msg %></p>
-    </div>
-  <% end %>
+    <%= render 'layouts/header' %>
+    <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
+    <% flash.delete(:timedout).each do |type, msg| %>
+      <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm">
+        <p><%= msg %></p>
+      </div>
+    <% end %>
 
-  <main class="fr-container fr-pt-4w">
+    <main class="fr-pt-4w">
       <%= yield %>
     </main>
     <!-- Non-module script for older browsers -->
