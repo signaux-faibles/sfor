@@ -1,8 +1,14 @@
 # Create establishments and companies (parent establishments)
+
+activity_sectors = ActivitySector.all
+level_two_and_above_sectors = activity_sectors.where('depth > 1')
+
 10.times do
   department = Department.order('RANDOM()').first
   siren = Faker::Number.unique.number(digits: 9).to_s
   siret = "#{siren}#{Faker::Number.number(digits: 5)}"
+  activity_sector = level_two_and_above_sectors.sample
+  level_one_activity_sector = activity_sector.level_one
 
   company = Establishment.create!(
     department: department,
@@ -60,12 +66,16 @@
     secteur_covid: Faker::Lorem.word,
     etat_administratif: Faker::Lorem.word,
     etat_administratif_entreprise: Faker::Lorem.word,
-    has_delai: Faker::Boolean.boolean
+    has_delai: Faker::Boolean.boolean,
+    activity_sector: activity_sector,
+    level_one_activity_sector: level_one_activity_sector
   )
 
   # Create establishments for each company
   5.times do
     department = Department.order('RANDOM()').first
+    activity_sector = level_two_and_above_sectors.sample
+    level_one_activity_sector = activity_sector.level_one || activity_sector.parent
 
     Establishment.create!(
       department: department,
@@ -123,8 +133,9 @@
       etat_administratif: Faker::Lorem.word,
       etat_administratif_entreprise: Faker::Lorem.word,
       has_delai: Faker::Boolean.boolean,
-      parent_company_id: company.id
-    )
+      parent_company_id: company.id,
+      activity_sector: activity_sector,
+      level_one_activity_sector: level_one_activity_sector    )
   end
 end
 

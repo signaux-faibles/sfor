@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_12_093006) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_17_084417) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "activity_sectors", force: :cascade do |t|
+    t.integer "depth", null: false
+    t.string "code", null: false
+    t.string "libelle", null: false
+    t.integer "parent_id"
+    t.integer "level_one_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_activity_sectors_on_code", unique: true
+    t.index ["level_one_id"], name: "index_activity_sectors_on_level_one_id"
+    t.index ["parent_id"], name: "index_activity_sectors_on_parent_id"
+  end
 
   create_table "campaign_memberships", force: :cascade do |t|
     t.bigint "campaign_id", null: false
@@ -112,7 +125,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_12_093006) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "department_id", null: false
+    t.bigint "activity_sector_id", null: false
+    t.bigint "level_one_activity_sector_id"
+    t.index ["activity_sector_id"], name: "index_establishments_on_activity_sector_id"
     t.index ["department_id"], name: "index_establishments_on_department_id"
+    t.index ["level_one_activity_sector_id"], name: "index_establishments_on_level_one_activity_sector_id"
     t.index ["parent_company_id"], name: "index_establishments_on_parent_company_id"
     t.index ["siret"], name: "index_establishments_on_siret", unique: true
   end
@@ -160,10 +177,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_12_093006) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "activity_sectors", "activity_sectors", column: "level_one_id"
+  add_foreign_key "activity_sectors", "activity_sectors", column: "parent_id"
   add_foreign_key "campaign_memberships", "campaigns"
   add_foreign_key "campaign_memberships", "establishments"
   add_foreign_key "establishment_trackings", "establishments"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
+  add_foreign_key "establishments", "activity_sectors"
+  add_foreign_key "establishments", "activity_sectors", column: "level_one_activity_sector_id"
   add_foreign_key "establishments", "departments"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
