@@ -3,6 +3,8 @@ class CreateCompanies < ActiveRecord::Migration[7.1]
     create_table :companies do |t|
       t.string :siren, null: false
       t.string :siret, null: false
+      t.string :raison_sociale, null: false
+      t.integer :effectif, null: true
 
       t.timestamps
     end

@@ -8,16 +8,8 @@ class Establishment < ApplicationRecord
 
   has_many :establishment_trackings
 
-  has_many :campaign_memberships
-  has_many :campaigns, through: :campaign_memberships
-
   validates :siren, presence: true
   validates :siret, presence: true, uniqueness: { scope: :siren }
-
-
-  # Scope to find only companies
-  scope :companies, -> { where(parent_company_id: nil) }
-  scope :by_campaign, -> (campaign_id) { joins(:campaign_memberships).where(campaign_memberships: { campaign_id: campaign_id }) if campaign_id.present? }
 
   def self.ransackable_attributes(auth_object = nil)
     ["activite_partielle", "activity_sector_id", "alert", "apconso_heure_consomme", "apconso_montant", "arrete_bilan", "chiffre_affaire", "code_activite", "code_departement", "code_territoire_industrie", "commune", "created_at", "date_creation_entreprise", "date_effectif", "date_entreprise", "date_last_procol", "date_ouverture_etablissement", "department_id", "detail_score", "dette_urssaf", "effectif", "effectif_entreprise", "etat_administratif", "etat_administratif_entreprise", "excedent_brut_d_exploitation", "exercice_diane", "first_alert", "first_list_entreprise", "first_list_etablissement", "first_red_list_entreprise", "first_red_list_etablissement", "has_delai", "hausse_urssaf", "id", "id_value", "last_alert", "last_list", "last_procol", "level_one_activity_sector_id", "libelle_departement", "libelle_n1", "libelle_n5", "libelle_territoire_industrie", "liste", "parent_company_id", "periode_urssaf", "presence_part_salariale", "prev_chiffre_affaire", "prev_excedent_brut_d_exploitation", "prev_resultat_expl", "raison_sociale", "raison_sociale_groupe", "resultat_expl", "roles", "secteur_covid", "siren", "siret", "statut_juridique_n1", "statut_juridique_n2", "statut_juridique_n3", "territoire_industrie", "updated_at", "valeur_score", "variation_ca"]

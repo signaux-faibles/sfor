@@ -1,28 +1,33 @@
-# Create establishments and companies (parent establishments)
+puts "Creating companies and establishments"
 
 activity_sectors = ActivitySector.all
 level_two_and_above_sectors = activity_sectors.where('depth > 1')
+departments = Department.all
 
 10.times do
-  department = Department.order('RANDOM()').first
+  department = departments.sample
+  raison_sociale = Faker::Company.name
   siren = Faker::Number.unique.number(digits: 9).to_s
   siret = "#{siren}#{Faker::Number.number(digits: 5)}"
+  effectif = Faker::Number.between(from: 1, to: 100)
   activity_sector = level_two_and_above_sectors.sample
   level_one_activity_sector = activity_sector.level_one
 
   company = Company.create!(
-    siren: siren,
-    siret: siret
+    siren:,
+    siret:,
+    raison_sociale:,
+    effectif:,
+    activity_sector:,
+    department:
   )
 
   main_establishment = Establishment.create!(
     department: department,
-    raison_sociale: Faker::Company.name,
+    raison_sociale:,
     siren: siren,
     siret: siret,
     commune: Faker::Address.city,
-    libelle_departement: Faker::Address.state,
-    code_departement: Faker::Address.zip_code,
     valeur_score: Faker::Number.decimal(l_digits: 2),
     detail_score: { example: "data" }, # Replace with actual JSON structure if needed
     first_alert: Faker::Boolean.boolean,
@@ -43,7 +48,7 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
     excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
     prev_excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
     effectif: Faker::Number.between(from: 1, to: 100),
-    effectif_entreprise: Faker::Number.between(from: 1, to: 100),
+    effectif_entreprise: effectif,
     date_entreprise: Faker::Date.backward(days: 365),
     date_effectif: Faker::Date.backward(days: 365),
     libelle_n5: Faker::Lorem.word,
@@ -79,6 +84,7 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
 
   # Create additional establishments for the company
   rand(1..5).times do
+    department = departments.sample
     new_siret = "#{siren}#{Faker::Number.unique.number(digits: 5)}"
     Establishment.create!(
       department: department,
@@ -86,8 +92,6 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
       siret: new_siret,
       siren: siren,
       commune: Faker::Address.city,
-      libelle_departement: Faker::Address.state,
-      code_departement: Faker::Address.zip_code,
       valeur_score: Faker::Number.decimal(l_digits: 2),
       detail_score: { example: "data" },
       first_alert: Faker::Boolean.boolean,
@@ -146,14 +150,36 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
   end
 end
 
+puts "Done creating companies and establishments"
 
-# Assign companies to campaigns
+puts "Assigning Companies to Campaigns..."
+
 campaigns = Campaign.all
-establishments = Establishment.all.sample((0.8 * Establishment.count).round)
+companies = Company.all.sample((0.8 * Establishment.count).round)
 
-establishments.each do |establishment|
-  CampaignMembership.create!(
+companies.each do |company|
+  CampaignCompany.create!(
     campaign: campaigns.sample,
-    establishment: establishment
+    company:,
+    status: 'pending'
   )
 end
+
+puts "Companies assigned to Campaigns."
+
+puts "Assigning Companies to Lists..."
+
+lists = List.all
+companies = Company.all
+
+lists.each do |list|
+  companies.sample((companies.count * 0.9).round).each do |company|
+    CompanyList.create!(company: company, list: list)
+  end
+end
+
+puts "Companies assigned to Lists."
+
+
+
+

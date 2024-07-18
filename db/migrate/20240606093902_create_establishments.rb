@@ -6,8 +6,6 @@ class CreateEstablishments < ActiveRecord::Migration[7.1]
       t.string :siren, limit: 9
       t.text :raison_sociale
       t.text :commune
-      t.text :libelle_departement
-      t.text :code_departement
       t.float :valeur_score
       t.jsonb :detail_score
       t.boolean :first_alert
