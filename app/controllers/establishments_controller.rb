@@ -2,11 +2,8 @@ class EstablishmentsController < ApplicationController
   before_action :set_establishment, only: %i[show]
 
   def index
-    if params[:campaign_id].present?
-      @establishments = Establishment.by_campaign(params[:campaign_id])
-    else
-      @establishments = Establishment.all
-    end
+    @q = Establishment.ransack(params[:q])
+    @establishments = @q.result(distinct: true)
   end
 
   def show

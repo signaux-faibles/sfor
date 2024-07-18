@@ -1,0 +1,22 @@
+<div class="fr-container">
+  <%= search_form_for @q, url: establishments_path, method: :get do |f| %>
+    <div>
+      <%= f.label :code_activite_cont, "Code Activité" %>
+      <%= f.text_field :code_activite_cont %>
+    </div>
+
+    <div>
+      <%= f.label :department_id_eq, "Department" %>
+      <%= f.collection_select :department_id_eq, Department.all, :id, :name, include_blank: true %>
+    </div>
+
+    <div>
+      <%= f.label :activity_sector_id_eq, "Activity Sector" %>
+      <%= f.collection_select :activity_sector_id_eq, ActivitySector.all, :id, :libelle, include_blank: true %>
+    </div>
+
+    <div>
+      <%= f.submit "Chercher", class: "fr-btn" %>
+    </div>
+  <% end %>
+</div>
