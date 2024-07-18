@@ -10,7 +10,12 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
   activity_sector = level_two_and_above_sectors.sample
   level_one_activity_sector = activity_sector.level_one
 
-  company = Establishment.create!(
+  company = Company.create!(
+    siren: siren,
+    siret: siret
+  )
+
+  main_establishment = Establishment.create!(
     department: department,
     raison_sociale: Faker::Company.name,
     siren: siren,
@@ -68,19 +73,17 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
     etat_administratif_entreprise: Faker::Lorem.word,
     has_delai: Faker::Boolean.boolean,
     activity_sector: activity_sector,
-    level_one_activity_sector: level_one_activity_sector
+    level_one_activity_sector: level_one_activity_sector,
+    is_siege: true
   )
 
-  # Create establishments for each company
-  5.times do
-    department = Department.order('RANDOM()').first
-    activity_sector = level_two_and_above_sectors.sample
-    level_one_activity_sector = activity_sector.level_one || activity_sector.parent
-
+  # Create additional establishments for the company
+  rand(1..5).times do
+    new_siret = "#{siren}#{Faker::Number.unique.number(digits: 5)}"
     Establishment.create!(
       department: department,
       raison_sociale: Faker::Company.name,
-      siret: "#{company.siren}#{Faker::Number.number(digits: 5)}",
+      siret: new_siret,
       siren: siren,
       commune: Faker::Address.city,
       libelle_departement: Faker::Address.state,
@@ -101,6 +104,7 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
       exercice_diane: Faker::Number.between(from: 1, to: 10),
       variation_ca: Faker::Number.decimal(l_digits: 2),
       resultat_expl: Faker::Number.decimal(l_digits: 2),
+      prev_resultat_expl: Faker::Number.decimal(l_digits: 2),
       excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
       prev_excedent_brut_d_exploitation: Faker::Number.decimal(l_digits: 2),
       effectif: Faker::Number.between(from: 1, to: 100),
@@ -133,9 +137,12 @@ level_two_and_above_sectors = activity_sectors.where('depth > 1')
       etat_administratif: Faker::Lorem.word,
       etat_administratif_entreprise: Faker::Lorem.word,
       has_delai: Faker::Boolean.boolean,
-      parent_company_id: company.id,
       activity_sector: activity_sector,
-      level_one_activity_sector: level_one_activity_sector    )
+      level_one_activity_sector: level_one_activity_sector,
+      company: company,
+      is_siege: false,
+      parent_establishment: main_establishment
+    )
   end
 end
 

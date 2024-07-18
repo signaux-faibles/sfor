@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_17_084417) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_084417) do
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "companies", force: :cascade do |t|
+    t.string "siren", null: false
+    t.string "siret", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["siren"], name: "index_companies_on_siren", unique: true
+    t.index ["siret"], name: "index_companies_on_siret", unique: true
   end
 
   create_table "departments", force: :cascade do |t|
@@ -121,16 +130,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_084417) do
     t.text "etat_administratif"
     t.text "etat_administratif_entreprise"
     t.boolean "has_delai"
-    t.integer "parent_company_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "department_id", null: false
     t.bigint "activity_sector_id", null: false
     t.bigint "level_one_activity_sector_id"
+    t.bigint "company_id"
+    t.boolean "is_siege"
+    t.integer "parent_establishment_id"
     t.index ["activity_sector_id"], name: "index_establishments_on_activity_sector_id"
+    t.index ["company_id"], name: "index_establishments_on_company_id"
     t.index ["department_id"], name: "index_establishments_on_department_id"
     t.index ["level_one_activity_sector_id"], name: "index_establishments_on_level_one_activity_sector_id"
-    t.index ["parent_company_id"], name: "index_establishments_on_parent_company_id"
+    t.index ["parent_establishment_id"], name: "index_establishments_on_parent_establishment_id"
+    t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siret"], name: "index_establishments_on_siret", unique: true
   end
 
@@ -185,7 +198,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_084417) do
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "establishments", "activity_sectors"
   add_foreign_key "establishments", "activity_sectors", column: "level_one_activity_sector_id"
+  add_foreign_key "establishments", "companies"
   add_foreign_key "establishments", "departments"
+  add_foreign_key "establishments", "establishments", column: "parent_establishment_id"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
 end
