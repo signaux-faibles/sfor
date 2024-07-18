@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -27,14 +27,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
     t.index ["parent_id"], name: "index_activity_sectors_on_parent_id"
   end
 
-  create_table "campaign_memberships", force: :cascade do |t|
+  create_table "campaign_companies", force: :cascade do |t|
     t.bigint "campaign_id", null: false
-    t.bigint "establishment_id", null: false
+    t.bigint "company_id", null: false
     t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["campaign_id"], name: "index_campaign_memberships_on_campaign_id"
-    t.index ["establishment_id"], name: "index_campaign_memberships_on_establishment_id"
+    t.index ["campaign_id"], name: "index_campaign_companies_on_campaign_id"
+    t.index ["company_id"], name: "index_campaign_companies_on_company_id"
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -48,10 +48,25 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
   create_table "companies", force: :cascade do |t|
     t.string "siren", null: false
     t.string "siret", null: false
+    t.string "raison_sociale", null: false
+    t.integer "effectif"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "department_id", null: false
+    t.bigint "activity_sector_id", null: false
+    t.index ["activity_sector_id"], name: "index_companies_on_activity_sector_id"
+    t.index ["department_id"], name: "index_companies_on_department_id"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
     t.index ["siret"], name: "index_companies_on_siret", unique: true
+  end
+
+  create_table "company_lists", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "list_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_company_lists_on_company_id"
+    t.index ["list_id"], name: "index_company_lists_on_list_id"
   end
 
   create_table "departments", force: :cascade do |t|
@@ -79,8 +94,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
     t.string "siren", limit: 9
     t.text "raison_sociale"
     t.text "commune"
-    t.text "libelle_departement"
-    t.text "code_departement"
     t.float "valeur_score"
     t.jsonb "detail_score"
     t.boolean "first_alert"
@@ -147,6 +160,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
     t.index ["siret"], name: "index_establishments_on_siret", unique: true
   end
 
+  create_table "lists", force: :cascade do |t|
+    t.string "label", null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "roles", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -192,8 +212,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_131720) do
 
   add_foreign_key "activity_sectors", "activity_sectors", column: "level_one_id"
   add_foreign_key "activity_sectors", "activity_sectors", column: "parent_id"
-  add_foreign_key "campaign_memberships", "campaigns"
-  add_foreign_key "campaign_memberships", "establishments"
+  add_foreign_key "campaign_companies", "campaigns"
+  add_foreign_key "campaign_companies", "companies"
+  add_foreign_key "companies", "activity_sectors"
+  add_foreign_key "companies", "departments"
+  add_foreign_key "company_lists", "companies"
+  add_foreign_key "company_lists", "lists"
   add_foreign_key "establishment_trackings", "establishments"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "establishments", "activity_sectors"
