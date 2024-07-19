@@ -1,40 +1,47 @@
-<h1>Ajouter un nouveau suivi pour <%= @establishment.raison_sociale %></h1>
+<div class="fr-container">
+  <div class="fr-grid-row">
+    <div class="fr-col-3"></div>
+    <div class="fr-col-6">
+      <h1>Ajouter un nouveau suivi pour <%= @establishment.raison_sociale %></h1>
 
-<%= form_with(model: @tracking, local: true) do |form| %>
-  <% if @tracking.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@tracking.errors.count, "error") %> empêchent la création de ce suivi :</h2>
-      <ul>
-        <% @tracking.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+      <%= form_with(model: @tracking, local: true) do |form| %>
+        <% if @tracking.errors.any? %>
+          <div id="error_explanation">
+            <h2><%= pluralize(@tracking.errors.count, "error") %> empêchent la création de ce suivi :</h2>
+            <ul>
+              <% @tracking.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
         <% end %>
-      </ul>
+
+        <div class="fr-input-group">
+          <%= form.label :start_date, class: 'fr-label' %>
+          <%= form.date_field :start_date, class: 'fr-input' %>
+        </div>
+
+        <div class="fr-input-group">
+          <%= form.label :end_date, class: 'fr-label' %>
+          <%= form.date_field :end_date, class: 'fr-input' %>
+        </div>
+
+        <div class="fr-input-group">
+          <%= form.label :status, class: 'fr-label' %>
+          <%= form.text_field :status, class: 'fr-input' %>
+        </div>
+
+        <div class="fr-input-group">
+          <%= form.label :Participants %>
+          <%= form.collection_select :participant_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+        </div>
+
+        <%= form.submit 'Créer Suivi', class: 'fr-btn' %>
+      <% end %>
+
+      <%= link_to 'Retour', @establishment %>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :start_date %>
-    <%= form.date_field :start_date %>
+    <div class="fr-col-3"></div>
   </div>
+</div>
 
-  <div class="field">
-    <%= form.label :end_date %>
-    <%= form.date_field :end_date %>
-  </div>
-
-  <div class="field">
-    <%= form.label :status %>
-    <%= form.text_field :status %>
-  </div>
-
-  <div class="field">
-    <%= form.label :Participants %>
-    <%= form.collection_select :participant_ids, User.all, :id, :full_name, {}, { multiple: true } %>
-  </div>
-
-  <div class="actions">
-    <%= form.submit 'Créer Suivi', class: 'fr-btn' %>
-  </div>
-<% end %>
-
-<%= link_to 'Retour', @establishment %>

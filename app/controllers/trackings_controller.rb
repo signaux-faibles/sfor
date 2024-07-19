@@ -1,5 +1,5 @@
 class TrackingsController < ApplicationController
-  before_action :set_establishment, only: %i[new create]
+  before_action :set_establishment
   before_action :set_tracking, only: %i[show destroy]
 
   def new
@@ -15,7 +15,7 @@ class TrackingsController < ApplicationController
     if @tracking.save
       redirect_to @establishment, notice: 'Le suivi a été créé avec succès.'
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
