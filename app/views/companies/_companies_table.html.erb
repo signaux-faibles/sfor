@@ -1,15 +1,17 @@
+<div class="fr-mb-3w">
+  Filtres actifs : <%= active_filter_tags(params) %>
+</div>
 <div class="fr-table--lg fr-table fr-table" id="table-lg-component">
   <div class="fr-table__wrapper">
     <div class="fr-table__container">
       <div class="fr-table__content">
         <table id="table-lg">
           <caption>
-            Toutes les entreprises détectées
+            Entreprises détectées
           </caption>
           <thead>
           <tr>
             <th scope="col">Siren</th>
-            <th scope="col">Siret</th>
             <th scope="col">Raison sociale</th>
             <th scope="col">Département</th>
             <th scope="col">Effectif</th>
@@ -21,7 +23,6 @@
           <% @companies.each do |company| %>
             <tr>
               <td><%= company.siren %></td>
-              <td><%= company.siret %></td>
               <td><%= company.raison_sociale %></td>
               <td><%= "#{company.department.name} (#{company.department.code})" %></td>
               <td><%= company.effectif %></td>

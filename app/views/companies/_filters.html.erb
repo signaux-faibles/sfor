@@ -1,22 +1,17 @@
-<div class="fr-container">
+<div class="fr-container" style="margin-top: calc(32px + 1rem);">
   <%= search_form_for @q, url: companies_path, method: :get do |f| %>
     <%= hidden_field_tag 'q[campaigns_id_eq]', params.dig(:q, :campaigns_id_eq) %>
     <%= hidden_field_tag 'q[lists_id_eq]', params.dig(:q, :lists_id_eq) %>
+    <div class="fr-input-group">
+      <%= f.collection_select :lists_id_eq, @lists, :id, :label, { include_blank: 'Choisir une liste', selected: params.dig(:q, :lists_id_eq) }, { class: 'fr-select' } %>
+    </div>
 
     <div class="fr-input-group">
       <%= f.collection_select :campaigns_id_eq, @campaigns, :id, :name, { include_blank: 'Choisir une campagne' }, { class: 'fr-select' } %>
     </div>
 
     <div class="fr-input-group">
-      <%= f.collection_select :lists_id_eq, @lists, :id, :label, { include_blank: 'Choisir une liste' }, { class: 'fr-select' } %>
-    </div>
-
-    <div class="fr-input-group">
       <%= f.search_field :siren_cont, class: 'fr-input', placeholder: 'SIREN' %>
-    </div>
-
-    <div class="fr-input-group">
-      <%= f.search_field :siret_cont, class: 'fr-input', placeholder: 'SIRET' %>
     </div>
 
     <div class="fr-input-group">
@@ -36,7 +31,7 @@
     </div>
 
     <div class="actions">
-      <%= f.submit "Chercher", class: 'fr-btn' %>
+      <%= f.submit "Filtrer", class: 'fr-btn' %>
     </div>
   <% end %>
 </div>

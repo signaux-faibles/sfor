@@ -1,6 +1,9 @@
 ---
 fr:
   activerecord:
+    attributes:
+      establishment:
+        raison_sociale: Raison sociale
     models:
       activity_sector:
         one: 'Secteurd''activité'

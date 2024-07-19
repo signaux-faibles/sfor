@@ -1,24 +1,26 @@
 <div class="fr-container--fluid">
   <div class="fr-grid-row">
     <div class="fr-col-3"></div>
-    <div class="fr-col-6">
+    <div class="fr-col-9">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-4">
-          <%= form_with(url: establishments_path, method: :get, data: { controller: 'submit-on-change' }) do |f| %>
-            <%= f.label :campaign_id, 'Choisir une campagne', class: 'fr-label' %>
-            <%= f.select :campaign_id, options_for_select([['Toutes les campagnes', nil]] + Campaign.all.map { |c| [c.name, c.id] }, params[:campaign_id]), {}, {class: 'fr-select', data: { 'submit-on-change-target': 'select' }} %>
-          <% end %>
+          <div class="fr-search-bar fr-search-bar--lg" id="search-2" role="search">
+            <label class="fr-label" for="search-787-input">
+              Recherche par SIRET ou Raison sociale
+            </label>
+            <input class="fr-input" placeholder="Recherche par SIRET ou Raison sociale" type="search" id="search-787-input" name="search-787-input">
+            <button class="fr-btn">
+              Rechercher
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    <div class="fr-col-3"></div>
   </div>
 </div>
 <div class="fr-container--fluid">
   <div class="fr-grid-row">
-    <div class="fr-col-3">
-      <%= render 'filters' %>
-    </div>
+    <div class="fr-col-3"></div>
     <div class="fr-col-6">
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-12">

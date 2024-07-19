@@ -1,14 +1,16 @@
-<h1>Détails du suivi</h1>
+<div class="fr-container">
+  <h1>Détails du suivi</h1>
 
-<p><strong>Créateur:</strong> <%= full_name(@tracking.creator) %></p>
-<p><strong>Date de début:</strong> <%= @tracking.start_date %></p>
-<p><strong>Date de fin:</strong> <%= @tracking.end_date %></p>
-<p><strong>Statut:</strong> <%= @tracking.status %></p>
-<p><strong>Participants:</strong></p>
-<ul>
-  <% @tracking.participants.each do |participant| %>
-    <li><%= full_name(participant) %></li>
-  <% end %>
-</ul>
+  <p><strong>Créateur:</strong> <%= full_name(@tracking.creator) %></p>
+  <p><strong>Date de début:</strong> <%= @tracking.start_date %></p>
+  <p><strong>Date de fin:</strong> <%= @tracking.end_date %></p>
+  <p><strong>Statut:</strong> <%= @tracking.status %></p>
+  <p><strong>Participants:</strong></p>
+  <ul>
+    <% @tracking.participants.each do |participant| %>
+      <li><%= full_name(participant) %></li>
+    <% end %>
+  </ul>
 
-<%= link_to 'Retour à l\'établissement', @tracking.establishment %>
+  <%= link_to 'Retour à l\'établissement', @tracking.establishment %>
+</div>

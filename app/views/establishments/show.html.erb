@@ -1,51 +1,48 @@
-<h1><%= @establishment.raison_sociale %></h1>
+<div class="fr-container">
+  <h1><%= @establishment.raison_sociale %></h1>
 
-<p>
-  <strong>Etablissement:</strong>
-  <%= @establishment.company? ? 'Oui' : 'Non' %>
-</p>
+  <p>
+    Plein de données publiques visibles par tout le monde sur cet établissement
+  </p>
 
-<p>
-  Plein de données publiques visibles par tout le monde sur cet établissement
-</p>
+  <button class="fr-btn"><%= link_to 'Ajouter un nouveau suivi', new_establishment_tracking_path(@establishment) %></button>
 
-<button class="fr-btn"><%= link_to 'Ajouter un nouveau suivi', new_establishment_tracking_path(@establishment) %></button>
-
-<% if @trackings.any? %>
-  <div class="fr-table fr-table--bordered fr-mt-4w">
-    <table>
-      <caption>Liste des suivis</caption>
-      <thead>
-      <tr>
-        <th scope="col">Créateur</th>
-        <th scope="col">Date de début</th>
-        <th scope="col">Date de fin</th>
-        <th scope="col">Statut</th>
-        <th scope="col">Participants</th>
-        <th scope="col">Actions</th>
-      </tr>
-      </thead>
-      <tbody>
-      <% @trackings.each do |tracking| %>
+  <% if @trackings.any? %>
+    <div class="fr-table fr-table--bordered fr-mt-4w">
+      <table>
+        <caption>Liste des suivis</caption>
+        <thead>
         <tr>
-          <td><%= full_name(tracking.creator) %></td>
-          <td><%= tracking.start_date %></td>
-          <td><%= tracking.end_date %></td>
-          <td><%= tracking.status %></td>
-          <td>
-            <% tracking.participants.each do |participant| %>
-              <%= full_name(participant) %><br>
-            <% end %>
-          </td>
-          <td>
-            <%= link_to 'Voir', tracking %>
-            <%= button_to 'Supprimer', establishment_tracking_path(@establishment, tracking), method: :delete, data: { turbo_confirm: 'Êtes-vous sûr ?' }, class: 'fr-btn fr-btn--secondary' %>        </tr>
-      <% end %>
-      </tbody>
-    </table>
-  </div>
-<% else %>
-  <p>Aucun suivi pour le moment</p>
-<% end %>
+          <th scope="col">Créateur</th>
+          <th scope="col">Date de début</th>
+          <th scope="col">Date de fin</th>
+          <th scope="col">Statut</th>
+          <th scope="col">Participants</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @trackings.each do |tracking| %>
+          <tr>
+            <td><%= full_name(tracking.creator) %></td>
+            <td><%= tracking.start_date %></td>
+            <td><%= tracking.end_date %></td>
+            <td><%= tracking.status %></td>
+            <td>
+              <% tracking.participants.each do |participant| %>
+                <%= full_name(participant) %><br>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to 'Voir', establishment_tracking_path(@establishment, tracking) %>
+              <%= button_to 'Supprimer', establishment_tracking_path(@establishment, tracking), method: :delete, data: { turbo_confirm: 'Êtes-vous sûr ?' }, class: 'fr-btn fr-btn--secondary' %>        </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p>Aucun suivi pour le moment</p>
+  <% end %>
 
-<%= link_to 'Retour à la liste', establishments_path %>
+  <%= link_to 'Retour à la liste', establishments_path %>
+</div>

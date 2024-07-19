@@ -1,25 +1,38 @@
-<h1><%= @company.raison_sociale %></h1>
-<p>SIREN: <%= @company.siren %></p>
-<p>SIRET: <%= @company.siret %></p>
-
-<h2>Establishments</h2>
-<table>
-  <thead>
-  <tr>
-    <th>Name</th>
-    <th>SIRET</th>
-    <th>Commune</th>
-    <th>Is Siege?</th>
-  </tr>
-  </thead>
-  <tbody>
-  <% @establishments.each do |establishment| %>
-    <tr>
-      <td><%= establishment.raison_sociale %></td>
-      <td><%= establishment.siret %></td>
-      <td><%= establishment.commune %></td>
-      <td><%= establishment.is_siege ? 'Yes' : 'No' %></td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+<div class="fr-container">
+  <h1><%= @company.raison_sociale %></h1>
+  <p>SIREN: <%= @company.siren %></p>
+  <p>SIRET: <%= @company.siret %></p>
+  <div class="fr-table--lg fr-table fr-table" id="table-lg-component">
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table>
+            <caption>
+              Etablissements de cette entreprise
+            </caption>
+            <thead>
+            <tr>
+              <th>Raison sociale</th>
+              <th>SIRET</th>
+              <th>Département</th>
+              <th>Siège</th>
+              <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% @establishments.each do |establishment| %>
+              <tr>
+                <td><%= establishment.raison_sociale %></td>
+                <td><%= establishment.siret %></td>
+                <td><%= "#{establishment.department.name} (#{establishment.department.code})" %></td>
+                <td><%= establishment.is_siege ? 'Oui' : 'Non' %></td>
+                <td><%= link_to 'Voir', establishment %></td>
+              </tr>
+            <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
