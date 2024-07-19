@@ -9,13 +9,12 @@ class CampaignDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    campaign_companies: Field::HasMany,
-    end_date: Field::DateTime,
+    end_date: Field::DateTime.with_options(format: '%d/%m/%Y'),
     companies: Field::HasMany,
     name: Field::String,
-    start_date: Field::DateTime,
-    created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    start_date: Field::DateTime.with_options(format: '%d/%m/%Y'),
+    created_at: Field::DateTime.with_options(format: '%d/%m/%Y'),
+    updated_at: Field::DateTime.with_options(format: '%d/%m/%Y'),
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -25,7 +24,7 @@ class CampaignDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    campaign_companies
+    start_date
     end_date
     companies
   ].freeze
@@ -34,11 +33,10 @@ class CampaignDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    campaign_companies
-    end_date
-    companies
     name
+    companies
     start_date
+    end_date
     created_at
     updated_at
   ].freeze
@@ -47,11 +45,10 @@ class CampaignDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    campaign_memberships
-    end_date
-    companies
     name
     start_date
+    end_date
+    companies
   ].freeze
 
   # COLLECTION_FILTERS
@@ -69,7 +66,7 @@ class CampaignDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how campaigns are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(campaign)
-  #   "Campaign ##{campaign.id}"
-  # end
+  def display_resource(campaign)
+   "Campagne #{campaign.name}"
+  end
 end

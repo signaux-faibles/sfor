@@ -78,7 +78,7 @@ class ActivitySectorDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how activity sectors are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(activity_sector)
-  #   "ActivitySector ##{activity_sector.id}"
-  # end
+  def display_resource(activity_sector)
+    "#{activity_sector.libelle}"
+  end
 end
