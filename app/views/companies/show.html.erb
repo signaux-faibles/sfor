@@ -1,1 +1,25 @@
 <h1><%= @company.raison_sociale %></h1>
+<p>SIREN: <%= @company.siren %></p>
+<p>SIRET: <%= @company.siret %></p>
+
+<h2>Establishments</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>SIRET</th>
+    <th>Commune</th>
+    <th>Is Siege?</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @establishments.each do |establishment| %>
+    <tr>
+      <td><%= establishment.raison_sociale %></td>
+      <td><%= establishment.siret %></td>
+      <td><%= establishment.commune %></td>
+      <td><%= establishment.is_siege ? 'Yes' : 'No' %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

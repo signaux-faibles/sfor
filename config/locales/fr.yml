@@ -1,6 +1,31 @@
 ---
 fr:
   activerecord:
+    models:
+      activity_sector:
+        one: 'Secteurd''activité'
+        other: 'Secteurs d''activité'
+      campaign:
+        one: Campagne
+        other: Campagnes
+      establishment:
+        one: Etablissement
+        other: Etablissements
+      department:
+        one: Département
+        other: Départements
+      company:
+        one: Entreprise
+        other: Entreprises
+      establishment_tracking:
+        one: Accompagnement
+        other: Accompagnements
+      role:
+        one: Rôle
+        other: Rôles
+      user:
+        one: Utilisateur
+        other: Utilisateurs
     errors:
       messages:
         record_invalid: 'La validation a échoué : %{errors}'
@@ -156,6 +181,31 @@ fr:
       create: Créer un(e) %{model}
       submit: Enregistrer ce(tte) %{model}
       update: Modifier ce(tte) %{model}
+    label:
+      establishment:
+        establishment_tracking: Accompagnement
+        activity_sector: 'Secteur d''activité'
+      establishment_tracking:
+        start_date: Date de début
+        end_date: Date de fin
+        status: Statut
+        establishment: Etablissement
+      department:
+        establishments: Etablissements
+        name: Nom
+      activity_sector:
+        depth: Niveau
+        establishments: Etablissements
+      company:
+        establishments: Etablissements
+      campaign:
+        name : Nom
+        companies: Entreprises
+        start_date: Date de début
+        end_date: Date de fin
+        created_at: Créée le
+        updated_at: Mise à jour le
+
   number:
     currency:
       format:

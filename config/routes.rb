@@ -7,7 +7,6 @@ Rails.application.routes.draw do
       resources :establishments
       resources :establishment_trackings
       resources :roles
-      resources :tracking_participants
       resources :users
 
       root to: "activity_sectors#index"

@@ -19,4 +19,8 @@ class Company < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     ["campaign_companies", "campaigns", "company_lists", "establishments", "lists", "department", "activity_sector"]
   end
+
+  def establishments_ordered
+    establishments.order(is_siege: :desc)
+  end
 end

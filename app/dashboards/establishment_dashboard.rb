@@ -15,12 +15,9 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     apconso_heure_consomme: Field::Number,
     apconso_montant: Field::Number,
     arrete_bilan: Field::Date,
-    campaign_memberships: Field::HasMany,
-    campaigns: Field::HasMany,
     chiffre_affaire: Field::Number.with_options(decimals: 2),
     child_establishments: Field::HasMany,
     code_activite: Field::Text,
-    code_departement: Field::Text,
     code_territoire_industrie: Field::Text,
     commune: Field::Text,
     company: Field::BelongsTo,
@@ -51,7 +48,6 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     last_list: Field::Text,
     last_procol: Field::Text,
     level_one_activity_sector: Field::BelongsTo,
-    libelle_departement: Field::Text,
     libelle_n1: Field::Text,
     libelle_n5: Field::Text,
     libelle_territoire_industrie: Field::Text,
@@ -101,12 +97,9 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     apconso_heure_consomme
     apconso_montant
     arrete_bilan
-    campaign_memberships
-    campaigns
     chiffre_affaire
     child_establishments
     code_activite
-    code_departement
     code_territoire_industrie
     commune
     company
@@ -137,7 +130,6 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     last_list
     last_procol
     level_one_activity_sector
-    libelle_departement
     libelle_n1
     libelle_n5
     libelle_territoire_industrie
@@ -175,12 +167,9 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     apconso_heure_consomme
     apconso_montant
     arrete_bilan
-    campaign_memberships
-    campaigns
     chiffre_affaire
     child_establishments
     code_activite
-    code_departement
     code_territoire_industrie
     commune
     company
@@ -211,7 +200,6 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     last_list
     last_procol
     level_one_activity_sector
-    libelle_departement
     libelle_n1
     libelle_n5
     libelle_territoire_industrie
@@ -252,7 +240,7 @@ class EstablishmentDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how establishments are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(establishment)
-  #   "Establishment ##{establishment.id}"
-  # end
+  def display_resource(establishment)
+   "#{establishment.siret}"
+  end
 end

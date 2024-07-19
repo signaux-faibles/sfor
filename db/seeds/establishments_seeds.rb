@@ -23,10 +23,10 @@ departments = Department.all
   )
 
   main_establishment = Establishment.create!(
-    department: department,
+    department:,
     raison_sociale:,
-    siren: siren,
-    siret: siret,
+    siren:,
+    siret:,
     commune: Faker::Address.city,
     valeur_score: Faker::Number.decimal(l_digits: 2),
     detail_score: { example: "data" }, # Replace with actual JSON structure if needed
@@ -77,8 +77,9 @@ departments = Department.all
     etat_administratif: Faker::Lorem.word,
     etat_administratif_entreprise: Faker::Lorem.word,
     has_delai: Faker::Boolean.boolean,
-    activity_sector: activity_sector,
-    level_one_activity_sector: level_one_activity_sector,
+    activity_sector:,
+    level_one_activity_sector:,
+    company:,
     is_siege: true
   )
 
@@ -87,10 +88,10 @@ departments = Department.all
     department = departments.sample
     new_siret = "#{siren}#{Faker::Number.unique.number(digits: 5)}"
     Establishment.create!(
-      department: department,
+      department:,
       raison_sociale: Faker::Company.name,
       siret: new_siret,
-      siren: siren,
+      siren:,
       commune: Faker::Address.city,
       valeur_score: Faker::Number.decimal(l_digits: 2),
       detail_score: { example: "data" },
@@ -143,7 +144,7 @@ departments = Department.all
       has_delai: Faker::Boolean.boolean,
       activity_sector: activity_sector,
       level_one_activity_sector: level_one_activity_sector,
-      company: company,
+      company:,
       is_siege: false,
       parent_establishment: main_establishment
     )

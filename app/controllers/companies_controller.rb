@@ -11,6 +11,7 @@ class CompaniesController < ApplicationController
   end
 
   def show
+    @establishments = @company.establishments_ordered
   end
 
   private
