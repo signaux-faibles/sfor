@@ -5,12 +5,29 @@
   <p><strong>Date de début:</strong> <%= @tracking.start_date %></p>
   <p><strong>Date de fin:</strong> <%= @tracking.end_date %></p>
   <p><strong>Statut:</strong> <%= @tracking.status %></p>
-  <p><strong>Participants:</strong></p>
-  <ul>
-    <% @tracking.participants.each do |participant| %>
-      <li><%= full_name(participant) %></li>
-    <% end %>
-  </ul>
+  <p><strong>Participants:</strong>
+    <%= @tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
+  </p>
+
+
+  <div class="fr-container">
+    <div class="fr-tabs">
+      <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
+        <li role="presentation">
+          <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">CODEFI</button>
+        </li>
+        <li role="presentation">
+          <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Mon réseau</button>
+        </li>
+      </ul>
+      <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-404" tabindex="0">
+        <p>Synthèse et commentaires CODEFI</p>
+      </div>
+      <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405" tabindex="0">
+        <p>Synthèse et commentaires mon réseau</p>
+      </div>
+    </div>
+  </div>
 
   <%= link_to 'Retour à l\'établissement', @tracking.establishment %>
 </div>
