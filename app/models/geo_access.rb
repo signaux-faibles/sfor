@@ -1,0 +1,2 @@
+class GeoAccess < ApplicationRecord
+end

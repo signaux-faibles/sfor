@@ -23,7 +23,10 @@
                 Signaux Faibles
               </p>
             <% end %>
-            <p class="fr-header__service-tagline">Service : Nom du service (Urssaf, DGFIP,...)</p>
+            <p class="fr-header__service-tagline">
+              Connecté en tant que : <%= full_name(current_user) %>, Entité : <%= current_user.entity.name %>, Segment : <%= current_user.segment.name %>
+            </p>
+
           </div>
         </div>
         <div class="fr-header__tools">

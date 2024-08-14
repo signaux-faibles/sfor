@@ -255,6 +255,9 @@ GEM
       strscan (>= 3.0.9)
     ruby-graphviz (1.2.5)
       rexml
+    rubyXL (3.4.27)
+      nokogiri (>= 1.10.8)
+      rubyzip (>= 1.3.0)
     rubyzip (2.3.2)
     selenium-webdriver (4.21.1)
       base64 (~> 0.2)
@@ -320,6 +323,7 @@ DEPENDENCIES
   rails-erd
   ransack
   redis (>= 4.0.1)
+  rubyXL
   selenium-webdriver
   sprockets-rails
   stimulus-rails

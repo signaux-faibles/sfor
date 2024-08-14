@@ -5,6 +5,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable
 
+  belongs_to :entity, optional: false
+  belongs_to :segment, optional: false
+  belongs_to :geo_access, optional: false
   has_and_belongs_to_many :roles
 
   has_many :created_trackings, class_name: 'EstablishmentTracking', foreign_key: 'creator_id'
@@ -12,6 +15,7 @@ class User < ApplicationRecord
   has_many :participated_trackings, through: :tracking_participants, source: :establishment_tracking
 
   validates :email, presence: true, uniqueness: true
+  validates :level, presence: true
 
   def self.from_omniauth(auth)
     puts "auth info: #{auth.inspect}"
