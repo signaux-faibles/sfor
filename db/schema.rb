@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
 
   create_table "departments", force: :cascade do |t|
     t.string "code"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "entities", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -160,6 +166,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
     t.index ["siret"], name: "index_establishments_on_siret", unique: true
   end
 
+  create_table "geo_accesses", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "lists", force: :cascade do |t|
     t.string "label", null: false
     t.string "code", null: false
@@ -176,6 +188,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
   create_table "roles_users", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "role_id", null: false
+  end
+
+  create_table "segments", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tracking_participants", force: :cascade do |t|
@@ -206,8 +224,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
     t.string "uid"
     t.string "id_token"
     t.string "wekan_document_id"
+    t.bigint "entity_id", null: false
+    t.bigint "segment_id", null: false
+    t.string "level", default: "A", null: false
+    t.text "description"
+    t.bigint "geo_access_id", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["entity_id"], name: "index_users_on_entity_id"
+    t.index ["geo_access_id"], name: "index_users_on_geo_access_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["segment_id"], name: "index_users_on_segment_id"
   end
 
   add_foreign_key "activity_sectors", "activity_sectors", column: "level_one_id"
@@ -227,4 +253,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_18_194541) do
   add_foreign_key "establishments", "establishments", column: "parent_establishment_id"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
+  add_foreign_key "users", "entities"
+  add_foreign_key "users", "geo_accesses"
+  add_foreign_key "users", "segments"
 end

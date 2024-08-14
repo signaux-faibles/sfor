@@ -4,6 +4,7 @@ class Users::SessionsController < Devise::SessionsController
   def create
     token = params[:token]
     decoded_token = decode_token(token)
+    puts decoded_token
     if decoded_token
       user = find_or_create_user(decoded_token)
       sign_in(resource_name, user)
