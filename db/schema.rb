@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_20_100938) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -80,6 +80,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "establishment_tracking_labels", force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "tracking_label_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_tracking_id"], name: "idx_on_establishment_tracking_id_0ea3d45614"
+    t.index ["tracking_label_id"], name: "index_establishment_tracking_labels_on_tracking_label_id"
   end
 
   create_table "establishment_trackings", force: :cascade do |t|
@@ -196,6 +205,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tracking_labels", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "system", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tracking_participants", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "establishment_tracking_id", null: false
@@ -203,6 +219,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
     t.datetime "updated_at", null: false
     t.index ["establishment_tracking_id"], name: "index_tracking_participants_on_establishment_tracking_id"
     t.index ["user_id"], name: "index_tracking_participants_on_user_id"
+  end
+
+  create_table "tracking_referents", force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_tracking_id"], name: "index_tracking_referents_on_establishment_tracking_id"
+    t.index ["user_id"], name: "index_tracking_referents_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -244,6 +269,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
   add_foreign_key "companies", "departments"
   add_foreign_key "company_lists", "companies"
   add_foreign_key "company_lists", "lists"
+  add_foreign_key "establishment_tracking_labels", "establishment_trackings"
+  add_foreign_key "establishment_tracking_labels", "tracking_labels"
   add_foreign_key "establishment_trackings", "establishments"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "establishments", "activity_sectors"
@@ -253,6 +280,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_154001) do
   add_foreign_key "establishments", "establishments", column: "parent_establishment_id"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
+  add_foreign_key "tracking_referents", "establishment_trackings"
+  add_foreign_key "tracking_referents", "users"
   add_foreign_key "users", "entities"
   add_foreign_key "users", "geo_accesses"
   add_foreign_key "users", "segments"

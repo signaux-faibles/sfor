@@ -5,7 +5,7 @@
     Plein de données publiques visibles par tout le monde sur cet établissement
   </p>
 
-  <button class="fr-btn"><%= link_to 'Ajouter un nouveau suivi', new_establishment_tracking_path(@establishment) %></button>
+  <button class="fr-btn">  <%= link_to 'Ajouter un nouveau suivi', new_establishment_establishment_tracking_path(@establishment) %></button>
 
   <% if @trackings.any? %>
     <div class="fr-table fr-table--bordered fr-mt-4w">
@@ -34,8 +34,8 @@
               <% end %>
             </td>
             <td>
-              <%= link_to 'Voir', establishment_tracking_path(@establishment, tracking) %>
-              <%= button_to 'Supprimer', establishment_tracking_path(@establishment, tracking), method: :delete, data: { turbo_confirm: 'Êtes-vous sûr ?' }, class: 'fr-btn fr-btn--secondary' %>        </tr>
+              <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking) %>
+              <%= button_to 'Supprimer', establishment_establishment_tracking_path(@establishment, tracking), method: :delete, data: { turbo_confirm: 'Êtes-vous sûr ?' }, class: 'fr-btn fr-btn--secondary' %>        </tr>
         <% end %>
         </tbody>
       </table>

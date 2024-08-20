@@ -9,6 +9,15 @@ class EstablishmentsController < ApplicationController
   def show
     @trackings = @establishment.establishment_trackings.includes(:creator)
   end
+  def new
+    @establishment = Establishment.find_by(siret: params[:establishment_siret])
+    if @establishment
+      @establishment_tracking = EstablishmentTracking.new(establishment: @establishment)
+      # Autres initialisations si nécessaire
+    else
+      redirect_to some_path, alert: 'Establishment not found'
+    end
+  end
 
   private
 

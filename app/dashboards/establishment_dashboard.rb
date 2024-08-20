@@ -82,77 +82,32 @@ class EstablishmentDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    activite_partielle
+    is_siege
+    raison_sociale
+    siren
+    siret
     activity_sector
-    alert
+    parent_establishment
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    activite_partielle
+    siren
+    siret
+    raison_sociale
     activity_sector
-    alert
-    apconso_heure_consomme
-    apconso_montant
-    arrete_bilan
-    chiffre_affaire
     child_establishments
     code_activite
     code_territoire_industrie
     commune
     company
-    date_creation_entreprise
-    date_effectif
-    date_entreprise
-    date_last_procol
-    date_ouverture_etablissement
     department
-    detail_score
-    dette_urssaf
-    effectif
-    effectif_entreprise
     establishment_trackings
-    etat_administratif
-    etat_administratif_entreprise
-    excedent_brut_d_exploitation
-    exercice_diane
-    first_alert
-    first_list_entreprise
-    first_list_etablissement
-    first_red_list_entreprise
-    first_red_list_etablissement
-    has_delai
-    hausse_urssaf
     is_siege
-    last_alert
-    last_list
-    last_procol
     level_one_activity_sector
-    libelle_n1
-    libelle_n5
-    libelle_territoire_industrie
-    liste
     parent_establishment
-    periode_urssaf
-    presence_part_salariale
-    prev_chiffre_affaire
-    prev_excedent_brut_d_exploitation
-    prev_resultat_expl
-    raison_sociale
-    raison_sociale_groupe
-    resultat_expl
-    roles
-    secteur_covid
-    siren
-    siret
-    statut_juridique_n1
-    statut_juridique_n2
-    statut_juridique_n3
-    territoire_industrie
-    valeur_score
-    variation_ca
     created_at
     updated_at
   ].freeze
@@ -161,68 +116,20 @@ class EstablishmentDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    activite_partielle
+    siren
+    siret
+    raison_sociale
     activity_sector
-    alert
-    apconso_heure_consomme
-    apconso_montant
-    arrete_bilan
-    chiffre_affaire
     child_establishments
     code_activite
     code_territoire_industrie
     commune
     company
-    date_creation_entreprise
-    date_effectif
-    date_entreprise
-    date_last_procol
-    date_ouverture_etablissement
     department
-    detail_score
-    dette_urssaf
-    effectif
-    effectif_entreprise
     establishment_trackings
-    etat_administratif
-    etat_administratif_entreprise
-    excedent_brut_d_exploitation
-    exercice_diane
-    first_alert
-    first_list_entreprise
-    first_list_etablissement
-    first_red_list_entreprise
-    first_red_list_etablissement
-    has_delai
-    hausse_urssaf
     is_siege
-    last_alert
-    last_list
-    last_procol
     level_one_activity_sector
-    libelle_n1
-    libelle_n5
-    libelle_territoire_industrie
-    liste
     parent_establishment
-    periode_urssaf
-    presence_part_salariale
-    prev_chiffre_affaire
-    prev_excedent_brut_d_exploitation
-    prev_resultat_expl
-    raison_sociale
-    raison_sociale_groupe
-    resultat_expl
-    roles
-    secteur_covid
-    siren
-    siret
-    statut_juridique_n1
-    statut_juridique_n2
-    statut_juridique_n3
-    territoire_industrie
-    valeur_score
-    variation_ca
   ].freeze
 
   # COLLECTION_FILTERS

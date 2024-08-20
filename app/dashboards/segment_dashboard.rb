@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class UserDashboard < Administrate::BaseDashboard
+class SegmentDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,26 +9,8 @@ class UserDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    created_trackings: Field::HasMany,
-    current_sign_in_at: Field::DateTime,
-    current_sign_in_ip: Field::String,
-    email: Field::String,
-    encrypted_password: Field::String,
-    first_name: Field::String,
-    id_token: Field::String,
-    last_name: Field::String,
-    last_sign_in_at: Field::DateTime,
-    last_sign_in_ip: Field::String,
-    participated_trackings: Field::HasMany,
-    provider: Field::String,
-    remember_created_at: Field::DateTime,
-    reset_password_sent_at: Field::DateTime,
-    reset_password_token: Field::String,
-    roles: Field::HasMany,
-    sign_in_count: Field::Number,
-    tracking_participants: Field::HasMany,
-    uid: Field::String,
-    wekan_document_id: Field::String,
+    name: Field::String,
+    users: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -40,25 +22,17 @@ class UserDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    first_name
-    last_name
-    created_trackings
+    name
+    users
+    created_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    first_name
-    last_name
-    email
-    created_trackings
-    participated_trackings
-    provider
-    roles
-    uid
-    wekan_document_id
-    id_token
+    name
+    users
     created_at
     updated_at
   ].freeze
@@ -67,11 +41,8 @@ class UserDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    first_name
-    last_name
-    email
-    participated_trackings
-    roles
+    name
+    users
   ].freeze
 
   # COLLECTION_FILTERS
@@ -86,10 +57,10 @@ class UserDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how users are displayed
+  # Overwrite this method to customize how segments are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(user)
-    "#{user.email}"
-  end
+  # def display_resource(segment)
+  #   "Segment ##{segment.id}"
+  # end
 end

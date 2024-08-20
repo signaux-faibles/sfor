@@ -1,4 +1,4 @@
-puts "Creating trackings..."
+puts "Creating establishment_trackings..."
 
 users = User.all
 establishments = Establishment.all
@@ -17,10 +17,16 @@ establishments.each do |establishment|
       )
 
       participants = users.sample(rand(1..10))
-      participants << creator unless participants.include?(creator)
+      referents = users.sample(rand(1..2))
+
+      referents << creator unless referents.include?(creator)
 
       participants.each do |participant|
         TrackingParticipant.create!(user: participant, establishment_tracking: tracking)
+      end
+
+      referents.each do |referent|
+        TrackingReferent.create!(user: referent, establishment_tracking: tracking)
       end
     end
   end
