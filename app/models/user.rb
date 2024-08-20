@@ -11,7 +11,11 @@ class User < ApplicationRecord
   has_and_belongs_to_many :roles
 
   has_many :created_trackings, class_name: 'EstablishmentTracking', foreign_key: 'creator_id'
-  has_many :tracking_participants
+
+  has_many :tracking_referents, dependent: :destroy
+  has_many :referent_trackings, through: :tracking_referents, source: :establishment_tracking
+
+  has_many :tracking_participants, dependent: :destroy
   has_many :participated_trackings, through: :tracking_participants, source: :establishment_tracking
 
   validates :email, presence: true, uniqueness: true

@@ -1,12 +1,12 @@
 <div class="fr-container">
   <h1>Détails du suivi</h1>
 
-  <p><strong>Créateur:</strong> <%= full_name(@tracking.creator) %></p>
-  <p><strong>Date de début:</strong> <%= @tracking.start_date %></p>
-  <p><strong>Date de fin:</strong> <%= @tracking.end_date %></p>
-  <p><strong>Statut:</strong> <%= @tracking.status %></p>
+  <p><strong>Créateur:</strong> <%= full_name(@establishment_tracking.creator) %></p>
+  <p><strong>Date de début:</strong> <%= @establishment_tracking.start_date %></p>
+  <p><strong>Date de fin:</strong> <%= @establishment_tracking.end_date %></p>
+  <p><strong>Statut:</strong> <%= @establishment_tracking.status %></p>
   <p><strong>Participants:</strong>
-    <%= @tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
+    <%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
   </p>
 
 
@@ -29,5 +29,5 @@
     </div>
   </div>
 
-  <%= link_to 'Retour à l\'établissement', @tracking.establishment %>
+  <%= link_to 'Retour à l\'établissement', @establishment_tracking.establishment %>
 </div>

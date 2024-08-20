@@ -3,7 +3,7 @@
 # usage : rake users:import file=path/to/your_file.xlsx
 
 namespace :users do
-  desc "Import users from habilitations Excel file using rubyXL"
+  desc "Import users from an Excel file using rubyXL"
   task import: :environment do
     file_path = ENV['file']
 
@@ -14,18 +14,22 @@ namespace :users do
 
     workbook = RubyXL::Parser.parse(file_path)
     worksheet = workbook[0] # Suppose that we are working with the first sheet
-    header = worksheet[0].cells.map(&:value)
 
-    (1...worksheet.count).each do |i|
-      row = Hash[[header, worksheet[i].cells.map(&:value)].transpose]
-      create_or_update_user(row)
+    # Extract headers from the first row
+    header = worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
+
+    # Iterate over each row starting from the second row
+    worksheet.sheet_data.rows[1..-1].each do |row|
+      row_data = Hash[header.zip(row.cells.map { |cell| cell && cell.value })]
+      create_or_update_user(row_data)
     end
 
     puts "Users import completed!"
   end
 
   def create_or_update_user(row)
-    email = row['ADRESSE MAIL'] || row['MAIL']
+    email = row['ADRESSE MAIL']&.downcase
+    return if %w[admin keycloakadmin].include?(email)
 
     user = User.find_or_initialize_by(email: email)
     user.first_name = row['PRENOM']
@@ -53,11 +57,15 @@ namespace :users do
       user.password = Devise.friendly_token[0, 20]
     end
 
-    # Assign roles based on 'NIVEAU HABILITATION'
+    # Assign roles the same way IamUpdater does it (signaux-faibles/IamUpdater/blob/master/user.go)
     roles = determine_roles(user, row)
     user.roles = Role.where(name: roles)
 
-    user.save!
+    if user.save
+      puts "L'utilisateur #{user.email} a bien été créé/mis à jour."
+    else
+      puts "Erreur lors de la création/mise à jour de l'utilisateur #{user.email}: #{user.errors.full_messages.join(', ')}"
+    end
   end
 
   def determine_roles(user, row)
@@ -86,4 +94,4 @@ namespace :users do
 
     roles.uniq
   end
-end
+  end

@@ -72,7 +72,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how establishment trackings are displayed
+  # Overwrite this method to customize how establishment establishment_trackings are displayed
   # across all pages of the admin dashboard.
   #
   # def display_resource(establishment_tracking)

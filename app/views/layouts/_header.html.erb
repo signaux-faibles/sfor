@@ -23,9 +23,11 @@
                 Signaux Faibles
               </p>
             <% end %>
-            <p class="fr-header__service-tagline">
-              Connecté en tant que : <%= full_name(current_user) %>, Entité : <%= current_user.entity.name %>, Segment : <%= current_user.segment.name %>
-            </p>
+            <% if user_signed_in? %>
+              <p class="fr-header__service-tagline">
+                Connecté en tant que : <%= full_name(current_user) %>, Entité : <%= current_user.entity.name %>, Segment : <%= current_user.segment.name %>
+              </p>
+            <% end %>
 
           </div>
         </div>

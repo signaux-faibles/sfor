@@ -2,15 +2,20 @@
 fr:
   activerecord:
     attributes:
+      establishment_tracking:
+        referents: Assignés
       establishment:
         raison_sociale: Raison sociale
+        is_siege: Siège ?
+        parent_establishment: Siège
+        child_establishments: Etablissements enfants
     models:
       activity_sector:
         one: 'Secteurd''activité'
         other: 'Secteurs d''activité'
-      campaign:
-        one: Campagne
-        other: Campagnes
+      referent:
+        one: Assigné
+        other: Assignés
       establishment:
         one: Etablissement
         other: Etablissements
@@ -29,6 +34,12 @@ fr:
       user:
         one: Utilisateur
         other: Utilisateurs
+      entity:
+        one: Campagne
+        other: Campagnes
+      campaign:
+        one: Campagne
+        other: Campagnes
     errors:
       messages:
         record_invalid: 'La validation a échoué : %{errors}'
