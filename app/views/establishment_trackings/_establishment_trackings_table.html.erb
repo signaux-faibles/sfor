@@ -1,0 +1,31 @@
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Nom de l'Établissement</th>
+    <th>Référents</th>
+    <th>Étiquettes</th>
+    <th>Créé par</th>
+    <th>Date de création</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @establishment_trackings.each do |tracking| %>
+    <tr>
+      <td><%= tracking.id %></td>
+      <td><%= tracking.establishment.name %></td>
+      <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
+      <td><%= tracking.tracking_labels.map(&:name).join(', ') %></td>
+      <td><%= tracking.creator.full_name %></td>
+      <td><%= l(tracking.created_at, format: :short) %></td>
+      <td>
+        <%= link_to 'Voir', establishment_tracking_path(tracking) %>
+        <%= link_to 'Éditer', edit_establishment_tracking_path(tracking) %>
+        <%= link_to 'Supprimer', establishment_tracking_path(tracking), method: :delete, data: { confirm: 'Êtes-vous sûr ?' } %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+  <%= paginate @establishment_trackings %>
+</table>

@@ -59,6 +59,12 @@ gem 'ransack'
 # Basic admin
 gem 'administrate', '1.0.0.beta1'
 
+# Authorizations
+gem 'pundit'
+
+# Pagination
+gem 'kaminari'
+
 # TODO put the gem back in development group (only using it here for demo purposes)
 gem 'faker'
 
