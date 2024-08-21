@@ -1,6 +1,12 @@
 class EstablishmentTrackingsController < ApplicationController
-  before_action :set_establishment, except: [:new_by_siret]
+  before_action :set_establishment, except: [:new_by_siret, :index]
   before_action :set_tracking, only: %i[show destroy]
+
+  def index
+    @establishment_trackings = policy_scope(EstablishmentTracking).includes(:establishment, :referents, :tracking_labels).page(params[:page])
+  end
+  def show
+  end
 
   def new
     @establishment_tracking = @establishment.establishment_trackings.new
@@ -26,10 +32,6 @@ class EstablishmentTrackingsController < ApplicationController
       puts @establishment_tracking.errors.inspect
       render :new, status: :unprocessable_entity
     end
-  end
-
-
-  def show
   end
 
   def destroy
