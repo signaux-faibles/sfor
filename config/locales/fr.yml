@@ -9,7 +9,24 @@ fr:
         is_siege: Siège ?
         parent_establishment: Siège
         child_establishments: Etablissements enfants
+      tracking_label:
+        establishment_trackings: Accompagnements
+        name: Nom
+      user:
+        first_name: Prénom
+        last_name: Nom
+        participated_trackings: Participe à
+        referent_trackings: Assigné à
+        roles: Rôles
+        entity: Entité
+        geo_access: Accès géographique
     models:
+      geo_access:
+        one: Accès géographique
+        other: Accès géographiques
+      tracking_label:
+        one: Etiquette
+        other: Etiquettes
       activity_sector:
         one: 'Secteurd''activité'
         other: 'Secteurs d''activité'

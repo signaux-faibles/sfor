@@ -1,8 +1,8 @@
 class Department < ApplicationRecord
   belongs_to :region
 
-  has_many :user_departments, dependent: :destroy
-  has_many :users, through: :user_departments
+  has_many :department_geo_accesses, dependent: :destroy
+  has_many :geo_accesses, through: :department_geo_accesses
 
   has_many :establishments
   has_many :companies

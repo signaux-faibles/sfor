@@ -6,5 +6,7 @@ class CreateDepartments < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :departments, :name, unique: true
   end
 end

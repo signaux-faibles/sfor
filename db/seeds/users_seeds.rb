@@ -8,7 +8,7 @@ dreets_entity = Entity.create!(name: 'DREETS')
 sf_segment = Segment.create!(name: 'sf')
 dreets_segment = Segment.create!(name: 'crp')
 
-geo_access = GeoAccess.create(name: 'France entière')
+geo_access = GeoAccess.find_by(name: 'France entière')
 
 
 User.create!(email: 'charles.marcoin@beta.gouv.fr',

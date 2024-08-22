@@ -33,8 +33,8 @@ class DepartmentDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     id
     code
-    establishments
     name
+    establishments
     created_at
     updated_at
   ].freeze
@@ -44,7 +44,6 @@ class DepartmentDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     code
-    establishments
     name
   ].freeze
 
@@ -63,7 +62,7 @@ class DepartmentDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how departments are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(department)
-  #   "Department ##{department.id}"
-  # end
+  def display_resource(department)
+    "#{department.name} (#{department.code})"
+  end
 end

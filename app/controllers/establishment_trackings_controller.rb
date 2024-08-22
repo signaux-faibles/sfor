@@ -27,7 +27,7 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment_tracking.creator = current_user
 
     if @establishment_tracking.save
-      redirect_to @establishment, notice: 'Le suivi a été créé avec succès.'
+      redirect_to @establishment, notice: 'L\'accompagnement a été créé avec succès.'
     else
       puts @establishment_tracking.errors.inspect
       render :new, status: :unprocessable_entity
@@ -37,7 +37,7 @@ class EstablishmentTrackingsController < ApplicationController
   def destroy
     @establishment = @establishment_tracking.establishment
     @establishment_tracking.destroy
-    redirect_to @establishment, notice: 'Le suivi a été supprimé avec succès.'
+    redirect_to @establishment, notice: 'L\'accompagnement a été supprimé avec succès.'
   end
 
   private

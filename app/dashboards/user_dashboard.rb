@@ -10,7 +10,6 @@ class UserDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     created_trackings: Field::HasMany,
-    regions: Field::HasMany,
     departments: Field::HasMany,
     current_sign_in_at: Field::DateTime,
     current_sign_in_ip: Field::String,
@@ -22,6 +21,7 @@ class UserDashboard < Administrate::BaseDashboard
     last_sign_in_at: Field::DateTime,
     last_sign_in_ip: Field::String,
     participated_trackings: Field::HasMany,
+    referent_trackings: Field::HasMany,
     provider: Field::String,
     remember_created_at: Field::DateTime,
     reset_password_sent_at: Field::DateTime,
@@ -50,7 +50,6 @@ class UserDashboard < Administrate::BaseDashboard
     segment
     entity
     geo_access
-    created_trackings
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -60,13 +59,13 @@ class UserDashboard < Administrate::BaseDashboard
     first_name
     last_name
     email
-    regions
     departments
     entity
     segment
     geo_access
     created_trackings
     participated_trackings
+    referent_trackings
     provider
     roles
     uid
@@ -84,6 +83,8 @@ class UserDashboard < Administrate::BaseDashboard
     last_name
     email
     participated_trackings
+    referent_trackings
+    departments
     roles
   ].freeze
 

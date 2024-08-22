@@ -6,6 +6,7 @@ require 'faker'
 
 require_relative 'seeds/roles_seeds'
 require_relative 'seeds/departments_seeds'
+require_relative 'seeds/geo_accesses_seed'
 require_relative 'seeds/users_seeds'
 require_relative 'seeds/campaigns_seeds'
 require_relative 'seeds/lists_seeds'

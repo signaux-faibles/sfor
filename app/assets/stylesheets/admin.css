@@ -1,0 +1,17 @@
+.app-container input {
+    color: black !important;
+    font-weight: normal !important;
+}
+
+.app-container input:hover {
+    background-color: white !important;
+}
+
+.app-container input[type=submit] {
+    color: white !important;
+}
+
+.app-container input[type=submit]:hover {
+    color: white !important;
+    background-color: #145ea8 !important;
+}
