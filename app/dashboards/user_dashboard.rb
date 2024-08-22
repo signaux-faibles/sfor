@@ -10,6 +10,8 @@ class UserDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     created_trackings: Field::HasMany,
+    regions: Field::HasMany,
+    departments: Field::HasMany,
     current_sign_in_at: Field::DateTime,
     current_sign_in_ip: Field::String,
     email: Field::String,
@@ -29,6 +31,9 @@ class UserDashboard < Administrate::BaseDashboard
     tracking_participants: Field::HasMany,
     uid: Field::String,
     wekan_document_id: Field::String,
+    geo_access: Field::BelongsTo,
+    entity: Field::BelongsTo,
+    segment: Field::BelongsTo,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -42,6 +47,9 @@ class UserDashboard < Administrate::BaseDashboard
     id
     first_name
     last_name
+    segment
+    entity
+    geo_access
     created_trackings
   ].freeze
 
@@ -52,6 +60,11 @@ class UserDashboard < Administrate::BaseDashboard
     first_name
     last_name
     email
+    regions
+    departments
+    entity
+    segment
+    geo_access
     created_trackings
     participated_trackings
     provider

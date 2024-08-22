@@ -13,13 +13,15 @@ namespace :users do
     end
 
     workbook = RubyXL::Parser.parse(file_path)
-    worksheet = workbook[0] # Suppose that we are working with the first sheet
+    worksheet = workbook[0] # Habilitations are in the first sheet of the xlsx file
 
     # Extract headers from the first row
     header = worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
 
-    # Iterate over each row starting from the second row
     worksheet.sheet_data.rows[1..-1].each do |row|
+      # Check if the first cell in the row is empty
+      break if row.cells[0].nil? || row.cells[0].value.nil?
+
       row_data = Hash[header.zip(row.cells.map { |cell| cell && cell.value })]
       create_or_update_user(row_data)
     end
@@ -52,6 +54,8 @@ namespace :users do
     geo_access = GeoAccess.find_or_create_by(name: geo_access_name)
     user.geo_access = geo_access
 
+    assign_region_and_departments(user, geo_access_name)
+
     # Password management for Devise
     if user.new_record?
       user.password = Devise.friendly_token[0, 20]
@@ -61,10 +65,29 @@ namespace :users do
     roles = determine_roles(user, row)
     user.roles = Role.where(name: roles)
 
-    if user.save
-      puts "L'utilisateur #{user.email} a bien été créé/mis à jour."
-    else
+    unless user.save
       puts "Erreur lors de la création/mise à jour de l'utilisateur #{user.email}: #{user.errors.full_messages.join(', ')}"
+    end
+  end
+
+  def assign_region_and_departments(user, geo_access_name)
+    if geo_access_name == 'France entière'
+      user.regions = Region.all
+      user.departments = Department.all
+    else
+      region = Region.find_by(libelle: geo_access_name)
+      if region
+        user.regions << region unless user.regions.include?(region)
+        user.departments += region.departments unless (user.departments & region.departments).any?
+      else
+        department = Department.find_by(code: geo_access_name)
+        if department
+          user.departments << department unless user.departments.include?(department)
+          user.regions << department.region unless user.regions.include?(department.region)
+        else
+          puts "Géographie inconnue: #{geo_access_name} pour l'utilisateur #{user.email}"
+        end
+      end
     end
   end
 
@@ -94,4 +117,4 @@ namespace :users do
 
     roles.uniq
   end
-  end
+end
