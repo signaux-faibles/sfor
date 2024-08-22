@@ -5,12 +5,12 @@
     Plein de données publiques visibles par tout le monde sur cet établissement
   </p>
 
-  <button class="fr-btn">  <%= link_to 'Ajouter un nouveau suivi', new_establishment_establishment_tracking_path(@establishment) %></button>
+  <button class="fr-btn">  <%= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %></button>
 
   <% if @trackings.any? %>
     <div class="fr-table fr-table--bordered fr-mt-4w">
       <table>
-        <caption>Liste des suivis</caption>
+        <caption>Liste des accompagnements</caption>
         <thead>
         <tr>
           <th scope="col">Créateur</th>
@@ -41,8 +41,8 @@
       </table>
     </div>
   <% else %>
-    <p>Aucun suivi pour le moment</p>
+    <p>Aucun accompagnement pour le moment</p>
   <% end %>
 
-  <%= link_to 'Retour à la liste', establishments_path %>
+  <%= link_to 'Retour à la liste', establishment_trackings_path %>
 </div>

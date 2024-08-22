@@ -75,7 +75,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how establishment establishment_trackings are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(establishment_tracking)
-  #   "EstablishmentTracking ##{establishment_tracking.id}"
-  # end
+  def display_resource(establishment_tracking)
+   "Accompagnement ##{establishment_tracking.id}, siret: #{establishment_tracking.establishment.siret}"
+  end
 end

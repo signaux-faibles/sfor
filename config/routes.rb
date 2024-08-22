@@ -2,17 +2,19 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   namespace :admin do
+    resources :users
     resources :activity_sectors
     resources :campaigns
     resources :companies
-    resources :departments
     resources :establishments
     resources :establishment_trackings
     resources :roles
-    resources :users
     resources :entities
     resources :segments
     resources :tracking_labels
+    resources :departments
+    resources :regions
+    resources :geo_accesses
 
     root to: "activity_sectors#index"
   end

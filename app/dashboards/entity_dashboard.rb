@@ -60,7 +60,7 @@ class EntityDashboard < Administrate::BaseDashboard
   # Overwrite this method to customize how entities are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(entity)
-  #   "Entity ##{entity.id}"
-  # end
+  def display_resource(entity)
+   "#{entity.name}"
+  end
 end

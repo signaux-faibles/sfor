@@ -19,7 +19,7 @@ namespace :users do
     header = worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
 
     worksheet.sheet_data.rows[1..-1].each do |row|
-      # Check if the first cell in the row is empty
+      break if row.nil?
       break if row.cells[0].nil? || row.cells[0].value.nil?
 
       row_data = Hash[header.zip(row.cells.map { |cell| cell && cell.value })]
@@ -31,6 +31,7 @@ namespace :users do
 
   def create_or_update_user(row)
     email = row['ADRESSE MAIL']&.downcase
+    puts "Creating new user: #{email}"
     return if %w[admin keycloakadmin].include?(email)
 
     user = User.find_or_initialize_by(email: email)
@@ -51,10 +52,8 @@ namespace :users do
 
     # GeoAccess association
     geo_access_name = row['ACCES GEOGRAPHIQUE']
-    geo_access = GeoAccess.find_or_create_by(name: geo_access_name)
-    user.geo_access = geo_access
 
-    assign_region_and_departments(user, geo_access_name)
+    assign_geo_access(user, geo_access_name)
 
     # Password management for Devise
     if user.new_record?
@@ -70,28 +69,26 @@ namespace :users do
     end
   end
 
-  def assign_region_and_departments(user, geo_access_name)
-    if geo_access_name == 'France entière'
-      user.regions = Region.all
+  def assign_geo_access(user, geo_access_name)
+    puts "Assigning geo access #{geo_access_name}"
+    geo_access = GeoAccess.find_by(name: geo_access_name)
+
+    if geo_access.nil?
+      puts "Accès géographique inconnu: #{geo_access_name} pour l'utilisateur #{user.email}"
+      return
+    end
+
+    if geo_access_name.downcase == 'France entière'
       user.departments = Department.all
     else
-      region = Region.find_by(libelle: geo_access_name)
-      if region
-        user.regions << region unless user.regions.include?(region)
-        user.departments += region.departments unless (user.departments & region.departments).any?
-      else
-        department = Department.find_by(code: geo_access_name)
-        if department
-          user.departments << department unless user.departments.include?(department)
-          user.regions << department.region unless user.regions.include?(department.region)
-        else
-          puts "Géographie inconnue: #{geo_access_name} pour l'utilisateur #{user.email}"
-        end
-      end
+      user.departments = geo_access.departments
     end
+
+    user.geo_access = geo_access
   end
 
   def determine_roles(user, row)
+    puts "Assigning roles..."
     habilitations = {
       "a" => ["bdf", "detection", "dgefp", "pge", "score", "urssaf"],
       "b" => ["detection", "dgefp", "pge", "score"]

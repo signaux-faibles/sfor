@@ -21,9 +21,6 @@ class User < ApplicationRecord
   has_many :user_departments, dependent: :destroy
   has_many :departments, through: :user_departments
 
-  has_many :user_regions, dependent: :destroy
-  has_many :regions, through: :user_regions
-
   validates :email, presence: true, uniqueness: true
   validates :level, presence: true
 

@@ -5,5 +5,7 @@ class CreateGeoAccesses < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :geo_accesses, :name, unique: true
   end
 end

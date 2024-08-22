@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_22_071737) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -69,12 +69,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_071737) do
     t.index ["list_id"], name: "index_company_lists_on_list_id"
   end
 
+  create_table "department_geo_accesses", force: :cascade do |t|
+    t.bigint "geo_access_id", null: false
+    t.bigint "department_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["department_id"], name: "index_department_geo_accesses_on_department_id"
+    t.index ["geo_access_id"], name: "index_department_geo_accesses_on_geo_access_id"
+  end
+
   create_table "departments", force: :cascade do |t|
     t.string "code"
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "region_id", null: false
+    t.index ["name"], name: "index_departments_on_name", unique: true
     t.index ["region_id"], name: "index_departments_on_region_id"
   end
 
@@ -181,6 +191,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_071737) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_geo_accesses_on_name", unique: true
   end
 
   create_table "lists", force: :cascade do |t|
@@ -248,15 +259,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_071737) do
     t.index ["user_id"], name: "index_user_departments_on_user_id"
   end
 
-  create_table "user_regions", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "region_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["region_id"], name: "index_user_regions_on_region_id"
-    t.index ["user_id"], name: "index_user_regions_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -296,6 +298,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_071737) do
   add_foreign_key "companies", "departments"
   add_foreign_key "company_lists", "companies"
   add_foreign_key "company_lists", "lists"
+  add_foreign_key "department_geo_accesses", "departments"
+  add_foreign_key "department_geo_accesses", "geo_accesses"
   add_foreign_key "departments", "regions"
   add_foreign_key "establishment_tracking_labels", "establishment_trackings"
   add_foreign_key "establishment_tracking_labels", "tracking_labels"
@@ -312,8 +316,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_071737) do
   add_foreign_key "tracking_referents", "users"
   add_foreign_key "user_departments", "departments"
   add_foreign_key "user_departments", "users"
-  add_foreign_key "user_regions", "regions"
-  add_foreign_key "user_regions", "users"
   add_foreign_key "users", "entities"
   add_foreign_key "users", "geo_accesses"
   add_foreign_key "users", "segments"

@@ -24,7 +24,6 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    establishment_tracking_labels
     establishment_trackings
     name
   ].freeze

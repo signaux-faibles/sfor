@@ -494,6 +494,7 @@
               <RakeTaskImpl description="" fullCommand="db:truncate_all" id="truncate_all" />
             </subtasks>
           </RakeTaskImpl>
+          <RakeTaskImpl description="Generate an Entity-Relationship Diagram based on your models" fullCommand="erd" id="erd" />
           <RakeTaskImpl id="import_from_wekan">
             <subtasks>
               <RakeTaskImpl description="Import user data from wekan (MongoDB) to rails users table (PostgreSQL)" fullCommand="import_from_wekan:users" id="users" />
@@ -606,6 +607,11 @@
               </RakeTaskImpl>
             </subtasks>
           </RakeTaskImpl>
+          <RakeTaskImpl id="users">
+            <subtasks>
+              <RakeTaskImpl description="Import users from an Excel file using rubyXL" fullCommand="users:import" id="import" />
+            </subtasks>
+          </RakeTaskImpl>
           <RakeTaskImpl id="yarn">
             <subtasks>
               <RakeTaskImpl description="Install all JavaScript dependencies as specified via Yarn" fullCommand="yarn:install" id="install" />
@@ -618,6 +624,14 @@
           </RakeTaskImpl>
           <RakeTaskImpl description="" fullCommand="default" id="default" />
           <RakeTaskImpl description="" fullCommand="environment" id="environment" />
+          <RakeTaskImpl id="erd">
+            <subtasks>
+              <RakeTaskImpl description="" fullCommand="erd:check_dependencies" id="check_dependencies" />
+              <RakeTaskImpl description="" fullCommand="erd:generate" id="generate" />
+              <RakeTaskImpl description="" fullCommand="erd:load_models" id="load_models" />
+              <RakeTaskImpl description="" fullCommand="erd:options" id="options" />
+            </subtasks>
+          </RakeTaskImpl>
           <RakeTaskImpl id="railties">
             <subtasks>
               <RakeTaskImpl id="install">
