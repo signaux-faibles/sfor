@@ -18,6 +18,12 @@ class User < ApplicationRecord
   has_many :tracking_participants, dependent: :destroy
   has_many :participated_trackings, through: :tracking_participants, source: :establishment_tracking
 
+  has_many :user_departments, dependent: :destroy
+  has_many :departments, through: :user_departments
+
+  has_many :user_regions, dependent: :destroy
+  has_many :regions, through: :user_regions
+
   validates :email, presence: true, uniqueness: true
   validates :level, presence: true
 
