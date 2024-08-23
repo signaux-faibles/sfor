@@ -1,5 +1,11 @@
 ---
 fr:
+  views:
+    pagination:
+      first: Première page
+      previous: Précédent
+      next: Suivant
+      last: Dernière page
   activerecord:
     attributes:
       establishment_tracking:
