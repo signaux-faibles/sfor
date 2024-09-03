@@ -82,6 +82,7 @@ class UserDashboard < Administrate::BaseDashboard
     first_name
     last_name
     email
+    segment
     participated_trackings
     referent_trackings
     departments

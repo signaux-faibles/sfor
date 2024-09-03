@@ -1,0 +1,10 @@
+<%= turbo_frame_tag summary.is_codefi ? "codefi_summary" : "segment_summary" do %>
+  <%= form_with(model: [ @establishment, @establishment_tracking, summary ], local: false) do |form| %>
+  <%= form.hidden_field :is_codefi, value: is_codefi.to_s %>
+  <div class="fr-input-group">
+    <%= form.label :content, "Contenu de la synthèse" %>
+    <%= form.text_area :content, class: "fr-input" %>
+  </div>
+  <%= form.submit "Sauvegarder", class: "fr-btn" %>
+  <% end %>
+<% end %>

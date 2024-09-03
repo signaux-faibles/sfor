@@ -58,6 +58,7 @@ gem 'ransack'
 
 # Basic admin
 gem 'administrate', '1.0.0.beta1'
+gem 'administrate-field-belongs_to_search'
 
 # Authorizations
 gem 'pundit'

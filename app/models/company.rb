@@ -1,6 +1,6 @@
 class Company < ApplicationRecord
   belongs_to :department
-  belongs_to :activity_sector
+  belongs_to :activity_sector, optional: true
   has_many :establishments
 
   has_many :campaign_companies

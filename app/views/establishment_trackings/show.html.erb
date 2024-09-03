@@ -1,6 +1,15 @@
 <div class="fr-container">
   <h1>Détails de l'accompagnement</h1>
 
+  <ul class="fr-tags-group">
+    <% @establishment_tracking.tracking_labels.each do |label| %>
+      <li>
+        <p class="fr-tag fr-tag--sm"><%= label.name %></p>
+      </li>
+    <% end %>
+  </ul>
+
+  <p><strong>SIRET:</strong> <%= @establishment_tracking.establishment.siret %></p>
   <p><strong>Créateur:</strong> <%= full_name(@establishment_tracking.creator) %></p>
   <p><strong>Date de début:</strong> <%= @establishment_tracking.start_date %></p>
   <p><strong>Date de fin:</strong> <%= @establishment_tracking.end_date %></p>
@@ -10,24 +19,68 @@
   </p>
 
 
-  <div class="fr-container">
-    <div class="fr-tabs">
-      <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
-        <li role="presentation">
-          <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">CODEFI</button>
-        </li>
-        <li role="presentation">
-          <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Mon réseau</button>
-        </li>
-      </ul>
-      <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-404" tabindex="0">
-        <p>Synthèse et commentaires CODEFI</p>
+  <div class="fr-tabs">
+    <ul class="fr-tabs__list" role="tablist">
+      <li role="presentation">
+        <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">CODEFI</button>
+      </li>
+      <li role="presentation">
+        <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Mon réseau (<%= current_user.segment.name %>)</button>
+      </li>
+    </ul>
+
+    <!-- Panel CODEFI -->
+    <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-404" tabindex="0">
+      <h3>Synthèse CODEFI</h3>
+      <%= turbo_frame_tag "codefi_summary" do %>
+        <% if @codefi_summaries.any? %>
+          <%= render @codefi_summaries.first %>
+        <% else %>
+          <%= render "summaries/form", summary: Summary.new, is_codefi: true %>
+        <% end %>
+      <% end %>
+
+      <hr class="fr-mt-4w fr-mb-4w" />
+
+      <h3>Commentaires CODEFI</h3>
+      <%= turbo_frame_tag "new_comment_codefi" do %>
+        <%= render "comments/form", comment: Comment.new, is_codefi: true %>
+      <% end %>
+
+      <div id="comments_codefi">
+        <%= turbo_frame_tag "comments_codefi" do %>
+          <%= render @codefi_comments %>
+        <% end %>
       </div>
-      <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405" tabindex="0">
-        <p>Synthèse et commentaires mon réseau</p>
+    </div>
+
+    <!-- Panel Mon réseau -->
+    <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405" tabindex="0">
+      <h3>Synthèses Mon réseau</h3>
+      <%= turbo_frame_tag "segment_summary" do %>
+        <% if @segment_summaries.any? %>
+          <%= render @segment_summaries.first %>
+        <% else %>
+          <%= render "summaries/form", summary: Summary.new(segment: @user_segment), is_codefi: false %>
+        <% end %>
+      <% end %>
+
+      <hr class="fr-mt-2w fr-mb-2w" />
+
+      <h3>Commentaires Mon réseau</h3>
+      <%= turbo_frame_tag "new_comment_segment" do %>
+        <%= render "comments/form", comment: Comment.new(segment: @user_segment), is_codefi: false %>
+      <% end %>
+
+      <div id="comments_segment">
+        <%= turbo_frame_tag "comments_segment" do %>
+          <%= render @segment_comments %>
+        <% end %>
       </div>
     </div>
   </div>
-
-  <%= link_to 'Retour à l\'établissement', @establishment_tracking.establishment %>
+  <div class="fr-mt-4w">
+    <%= link_to 'Retour à l\'établissement', @establishment_tracking.establishment %>
+  </div>
 </div>
+

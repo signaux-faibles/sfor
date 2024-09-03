@@ -1,0 +1,9 @@
+<%= turbo_stream.replace @summary.is_codefi ? "codefi_summary" : "segment_summary" do %>
+  <%= render partial: "summaries/summary", locals: { summary: @summary, is_codefi: @summary.is_codefi, establishment: @establishment, establishment_tracking: @establishment_tracking } %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <div id="flash" class="fr-alert fr-alert--success">
+    <%= notice %>
+  </div>
+<% end %>

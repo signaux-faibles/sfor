@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_04_091045) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,15 +45,28 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "comments", force: :cascade do |t|
+    t.text "content"
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "segment_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_codefi", default: false, null: false
+    t.bigint "user_id", null: false
+    t.index ["establishment_tracking_id"], name: "index_comments_on_establishment_tracking_id"
+    t.index ["segment_id"], name: "index_comments_on_segment_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
   create_table "companies", force: :cascade do |t|
     t.string "siren", null: false
     t.string "siret", null: false
-    t.string "raison_sociale", null: false
+    t.string "raison_sociale"
     t.integer "effectif"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "department_id", null: false
-    t.bigint "activity_sector_id", null: false
+    t.bigint "activity_sector_id"
     t.index ["activity_sector_id"], name: "index_companies_on_activity_sector_id"
     t.index ["department_id"], name: "index_companies_on_department_id"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
@@ -173,7 +186,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "department_id", null: false
-    t.bigint "activity_sector_id", null: false
+    t.bigint "activity_sector_id"
     t.bigint "level_one_activity_sector_id"
     t.bigint "company_id"
     t.boolean "is_siege"
@@ -223,6 +236,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "summaries", force: :cascade do |t|
+    t.text "content"
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "segment_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_codefi", default: false, null: false
+    t.index ["establishment_tracking_id", "is_codefi"], name: "index_summaries_on_establishment_tracking_id_and_is_codefi", unique: true, where: "(is_codefi = true)"
+    t.index ["establishment_tracking_id", "segment_id"], name: "index_summaries_on_establishment_tracking_id_and_segment_id", unique: true
+    t.index ["establishment_tracking_id"], name: "index_summaries_on_establishment_tracking_id"
+    t.index ["segment_id"], name: "index_summaries_on_segment_id"
   end
 
   create_table "tracking_labels", force: :cascade do |t|
@@ -294,6 +320,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
   add_foreign_key "activity_sectors", "activity_sectors", column: "parent_id"
   add_foreign_key "campaign_companies", "campaigns"
   add_foreign_key "campaign_companies", "companies"
+  add_foreign_key "comments", "establishment_trackings"
+  add_foreign_key "comments", "segments"
+  add_foreign_key "comments", "users"
   add_foreign_key "companies", "activity_sectors"
   add_foreign_key "companies", "departments"
   add_foreign_key "company_lists", "companies"
@@ -310,6 +339,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_192111) do
   add_foreign_key "establishments", "companies"
   add_foreign_key "establishments", "departments"
   add_foreign_key "establishments", "establishments", column: "parent_establishment_id"
+  add_foreign_key "summaries", "establishment_trackings"
+  add_foreign_key "summaries", "segments"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
   add_foreign_key "tracking_referents", "establishment_trackings"

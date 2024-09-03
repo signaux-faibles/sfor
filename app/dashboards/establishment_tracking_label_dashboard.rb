@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class TrackingLabelDashboard < Administrate::BaseDashboard
+class EstablishmentTrackingLabelDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,10 +9,8 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    establishment_tracking_labels: Field::HasMany,
-    establishment_trackings: Field::HasMany,
-    name: Field::String,
-    system: Field::Boolean,
+    establishment_tracking: Field::BelongsTo,
+    tracking_label: Field::BelongsTo,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -24,18 +22,17 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    establishment_trackings
-    name
+    establishment_tracking
+    tracking_label
+    created_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    establishment_tracking_labels
-    establishment_trackings
-    name
-    system
+    establishment_tracking
+    tracking_label
     created_at
     updated_at
   ].freeze
@@ -44,10 +41,8 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    establishment_tracking_labels
-    establishment_trackings
-    name
-    system
+    establishment_tracking
+    tracking_label
   ].freeze
 
   # COLLECTION_FILTERS
@@ -62,10 +57,10 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how tracking labels are displayed
+  # Overwrite this method to customize how establishment tracking labels are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(tracking_label)
-    tracking_label.name
-  end
+  # def display_resource(establishment_tracking_label)
+  #   "EstablishmentTrackingLabel ##{establishment_tracking_label.id}"
+  # end
 end

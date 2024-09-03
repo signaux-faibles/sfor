@@ -5,4 +5,8 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
            .where(establishments: { department_id: user.department_ids })
     end
   end
+
+  def show?
+    user.department_ids.include?(record.establishment.department.id)
+  end
 end

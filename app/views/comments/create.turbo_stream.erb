@@ -1,0 +1,13 @@
+<%= turbo_stream.prepend @comment.is_codefi ? "comments_codefi" : "comments_segment" do %>
+  <%= render partial: "comments/comment", locals: { comment: @comment } %>
+<% end %>
+
+<%= turbo_stream.replace "new_comment_#{@comment.is_codefi ? 'codefi' : 'segment'}" do %>
+  <%= render "comments/form", comment: Comment.new, is_codefi: @comment.is_codefi %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <div id="flash" class="fr-alert fr-alert--success">
+    <%= notice %>
+  </div>
+<% end %>

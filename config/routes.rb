@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
+  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
+  get "up" => "rails/health#show", as: :rails_health_check
+
   namespace :admin do
     resources :users
     resources :activity_sectors
@@ -28,11 +31,11 @@ Rails.application.routes.draw do
     post 'authenticate', to: 'users/sessions#create'
   end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  get "up" => "rails/health#show", as: :rails_health_check
-
   resources :establishments, only: [:show], path: 'etablissements' do
-    resources :establishment_trackings, only: [:new, :create, :show, :destroy], path: 'accompagnements'
+    resources :establishment_trackings, only: [:new, :create, :show, :destroy], path: 'accompagnements' do
+      resources :summaries, only: [:create, :edit, :update]
+      resources :comments, only: [:create, :edit, :update, :destroy]
+    end
   end
 
   resources :establishment_trackings, only: [:index]
@@ -40,8 +43,5 @@ Rails.application.routes.draw do
   # Build a new 'accompagnement' from the Vue JS legacy app (using siret as query param)
   get 'establishment_trackings/new_by_siret', to: 'establishment_trackings#new_by_siret', as: 'new_establishment_tracking_by_siret'
 
-  resources :companies, only: [:show], path: 'entreprises'
-
-  # Defines the root path route ("/")
   root "pages#home"
 end
