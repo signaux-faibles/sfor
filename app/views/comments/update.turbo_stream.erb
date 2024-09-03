@@ -1,0 +1,9 @@
+<%= turbo_stream.replace dom_id(@comment) do %>
+  <%= render partial: "comments/comment", locals: { comment: @comment } %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <div id="flash" class="fr-alert fr-alert--success">
+    <%= notice %>
+  </div>
+<% end %>

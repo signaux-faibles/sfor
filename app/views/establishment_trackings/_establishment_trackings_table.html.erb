@@ -11,7 +11,7 @@
             <th>Référents</th>
             <th>Étiquettes</th>
             <th>Créé par</th>
-            <th>Date de création</th>
+            <th>Date de début</th>
             <th>Actions</th>
           </tr>
           </thead>
@@ -24,7 +24,7 @@
                 <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
                 <td><%= tracking.tracking_labels.map(&:name).join(', ') %></td>
                 <td><%= tracking.creator.full_name %></td>
-                <td><%= l(tracking.created_at, format: :short) %></td>
+                <td><%= l(tracking.start_date, format: :long) %></td>
                 <td>
                   <div class="fr-grid-row">
                     <div class="fr-col-6">

@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@comment) do %>
+  <%= render partial: "comments/form", locals: { comment: @comment, is_codefi: @comment.is_codefi } %>
+<% end %>

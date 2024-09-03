@@ -11,11 +11,16 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     id: Field::Number,
     creator: Field::BelongsTo,
     end_date: Field::Date,
-    establishment: Field::BelongsTo,
+    establishment: Field::BelongsToSearch.with_options(
+      searchable: true,
+      searchable_fields: ['name']
+    ),
     participants: Field::HasMany,
     start_date: Field::Date,
     status: Field::String,
     tracking_participants: Field::HasMany,
+    tracking_labels: Field::HasMany,
+    establishment_tracking_labels: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -52,12 +57,11 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     creator
-    end_date
     establishment
     participants
+    tracking_labels
     start_date
-    status
-    tracking_participants
+    end_date
   ].freeze
 
   # COLLECTION_FILTERS

@@ -1,0 +1,8 @@
+<%= turbo_frame_tag dom_id(comment) do %>
+  <hr class="fr-mt-4w fr-mb-4w" />
+  <p><%= comment.content %></p>
+  <p><strong><%= comment.user.full_name %></strong> <em>(<%= l(comment.created_at, format: :short) %>)</em></p>
+  <% if comment.user == current_user %><%= link_to "Modifier", edit_establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), data: { turbo_frame: dom_id(comment), turbo_stream: true }, class: "fr-btn fr-btn--sm" %>
+    <%= link_to "Supprimer", establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?", turbo_method: :delete, turbo_stream: true }, class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+  <% end %>
+<% end %>

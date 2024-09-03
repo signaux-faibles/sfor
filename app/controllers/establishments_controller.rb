@@ -7,7 +7,7 @@ class EstablishmentsController < ApplicationController
   end
 
   def show
-    @trackings = @establishment.establishment_trackings.includes(:creator)
+    @trackings = policy_scope(@establishment.establishment_trackings).includes(:creator)
   end
   def new
     @establishment = Establishment.find_by(siret: params[:establishment_siret])
