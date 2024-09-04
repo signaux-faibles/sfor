@@ -9,4 +9,8 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
   def show?
     user.department_ids.include?(record.establishment.department.id)
   end
+
+  def destroy?
+    user.department_ids.include?(record.establishment.department.id)
+  end
 end
