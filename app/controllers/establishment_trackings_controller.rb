@@ -40,11 +40,32 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def new_by_siret
+    # TODO. ce code a vocation à disparaître. Dans le futur on veut avoir la base de SIREN/SIRET dans la bdd de l'appli rails
     @establishment = Establishment.find_by(siret: params[:siret])
+
     if @establishment
       redirect_to new_establishment_establishment_tracking_path(@establishment)
     else
-      redirect_to root_path, alert: 'Impossible de trouver l\'établissement'
+      department = Department.find_by(code: params[:code_departement])
+
+      if department.nil?
+        redirect_to root_path, alert: "Département introuvable avec le code #{params[:code_departement]}"
+        return
+      end
+
+      siren = params[:siret][0, 9] # Les 9 premiers chiffres du SIRET sont le SIREN
+
+      @establishment = Establishment.new(
+        siret: params[:siret],
+        siren: siren,
+        department: department
+      )
+
+      if @establishment.save
+        redirect_to new_establishment_establishment_tracking_path(@establishment), notice: 'Établissement créé avec succès.'
+      else
+        redirect_to root_path, alert: "Impossible de créer l'établissement: #{@establishment.errors.full_messages.join(', ')}"
+      end
     end
   end
 

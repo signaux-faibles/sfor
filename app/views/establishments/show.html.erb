@@ -1,9 +1,5 @@
 <div class="fr-container">
-  <h1><%= @establishment.raison_sociale %></h1>
-
-  <p>
-    Plein de données publiques visibles par tout le monde sur cet établissement
-  </p>
+  <h1>SIRET : <%= @establishment.siret %></h1>
 
   <button class="fr-btn">  <%= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %></button>
 
@@ -43,7 +39,7 @@
                       </div>
                       <div class="fr-col-6">
                         <div>
-                          <%= link_to 'Supprimer', establishment_establishment_tracking_path(@establishment, tracking), method: :delete, data: { confirm: 'Êtes-vous sûr ?' }, class: 'fr-link' %>
+                          <%= link_to 'Supprimer', establishment_establishment_tracking_path(@establishment, tracking), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?", turbo_method: :delete, turbo_stream: true }, class: 'fr-link' %>
                         </div>
                       </div>
                     </div>
