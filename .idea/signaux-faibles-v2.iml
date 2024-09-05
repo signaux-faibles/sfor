@@ -497,6 +497,11 @@
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl description="Generate an Entity-Relationship Diagram based on your models" fullCommand="erd" id="erd" />
+          <RakeTaskImpl id="establishments">
+            <subtasks>
+              <RakeTaskImpl description="Import establishments from a CSV file" fullCommand="establishments:import_from_insee" id="import_from_insee" />
+            </subtasks>
+          </RakeTaskImpl>
           <RakeTaskImpl id="import_from_wekan">
             <subtasks>
               <RakeTaskImpl description="Import user data from wekan (MongoDB) to rails users table (PostgreSQL)" fullCommand="import_from_wekan:users" id="users" />

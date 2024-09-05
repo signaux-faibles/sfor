@@ -1,4 +1,4 @@
 <%= turbo_frame_tag summary.is_codefi ? "codefi_summary" : "segment_summary" do %>
-  <p><%= summary.content %></p>
+  <p><%= simple_format(summary.content) %></p>
   <%= link_to "Modifier", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn" %>
 <% end %>
