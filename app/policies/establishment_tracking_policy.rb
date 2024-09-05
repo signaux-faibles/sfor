@@ -10,6 +10,14 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
     user.department_ids.include?(record.establishment.department.id)
   end
 
+  def update?
+    user.department_ids.include?(record.establishment.department.id)
+  end
+
+  def edit?
+    update?
+  end
+
   def destroy?
     user.department_ids.include?(record.establishment.department.id)
   end

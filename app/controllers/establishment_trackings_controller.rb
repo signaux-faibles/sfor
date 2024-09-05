@@ -1,6 +1,6 @@
 class EstablishmentTrackingsController < ApplicationController
   before_action :set_establishment, except: [:new_by_siret, :index]
-  before_action :set_tracking, only: %i[show destroy]
+  before_action :set_tracking, only: %i[show destroy edit update]
 
   def index
     @establishment_trackings = policy_scope(EstablishmentTracking).includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
@@ -66,6 +66,17 @@ class EstablishmentTrackingsController < ApplicationController
       else
         redirect_to root_path, alert: "Impossible de créer l'établissement: #{@establishment.errors.full_messages.join(', ')}"
       end
+    end
+  end
+
+  def edit
+  end
+
+  def update
+    if @establishment_tracking.update(tracking_params)
+      redirect_to @establishment_tracking.establishment, notice: 'L\'accompagnement a été mis à jour avec succès.'
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 

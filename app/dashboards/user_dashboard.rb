@@ -34,6 +34,8 @@ class UserDashboard < Administrate::BaseDashboard
     geo_access: Field::BelongsTo,
     entity: Field::BelongsTo,
     segment: Field::BelongsTo,
+    password: Field::String,
+    password_confirmation: Field::String,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -82,7 +84,11 @@ class UserDashboard < Administrate::BaseDashboard
     first_name
     last_name
     email
+    password
+    password_confirmation
     segment
+    entity
+    geo_access
     participated_trackings
     referent_trackings
     departments

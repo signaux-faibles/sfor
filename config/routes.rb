@@ -32,7 +32,7 @@ Rails.application.routes.draw do
   end
 
   resources :establishments, only: [:show], path: 'etablissements' do
-    resources :establishment_trackings, only: [:new, :create, :show, :destroy], path: 'accompagnements' do
+    resources :establishment_trackings, only: [:new, :create, :show, :destroy, :edit, :update], path: 'accompagnements' do
       resources :summaries, only: [:create, :edit, :update]
       resources :comments, only: [:create, :edit, :update, :destroy]
     end
