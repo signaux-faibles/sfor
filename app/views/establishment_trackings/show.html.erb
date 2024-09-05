@@ -1,6 +1,10 @@
 <div class="fr-container">
   <h1>Détails de l'accompagnement</h1>
 
+  <% if policy(@establishment_tracking).edit? %>
+    <%= link_to 'Modifier', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-link' %>
+  <% end %>
+
   <ul class="fr-tags-group">
     <% @establishment_tracking.tracking_labels.each do |label| %>
       <li>
