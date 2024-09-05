@@ -148,6 +148,23 @@
         <option value="active_record:application_record" />
         <option value="active_record:devise" />
         <option value="active_record:multi_db" />
+        <option value="administrate:assets" />
+        <option value="administrate:assets:javascripts" />
+        <option value="administrate:assets:stylesheets" />
+        <option value="administrate:dashboard" />
+        <option value="administrate:field" />
+        <option value="administrate:install" />
+        <option value="administrate:routes" />
+        <option value="administrate:view" />
+        <option value="administrate:views" />
+        <option value="administrate:views:edit" />
+        <option value="administrate:views:field" />
+        <option value="administrate:views:form" />
+        <option value="administrate:views:index" />
+        <option value="administrate:views:layout" />
+        <option value="administrate:views:navigation" />
+        <option value="administrate:views:new" />
+        <option value="administrate:views:show" />
         <option value="application_record" />
         <option value="benchmark" />
         <option value="channel" />
@@ -156,19 +173,25 @@
         <option value="devise:controllers" />
         <option value="devise:install" />
         <option value="devise:views" />
+        <option value="erd:install" />
         <option value="generator" />
         <option value="helper" />
         <option value="integration_test" />
         <option value="jbuilder" />
         <option value="job" />
+        <option value="kaminari:config" />
+        <option value="kaminari:views" />
         <option value="mailbox" />
         <option value="mailer" />
         <option value="migration" />
         <option value="model" />
         <option value="mongoid:devise" />
+        <option value="pundit:install" />
+        <option value="pundit:policy" />
         <option value="resource" />
         <option value="responders:install" />
         <option value="responders_controller" />
+        <option value="rspec:policy" />
         <option value="scaffold" />
         <option value="scaffold_controller" />
         <option value="stimulus" />
@@ -179,6 +202,7 @@
         <option value="test_unit:install" />
         <option value="test_unit:mailbox" />
         <option value="test_unit:plugin" />
+        <option value="test_unit:policy" />
       </list>
     </option>
     <option name="myGenerators">
@@ -186,6 +210,23 @@
         <option value="active_record:application_record" />
         <option value="active_record:devise" />
         <option value="active_record:multi_db" />
+        <option value="administrate:assets" />
+        <option value="administrate:assets:javascripts" />
+        <option value="administrate:assets:stylesheets" />
+        <option value="administrate:dashboard" />
+        <option value="administrate:field" />
+        <option value="administrate:install" />
+        <option value="administrate:routes" />
+        <option value="administrate:view" />
+        <option value="administrate:views" />
+        <option value="administrate:views:edit" />
+        <option value="administrate:views:field" />
+        <option value="administrate:views:form" />
+        <option value="administrate:views:index" />
+        <option value="administrate:views:layout" />
+        <option value="administrate:views:navigation" />
+        <option value="administrate:views:new" />
+        <option value="administrate:views:show" />
         <option value="application_record" />
         <option value="benchmark" />
         <option value="channel" />
@@ -194,19 +235,25 @@
         <option value="devise:controllers" />
         <option value="devise:install" />
         <option value="devise:views" />
+        <option value="erd:install" />
         <option value="generator" />
         <option value="helper" />
         <option value="integration_test" />
         <option value="jbuilder" />
         <option value="job" />
+        <option value="kaminari:config" />
+        <option value="kaminari:views" />
         <option value="mailbox" />
         <option value="mailer" />
         <option value="migration" />
         <option value="model" />
         <option value="mongoid:devise" />
+        <option value="pundit:install" />
+        <option value="pundit:policy" />
         <option value="resource" />
         <option value="responders:install" />
         <option value="responders_controller" />
+        <option value="rspec:policy" />
         <option value="scaffold" />
         <option value="scaffold_controller" />
         <option value="stimulus" />
@@ -217,6 +264,7 @@
         <option value="test_unit:install" />
         <option value="test_unit:mailbox" />
         <option value="test_unit:plugin" />
+        <option value="test_unit:policy" />
       </list>
     </option>
   </component>
