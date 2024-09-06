@@ -3,9 +3,11 @@
     <div class="fr-table__container">
       <div class="fr-table__content">
         <table id="table-md">
+          <caption>Tous les accompagnements</caption>
           <thead>
           <tr>
             <th>ID</th>
+            <th>Statut</th>
             <th>Raison sociale</th>
             <th>Département</th>
             <th>Référents</th>
@@ -19,6 +21,7 @@
             <% @establishment_trackings.each do |tracking| %>
               <tr>
                 <td><%= tracking.id %></td>
+                <td><%= tracking.aasm.human_state %></td>
                 <td><%= tracking.establishment.raison_sociale %></td>
                 <td><%= tracking.establishment.department.code %></td>
                 <td><%= tracking.referents.map(&:full_name).join(', ') %></td>

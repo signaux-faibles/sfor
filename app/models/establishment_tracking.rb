@@ -1,4 +1,6 @@
 class EstablishmentTracking < ApplicationRecord
+  include AASM
+
   belongs_to :creator, class_name: 'User'
   belongs_to :establishment
 
@@ -15,4 +17,25 @@ class EstablishmentTracking < ApplicationRecord
   has_many :comments, dependent: :destroy
 
   validates :referents, presence: true
+
+  scope :in_progress, -> { where(state: 'in_progress') }
+  scope :completed, -> { where(state: 'completed') }
+  scope :cancelled, -> { where(state: 'cancelled') }
+
+  aasm column: 'state' do
+    state :in_progress, initial: true
+    state :completed
+    state :cancelled
+
+    event :complete do
+      before do
+        self.end_date = Date.today
+      end
+      transitions from: :in_progress, to: :completed
+    end
+
+    event :cancel do
+      transitions from: :in_progress, to: :cancelled
+    end
+  end
 end

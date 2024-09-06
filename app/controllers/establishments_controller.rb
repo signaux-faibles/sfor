@@ -7,7 +7,9 @@ class EstablishmentsController < ApplicationController
   end
 
   def show
-    @trackings = policy_scope(@establishment.establishment_trackings).includes(:creator)
+    @in_progress_trackings = policy_scope(@establishment.establishment_trackings).includes(:creator).in_progress
+    @completed_trackings = policy_scope(@establishment.establishment_trackings).includes(:creator).completed
+    @cancelled_trackings = policy_scope(@establishment.establishment_trackings).includes(:creator).cancelled
   end
   def new
     @establishment = Establishment.find_by(siret: params[:establishment_siret])
