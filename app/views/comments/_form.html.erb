@@ -1,11 +1,17 @@
-<hr class="fr-mt-2w fr-mb-2w" />
-<%= form_with(model: [ @establishment, @establishment_tracking, comment ], local: false) do |form| %>
-  <%= form.hidden_field :is_codefi, value: is_codefi.to_s %>
+<%= turbo_frame_tag "new_comment_#{is_codefi ? 'codefi' : 'segment'}" do %>
+  <hr class="fr-mt-2w fr-mb-2w" />
+  <%= form_with(model: [ @establishment, @establishment_tracking, comment ], local: false) do |form| %>
+    <%= form.hidden_field :is_codefi, value: is_codefi.to_s %>
+    <div class="fr-input-group <%= 'fr-input-group--error' if comment.errors[:content].any? %>">
+        <%= form.label :content, "Nouveau commentaire" %>
+        <%= form.text_area :content, class: "fr-input" %>
+      <% if comment.errors[:content].any? %>
+        <p id="comment_content_error_#{is_codefi ? 'codefi' : 'segment'}" class="fr-error-text">
+          <%= comment.errors[:content].first %>
+        </p>
+      <% end %>
+    </div>
 
-  <div class="fr-input-group">
-    <%= form.label :content, "Nouveau commentaire" %>
-    <%= form.text_area :content, class: "fr-input" %>
-  </div>
-
-  <%= form.submit "Sauvegarder", class: "fr-btn" %>
+    <%= form.submit "Sauvegarder", class: "fr-btn" %>
+  <% end %>
 <% end %>

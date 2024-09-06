@@ -21,11 +21,13 @@ class EstablishmentTrackingsController < ApplicationController
     # Filtrage des comments par segment avec Pundit
     @segment_comments = @establishment_tracking.comments
                                                .where(segment: @user_segment)
+                                               .order(created_at: :desc)
                                                .select { |comment| authorize comment }
 
     # Filtrage des comments CODEFI avec Pundit
     @codefi_comments = @establishment_tracking.comments
                                               .where(segment_id: nil)
+                                              .order(created_at: :desc)
                                               .select { |comment| authorize comment }
 
     # Gestion des erreurs d'autorisation
@@ -74,7 +76,7 @@ class EstablishmentTrackingsController < ApplicationController
 
   def update
     if @establishment_tracking.update(tracking_params)
-      redirect_to @establishment_tracking.establishment, notice: 'L\'accompagnement a été mis à jour avec succès.'
+      redirect_to [@establishment, @establishment_tracking], notice: "L'accompagnement a été mis à jour avec succès."
     else
       render :edit, status: :unprocessable_entity
     end
