@@ -17,7 +17,6 @@ establishments.each do |establishment|
         establishment: establishment,
         start_date: Faker::Date.backward(days: 365),
         end_date: Faker::Date.forward(days: 365),
-        status: ['active', 'inactive'].sample
       )
 
       tracking.referents = referents

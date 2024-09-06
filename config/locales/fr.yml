@@ -10,6 +10,11 @@ fr:
     attributes:
       establishment_tracking:
         referents: Assignés
+        state:
+          one: 'Statut'
+          in_progress: "En cours"
+          completed: "Terminé"
+          cancelled: "Annulé"
       establishment:
         raison_sociale: Raison sociale
         is_siege: Siège ?

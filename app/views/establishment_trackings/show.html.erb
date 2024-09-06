@@ -4,7 +4,15 @@
       <h1>Détails de l'accompagnement</h1>
 
       <% if policy(@establishment_tracking).edit? %>
-        <%= link_to 'Modifier', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-link fr-mb-2w' %>
+        <%= link_to 'Modifier', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-mb-2w' %>
+      <% end %>
+
+      <% if @establishment_tracking.may_complete? %>
+        <%= link_to 'Compléter', complete_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :post, data: { confirm: 'Êtes-vous sûr de vouloir terminer cet accompagnement ?' }, class: 'fr-btn fr-mb-2w' %>
+      <% end %>
+
+      <% if @establishment_tracking.may_cancel? %>
+        <%= link_to 'Annuler', cancel_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :post, data: { confirm: 'Êtes-vous sûr de vouloir annuler cet accompagnement ?' }, class: 'fr-btn fr-mb-2w' %>
       <% end %>
     </div>
 
@@ -20,7 +28,7 @@
     <p><strong>Créateur:</strong> <%= full_name(@establishment_tracking.creator) %></p>
     <p><strong>Date de début:</strong> <%= @establishment_tracking.start_date %></p>
     <p><strong>Date de fin:</strong> <%= @establishment_tracking.end_date %></p>
-    <p><strong>Statut:</strong> <%= @establishment_tracking.status %></p>
+    <p><strong>État actuel:</strong> <%= @establishment_tracking.aasm.human_state %></p>
     <p><strong>Participants:</strong>
       <%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
     </p>
@@ -86,7 +94,7 @@
         </div>
       </div>
     </div>
-    <div class="fr-mt-4w">
+    <div class="fr-mt-4w fr-mb-4w">
       <%= link_to 'Retour à l\'établissement', @establishment_tracking.establishment %>
     </div>
   </div>

@@ -17,7 +17,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     ),
     participants: Field::HasMany,
     start_date: Field::Date,
-    status: Field::String,
+    state: Field::String,
     tracking_participants: Field::HasMany,
     tracking_labels: Field::HasMany,
     establishment_tracking_labels: Field::HasMany,
@@ -46,7 +46,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     establishment
     participants
     start_date
-    status
+    state
     tracking_participants
     created_at
     updated_at

@@ -3,59 +3,122 @@
 
     <h1>SIRET : <%= @establishment.siret %></h1>
 
-    <button class="fr-btn">  <%= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %></button>
+    <% if @in_progress_trackings.empty? %>
+      <button class="fr-btn">
+        <%= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %>
+      </button>
+    <% end %>
 
-    <% if @trackings.any? %>
+    <!-- Accompagnements en cours -->
+    <% if @in_progress_trackings.any? %>
       <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
-        <div class="fr-table__wrapper">
-          <div class="fr-table__container">
-            <div class="fr-table__content">
-              <table>
-                <caption>Liste des accompagnements</caption>
-                <thead>
-                <tr>
-                  <th scope="col">Créateur</th>
-                  <th scope="col">Date de début</th>
-                  <th scope="col">Date de fin</th>
-                  <th scope="col">Statut</th>
-                  <th scope="col">Participants</th>
-                  <th scope="col">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <% @trackings.each do |tracking| %>
-                  <tr>
-                    <td><%= full_name(tracking.creator) %></td>
-                    <td><%= tracking.start_date %></td>
-                    <td><%= tracking.end_date %></td>
-                    <td><%= tracking.status %></td>
-                    <td>
-                      <% tracking.participants.each do |participant| %>
-                        <%= full_name(participant) %><br>
-                      <% end %>
-                    </td>
-                    <td>
-                      <div class="fr-grid-row">
-                        <div class="fr-col-6">
-                          <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
-                        </div>
-                        <div class="fr-col-6">
-                          <div>
-                            <%= link_to 'Supprimer', establishment_establishment_tracking_path(@establishment, tracking), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?", turbo_method: :delete, turbo_stream: true }, class: 'fr-link' %>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+        <table>
+          <caption>Accompagnements en cours</caption>
+          <thead>
+          <tr>
+            <th>Créateur</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Statut</th>
+            <th>Participants</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @in_progress_trackings.each do |tracking| %>
+            <tr>
+              <td><%= full_name(tracking.creator) %></td>
+              <td><%= tracking.start_date %></td>
+              <td><%= tracking.end_date %></td>
+              <td><%= tracking.aasm.human_state %></td>
+              <td>
+                <% tracking.participants.each do |participant| %>
+                  <%= full_name(participant) %><br>
                 <% end %>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+              </td>
+              <td>
+                <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
+                <%= link_to 'Supprimer', establishment_establishment_tracking_path(@establishment, tracking), method: :delete, data: { confirm: 'Êtes-vous sûr ?' }, class: 'fr-link' %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
       </div>
-    <% else %>
-      <p>Aucun accompagnement pour le moment</p>
+    <% end %>
+
+    <!-- Accompagnements terminés -->
+    <% if @completed_trackings.any? %>
+      <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
+        <table>
+          <caption>Accompagnements terminés</caption>
+          <thead>
+          <tr>
+            <th>Créateur</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Statut</th>
+            <th>Participants</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @completed_trackings.each do |tracking| %>
+            <tr>
+              <td><%= full_name(tracking.creator) %></td>
+              <td><%= tracking.start_date %></td>
+              <td><%= tracking.end_date %></td>
+              <td><%= tracking.aasm.human_state %></td>
+              <td>
+                <% tracking.participants.each do |participant| %>
+                  <%= full_name(participant) %><br>
+                <% end %>
+              </td>
+              <td>
+                <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+
+    <!-- Accompagnements annulés -->
+    <% if @cancelled_trackings.any? %>
+      <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
+        <table>
+          <caption>Accompagnements annulés</caption>
+          <thead>
+          <tr>
+            <th>Créateur</th>
+            <th>Date de début</th>
+            <th>Date de fin</th>
+            <th>Statut</th>
+            <th>Participants</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @cancelled_trackings.each do |tracking| %>
+            <tr>
+              <td><%= full_name(tracking.creator) %></td>
+              <td><%= tracking.start_date %></td>
+              <td><%= tracking.end_date %></td>
+              <td><%= tracking.aasm.human_state %></td>
+              <td>
+                <% tracking.participants.each do |participant| %>
+                  <%= full_name(participant) %><br>
+                <% end %>
+              </td>
+              <td>
+                <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
+              </td>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
     <% end %>
 
     <%= link_to 'Retour à la liste', establishment_trackings_path %>

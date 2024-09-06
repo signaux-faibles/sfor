@@ -33,6 +33,10 @@ Rails.application.routes.draw do
 
   resources :establishments, only: [:show], path: 'etablissements' do
     resources :establishment_trackings, only: [:new, :create, :show, :destroy, :edit, :update], path: 'accompagnements' do
+      member do
+        get :complete
+        get :cancel
+      end
       resources :summaries, only: [:create, :edit, :update]
       resources :comments, only: [:create, :edit, :update, :destroy]
     end

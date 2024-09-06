@@ -1,6 +1,6 @@
 class EstablishmentTrackingsController < ApplicationController
-  before_action :set_establishment, except: [:new_by_siret, :index]
-  before_action :set_tracking, only: %i[show destroy edit update]
+  before_action :set_establishment, except: %i[new_by_siret index]
+  before_action :set_tracking, only: %i[show destroy edit update complete cancel]
 
   def index
     @establishment_trackings = policy_scope(EstablishmentTracking).includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
@@ -99,6 +99,26 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment = @establishment_tracking.establishment
     @establishment_tracking.destroy
     redirect_to @establishment, notice: 'L\'accompagnement a été supprimé avec succès.'
+  end
+
+  def complete
+    if @establishment_tracking.may_complete?
+      @establishment_tracking.complete!
+      flash[:notice] = "L'accompagnement a été marqué comme terminé."
+    else
+      flash[:alert] = "Impossible de terminer cet accompagnement."
+    end
+    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
+  end
+
+  def cancel
+    if @establishment_tracking.may_cancel?
+      @establishment_tracking.cancel!
+      flash[:notice] = "L'accompagnement a été annulé."
+    else
+      flash[:alert] = "Impossible d'annuler cet accompagnement."
+    end
+    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
   end
 
   private
