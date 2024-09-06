@@ -14,10 +14,13 @@ class CommentsController < ApplicationController
     end
 
     if @comment.save
+      puts "ON SAVE"
       flash.now[:notice] = "Commentaire ajouté avec succès."
     else
-      # Gestion des erreurs, le formulaire sera re-rendu via Turbo
-      render :create, status: :unprocessable_entity
+      render turbo_stream: turbo_stream.replace("new_comment_#{params[:comment][:is_codefi] == 'true' ? 'codefi' : 'segment'}",
+                                                partial: "comments/form",
+                                                locals: { comment: @comment, is_codefi: params[:comment][:is_codefi] == "true" },
+                                                status: :unprocessable_entity)
     end
   end
 

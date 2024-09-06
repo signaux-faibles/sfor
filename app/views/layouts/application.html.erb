@@ -24,7 +24,11 @@
     </div>
 
     <main class="fr-pt-4w">
-      <%= yield %>
+      <div class="fr-container">
+        <div class="fr-grid-row">
+            <%= yield %>
+        </div>
+      </div>
     </main>
     <!-- Non-module script for older browsers -->
     <script src="<%= asset_path 'dsfr.nomodule.min.js' %>" nomodule></script>

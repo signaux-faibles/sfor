@@ -1,9 +1,6 @@
-<div class="fr-container">
-  <div class="fr-grid-row">
-    <div class="fr-col-3"></div>
-    <div class="fr-col-6">
-      <h1>Modifier l'accompagnement pour <%= @establishment.siret %></h1>
-
+<div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
+  <div class="fr-container">
+    <h1>Modifier l'accompagnement pour <%= @establishment.siret %></h1>
       <%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
         <% if @establishment_tracking.errors.any? %>
           <div id="error_explanation">
@@ -36,6 +33,5 @@
       <div class="fr-mt-2w">
         <%= link_to 'Annuler', establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-mt-2w' %>
       </div>
-    </div>
   </div>
 </div>
