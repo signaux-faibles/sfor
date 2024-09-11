@@ -29,6 +29,9 @@
     <p><strong>Date de début:</strong> <%= @establishment_tracking.start_date %></p>
     <p><strong>Date de fin:</strong> <%= @establishment_tracking.end_date %></p>
     <p><strong>État actuel:</strong> <%= @establishment_tracking.aasm.human_state %></p>
+    <p><strong>Assignés:</strong>
+      <%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %>
+    </p>
     <p><strong>Participants:</strong>
       <%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
     </p>

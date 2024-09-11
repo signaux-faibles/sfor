@@ -37,5 +37,7 @@ class EstablishmentTracking < ApplicationRecord
     event :cancel do
       transitions from: :in_progress, to: :cancelled
     end
+
+    #TODO : permettre le passage d'un statut à l'autre sans restrictions (restore ? monitor ?)
   end
 end
