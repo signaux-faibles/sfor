@@ -6,37 +6,33 @@
           <caption>Tous les accompagnements</caption>
           <thead>
           <tr>
-            <th>ID</th>
-            <th>Statut</th>
+            <th>SIRET</th>
             <th>Raison sociale</th>
-            <th>Département</th>
-            <th>Référents</th>
-            <th>Étiquettes</th>
-            <th>Créé par</th>
+            <th>Statut</th>
             <th>Date de début</th>
-            <th>Actions</th>
+            <th>Référents</th>
+            <th>Participants</th>
+            <th>Étiquettes</th>
+            <th colspan="2">Actions</th>
           </tr>
           </thead>
           <tbody>
             <% @establishment_trackings.each do |tracking| %>
               <tr>
-                <td><%= tracking.id %></td>
-                <td><%= tracking.aasm.human_state %></td>
+                <td><%= tracking.establishment.siret %></td>
                 <td><%= tracking.establishment.raison_sociale %></td>
-                <td><%= tracking.establishment.department.code %></td>
-                <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
-                <td><%= tracking.tracking_labels.map(&:name).join(', ') %></td>
-                <td><%= tracking.creator.full_name %></td>
+                <td><%= tracking.aasm.human_state %></td>
                 <td><%= l(tracking.start_date, format: :long) %></td>
+                <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
+                <td><%= tracking.participants.map(&:full_name).join(', ') %></td>
+                <td><%= tracking.tracking_labels.map(&:name).join(', ') %></td>
                 <td>
-                  <div class="fr-grid-row">
-                    <div class="fr-col-6">
-                      <%= link_to 'Voir cet accompagnement', [tracking.establishment, tracking], class: 'fr-link' %>
-                    </div>
-                    <div class="fr-col-6">
-                      <%= link_to 'Voir tous les accompagnements',tracking.establishment, class: 'fr-link' %>
-                    </div>
-                  </div>
+
+                      <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-btn' %>
+                </td>
+                <td>
+                      <%= link_to 'Fiche l\'établissement',tracking.establishment, class: 'fr-btn fr-btn--secondary' %>
+
                 </td>
               </tr>
             <% end %>
