@@ -22,6 +22,14 @@ class EstablishmentTracking < ApplicationRecord
   scope :completed, -> { where(state: 'completed') }
   scope :cancelled, -> { where(state: 'cancelled') }
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["comments", "creator", "establishment", "establishment_tracking_labels", "participants", "referents", "summaries", "tracking_labels", "tracking_participants", "tracking_referents"]
+  end
+
   aasm column: 'state' do
     state :in_progress, initial: true
     state :completed

@@ -3,7 +3,8 @@ class EstablishmentTrackingsController < ApplicationController
   before_action :set_tracking, only: %i[show destroy edit update complete cancel]
 
   def index
-    @establishment_trackings = policy_scope(EstablishmentTracking).includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
+    @q = policy_scope(EstablishmentTracking).ransack(params[:q])
+    @establishment_trackings = @q.result.includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
   end
   def show
     @user_segment = current_user.segment

@@ -1,0 +1,38 @@
+<%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form" } do |f| %>
+  <div class="fr-input-group">
+    <%= f.label :establishment_department_id_in, "Départements" %>
+    <%= f.collection_select :establishment_department_id_in, current_user.geo_access.departments, :id, :name, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+  </div>
+
+  <div class="fr-select-group">
+    <%= f.label :state_eq, "Statut" %>
+    <%= f.select :state_eq, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, { include_blank: "Tous"} , { class: "fr-select" } %>
+  </div>
+
+  <div class="fr-input-group">
+    <%= f.label :tracking_labels_id_in, "Étiquettes" %>
+    <%= f.collection_select :tracking_labels_id_in, TrackingLabel.all, :id, :name, {}, { multiple: true, class: "tom-select",  data: { controller: "tom-select" } } %>
+  </div>
+
+  <div class="fr-input-group">
+    <%= f.label :establishment_siret_cont, "SIRET" %>
+    <%= f.text_field :establishment_siret_cont, class: "fr-input" %>
+  </div>
+
+  <div class="fr-input-group">
+    <%= f.label :establishment_raison_sociale_cont, "Raison sociale" %>
+    <%= f.text_field :establishment_raison_sociale_cont, class: "fr-input" %>
+  </div>
+
+  <div class="fr-input-group">
+    <%= f.label :start_date_gteq, "Date de début à partir de" %>
+    <%= f.date_field :start_date_gteq, class: "fr-input" %>
+  </div>
+
+  <div class="fr-input-group">
+    <%= f.submit "Filtrer", class: "fr-btn" %>
+  </div>
+<% end %>
+<div class="fr-input-group">
+  <%= link_to "Réinitialiser les filtres", establishment_trackings_path, class: "fr-btn fr-btn--secondary" %>
+</div>
