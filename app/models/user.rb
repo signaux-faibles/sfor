@@ -24,6 +24,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :level, presence: true
 
+  before_save :update_departments_based_on_geo_access, if: :will_save_change_to_geo_access_id?
+
   def self.from_omniauth(auth)
     puts "auth info: #{auth.inspect}"
 
@@ -59,5 +61,13 @@ class User < ApplicationRecord
     resource_access['signauxfaibles']['roles']
   rescue
     []
+  end
+
+  def update_departments_based_on_geo_access
+    if geo_access.name.downcase == 'france entière'
+      self.departments = Department.all
+    else
+      self.departments = geo_access.departments
+    end
   end
 end
