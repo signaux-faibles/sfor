@@ -10,7 +10,7 @@ module Admin
 
     def authenticate_admin
       #TODO add this authentication for the first deploy
-      unless current_user && current_user.segment.name == "crp"
+      unless current_user && current_user.segment.name == "sf"
         redirect_to root_url, alert: "Vous n'avez pas l'authorisation d'accéder à cette section"
       end
     end
