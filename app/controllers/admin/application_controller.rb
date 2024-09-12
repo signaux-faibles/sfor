@@ -9,7 +9,10 @@ module Admin
     before_action :authenticate_admin
 
     def authenticate_admin
-      # TODO Add authentication logic here.
+      #TODO add this authentication for the first deploy
+      unless current_user && current_user.segment.name == "crp"
+        redirect_to root_url, alert: "Vous n'avez pas l'authorisation d'accéder à cette section"
+      end
     end
 
     # Override this value to specify the number of elements to display at a time
