@@ -12,7 +12,6 @@ class RegionDashboard < Administrate::BaseDashboard
     code: Field::String,
     departments: Field::HasMany,
     libelle: Field::String,
-    users: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -36,7 +35,6 @@ class RegionDashboard < Administrate::BaseDashboard
     code
     departments
     libelle
-    users
     created_at
     updated_at
   ].freeze
@@ -48,7 +46,6 @@ class RegionDashboard < Administrate::BaseDashboard
     code
     departments
     libelle
-    users
   ].freeze
 
   # COLLECTION_FILTERS
