@@ -22,6 +22,11 @@ class EstablishmentTracking < ApplicationRecord
   scope :completed, -> { where(state: 'completed') }
   scope :cancelled, -> { where(state: 'cancelled') }
 
+  scope :with_user_as_referent_or_participant, ->(user) {
+    joins(:tracking_participants, :tracking_referents)
+      .where('tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id', user_id: user.id).distinct
+  }
+
   def self.ransackable_attributes(auth_object = nil)
     ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "updated_at"]
   end
@@ -33,19 +38,21 @@ class EstablishmentTracking < ApplicationRecord
   aasm column: 'state' do
     state :in_progress, initial: true
     state :completed
-    state :cancelled
+    state :under_surveillance
 
     event :complete do
       before do
         self.end_date = Date.today
       end
-      transitions from: :in_progress, to: :completed
+      transitions from: [:in_progress, :under_surveillance, :completed], to: :completed
     end
 
-    event :cancel do
-      transitions from: :in_progress, to: :cancelled
+    event :start_surveillance do
+      transitions from: [:in_progress, :completed, :under_surveillance], to: :under_surveillance
     end
 
-    #TODO : permettre le passage d'un statut à l'autre sans restrictions (restore ? monitor ?)
+    event :resume do
+      transitions from: [:completed, :under_surveillance, :in_progress], to: :in_progress
+    end
   end
 end

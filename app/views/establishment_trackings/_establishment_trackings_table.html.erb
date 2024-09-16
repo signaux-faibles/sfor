@@ -3,8 +3,15 @@
     <div class="fr-table__container">
       <div class="fr-table__content">
         <table id="table-md">
-          <caption>Tous les accompagnements</caption>
-          <thead>
+          <caption>
+            <% if @establishment_trackings.any? %>
+              <p><%= pluralize(@establishment_trackings.total_count, "accompagnement trouvé", "accompagnements trouvés") %></p>
+            <% else %>
+              <p>Aucun accompagnement trouvé pour cette combinaison de filtres.</p>
+            <% end %>
+          </caption>
+          <% if @establishment_trackings.any? %>
+            <thead>
           <tr>
             <th><%= sort_link @q, :establishment_siret, "SIRET" %></th>
             <th><%= sort_link @q, :establishment_raison_sociale, "Raison sociale" %></th>
@@ -16,7 +23,7 @@
             <th colspan="2">Actions</th>
           </tr>
           </thead>
-          <tbody>
+            <tbody>
             <% @establishment_trackings.each do |tracking| %>
               <tr>
                 <td><%= tracking.establishment.siret %></td>
@@ -35,7 +42,8 @@
               </tr>
             <% end %>
           </tbody>
-          <%= paginate @establishment_trackings %>
+            <%= paginate @establishment_trackings %>
+          <% end %>
         </table>
       </div>
     </div>
