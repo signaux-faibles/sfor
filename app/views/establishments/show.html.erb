@@ -85,10 +85,10 @@
     <% end %>
 
     <!-- Accompagnements annulés -->
-    <% if @cancelled_trackings.any? %>
+    <% if @under_surveillance_trackings.any? %>
       <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
         <table>
-          <caption>Accompagnements annulés</caption>
+          <caption>Surveillances</caption>
           <thead>
           <tr>
             <th>Créateur</th>
@@ -100,7 +100,7 @@
           </tr>
           </thead>
           <tbody>
-          <% @cancelled_trackings.each do |tracking| %>
+          <% @under_surveillance_trackings.each do |tracking| %>
             <tr>
               <td><%= full_name(tracking.creator) %></td>
               <td><%= tracking.start_date %></td>

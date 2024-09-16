@@ -4,7 +4,16 @@ class EstablishmentTrackingsController < ApplicationController
 
   def index
     @q = policy_scope(EstablishmentTracking).ransack(params[:q])
-    @establishment_trackings = @q.result.includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
+
+    if params.dig(:q, :my_tracking) == '1'
+      puts "ON prend bien que les miens"
+      @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)
+    else
+      puts "On prend tout"
+      @establishment_trackings = @q.result
+    end
+
+    @establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
   end
   def show
     @user_segment = current_user.segment

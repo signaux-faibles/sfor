@@ -11,8 +11,12 @@
         <%= link_to 'Compléter', complete_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :post, data: { confirm: 'Êtes-vous sûr de vouloir terminer cet accompagnement ?' }, class: 'fr-btn fr-mb-2w' %>
       <% end %>
 
-      <% if @establishment_tracking.may_cancel? %>
-        <%= link_to 'Annuler', cancel_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :post, data: { confirm: 'Êtes-vous sûr de vouloir annuler cet accompagnement ?' }, class: 'fr-btn fr-mb-2w' %>
+      <% if @establishment_tracking.may_start_surveillance? %>
+        <%= link_to 'Placer sous surveillance', start_surveillance_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :post, data: { confirm: 'Êtes-vous sûr de vouloir annuler cet accompagnement ?' }, class: 'fr-btn fr-mb-2w' %>
+      <% end %>
+
+      <% if @establishment_tracking.may_resume? %>
+        <%= link_to 'Reprendre', resume_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :post, data: { confirm: 'Êtes-vous sûr de vouloir annuler cet accompagnement ?' }, class: 'fr-btn fr-mb-2w' %>
       <% end %>
     </div>
 
