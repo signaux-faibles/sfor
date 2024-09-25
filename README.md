@@ -112,4 +112,14 @@ rake import_from_wekan:users
 ## Companies
 
 
+# Tests
+L'application est testée grâce à un ensemble de tests d'intégration écrits à l'aide de la librairie `Minitest` fournie avec `Ruby on Rails`.
+Les tests sont lancés automatiquement lors de l'exécution du workflow GitHub `Publish rails container to ghcr.io`
+Pour lancer les tests en local, utiliser la commande :
+
+```bash
+docker compose run test_web rails test
+```
+
+
 
