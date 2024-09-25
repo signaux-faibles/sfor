@@ -17,7 +17,51 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: myapp_test
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:password@localhost:5432/myapp_test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Set up the database
+        run: |
+          bundle exec rails db:create db:schema:load RAILS_ENV=test
+
+      - name: Run Tests
+        run: |
+          bundle exec rails test  # This runs Minitest, or use 'bundle exec rspec' if using RSpec
   build_and_publish:
+    needs: run_tests
     strategy:
       fail-fast: true
       matrix:
