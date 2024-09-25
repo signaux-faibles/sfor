@@ -28,6 +28,25 @@ services:
       - default
       - dev_wekan-tier
 
+  test_web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bash -c "rm -f tmp/pids/server.pid && rails s -b '0.0.0.0'"
+    volumes:
+      - .:/app
+      - test_web_tmp:/app/tmp # Volume pour les fichiers temporaires
+      - ./tmp/capybara:/app/tmp/capybara # Volume pour les captures d'écran Capybara
+    ports:
+      - "3002:3000"
+    environment:
+      RAILS_ENV: test
+    depends_on:
+      - db
+      - redis
+    networks:
+      - default
+
 networks:
   default:
   dev_wekan-tier:
@@ -35,3 +54,4 @@ networks:
 
 volumes:
   postgres_data:
+  test_web_tmp:
