@@ -40,7 +40,7 @@
                   <% end %>
               </li>
               <li>
-                <%= link_to "#{current_user.full_name} (#{current_user.segment.name})","#", class: 'fr-btn fr-icon-account-circle-fill' %>
+                <%= link_to "#{current_user&.full_name} (#{current_user&.segment&.name})","#", class: 'fr-btn fr-icon-account-circle-fill' %>
               </li>
               <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
                 <%= submit_tag 'Se déconnecter', class: 'fr-btn fr-icon-logout-box-r-fill' %>

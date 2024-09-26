@@ -1,4 +1,4 @@
-<%= turbo_stream.replace dom_id(@comment) do %>
+<%= turbo_stream.update dom_id(@comment) do %>
   <%= render partial: "comments/comment", locals: { comment: @comment } %>
 <% end %>
 

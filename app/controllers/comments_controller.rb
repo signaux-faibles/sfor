@@ -17,7 +17,7 @@ class CommentsController < ApplicationController
       puts "ON SAVE"
       flash.now[:notice] = "Commentaire ajouté avec succès."
     else
-      render turbo_stream: turbo_stream.replace("new_comment_#{params[:comment][:is_codefi] == 'true' ? 'codefi' : 'segment'}",
+      render turbo_stream: turbo_stream.update("new_comment_#{params[:comment][:is_codefi] == 'true' ? 'codefi' : 'segment'}",
                                                 partial: "comments/form",
                                                 locals: { comment: @comment, is_codefi: params[:comment][:is_codefi] == "true" },
                                                 status: :unprocessable_entity)
@@ -32,8 +32,10 @@ class CommentsController < ApplicationController
     if @comment.update(comment_params)
       flash.now[:notice] = "Commentaire mis à jour avec succès."
     else
-      render :update, status: :unprocessable_entity
-    end
+      render turbo_stream: turbo_stream.update("comment_#{@comment.id}",
+                                                partial: "comments/form",
+                                                locals: { comment: @comment, is_codefi: @comment.is_codefi },
+                                                status: :unprocessable_entity)    end
   end
 
   def destroy

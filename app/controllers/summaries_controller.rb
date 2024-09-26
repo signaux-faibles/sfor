@@ -4,14 +4,26 @@ class SummariesController < ApplicationController
   def create
     @summary = @establishment_tracking.summaries.new(summary_params)
 
+    puts summary_params.inspect
+
+    puts "On créer bien le Summary"
+    puts @summary.inspect
+    puts @summary.is_codefi
     unless @summary.is_codefi
+      puts "On attribue le summary on segment du user"
       @summary.segment = current_user.segment
+      puts @summary.segment.inspect
     end
 
     if @summary.save
+      puts "On a bien réussi à save"
+      puts @summary.is_codefi
       flash.now[:notice] = "Synthèse créée avec succès."
     else
-      render turbo_stream: turbo_stream.replace("new_summary", partial: "summaries/form", locals: { summary: @summary })
+      render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "segment_summary",
+                                                partial: "summaries/form",
+                                                locals: { summary: @summary, is_codefi: params[:summary][:is_codefi] == "true" },
+                                                status: :unprocessable_entity)
     end
   end
 
@@ -24,7 +36,10 @@ class SummariesController < ApplicationController
     if @summary.update(summary_params)
       flash.now[:notice] = "Synthèse modifiée avec succès."
     else
-      render turbo_stream: turbo_stream.replace(dom_id(@summary), partial: "summaries/form", locals: { summary: @summary })
+      render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "segment_summary",
+                                               partial: "summaries/form",
+                                               locals: { summary: @summary, is_codefi: @summary.is_codefi },
+                                               status: :unprocessable_entity)
     end
   end
 
