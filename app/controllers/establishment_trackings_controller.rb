@@ -1,6 +1,6 @@
 class EstablishmentTrackingsController < ApplicationController
   before_action :set_establishment, except: %i[new_by_siret index]
-  before_action :set_tracking, only: %i[show destroy edit update complete cancel]
+  before_action :set_tracking, only: %i[show destroy edit update complete cancel start_surveillance]
 
   def index
     @q = policy_scope(EstablishmentTracking).ransack(params[:q])
@@ -127,6 +127,16 @@ class EstablishmentTrackingsController < ApplicationController
       flash[:notice] = "L'accompagnement a été annulé."
     else
       flash[:alert] = "Impossible d'annuler cet accompagnement."
+    end
+    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
+  end
+
+  def start_surveillance
+    if @establishment_tracking.may_start_surveillance?
+      @establishment_tracking.start_surveillance!
+      flash[:notice] = "Le statut de l'accompagnement est passé à 'Sous surveillance'"
+    else
+      flash[:alert] = "Impossible de passer sous surveillance"
     end
     redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
   end

@@ -9,116 +9,16 @@
       </button>
     <% end %>
 
-    <!-- Accompagnements en cours -->
     <% if @in_progress_trackings.any? %>
-      <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
-        <table>
-          <caption>Accompagnements en cours</caption>
-          <thead>
-          <tr>
-            <th>Créateur</th>
-            <th>Date de début</th>
-            <th>Date de fin</th>
-            <th>Statut</th>
-            <th>Participants</th>
-            <th>Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% @in_progress_trackings.each do |tracking| %>
-            <tr>
-              <td><%= full_name(tracking.creator) %></td>
-              <td><%= tracking.start_date %></td>
-              <td><%= tracking.end_date %></td>
-              <td><%= tracking.aasm.human_state %></td>
-              <td>
-                <% tracking.participants.each do |participant| %>
-                  <%= full_name(participant) %><br>
-                <% end %>
-              </td>
-              <td>
-                <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
-                <%= link_to 'Supprimer', establishment_establishment_tracking_path(@establishment, tracking), method: :delete, data: { confirm: 'Êtes-vous sûr ?' }, class: 'fr-link' %>
-              </td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
+      <%= render partial: 'establishments/establishment_trackings_table_light', locals: { trackings: @in_progress_trackings, title: 'Accompagnements en cours' } %>
     <% end %>
 
-    <!-- Accompagnements terminés -->
     <% if @completed_trackings.any? %>
-      <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
-        <table>
-          <caption>Accompagnements terminés</caption>
-          <thead>
-          <tr>
-            <th>Créateur</th>
-            <th>Date de début</th>
-            <th>Date de fin</th>
-            <th>Statut</th>
-            <th>Participants</th>
-            <th>Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% @completed_trackings.each do |tracking| %>
-            <tr>
-              <td><%= full_name(tracking.creator) %></td>
-              <td><%= tracking.start_date %></td>
-              <td><%= tracking.end_date %></td>
-              <td><%= tracking.aasm.human_state %></td>
-              <td>
-                <% tracking.participants.each do |participant| %>
-                  <%= full_name(participant) %><br>
-                <% end %>
-              </td>
-              <td>
-                <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
-              </td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
+      <%= render partial: 'establishments/establishment_trackings_table_light', locals: { trackings: @completed_trackings, title: 'Accompagnements terminés' } %>
     <% end %>
 
-    <!-- Accompagnements annulés -->
     <% if @under_surveillance_trackings.any? %>
-      <div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
-        <table>
-          <caption>Surveillances</caption>
-          <thead>
-          <tr>
-            <th>Créateur</th>
-            <th>Date de début</th>
-            <th>Date de fin</th>
-            <th>Statut</th>
-            <th>Participants</th>
-            <th>Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <% @under_surveillance_trackings.each do |tracking| %>
-            <tr>
-              <td><%= full_name(tracking.creator) %></td>
-              <td><%= tracking.start_date %></td>
-              <td><%= tracking.end_date %></td>
-              <td><%= tracking.aasm.human_state %></td>
-              <td>
-                <% tracking.participants.each do |participant| %>
-                  <%= full_name(participant) %><br>
-                <% end %>
-              </td>
-              <td>
-                <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
-              </td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      </div>
+      <%= render partial: 'establishments/establishment_trackings_table_light', locals: { trackings: @under_surveillance_trackings, title: 'Surveillances' } %>
     <% end %>
 
     <%= link_to 'Retour à la liste', establishment_trackings_path %>

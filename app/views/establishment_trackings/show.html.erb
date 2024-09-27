@@ -1,4 +1,4 @@
-<div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
+<div class="fr-col-12 fr-col-sm-10 fr-col-md-8 fr-mb-3w">
   <div class="fr-container">
     <div class="accompagnement__header-container">
       <h1>Détails de l'accompagnement</h1>
@@ -78,7 +78,7 @@
 
       <!-- Panel Mon réseau -->
       <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405" tabindex="0">
-        <h3>Synthèses Mon réseau</h3>
+        <h3>Synthèse Mon réseau</h3>
         <%= turbo_frame_tag "segment_summary" do %>
           <% if @segment_summaries.any? %>
             <%= render @segment_summaries.first %>
@@ -100,9 +100,6 @@
           <% end %>
         </div>
       </div>
-    </div>
-    <div class="fr-mt-4w fr-mb-4w">
-      <%= link_to 'Retour à l\'établissement', @establishment_tracking.establishment %>
     </div>
   </div>
 </div>

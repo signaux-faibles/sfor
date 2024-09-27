@@ -13,8 +13,8 @@
           <% if @establishment_trackings.any? %>
             <thead>
           <tr>
-            <th><%= sort_link @q, :establishment_siret, "SIRET" %></th>
-            <th><%= sort_link @q, :establishment_raison_sociale, "Raison sociale" %></th>
+            <th>Siret</th>
+            <th>Raison sociale</th>
             <th>Statut</th>
             <th><%= sort_link @q, :start_date, "Date de début" %></th>
             <th>Assignés</th>
@@ -29,15 +29,15 @@
                 <td><%= tracking.establishment.siret %></td>
                 <td><%= tracking.establishment.raison_sociale %></td>
                 <td><%= tracking.aasm.human_state %></td>
-                <td><%= l(tracking.start_date, format: :long) %></td>
+                <td><%= tracking.start_date.present? ? l(tracking.start_date, format: :default) : '-' %></td>
                 <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
                 <td><%= tracking.participants.map(&:full_name).join(', ') %></td>
                 <td><%= tracking.tracking_labels.map(&:name).join(', ') %></td>
                 <td>
-                  <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-btn' %>
+                  <%= link_to 'Voir', [tracking.establishment, tracking], class: 'fr-btn' %>
                 </td>
                 <td>
-                  <%= link_to 'Fiche établissement',tracking.establishment, class: 'fr-btn fr-btn--secondary' %>
+                  <%= link_to 'Historique',tracking.establishment, class: 'fr-btn fr-btn--secondary' %>
                 </td>
               </tr>
             <% end %>
