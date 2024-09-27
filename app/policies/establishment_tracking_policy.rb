@@ -26,6 +26,10 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
     show?
   end
 
+  def start_surveillance?
+    show?
+  end
+
   def destroy?
     user.department_ids.include?(record.establishment.department.id)
   end
