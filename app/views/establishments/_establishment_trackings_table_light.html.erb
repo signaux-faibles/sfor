@@ -20,7 +20,7 @@
         <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
         <td><%= tracking.participants.map(&:full_name).join(', ') %></td>
         <td>
-          <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-link' %>
+          <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-btn' %>
         </td>
       </tr>
     <% end %>

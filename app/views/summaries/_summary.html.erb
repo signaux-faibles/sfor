@@ -1,3 +1,3 @@
-<p><%= simple_format(html_escape(summary.content)) %></p>
+<p><%= simple_format(auto_link(summary.content)) %></p>
 <p><em>Dernière modification le <%= l(summary.updated_at, format: :custom) %></em></p>
 <%= link_to "Modifier", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn" %>
