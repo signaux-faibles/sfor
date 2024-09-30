@@ -1,6 +1,6 @@
 class EstablishmentTrackingsController < ApplicationController
   before_action :set_establishment, except: %i[new_by_siret index]
-  before_action :set_tracking, only: %i[show destroy edit update complete cancel start_surveillance]
+  before_action :set_tracking, only: %i[show destroy edit update]
 
   def index
     @q = policy_scope(EstablishmentTracking).ransack(params[:q])
@@ -86,8 +86,9 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def update
-    if @establishment_tracking.update(tracking_params)
-      redirect_to [@establishment, @establishment_tracking], notice: "L'accompagnement a été mis à jour avec succès."
+    if update_state && @establishment_tracking.update(tracking_params)
+      flash[:success] = 'L\'accompagnement a été mis à jour avec succès.'
+      redirect_to [@establishment, @establishment_tracking]
     else
       render :edit, status: :unprocessable_entity
     end
@@ -99,7 +100,8 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment_tracking.start_date ||= Date.today
 
     if @establishment_tracking.save
-      redirect_to @establishment, notice: 'L\'accompagnement a été créé avec succès.'
+      flash[:success] = 'L\'accompagnement a été créé avec succès.'
+      redirect_to @establishment
     else
       puts @establishment_tracking.errors.inspect
       render :new, status: :unprocessable_entity
@@ -109,37 +111,8 @@ class EstablishmentTrackingsController < ApplicationController
   def destroy
     @establishment = @establishment_tracking.establishment
     @establishment_tracking.destroy
-    redirect_to @establishment, notice: 'L\'accompagnement a été supprimé avec succès.'
-  end
-
-  def complete
-    if @establishment_tracking.may_complete?
-      @establishment_tracking.complete!
-      flash[:notice] = "L'accompagnement a été marqué comme terminé."
-    else
-      flash[:alert] = "Impossible de terminer cet accompagnement."
-    end
-    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
-  end
-
-  def cancel
-    if @establishment_tracking.may_cancel?
-      @establishment_tracking.cancel!
-      flash[:notice] = "L'accompagnement a été annulé."
-    else
-      flash[:alert] = "Impossible d'annuler cet accompagnement."
-    end
-    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
-  end
-
-  def start_surveillance
-    if @establishment_tracking.may_start_surveillance?
-      @establishment_tracking.start_surveillance!
-      flash[:notice] = "Le statut de l'accompagnement est passé à 'Sous surveillance'"
-    else
-      flash[:alert] = "Impossible de passer sous surveillance"
-    end
-    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
+    flash[:success] = 'L\'accompagnement a été supprimé avec succès.'
+    redirect_to @establishment
   end
 
   private
@@ -153,7 +126,22 @@ class EstablishmentTrackingsController < ApplicationController
     authorize @establishment_tracking
   end
 
+  def update_state
+    desired_state = params[:establishment_tracking][:state]
+
+    case desired_state
+    when 'completed'
+      @establishment_tracking.complete! if @establishment_tracking.may_complete?
+    when 'under_surveillance'
+      @establishment_tracking.start_surveillance! if @establishment_tracking.may_start_surveillance?
+    when 'in_progress'
+      @establishment_tracking.resume! if @establishment_tracking.may_resume?
+    else
+      false
+    end
+  end
+
   def tracking_params
-    params.require(:establishment_tracking).permit(:status, participant_ids: [], referent_ids: [], tracking_label_ids: [])
+    params.require(:establishment_tracking).permit(:state, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [])
   end
 end

@@ -10,9 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_06_131139) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_30_151621) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "actions", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "activity_sectors", force: :cascade do |t|
     t.integer "depth", null: false
@@ -105,6 +111,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_131139) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "establishment_tracking_actions", force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "action_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action_id"], name: "index_establishment_tracking_actions_on_action_id"
+    t.index ["establishment_tracking_id"], name: "idx_on_establishment_tracking_id_282caecb1d"
   end
 
   create_table "establishment_tracking_labels", force: :cascade do |t|
@@ -330,6 +345,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_131139) do
   add_foreign_key "department_geo_accesses", "departments"
   add_foreign_key "department_geo_accesses", "geo_accesses"
   add_foreign_key "departments", "regions"
+  add_foreign_key "establishment_tracking_actions", "actions"
+  add_foreign_key "establishment_tracking_actions", "establishment_trackings"
   add_foreign_key "establishment_tracking_labels", "establishment_trackings"
   add_foreign_key "establishment_tracking_labels", "tracking_labels"
   add_foreign_key "establishment_trackings", "establishments"

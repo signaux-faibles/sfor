@@ -4,6 +4,7 @@
 
 require 'faker'
 
+require_relative 'seeds/actions_seeds'
 require_relative 'seeds/roles_seeds'
 require_relative 'seeds/departments_seeds'
 require_relative 'seeds/geo_accesses_seed'

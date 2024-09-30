@@ -14,6 +14,11 @@
         <% end %>
 
         <div class="fr-input-group">
+          <%= form.label :state, 'Statut' %>
+          <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Complété', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
+        </div>
+
+        <div class="fr-input-group">
           <%= form.label 'Assignés' %>
           <%= form.collection_select :referent_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
         </div>
@@ -26,6 +31,11 @@
         <div class="fr-input-group">
           <%= form.label :tracking_label_ids, 'Étiquettes' %>
           <%= form.collection_select :tracking_label_ids, TrackingLabel.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+        </div>
+
+        <div class="fr-input-group">
+          <%= form.label :action_ids, 'Actions' %>
+          <%= form.collection_select :action_ids, Action.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
         </div>
 
         <%= form.submit 'Mettre à jour l\'accompagnement', class: 'fr-btn' %>
