@@ -20,6 +20,15 @@ User.create!(email: 'charles.marcoin@beta.gouv.fr',
              segment: sf_segment,
              geo_access: geo_access)
 
+User.create!(email: 'josquin.cornec@beta.gouv.fr',
+             password: 'password',
+             password_confirmation: 'password',
+             first_name: 'Josquin',
+             last_name: 'Cornec',
+             entity: sf_entity,
+             segment: sf_segment,
+             geo_access: geo_access)
+
 19.times do
   User.create!(
     email: Faker::Internet.unique.email,
