@@ -69,6 +69,7 @@ class EstablishmentTrackingsController < ApplicationController
 
       @establishment = Establishment.new(
         siret: params[:siret],
+        raison_sociale: params[:denomination],
         siren: siren,
         department: department
       )
