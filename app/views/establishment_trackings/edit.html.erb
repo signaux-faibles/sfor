@@ -1,5 +1,5 @@
-<div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
-  <div class="fr-container">
+<div class="fr-container">
+  <div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
     <h1>Modifier l'accompagnement pour <%= @establishment.siret %></h1>
       <%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
         <% if @establishment_tracking.errors.any? %>
