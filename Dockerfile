@@ -46,7 +46,7 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 RUN apt-get update -qq && \
-    apt-get --no-install-recommends -y install iputils-ping nmap telnet tcpdump
+    apt-get --no-install-recommends -y install iputils-ping nmap telnet tcpdump vim
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
@@ -54,7 +54,7 @@ COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    chown -R rails:rails db log storage tmp lib
 USER rails:rails
 
 # Entrypoint prepares the database.
