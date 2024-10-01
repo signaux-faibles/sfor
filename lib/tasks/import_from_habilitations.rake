@@ -13,20 +13,27 @@ namespace :users do
     end
 
     workbook = RubyXL::Parser.parse(file_path)
-    worksheet = workbook[0] # Habilitations are in the first sheet of the xlsx file
+    users_worksheet = workbook['utilisateurs']
+    discard_worksheet = workbook['historique suppressions']
 
-    # Extract headers from the first row
-    header = worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
+    users_header = users_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
+    discard_header = discard_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
 
-    worksheet.sheet_data.rows[1..-1].each do |row|
-      break if row.nil?
-      break if row.cells[0].nil? || row.cells[0].value.nil?
+    users_worksheet.sheet_data.rows[1..-1].each do |row|
+      break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
 
-      row_data = Hash[header.zip(row.cells.map { |cell| cell && cell.value })]
+      row_data = Hash[users_header.zip(row.cells.map { |cell| cell && cell.value })]
       create_or_update_user(row_data)
     end
 
-    puts "Users import completed!"
+    discard_worksheet.sheet_data.rows[1..-1].each do |row|
+      break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
+
+      row_data = Hash[discard_header.zip(row.cells.map { |cell| cell && cell.value })]
+      discard_users(row_data)
+    end
+
+    puts "Users import and discard completed!"
   end
 
   def create_or_update_user(row)
@@ -67,6 +74,13 @@ namespace :users do
     unless user.save
       puts "Erreur lors de la création/mise à jour de l'utilisateur #{user.email}: #{user.errors.full_messages.join(', ')}"
     end
+  end
+
+  def discard_users(row)
+    email = row['ADRESSE MAIL']&.downcase
+    puts "Discarding user: #{email}"
+    user = User.find_by(email: email)
+    user.discard! if user
   end
 
   def assign_geo_access(user, geo_access_name)

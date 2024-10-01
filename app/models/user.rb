@@ -5,6 +5,14 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable
 
+  # Discarded users cannot authenticate (See https://github.com/jhawthorn/discard?tab=readme-ov-file#working-with-devise)
+  def active_for_authentication?
+    super && !discarded?
+  end
+
+  # Users can be soft deleted
+  include Discard::Model
+
   belongs_to :entity, optional: false
   belongs_to :segment, optional: false
   belongs_to :geo_access, optional: false

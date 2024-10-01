@@ -5,7 +5,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   namespace :admin do
-    resources :users
+    resources :users do
+      get '/impersonate' => "users#impersonate"
+    end
     resources :activity_sectors
     resources :campaigns
     resources :companies
@@ -20,6 +22,10 @@ Rails.application.routes.draw do
     resources :geo_accesses
 
     root to: "activity_sectors#index"
+  end
+
+  resources :users do
+    post :stop_impersonating, on: :collection
   end
 
   # Authentication

@@ -77,6 +77,15 @@ gem 'aasm'
 
 gem 'rails_autolink'
 
+# Handle soft delete
+gem 'discard', '~> 1.2'
+
+# Track changes to models
+gem 'paper_trail'
+
+# Impersonate users
+gem 'pretender'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]

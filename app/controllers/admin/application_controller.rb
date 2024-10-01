@@ -6,10 +6,10 @@
 # you're free to overwrite the RESTful controller actions.
 module Admin
   class ApplicationController < Administrate::ApplicationController
+    impersonates :user
     before_action :authenticate_admin
 
     def authenticate_admin
-      #TODO add this authentication for the first deploy
       unless current_user && current_user.segment.name == "sf"
         redirect_to root_url, alert: "Vous n'avez pas l'authorisation d'accéder à cette section"
       end

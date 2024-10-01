@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_30_151621) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_01_131200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -324,6 +324,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_30_151621) do
     t.string "level", default: "A", null: false
     t.text "description"
     t.bigint "geo_access_id", null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_users_on_discarded_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["entity_id"], name: "index_users_on_entity_id"
     t.index ["geo_access_id"], name: "index_users_on_geo_access_id"

@@ -35,6 +35,11 @@
           <div class="fr-header__tools-links">
             <ul class="fr-btns-group">
               <li>
+                <% if current_user != true_user %>
+                  <%= button_to("Retour à l'admin", stop_impersonating_users_path, data: { turbo: false },  class: 'fr-btn fr-icon-settings-5-fill') %>
+                <% end %>
+              </li>
+              <li>
                   <%= link_to admin_root_path, class: 'fr-btn fr-icon-settings-5-fill' do %>
                     Administration centrale
                   <% end %>
