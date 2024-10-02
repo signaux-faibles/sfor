@@ -80,6 +80,7 @@ namespace :users do
   end
 
   def discard_users(row)
+    create_or_update_user(row)
     email = row['ADRESSE MAIL']&.downcase
     puts "Discarding user: #{email}"
     user = User.find_by(email: email)
@@ -95,7 +96,7 @@ namespace :users do
         end
       end
     else
-      puts "User not found: #{email}"
+      puts "User not found: #{email}."
     end
   end
 
