@@ -1,6 +1,9 @@
 class EstablishmentTracking < ApplicationRecord
   include AASM
 
+  # EstablishmentTracking can be soft deleted
+  include Discard::Model
+
   belongs_to :creator, class_name: 'User'
   belongs_to :establishment
 
