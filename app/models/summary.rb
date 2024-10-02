@@ -1,4 +1,6 @@
 class Summary < ApplicationRecord
+  has_paper_trail
+
   belongs_to :establishment_tracking
   belongs_to :segment, optional: true
 

@@ -64,4 +64,9 @@ Rails.application.configure do
 
   # Devise conf (required by the devise installer) :
   config.action_mailer.default_url_options = { host: 'localhost' }
+
+  # Disabling paper trail to speed up tests
+  config.after_initialize do
+    PaperTrail.enabled = false
+  end
 end
