@@ -5,11 +5,6 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable
 
-  # Discarded users cannot authenticate (See https://github.com/jhawthorn/discard?tab=readme-ov-file#working-with-devise)
-  def active_for_authentication?
-    super && !discarded?
-  end
-
   # Users can be soft deleted
   include Discard::Model
 
@@ -33,6 +28,15 @@ class User < ApplicationRecord
   validates :level, presence: true
 
   before_save :update_departments_based_on_geo_access, if: :will_save_change_to_geo_access_id?
+
+  # Discarded users cannot authenticate (See https://github.com/jhawthorn/discard?tab=readme-ov-file#working-with-devise)
+  def active_for_authentication?
+    super && !discarded?
+  end
+
+  def inactive_message
+    discarded? ? :discarded_account : super
+  end
 
   def self.from_omniauth(auth)
     puts "auth info: #{auth.inspect}"

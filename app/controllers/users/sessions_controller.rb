@@ -7,8 +7,12 @@ class Users::SessionsController < Devise::SessionsController
     puts decoded_token
     if decoded_token
       user = find_or_create_user(decoded_token)
-      sign_in(resource_name, user)
-      render json: { success: true }
+      if user.active_for_authentication?
+        sign_in(resource_name, user)
+        render json: { success: true }
+      else
+        render json: { error: 'Votre compte est inactif' }, status: :unauthorized
+      end
     else
       render json: { error: 'Invalid token' }, status: :unauthorized
     end
