@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_02_110136) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_07_140347) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -261,8 +261,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_02_110136) do
     t.datetime "updated_at", null: false
     t.boolean "is_codefi", default: false, null: false
     t.index ["establishment_tracking_id", "is_codefi"], name: "index_summaries_on_establishment_tracking_id_and_is_codefi", unique: true, where: "(is_codefi = true)"
-    t.index ["establishment_tracking_id", "segment_id"], name: "index_summaries_on_establishment_tracking_id_and_segment_id", unique: true
+    t.index ["establishment_tracking_id", "segment_id"], name: "index_unique_segment_summary", unique: true, where: "(segment_id IS NOT NULL)"
     t.index ["establishment_tracking_id"], name: "index_summaries_on_establishment_tracking_id"
+    t.index ["establishment_tracking_id"], name: "index_unique_codefi_summary", unique: true, where: "(segment_id IS NULL)"
     t.index ["segment_id"], name: "index_summaries_on_segment_id"
   end
 

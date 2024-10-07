@@ -49,7 +49,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :establishment_trackings, only: [:index], path: 'accompagnements'
+  resources :establishment_trackings, only: [:index], defaults: { format: :html }, path: 'accompagnements'
 
   # Build a new 'accompagnement' from the Vue JS legacy app (using siret as query param)
   get 'establishment_trackings/new_by_siret', to: 'establishment_trackings#new_by_siret', as: 'new_establishment_tracking_by_siret'

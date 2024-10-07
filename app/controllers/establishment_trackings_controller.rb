@@ -13,34 +13,42 @@ class EstablishmentTrackingsController < ApplicationController
       @establishment_trackings = @q.result
     end
 
-    @establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
+    @paginated_establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(5)
+
+    respond_to do |format|
+      format.html
+      format.xlsx do
+        all_establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels)
+
+        response.headers['Cache-Control'] = 'no-store'
+        send_data generate_excel(all_establishment_trackings),
+                  filename: "accompagnements.xlsx",
+                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  disposition: 'attachment'
+      end
+    end
   end
   def show
     @user_segment = current_user.segment
 
-    # Filtrage des summaries par segment avec Pundit
     @segment_summaries = @establishment_tracking.summaries
                                                 .where(segment: @user_segment)
                                                 .select { |summary| authorize summary }
 
-    # Filtrage des summaries CODEFI avec Pundit
     @codefi_summaries = @establishment_tracking.summaries
                                                .where(segment_id: nil)
                                                .select { |summary| authorize summary }
 
-    # Filtrage des comments par segment avec Pundit
     @segment_comments = @establishment_tracking.comments
                                                .where(segment: @user_segment)
                                                .order(created_at: :desc)
                                                .select { |comment| authorize comment }
 
-    # Filtrage des comments CODEFI avec Pundit
     @codefi_comments = @establishment_tracking.comments
                                               .where(segment_id: nil)
                                               .order(created_at: :desc)
                                               .select { |comment| authorize comment }
 
-    # Gestion des erreurs d'autorisation
   rescue Pundit::NotAuthorizedError
     flash[:alert] = "Vous n'êtes pas autorisé à voir certains éléments."
     redirect_back(fallback_location: root_path)
@@ -143,5 +151,31 @@ class EstablishmentTrackingsController < ApplicationController
 
   def tracking_params
     params.require(:establishment_tracking).permit(:state, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [])
+  end
+
+  def generate_excel(establishment_trackings)
+    package = Axlsx::Package.new
+    workbook = package.workbook
+
+    workbook.add_worksheet(name: "Accompagnements") do |sheet|
+      sheet.add_row ["Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Statut", "Synthèse"]
+
+
+      establishment_trackings.each do |tracking|
+        summary = tracking.summaries.find_by(segment: @user_segment)
+        sheet.add_row [
+                        tracking.establishment.raison_sociale,
+                        tracking.establishment.siret,
+                        tracking.establishment&.department.name,
+                        tracking.participants.map(&:full_name).join(', '),
+                        tracking.referents.map(&:full_name).join(', '),
+                        tracking.start_date.present? ? tracking.start_date.strftime('%d/%m/%Y') : '-',
+                        tracking.aasm.human_state,
+                        summary&.content || 'Aucune synthèse rédigée'
+                      ]
+      end
+    end
+
+    package.to_stream.read
   end
 end

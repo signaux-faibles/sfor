@@ -4,13 +4,13 @@
       <div class="fr-table__content">
         <table id="table-md">
           <caption>
-            <% if @establishment_trackings.any? %>
-              <p><%= pluralize(@establishment_trackings.total_count, "accompagnement trouvé", "accompagnements trouvés") %></p>
+            <% if @paginated_establishment_trackings.any? %>
+              <p><%= pluralize(@paginated_establishment_trackings.total_count, "accompagnement trouvé", "accompagnements trouvés") %></p>
             <% else %>
               <p>Aucun accompagnement trouvé pour cette combinaison de filtres.</p>
             <% end %>
           </caption>
-          <% if @establishment_trackings.any? %>
+          <% if @paginated_establishment_trackings.any? %>
             <thead>
           <tr>
             <th>Siret</th>
@@ -24,7 +24,7 @@
           </tr>
           </thead>
             <tbody>
-            <% @establishment_trackings.each do |tracking| %>
+            <% @paginated_establishment_trackings.each do |tracking| %>
               <tr>
                 <td><%= tracking.establishment.siret %></td>
                 <td><%= tracking.establishment.raison_sociale %></td>
@@ -42,7 +42,7 @@
               </tr>
             <% end %>
           </tbody>
-            <%= paginate @establishment_trackings %>
+            <%= paginate @paginated_establishment_trackings %>
           <% end %>
         </table>
       </div>
