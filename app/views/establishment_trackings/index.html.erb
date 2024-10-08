@@ -6,7 +6,7 @@
       </div>
     </div>
     <div class="fr-col-9">
-      <%= link_to 'Exporter vers Excel', establishment_trackings_path(format: :xlsx, q: params[:q]), class: 'fr-btn' %>
+      <%= link_to 'Exporter vers Excel', establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!), class: 'fr-btn' %>
       <%= render 'establishment_trackings_table' %>
     </div>
   </div>
