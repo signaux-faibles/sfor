@@ -1,0 +1,7 @@
+region_ile_de_france:
+  code: '11'
+  libelle: 'Île-de-France'
+
+region_bretagne:
+  code: '53'
+  libelle: 'Bretagne'

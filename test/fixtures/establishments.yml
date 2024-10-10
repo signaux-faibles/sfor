@@ -1,0 +1,11 @@
+establishment_paris:
+  siren: '123456789'
+  siret: '12345678900001'
+  raison_sociale: 'Etablissement Paris'
+  department: department_paris
+
+establishment_finistere:
+  siren: '987654321'
+  siret: '98765432100002'
+  raison_sociale: 'Etablissement Bretagne'
+  department: department_finistere

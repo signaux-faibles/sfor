@@ -1,0 +1,9 @@
+department_paris:
+  code: '75'
+  name: 'Paris'
+  region: region_ile_de_france
+
+department_finistere:
+  code: '29'
+  name: 'Finistère'
+  region: region_bretagne

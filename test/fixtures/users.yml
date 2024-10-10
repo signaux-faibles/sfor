@@ -1,0 +1,31 @@
+user_crp_paris:
+  email: test@crp_paris.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_crp
+  entity: entity_dreets
+  geo_access: geo_access_paris
+  departments: department_paris
+
+user_crp_finistere:
+  email: test@crp_finistere.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_crp
+  entity: entity_dreets
+  geo_access: geo_access_finistere
+  departments: department_finistere
+
+user_urssaf_paris:
+  email: test@urssaf_paris.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_urssaf
+  entity: entity_dreets
+  geo_access: geo_access_paris
+  departments: department_paris
+
+user_urssaf_finistere:
+  email: test@urssaf_finistere.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_urssaf
+  entity: entity_dreets
+  geo_access: geo_access_finistere
+  departments: department_finistere

@@ -1,0 +1,7 @@
+geo_access_paris:
+  name: 'Paris'
+  departments: department_paris
+
+geo_access_finistere:
+  name: 'Finistère'
+  departments: department_finistere

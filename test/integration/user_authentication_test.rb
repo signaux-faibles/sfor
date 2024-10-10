@@ -2,15 +2,7 @@ require 'test_helper'
 
 class UserAuthenticationTest < ActionDispatch::IntegrationTest
   def setup
-    @region = Region.create!(libelle: 'Île-de-France', code: '11')
-    @entity = Entity.create!(name: 'Une entité CRP')
-    @segment = Segment.create!(name: 'crp')
-    @geo_access = GeoAccess.create!(name: 'Île-de-France')
-    @departments = [
-      Department.create!(code: '75', name: 'Paris', region: @region),
-      Department.create!(code: '78', name: 'Yvelines', region: @region)
-    ]
-    @user = User.create!(email: 'test@example.com', password: 'password', geo_access: @geo_access, departments: @departments, entity: @entity, segment: @segment)
+    @user = users(:user_crp_paris)
 
     token_payload = {
       'email' => @user.email,

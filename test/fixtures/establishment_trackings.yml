@@ -1,0 +1,11 @@
+establishment_tracking_paris:
+  state: 'in_progress'
+  establishment: establishment_paris
+  start_date: 2023-01-01
+  creator: user_crp_paris
+
+establishment_tracking_finistere:
+  state: 'in_progress'
+  establishment: establishment_finistere
+  start_date: 2022-02-01
+  creator: user_crp_finistere
