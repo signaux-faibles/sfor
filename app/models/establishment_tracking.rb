@@ -21,6 +21,8 @@ class EstablishmentTracking < ApplicationRecord
 
   validates :referents, presence: true
 
+  validate :single_in_progress_tracking, if: :in_progress?
+
   scope :in_progress, -> { where(state: 'in_progress') }
   scope :completed, -> { where(state: 'completed') }
   scope :cancelled, -> { where(state: 'cancelled') }
@@ -56,6 +58,14 @@ class EstablishmentTracking < ApplicationRecord
 
     event :resume do
       transitions from: [:completed, :under_surveillance, :in_progress], to: :in_progress
+    end
+  end
+
+  private
+
+  def single_in_progress_tracking
+    if establishment.establishment_trackings.where(state: 'in_progress').where.not(id: id).exists?
+      errors.add(:state, 'Il ne peut y avoir qu\'un seul accompagnement en cours pour un établissement donné')
     end
   end
 end

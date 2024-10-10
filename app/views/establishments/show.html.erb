@@ -3,11 +3,11 @@
 
     <h1>Historique des accompagnements - <%= @establishment&.raison_sociale %></h1>
 
-    <% if @in_progress_trackings.empty? %>
+<!--
       <button class="fr-btn">
-        <%= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %>
+        <%#= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %>
       </button>
-    <% end %>
+-->
 
     <% if @in_progress_trackings.any? %>
       <%= render partial: 'establishments/establishment_trackings_table_light', locals: { trackings: @in_progress_trackings, title: 'Accompagnements en cours' } %>
