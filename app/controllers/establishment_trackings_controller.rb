@@ -6,10 +6,8 @@ class EstablishmentTrackingsController < ApplicationController
     @q = policy_scope(EstablishmentTracking).ransack(params[:q])
 
     if params.dig(:q, :my_tracking) == '1'
-      puts "ON prend bien que les miens"
       @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)
     else
-      puts "On prend tout"
       @establishment_trackings = @q.result
     end
 
