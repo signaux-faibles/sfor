@@ -54,5 +54,5 @@ Rails.application.routes.draw do
   # Build a new 'accompagnement' from the Vue JS legacy app (using siret as query param)
   get 'establishment_trackings/new_by_siret', to: 'establishment_trackings#new_by_siret', as: 'new_establishment_tracking_by_siret'
 
-  root "pages#home"
+  root "establishment_trackings#index"
 end
