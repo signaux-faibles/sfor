@@ -15,7 +15,7 @@
 
         <div class="fr-input-group">
           <%= form.label :state, 'Statut' %>
-          <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Complété', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
+          <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
         </div>
 
         <div class="fr-input-group">

@@ -10,9 +10,9 @@
     <%= f.collection_select :establishment_department_id_in, current_user.geo_access.departments, :id, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
   </div>
 
-  <div class="fr-select-group">
-    <%= f.label :state_eq, "Statut" %>
-    <%= f.select :state_eq, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, { include_blank: "Tous"} , { class: "fr-select" } %>
+  <div class="fr-input-group">
+    <%= f.label :state_in, "Statuts" %>
+    <%= f.collection_select :state_in, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, :last, :first, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
   </div>
 
   <div class="fr-input-group">
