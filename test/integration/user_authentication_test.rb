@@ -23,7 +23,7 @@ class UserAuthenticationTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_includes @response.body, 'Accueil de l\'application'
+    assert_includes @response.body, 'Réinitialiser les filtres'
   end
 end
 
