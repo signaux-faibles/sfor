@@ -18,19 +18,22 @@
       <% end %>
     </ul>
 
-    <p><strong>SIRET:</strong> <%= @establishment_tracking.establishment.siret %></p>
-    <p><strong>Créateur:</strong> <%= full_name(@establishment_tracking.creator) %></p>
-    <p><strong>Date de début:</strong> <%= @establishment_tracking.start_date %></p>
-    <p><strong>Date de fin:</strong> <%= @establishment_tracking.end_date %></p>
-    <p><strong>Statut:</strong> <%= @establishment_tracking.aasm.human_state %></p>
-    <p><strong>Assignés:</strong>
+    <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
+    <p><strong>Créateur :</strong> <%= full_name(@establishment_tracking.creator) %></p>
+    <p><strong>Date de début :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %></p>
+    <p><strong>Date de fin :</strong> <%= @establishment_tracking.end_date.present? ? l(@establishment_tracking.end_date, format: :default) : '-' %></p>
+
+
+
+    <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
+    <p><strong>Assignés :</strong>
       <%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %>
     </p>
-    <p><strong>Participants:</strong>
+    <p><strong>Participants :</strong>
       <%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
     </p>
-    <p><strong>Actions:</strong>
-      <%= @establishment_tracking.actions.map { |action| action.name }.join(', ') %>
+    <p><strong>Actions :</strong>
+      <%= @establishment_tracking.actions.any? ? @establishment_tracking.actions.map { |action| action.name }.join(', ') : 'Pas d\'actions renseignées' %>
     </p>
 
 
