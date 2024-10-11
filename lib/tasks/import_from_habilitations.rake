@@ -80,7 +80,20 @@ namespace :users do
     email = row['ADRESSE MAIL']&.downcase
     puts "Discarding user: #{email}"
     user = User.find_by(email: email)
-    user.discard! if user
+    if user
+      begin
+        user.discard!
+        puts "User discarded successfully"
+      rescue Discard::RecordNotDiscarded => e
+        if user.discarded?
+          puts "User is already discarded: #{email}"
+        else
+          puts "Failed to discard user: #{email}. Error: #{e.message}"
+        end
+      end
+    else
+      puts "User not found: #{email}"
+    end
   end
 
   def assign_geo_access(user, geo_access_name)
