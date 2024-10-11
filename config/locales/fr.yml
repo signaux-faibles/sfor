@@ -23,6 +23,10 @@ fr:
       tracking_label:
         establishment_trackings: Accompagnements
         name: Nom
+      label_group:
+        name: Nom
+        tracking_labels: Etiquettes
+        created_at: créé le
       user:
         first_name: Prénom
         last_name: Nom
@@ -38,6 +42,9 @@ fr:
       tracking_label:
         one: Etiquette
         other: Etiquettes
+      label_group:
+        one: Groupe d'étiquettes
+        other: Groupes d'étiquettes
       activity_sector:
         one: 'Secteurd''activité'
         other: 'Secteurs d''activité'

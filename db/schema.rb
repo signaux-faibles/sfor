@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_10_084904) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_11_115359) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -223,6 +223,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_10_084904) do
     t.index ["name"], name: "index_geo_accesses_on_name", unique: true
   end
 
+  create_table "label_groups", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "lists", force: :cascade do |t|
     t.string "label", null: false
     t.string "code", null: false
@@ -273,6 +279,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_10_084904) do
     t.boolean "system", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "label_group_id"
+    t.index ["label_group_id"], name: "index_tracking_labels_on_label_group_id"
   end
 
   create_table "tracking_participants", force: :cascade do |t|
@@ -372,6 +380,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_10_084904) do
   add_foreign_key "establishments", "establishments", column: "parent_establishment_id"
   add_foreign_key "summaries", "establishment_trackings"
   add_foreign_key "summaries", "segments"
+  add_foreign_key "tracking_labels", "label_groups"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
   add_foreign_key "tracking_referents", "establishment_trackings"

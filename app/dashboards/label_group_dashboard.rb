@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class TrackingLabelDashboard < Administrate::BaseDashboard
+class LabelGroupDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,11 +9,8 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    establishment_tracking_labels: Field::HasMany,
-    establishment_trackings: Field::HasMany,
     name: Field::String,
-    system: Field::Boolean,
-    label_group: Field::BelongsTo,
+    tracking_labels: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -26,8 +23,8 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
-    label_group
-    system
+    tracking_labels
+    created_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -35,8 +32,7 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     id
     name
-    label_group
-    system
+    tracking_labels
     created_at
     updated_at
   ].freeze
@@ -46,8 +42,7 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    label_group
-    system
+    tracking_labels
   ].freeze
 
   # COLLECTION_FILTERS
@@ -62,10 +57,10 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how tracking labels are displayed
+  # Overwrite this method to customize how label groups are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(tracking_label)
-    tracking_label.name
+  def display_resource(label_group)
+    label_group.name
   end
 end

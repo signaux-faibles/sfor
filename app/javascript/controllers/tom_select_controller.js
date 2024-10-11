@@ -11,6 +11,20 @@ export default class extends Controller {
             sortField: {
                 field: "text",
                 direction: "asc"
+            },
+            render: {
+                option: function(data, escape) {
+                    return `<div class="option" style="margin-left: 10px;">${escape(data.text)}</div>`;
+                },
+                item: function(data, escape) {
+                    return `<div class="item">${escape(data.text)}</div>`;
+                },
+                optgroup_header: function(data, escape) {
+                    return `<div class="optgroup-header" style="font-weight: bold;">${escape(data.label)}</div>`;
+                },
+                no_results: function(data, escape) {
+                    return '<div class="no-results">' + 'Aucun résultat' + '</div>';
+                }
             }
         });
     }
