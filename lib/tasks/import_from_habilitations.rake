@@ -105,12 +105,7 @@ namespace :users do
       return
     end
 
-    if geo_access_name.downcase == 'France entière'
-      user.departments = Department.all
-    else
-      user.departments = geo_access.departments
-    end
-
+    user.departments = geo_access.departments
     user.geo_access = geo_access
   end
 
