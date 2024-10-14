@@ -37,7 +37,7 @@ namespace :users do
   end
 
   def create_or_update_user(row)
-    email = row['ADRESSE MAIL']&.downcase
+    email = row['ADRESSE MAIL']&.strip&.downcase
     puts "Creating new user: #{email}"
     return if %w[admin keycloakadmin].include?(email)
 
@@ -71,8 +71,11 @@ namespace :users do
     roles = determine_roles(user, row)
     user.roles = Role.where(name: roles)
 
-    unless user.save
-      puts "Erreur lors de la création/mise à jour de l'utilisateur #{user.email}: #{user.errors.full_messages.join(', ')}"
+    # Save the user and handle any errors
+    if user.save
+      puts "User #{user.email} saved successfully"
+    else
+      puts "Error creating/updating user #{user.email}: #{user.errors.full_messages.join(', ')}"
     end
   end
 
