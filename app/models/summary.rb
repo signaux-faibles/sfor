@@ -3,9 +3,26 @@ class Summary < ApplicationRecord
 
   belongs_to :establishment_tracking
   belongs_to :segment, optional: true
+  belongs_to :locked_by_user, class_name: 'User', foreign_key: 'locked_by', optional: true
 
   validates :content, presence: true
   validate :ensure_unique_codefi_or_segment_summary
+
+  def lock!(user)
+    update!(locked_by: user.id, locked_at: Time.current)
+  end
+
+  def unlock!
+    update!(locked_by: nil, locked_at: nil)
+  end
+
+  def locked?
+    locked_at.present? && locked_at > 2.hours.ago
+  end
+
+  def locked_by_user?
+    locked? && locked_by_user.present?
+  end
 
   private
 

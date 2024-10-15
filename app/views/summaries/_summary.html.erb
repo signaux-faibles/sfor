@@ -1,3 +1,7 @@
 <p><%= simple_format(auto_link(summary.content)) %></p>
 <p><em>Dernière modification le <%= l(summary.updated_at, format: :custom) %></em></p>
-<%= link_to "Modifier", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn" %>
+<% if summary.locked? %>
+  <%= button_tag "En cours d'édition par #{User.find(summary.locked_by).email}", class: "fr-btn", disabled: true %>
+<% else %>
+  <%= link_to "Modifier", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn" %>
+<% end %>

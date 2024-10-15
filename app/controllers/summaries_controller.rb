@@ -4,20 +4,11 @@ class SummariesController < ApplicationController
   def create
     @summary = @establishment_tracking.summaries.new(summary_params)
 
-    puts summary_params.inspect
-
-    puts "On créer bien le Summary"
-    puts @summary.inspect
-    puts @summary.is_codefi
     unless @summary.is_codefi
-      puts "On attribue le summary on segment du user"
       @summary.segment = current_user.segment
-      puts @summary.segment.inspect
     end
 
     if @summary.save
-      puts "On a bien réussi à save"
-      puts @summary.is_codefi
       flash.now[:notice] = "Synthèse créée avec succès."
     else
       render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "segment_summary",
@@ -29,10 +20,26 @@ class SummariesController < ApplicationController
 
   def edit
     @summary = @establishment_tracking.summaries.find(params[:id])
+
+    if @summary.locked? && @summary.locked_by != current_user.id
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace("flash", html: "<div id='flash' class='fr-alert fr-alert--error'>Cette synthèse est actuellement en cours de modification par un autre utilisateur.</div>".html_safe)
+        end
+        format.html do
+          flash[:alert] = "Cette synthèse est actuellement en cours de modification par un autre utilisateur."
+          redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
+        end
+      end
+    else
+      @summary.lock!(current_user)
+    end
   end
 
   def update
     @summary = @establishment_tracking.summaries.find(params[:id])
+    @summary.unlock!
+
     if @summary.update(summary_params)
       flash.now[:notice] = "Synthèse modifiée avec succès."
     else
@@ -41,6 +48,12 @@ class SummariesController < ApplicationController
                                                locals: { summary: @summary, is_codefi: @summary.is_codefi },
                                                status: :unprocessable_entity)
     end
+  end
+
+  def cancel
+    @summary = @establishment_tracking.summaries.find(params[:id])
+    @summary.unlock!
+    flash[:notice] = "Modification annulée."
   end
 
   private

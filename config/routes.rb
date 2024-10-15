@@ -45,7 +45,9 @@ Rails.application.routes.draw do
         get :start_surveillance
         get :resume
       end
-      resources :summaries, only: [:create, :edit, :update]
+      resources :summaries, only: [:create, :edit, :update] do
+        get :cancel, on: :member
+      end
       resources :comments, only: [:create, :edit, :update, :destroy]
     end
   end
