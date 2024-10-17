@@ -4,6 +4,11 @@ Rails.application.routes.draw do
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Authentication
+  devise_for :users, controllers: {
+    sessions: 'users/sessions'
+  }
+
   namespace :admin do
     resources :users do
       get '/impersonate' => "users#impersonate"
@@ -28,11 +33,6 @@ Rails.application.routes.draw do
   resources :users do
     post :stop_impersonating, on: :collection
   end
-
-  # Authentication
-  devise_for :users, controllers: {
-    sessions: 'users/sessions'
-  }
 
   devise_scope :user do
     post 'authenticate', to: 'users/sessions#create'
