@@ -6,6 +6,14 @@ user_crp_paris:
   geo_access: geo_access_paris
   departments: department_paris
 
+user_crp_paris_2:
+  email: test2@crp_paris.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_crp
+  entity: entity_dreets
+  geo_access: geo_access_paris
+  departments: department_paris
+
 user_crp_finistere:
   email: test@crp_finistere.com
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>

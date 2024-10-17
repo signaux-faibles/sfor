@@ -11,6 +11,6 @@
   </div>
   <%= form.submit "Sauvegarder", class: "fr-btn" %>
   <% if summary.persisted? %>
-    <%= link_to "Annuler", cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), class: "fr-btn fr-btn--secondary", method: :post, data: { turbo_stream: true, confirm: "Êtes-vous sûr de vouloir annuler ?" } %>
+    <%= link_to "Annuler", cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), class: "fr-btn fr-btn--secondary", data: { turbo_stream: true, confirm: "Êtes-vous sûr de vouloir annuler ?" } %>
   <% end %>
 <% end %>
