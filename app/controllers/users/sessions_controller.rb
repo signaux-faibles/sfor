@@ -18,6 +18,12 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
+  def destroy
+    super do
+      return redirect_to "#{ENV['VUE_APP_FRONTEND_URL']}/#/logout"
+    end
+  end
+
   private
 
   def decode_token(token)
