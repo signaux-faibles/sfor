@@ -12,9 +12,9 @@ class SummariesController < ApplicationController
       flash.now[:notice] = "Synthèse créée avec succès."
     else
       render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "segment_summary",
-                                                partial: "summaries/form",
-                                                locals: { summary: @summary, is_codefi: params[:summary][:is_codefi] == "true" },
-                                                status: :unprocessable_entity)
+                                               partial: "summaries/form",
+                                               locals: { summary: @summary, is_codefi: params[:summary][:is_codefi] == "true" },
+                                               status: :unprocessable_entity)
     end
   end
 
@@ -22,15 +22,10 @@ class SummariesController < ApplicationController
     @summary = @establishment_tracking.summaries.find(params[:id])
 
     if @summary.locked? && @summary.locked_by != current_user.id
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("flash", html: "<div id='flash' class='fr-alert fr-alert--error'>Cette synthèse est actuellement en cours de modification par un autre utilisateur.</div>".html_safe)
-        end
-        format.html do
-          flash[:alert] = "Cette synthèse est actuellement en cours de modification par un autre utilisateur."
-          redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking)
-        end
-      end
+      render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "segment_summary",
+                                               partial: "summaries/summary",
+                                               locals: { summary: @summary, is_codefi: @summary.is_codefi, establishment: @establishment, establishment_tracking: @establishment_tracking },
+      )
     else
       @summary.lock!(current_user)
     end
@@ -46,14 +41,15 @@ class SummariesController < ApplicationController
       render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "segment_summary",
                                                partial: "summaries/form",
                                                locals: { summary: @summary, is_codefi: @summary.is_codefi },
-                                               status: :unprocessable_entity)
+                                               status: :unprocessable_entity
+      )
     end
   end
 
   def cancel
     @summary = @establishment_tracking.summaries.find(params[:id])
     @summary.unlock!
-    flash[:notice] = "Modification annulée."
+    flash.now[:notice] = "Modification annulée."
   end
 
   private
