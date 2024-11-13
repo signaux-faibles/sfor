@@ -1,4 +1,4 @@
-<p><%= simple_format(auto_link(summary.content)) %></p>
+<p><%= markdown(summary.content) %></p>
 <p><em>Dernière modification le <%= l(summary.updated_at, format: :custom) %></em></p>
 <% if summary.locked? %>
   <%= button_tag "En cours d'édition par #{User.find(summary.locked_by).email}", class: "fr-btn", disabled: true %>
