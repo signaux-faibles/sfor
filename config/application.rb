@@ -27,5 +27,7 @@ module SignauxFaiblesV2
     # Localisation
     config.i18n.default_locale = :fr
     config.i18n.available_locales = [:fr, :en]
+    config.time_zone = 'Paris'
+    config.active_record.default_timezone = :local
   end
 end
