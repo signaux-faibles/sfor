@@ -4,17 +4,16 @@ class SummariesController < ApplicationController
   def create
     @summary = @establishment_tracking.summaries.new(summary_params)
 
-    unless @summary.is_codefi
-      @summary.network = current_user.network
+    if @summary.network.nil?
+      @summary.network = current_user.networks.where.not(name: 'codefi').first
     end
 
     if @summary.save
       flash.now[:notice] = "Synthèse créée avec succès."
     else
-      puts @summary.errors.full_messages
-      render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "network_summary",
+      render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
                                                partial: "summaries/form",
-                                               locals: { summary: @summary, is_codefi: params[:summary][:is_codefi] == "true" },
+                                               locals: { summary: @summary, network: @summary.network },
                                                status: :unprocessable_entity)
     end
   end
@@ -23,9 +22,9 @@ class SummariesController < ApplicationController
     @summary = @establishment_tracking.summaries.find(params[:id])
 
     if @summary.locked? && @summary.locked_by != current_user.id
-      render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "network_summary",
+      render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
                                                partial: "summaries/summary",
-                                               locals: { summary: @summary, is_codefi: @summary.is_codefi, establishment: @establishment, establishment_tracking: @establishment_tracking },
+                                               locals: { summary: @summary, establishment: @establishment, establishment_tracking: @establishment_tracking, network: @summary.network },
       )
     else
       @summary.lock!(current_user)
@@ -39,9 +38,9 @@ class SummariesController < ApplicationController
     if @summary.update(summary_params)
       flash.now[:notice] = "Synthèse modifiée avec succès."
     else
-      render turbo_stream: turbo_stream.update(@summary.is_codefi ? "codefi_summary" : "network_summary",
+      render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
                                                partial: "summaries/form",
-                                               locals: { summary: @summary, is_codefi: @summary.is_codefi },
+                                               locals: { summary: @summary, network: @summary.network },
                                                status: :unprocessable_entity
       )
     end
@@ -61,6 +60,6 @@ class SummariesController < ApplicationController
   end
 
   def summary_params
-    params.require(:summary).permit(:content, :is_codefi, :network_id)
+    params.require(:summary).permit(:content, :network_id)
   end
 end

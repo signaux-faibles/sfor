@@ -65,7 +65,7 @@ end
     geo_access: geo_access
   )
 
-  user.networks = [codefi_network, sf_network] # Assign both networks at once
+  user.networks = [codefi_network, crp_network] # Assign both networks at once
 
   user.save
 end

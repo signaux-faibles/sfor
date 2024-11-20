@@ -39,63 +39,54 @@
 
     <div class="fr-tabs">
       <ul class="fr-tabs__list" role="tablist">
-        <li role="presentation">
-          <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">CODEFI</button>
-        </li>
-        <li role="presentation">
-          <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Mon réseau (<%= current_user.network.name %>)</button>
-        </li>
+        <% current_user.networks.each_with_index do |network, index| %>
+          <li role="presentation">
+            <button id="tabpanel-<%= index %>"
+                    class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left"
+                    tabindex="<%= index.zero? ? 0 : -1 %>"
+                    role="tab"
+                    aria-selected="<%= index.zero? ? 'true' : 'false' %>"
+                    aria-controls="tabpanel-<%= index %>-panel">
+              <%= network.name %>
+            </button>
+          </li>
+        <% end %>
       </ul>
 
-      <!-- Panel CODEFI -->
-      <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-404" tabindex="0">
-        <h3>Synthèse CODEFI</h3>
-        <%= turbo_frame_tag "codefi_summary" do %>
-          <% if @codefi_summaries.any? %>
-            <%= render @codefi_summaries.first %>
-          <% else %>
-            <%= render "summaries/form", summary: Summary.new, is_codefi: true %>
+      <% current_user.networks.each_with_index do |network, index| %>
+        <div id="tabpanel-<%= index %>-panel"
+             class="fr-tabs__panel <%= 'fr-tabs__panel--selected' if index.zero? %>"
+             role="tabpanel"
+             aria-labelledby="tabpanel-<%= index %>"
+             tabindex="0">
+
+          <h3>Synthèse <%= network.name %></h3>
+          <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
+            <% if network.name.downcase == 'codefi' %>
+              <%= render @codefi_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
+            <% else %>
+              <%= render @user_network_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
+            <% end %>
           <% end %>
-        <% end %>
 
-        <hr class="fr-mt-4w fr-mb-4w" />
+          <hr class="fr-mt-4w fr-mb-4w" />
 
-        <h3>Commentaires CODEFI</h3>
-        <%= turbo_frame_tag "new_comment_codefi" do %>
-          <%= render "comments/form", comment: Comment.new, is_codefi: true %>
-        <% end %>
-
-        <div id="comments_codefi">
-          <%= turbo_frame_tag "comments_codefi" do %>
-            <%= render @codefi_comments %>
+          <h3>Commentaires <%= network.name %></h3>
+          <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
+            <%= render "comments/form", comment: Comment.new(network: network), network: network %>
           <% end %>
+
+          <div id="comments_<%= network.name.parameterize %>">
+            <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
+              <% if network.name == 'Codefi' %>
+                <%= render @codefi_comments, network: network %>
+              <% else %>
+                <%= render @user_network_comments, network: network %>
+              <% end %>
+            <% end %>
+          </div>
         </div>
-      </div>
-
-      <!-- Panel Mon réseau -->
-      <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405" tabindex="0">
-        <h3>Synthèse Mon réseau</h3>
-        <%= turbo_frame_tag "network_summary" do %>
-          <% if @network_summaries.any? %>
-            <%= render @network_summaries.first %>
-          <% else %>
-            <%= render "summaries/form", summary: Summary.new(network: @user_network), is_codefi: false %>
-          <% end %>
-        <% end %>
-
-        <hr class="fr-mt-2w fr-mb-2w" />
-
-        <h3>Commentaires Mon réseau</h3>
-        <%= turbo_frame_tag "new_comment_network" do %>
-          <%= render "comments/form", comment: Comment.new(network: @user_network), is_codefi: false %>
-        <% end %>
-
-        <div id="comments_network">
-          <%= turbo_frame_tag "comments_network" do %>
-            <%= render @network_comments %>
-          <% end %>
-        </div>
-      </div>
+      <% end %>
     </div>
   </div>
 </div>

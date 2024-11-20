@@ -26,8 +26,6 @@ namespace :users do
     @dgfip_network = Network.find_or_create_by(name: 'DGFIP')
     @dgefp_network = Network.find_or_create_by(name: 'DGEFP')
 
-
-
     users_worksheet.sheet_data.rows[1..-1].each do |row|
       break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
 

@@ -27,25 +27,16 @@ class EstablishmentTrackingsController < ApplicationController
     end
   end
   def show
-    @user_network = current_user.network
+    user_network_ids = current_user.networks.pluck(:id) # ['Codefi' and user's specific network]
+    @summaries = Summary.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
 
-    @network_summaries = @establishment_tracking.summaries
-                                                .where(network: @user_network)
-                                                .select { |summary| authorize summary }
+    @codefi_summaries = @summaries.find { |s| s.network.name.downcase == 'codefi' }
+    @user_network_summaries = @summaries.find { |s| s.network.id == current_user.networks.where.not(name: 'Codefi').pluck(:id).first }
 
-    @codefi_summaries = @establishment_tracking.summaries
-                                               .where(network_id: nil)
-                                               .select { |summary| authorize summary }
+    @comments = Comment.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
 
-    @network_comments = @establishment_tracking.comments
-                                               .where(network: @user_network)
-                                               .order(created_at: :desc)
-                                               .select { |comment| authorize comment }
-
-    @codefi_comments = @establishment_tracking.comments
-                                              .where(network_id: nil)
-                                              .order(created_at: :desc)
-                                              .select { |comment| authorize comment }
+    @codefi_comments = @comments.select { |c| c.network.name.downcase == 'codefi' }
+    @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'Codefi').pluck(:id).first }
 
   rescue Pundit::NotAuthorizedError
     flash[:alert] = "Vous n'êtes pas autorisé à voir certains éléments."
