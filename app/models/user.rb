@@ -11,6 +11,9 @@ class User < ApplicationRecord
   belongs_to :entity, optional: false
   belongs_to :segment, optional: false
   belongs_to :geo_access, optional: false
+  has_many :network_memberships, dependent: :destroy
+  has_many :networks, through: :network_memberships
+
   has_and_belongs_to_many :roles
 
   has_many :created_trackings, class_name: 'EstablishmentTracking', foreign_key: 'creator_id'
@@ -26,6 +29,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :level, presence: true
+  validate :validate_network_memberships
 
   before_save :update_departments_based_on_geo_access, if: :will_save_change_to_geo_access_id?
 
@@ -80,6 +84,18 @@ class User < ApplicationRecord
       self.departments = Department.all
     else
       self.departments = geo_access.departments
+    end
+  end
+
+  def validate_network_memberships
+    puts "RESEAUX ACTUELS"
+    puts networks.inspect
+    if networks.size > 2
+      errors.add(:networks, "Un utilisateur ne peut appartenir qu'à deux réseaux dont le réseau codefi")
+    end
+
+    unless networks.any? { |network| network.name == 'CODEFI' }
+      errors.add(:networks, "Un utilisateur doit appartenir au réseau codefi")
     end
   end
 end

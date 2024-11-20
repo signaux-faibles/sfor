@@ -8,6 +8,8 @@ fr:
       last: Dernière page
   activerecord:
     attributes:
+      summary:
+        network: Réseau
       establishment_tracking:
         referents: Assignés
         state:
@@ -35,6 +37,9 @@ fr:
         roles: Rôles
         entity: Entité
         geo_access: Accès géographique
+      network:
+        name: Nom
+        users: Utilisateurs
     models:
       geo_access:
         one: Accès géographique
@@ -75,6 +80,9 @@ fr:
       campaign:
         one: Campagne
         other: Campagnes
+      network:
+        one: Réseau
+        other: Réseaux
     errors:
       messages:
         record_invalid: 'La validation a échoué : %{errors}'

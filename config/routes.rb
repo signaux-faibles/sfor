@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     sessions: 'users/sessions'
   }
 
+  get 'unauthorized', to: 'pages#unauthorized'
+
   namespace :admin do
     resources :users do
       get '/impersonate' => "users#impersonate"
@@ -20,6 +22,7 @@ Rails.application.routes.draw do
     resources :companies
     resources :roles
     resources :entities
+    resources :networks
     resources :segments
     resources :departments
     resources :regions

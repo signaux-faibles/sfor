@@ -34,6 +34,7 @@ class UserDashboard < Administrate::BaseDashboard
     geo_access: Field::BelongsTo,
     entity: Field::BelongsTo,
     segment: Field::BelongsTo,
+    network: Field::BelongsTo,
     password: Field::String.with_options(
       searchable: false
     ),
@@ -54,7 +55,7 @@ class UserDashboard < Administrate::BaseDashboard
     last_name
     email
     segment
-    entity
+    network
     geo_access
   ].freeze
 
@@ -68,6 +69,7 @@ class UserDashboard < Administrate::BaseDashboard
     departments
     entity
     segment
+    network
     geo_access
     created_trackings
     participated_trackings
@@ -90,6 +92,7 @@ class UserDashboard < Administrate::BaseDashboard
     email
     segment
     entity
+    network
     geo_access
     participated_trackings
     referent_trackings

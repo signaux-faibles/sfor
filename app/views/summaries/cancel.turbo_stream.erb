@@ -1,4 +1,4 @@
-<%= turbo_stream.update @summary.is_codefi ? "codefi_summary" : "segment_summary" do %>
+<%= turbo_stream.update @summary.is_codefi ? "codefi_summary" : "network_summary" do %>
   <%= render partial: "summaries/summary", locals: { summary: @summary, is_codefi: @summary.is_codefi, establishment: @establishment, establishment_tracking: @establishment_tracking } %>
 <% end %>
 

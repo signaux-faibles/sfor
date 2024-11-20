@@ -19,6 +19,15 @@ namespace :users do
     users_header = users_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
     discard_header = discard_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
 
+    @codefi_network = Network.find_or_create_by(name: 'CODEFI')
+    @crp_network = Network.find_or_create_by(name: 'CRP')
+    @urssaf_network = Network.find_or_create_by(name: 'URSSAF')
+    @banque_de_france_network = Network.find_or_create_by(name: 'Banque de France')
+    @dgfip_network = Network.find_or_create_by(name: 'DGFIP')
+    @dgefp_network = Network.find_or_create_by(name: 'DGEFP')
+
+
+
     users_worksheet.sheet_data.rows[1..-1].each do |row|
       break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
 
@@ -54,8 +63,14 @@ namespace :users do
 
     # Segment association
     segment_name = row['SEGMENT']
-    segment = Segment.find_or_create_by(name: segment_name)
+    segment = Segment.find_or_create_by(name: segment_name) do |seg|
+      seg.network = determine_network_for_segment(segment_name)
+    end
     user.segment = segment
+
+    # Network associations
+    assign_networks(user, segment_name)
+
 
     # GeoAccess association
     geo_access_name = row['ACCES GEOGRAPHIQUE']
@@ -139,5 +154,35 @@ namespace :users do
     roles += scope unless scope == [""]
 
     roles.uniq
+  end
+
+  def assign_networks(user, segment_name)
+    user.networks << @codefi_network unless user.networks.include?(@codefi_network)
+
+    # Assign additional network based on the segment
+    network = determine_network_for_segment(segment_name)
+
+    if network
+      user.networks << network unless user.networks.include?(network)
+    else
+      puts "No network found for segment #{segment_name}."
+    end
+  end
+
+  def determine_network_for_segment(segment_name)
+    case segment_name.downcase
+    when 'crp', 'dreets_reseaucrp', 'finances'
+      @crp_network
+    when 'urssaf'
+      @urssaf_network
+    when 'bdf'
+      @banque_de_france_network
+    when 'dgfip'
+      @dgfip_network
+    when 'darp', 'ddets', 'dgefp', 'dreets'
+      @dgefp_network
+    else
+      nil
+    end
   end
 end

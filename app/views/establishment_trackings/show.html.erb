@@ -43,7 +43,7 @@
           <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">CODEFI</button>
         </li>
         <li role="presentation">
-          <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Mon réseau (<%= current_user.segment.name %>)</button>
+          <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Mon réseau (<%= current_user.network.name %>)</button>
         </li>
       </ul>
 
@@ -75,24 +75,24 @@
       <!-- Panel Mon réseau -->
       <div id="tabpanel-405-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-405" tabindex="0">
         <h3>Synthèse Mon réseau</h3>
-        <%= turbo_frame_tag "segment_summary" do %>
-          <% if @segment_summaries.any? %>
-            <%= render @segment_summaries.first %>
+        <%= turbo_frame_tag "network_summary" do %>
+          <% if @network_summaries.any? %>
+            <%= render @network_summaries.first %>
           <% else %>
-            <%= render "summaries/form", summary: Summary.new(segment: @user_segment), is_codefi: false %>
+            <%= render "summaries/form", summary: Summary.new(network: @user_network), is_codefi: false %>
           <% end %>
         <% end %>
 
         <hr class="fr-mt-2w fr-mb-2w" />
 
         <h3>Commentaires Mon réseau</h3>
-        <%= turbo_frame_tag "new_comment_segment" do %>
-          <%= render "comments/form", comment: Comment.new(segment: @user_segment), is_codefi: false %>
+        <%= turbo_frame_tag "new_comment_network" do %>
+          <%= render "comments/form", comment: Comment.new(network: @user_network), is_codefi: false %>
         <% end %>
 
-        <div id="comments_segment">
-          <%= turbo_frame_tag "comments_segment" do %>
-            <%= render @segment_comments %>
+        <div id="comments_network">
+          <%= turbo_frame_tag "comments_network" do %>
+            <%= render @network_comments %>
           <% end %>
         </div>
       </div>

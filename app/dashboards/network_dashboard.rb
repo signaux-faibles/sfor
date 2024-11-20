@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class SegmentDashboard < Administrate::BaseDashboard
+class NetworkDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -10,8 +10,8 @@ class SegmentDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
+    segments: Field::HasMany,
     users: Field::HasMany,
-    network: Field::BelongsTo,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -24,9 +24,8 @@ class SegmentDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
-    network
+    segments
     users
-    created_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -34,8 +33,7 @@ class SegmentDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     id
     name
-    network
-    users
+    segments
     created_at
     updated_at
   ].freeze
@@ -45,7 +43,7 @@ class SegmentDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    network
+    segments
   ].freeze
 
   # COLLECTION_FILTERS
@@ -60,10 +58,10 @@ class SegmentDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how segments are displayed
+  # Overwrite this method to customize how networks are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(segment)
-    segment.name
+  def display_resource(network)
+    network.name
   end
 end

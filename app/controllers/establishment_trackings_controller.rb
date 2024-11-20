@@ -27,23 +27,23 @@ class EstablishmentTrackingsController < ApplicationController
     end
   end
   def show
-    @user_segment = current_user.segment
+    @user_network = current_user.network
 
-    @segment_summaries = @establishment_tracking.summaries
-                                                .where(segment: @user_segment)
+    @network_summaries = @establishment_tracking.summaries
+                                                .where(network: @user_network)
                                                 .select { |summary| authorize summary }
 
     @codefi_summaries = @establishment_tracking.summaries
-                                               .where(segment_id: nil)
+                                               .where(network_id: nil)
                                                .select { |summary| authorize summary }
 
-    @segment_comments = @establishment_tracking.comments
-                                               .where(segment: @user_segment)
+    @network_comments = @establishment_tracking.comments
+                                               .where(network: @user_network)
                                                .order(created_at: :desc)
                                                .select { |comment| authorize comment }
 
     @codefi_comments = @establishment_tracking.comments
-                                              .where(segment_id: nil)
+                                              .where(network_id: nil)
                                               .order(created_at: :desc)
                                               .select { |comment| authorize comment }
 
@@ -160,7 +160,7 @@ class EstablishmentTrackingsController < ApplicationController
 
 
       establishment_trackings.each do |tracking|
-        summary = tracking.summaries.find_by(segment: @user_segment)
+        summary = tracking.summaries.find_by(network: @user_network)
         sheet.add_row [
                         tracking.establishment.raison_sociale,
                         tracking.establishment.siret,
