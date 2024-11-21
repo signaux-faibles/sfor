@@ -1,9 +1,9 @@
-<%= turbo_stream.prepend @comment.is_codefi ? "comments_codefi" : "comments_network" do %>
-  <%= render partial: "comments/comment", locals: { comment: @comment } %>
+<%= turbo_stream.prepend "comments_#{@comment.network.name.parameterize}" do %>
+  <%= render partial: "comments/comment", locals: { comment: @comment, network: @comment.network } %>
 <% end %>
 
-<%= turbo_stream.update "new_comment_#{network.name.parameterize}" do %>
-  <%= render "comments/form", comment: Comment.new, is_codefi: @comment.is_codefi %>
+<%= turbo_stream.update "new_comment_#{@comment.network.name.parameterize}" do %>
+  <%= render "comments/form", comment: Comment.new, network: @comment.network %>
 <% end %>
 
 <%= turbo_stream.replace "flash" do %>

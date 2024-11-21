@@ -4,11 +4,13 @@
   <div class="fr-input-group <%= 'fr-input-group--error' if comment.errors[:content].any? %>">
       <%= form.label :content, "Nouveau commentaire" %>
       <%= form.text_area :content, class: "fr-input" %>
-    <% if comment.errors[:content].any? %>
-      <p id=<%= "summary_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
-        <%= comment.errors[:content].first %>
-      </p>
-    <% end %>
+      <% comment.errors.each do |error| %>
+        <% if error.attribute == :content || error.attribute == :network %>
+          <p id=<%= "comment_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
+            <%= error.full_message %>
+          </p>
+        <% end %>
+      <% end %>
   </div>
 
   <%= form.submit "Sauvegarder", class: "fr-btn" %>

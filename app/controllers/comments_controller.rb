@@ -7,19 +7,20 @@ class CommentsController < ApplicationController
     @comment = @establishment_tracking.comments.new(comment_params)
     @comment.user = current_user
 
-    if params[:comment][:is_codefi] == "true"
-      @comment.segment = nil
-    else
-      @comment.segment = current_user.segment
+    puts "Comment"
+    puts @comment.inspect
+
+    if @comment.network.nil?
+      @comment.network = current_user.networks.where.not(name: 'codefi').first
     end
 
     if @comment.save
-      puts "ON SAVE"
       flash.now[:notice] = "Commentaire ajouté avec succès."
     else
-      render turbo_stream: turbo_stream.update("new_comment_#{params[:comment][:is_codefi] == 'true' ? 'codefi' : 'segment'}",
+      puts @comment.errors.full_messages
+      render turbo_stream: turbo_stream.update("new_comment_#{@comment.network.name.parameterize}",
                                                 partial: "comments/form",
-                                                locals: { comment: @comment, is_codefi: params[:comment][:is_codefi] == "true" },
+                                                locals: { comment: @comment, network: @comment.network },
                                                 status: :unprocessable_entity)
     end
   end
@@ -34,7 +35,7 @@ class CommentsController < ApplicationController
     else
       render turbo_stream: turbo_stream.update("comment_#{@comment.id}",
                                                 partial: "comments/form",
-                                                locals: { comment: @comment, is_codefi: @comment.is_codefi },
+                                                locals: { comment: @comment, network: @comment.network },
                                                 status: :unprocessable_entity)    end
   end
 
@@ -59,6 +60,6 @@ class CommentsController < ApplicationController
   end
 
   def comment_params
-    params.require(:comment).permit(:content, :is_codefi, :segment_id)
+    params.require(:comment).permit(:content, :network_id)
   end
 end
