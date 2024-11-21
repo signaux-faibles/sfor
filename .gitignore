@@ -36,3 +36,6 @@
 
 # Ignore Jetbrains config
 .idea/*
+
+# Ignore test coverage files
+coverage

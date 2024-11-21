@@ -88,8 +88,6 @@ class User < ApplicationRecord
   end
 
   def validate_network_memberships
-    puts "RESEAUX ACTUELS"
-    puts networks.inspect
     if networks.size > 2
       errors.add(:networks, "Un utilisateur ne peut appartenir qu'à deux réseaux dont le réseau codefi")
     end

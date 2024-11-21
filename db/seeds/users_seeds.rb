@@ -49,8 +49,6 @@ josquin = User.new(
 
   user.networks = [codefi_network, sf_network] # Assign both networks at once
   user.save
-  puts user.errors.full_messages
-
 end
 
 19.times do

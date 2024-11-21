@@ -78,7 +78,7 @@
 
           <div id="comments_<%= network.name.parameterize %>">
             <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
-              <% if network.name == 'Codefi' %>
+              <% if network.name.downcase == 'codefi' %>
                 <%= render @codefi_comments, network: network %>
               <% else %>
                 <%= render @user_network_comments, network: network %>

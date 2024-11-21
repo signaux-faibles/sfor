@@ -11,6 +11,9 @@ fr:
       summary:
         network: Réseau
         content: Contenu
+      comment:
+        network: Réseau
+        content: Contenu
       establishment_tracking:
         referents: Assignés
         state:
