@@ -34,6 +34,39 @@ charles = User.new(
   geo_access: geo_access
 )
 
+anna = User.new(
+  email: 'anna.ouhayoun@beta.gouv.fr',
+  password: 'password',
+  password_confirmation: 'password',
+  first_name: 'Anna',
+  last_name: 'Ouhayoun',
+  entity: sf_entity,
+  segment: sf_segment,
+  geo_access: geo_access
+)
+
+loic = User.new(
+  email: 'loic.poillion@dgfip.finances.gouv.fr',
+  password: 'password',
+  password_confirmation: 'password',
+  first_name: 'Loïc',
+  last_name: 'Poillon',
+  entity: sf_entity,
+  segment: sf_segment,
+  geo_access: geo_access
+)
+
+esther = User.new(
+  email: 'esther.spindler@beta.gouv.fr',
+  password: 'password',
+  password_confirmation: 'password',
+  first_name: 'Esther',
+  last_name: 'Spindler',
+  entity: sf_entity,
+  segment: sf_segment,
+  geo_access: geo_access
+)
+
 josquin = User.new(
   email: 'josquin.cornec@beta.gouv.fr',
   password: 'password',
@@ -45,7 +78,7 @@ josquin = User.new(
   geo_access: geo_access
 )
 
-[charles, josquin].each do |user|
+[charles, josquin, anna, esther, loic].each do |user|
 
   user.networks = [codefi_network, sf_network] # Assign both networks at once
   user.save
