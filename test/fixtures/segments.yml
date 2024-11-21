@@ -1,5 +1,8 @@
 segment_crp:
   name: "crp"
+  network: network_crp
 
 segment_urssaf:
   name: "urssaf"
+  network: network_urssaf
+

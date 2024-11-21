@@ -5,6 +5,9 @@ user_crp_paris:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  networks:
+    - network_crp
+    - network_codefi
 
 user_crp_paris_2:
   email: test2@crp_paris.com
@@ -13,6 +16,9 @@ user_crp_paris_2:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  networks:
+    - network_crp
+    - network_codefi
 
 user_crp_finistere:
   email: test@crp_finistere.com
@@ -21,6 +27,9 @@ user_crp_finistere:
   entity: entity_dreets
   geo_access: geo_access_finistere
   departments: department_finistere
+  networks:
+    - network_crp
+    - network_codefi
 
 user_urssaf_paris:
   email: test@urssaf_paris.com
@@ -29,6 +38,9 @@ user_urssaf_paris:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  networks:
+    - network_urssaf
+    - network_codefi
 
 user_urssaf_finistere:
   email: test@urssaf_finistere.com
@@ -37,3 +49,6 @@ user_urssaf_finistere:
   entity: entity_dreets
   geo_access: geo_access_finistere
   departments: department_finistere
+  networks:
+    - network_urssaf
+    - network_codefi

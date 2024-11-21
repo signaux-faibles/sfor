@@ -1,0 +1,5 @@
+comment_paris_crp:
+  content: 'Dummy comment content'
+  establishment_tracking: establishment_tracking_paris
+  network: network_crp
+  user: user_crp_paris

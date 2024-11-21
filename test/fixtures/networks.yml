@@ -1,7 +1,8 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+network_crp:
+  name: "CRP"
 
-one:
-  name: MyString
+network_urssaf:
+  name: "URSSAF"
 
-two:
-  name: MyString
+network_codefi:
+  name: "CODEFI"

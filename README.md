@@ -121,5 +121,7 @@ Pour lancer les tests en local, utiliser la commande :
 docker compose run test_web rails test
 ```
 
+La couverture des tests est calculée par la gem `simplecov` et sera affichée à la fin des tests. Un fichier récapitulatif est disponible dans le dossier `coverage`
+
 
 

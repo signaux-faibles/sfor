@@ -1,4 +1,4 @@
 summary_paris_crp:
   content: 'Dummy content'
   establishment_tracking: establishment_tracking_paris
-  segment: segment_crp
+  network: network_codefi
