@@ -3,7 +3,13 @@ class EstablishmentTrackingsController < ApplicationController
   before_action :set_tracking, only: %i[show destroy edit update]
 
   def index
-    @q = policy_scope(EstablishmentTracking).ransack(params[:q])
+    # Storing user's layout choice (cards or table)
+    @current_view = params.dig(:q, :view) || "table"
+
+    # Removing `view` from `q` so it doesn't affect Ransack
+    clean_params = params[:q]&.except(:view)
+
+    @q = EstablishmentTracking.ransack(clean_params)
 
     if params.dig(:q, :my_tracking) == '1'
       @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)

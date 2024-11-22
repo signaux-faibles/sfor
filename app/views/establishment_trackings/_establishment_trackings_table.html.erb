@@ -4,18 +4,43 @@
   <p>Aucun accompagnement trouvé pour cette combinaison de filtres.</p>
 <% end %>
 
-<%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!), class: 'fr-link--download fr-link', download: "true" do %>
-  Télécharger les <%= @paginated_establishment_trackings.total_count %> accompagnements retrouvés
-  <span class="fr-link__detail">XLS – 61,88 ko</span>
-<% end %>
+<div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+  <div class="fr-col-6">
+    <%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!), class: 'fr-link--download fr-link', download: "true" do %>
+      Télécharger les <%= @paginated_establishment_trackings.total_count %> accompagnements retrouvés
+      <span class="fr-link__detail">XLS</span>
+    <% end %>
+  </div>
+  <div class="fr-col-6">
+    <div class="fr-grid-row fr-grid-row--right">
+      <fieldset class="fr-segmented fr-segmented--sm">
+        <div class="fr-segmented__elements">
+          <div class="fr-segmented__element">
+            <input type="radio" id="view-table" name="q[toto]" value="table"
+                   data-action="view-toggle#change" data-view-toggle-target="radioInput"
+                   <%= @current_view == "table" ? "checked" : "" %>>
+            <label class="fr-label fr-icon-table-line" for="view-table">Tableau</label>
+          </div>
+          <div class="fr-segmented__element">
+            <input type="radio" id="view-cards" name="q[toto]" value="cards"
+                   data-action="view-toggle#change" data-view-toggle-target="radioInput"
+                   <%= @current_view == "cards" ? "checked" : "" %>>
+            <label class="fr-label fr-icon-layout-grid-fill" for="view-cards">Vignettes</label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</div>
+<div data-view-toggle-target="tableView" style="<%= @current_view == 'cards' ? 'display: none;' : 'display: block;' %>">
 
-<div class="fr-table" id="table-md-component">
-  <div class="fr-table__wrapper">
-    <div class="fr-table__container">
-      <div class="fr-table__content">
-        <table id="table-md">
-          <% if @paginated_establishment_trackings.any? %>
-            <thead>
+  <div class="fr-table" id="table-md-component">
+    <div class="fr-table__wrapper">
+      <div class="fr-table__container">
+        <div class="fr-table__content">
+          <table id="table-md">
+            <% if @paginated_establishment_trackings.any? %>
+              <thead>
               <tr>
                 <th>Raison sociale</th>
                 <th>Siret</th>
@@ -25,8 +50,8 @@
                 <th>Étiquettes</th>
                 <th colspan="2">Actions</th>
               </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
               <% @paginated_establishment_trackings.each do |tracking| %>
                 <tr>
                   <td><%= tracking.establishment.raison_sociale %></td>
@@ -40,13 +65,47 @@
                   </td>
                 </tr>
               <% end %>
-            </tbody>
-          <% end %>
-        </table>
-
+              </tbody>
+            <% end %>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
-<%= paginate @paginated_establishment_trackings %>
+
+<div data-view-toggle-target="cardsView" style="<%= @current_view == 'cards' ? 'display: flex;' : 'display: none;' %>">
+
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <% @paginated_establishment_trackings.each do |tracking| %>
+      <div class="fr-col-sm-4 fr-col">
+        <div class="fr-card fr-enlarge-link">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <h3 class="fr-card__title">
+                <%= link_to tracking.establishment.raison_sociale, [tracking.establishment, tracking] %>
+              </h3>
+              <ul class="fr-card__desc" style="list-style:none;">
+                <li>SIRET: <%= tracking.establishment.siret %></li>
+                <li>Assignés: <%= tracking.referents.map(&:full_name).join(', ') %></li>
+                <li>Département: <%= tracking.establishment.department.name %></li>
+              </ul>
+              <div class="fr-card__start">
+                <ul class="fr-badges-group">
+                  <li>
+                    <%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="fr-mt-3w fr-mb-3w" data-view-toggle-target="pagination">
+  <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit! } %>
+</div>
 

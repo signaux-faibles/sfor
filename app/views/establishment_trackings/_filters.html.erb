@@ -1,7 +1,8 @@
 <div class="fr-card">
   <div class="fr-container">
   </div>
-  <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form" } do |f| %>
+  <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
+    <%= f.hidden_field :view, value: @current_view || "table", data: { view_toggle_target: "hiddenInput" } %>
     <div class="fr-container fr-mb-3w fr-mt-3w">
       <h4>Rechercher un accompagnement</h4>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
@@ -31,13 +32,13 @@
         </div>
       </div>
       <!-- Hidden Filters -->
-      <div data-controller="toggle">
+      <div data-controller="filters-toggle">
         <%= f.hidden_field :filters_open,
                            value: params.dig(:q, :filters_open) || "false",
                            id: "filters_open",
-                           data: { toggle_target: "filtersOpenInput" } %>
+                           data: { filters_toggle_target: "filtersOpenInput" } %>
 
-        <div data-toggle-target="hiddenFilters" style="display: <%= params.dig(:q, :filters_open) == "true" ? "block" : "none" %>">
+        <div data-filters-toggle-target="hiddenFilters" style="display: <%= params.dig(:q, :filters_open) == "true" ? "block" : "none" %>">
 
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
             <div class="fr-col-3">
@@ -90,7 +91,7 @@
           <div class="fr-input-group">
             <%= button_tag type: "button",
                            class: "fr-btn fr-btn--tertiary fr-btn--icon-left",
-                           data: { action: "toggle#toggle", toggle_target: "toggleButton" } do %>
+                           data: { action: "filters-toggle#toggle", filters_toggle_target: "toggleButton" } do %>
               <span class="<%= params.dig(:q, :filters_open) == "true" ? 'fr-icon-arrow-up-line' : 'fr-icon-arrow-down-line' %>" aria-hidden="true"></span>
               <%= params.dig(:q, :filters_open) == "true" ? 'Réduire les critères supplémentaires' : 'Afficher des critères supplémentaires' %>
             <% end %>
