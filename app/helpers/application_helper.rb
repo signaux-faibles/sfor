@@ -76,4 +76,17 @@ module ApplicationHelper
 
     items
   end
+
+  def badge_class_for(state)
+    case state
+    when 'En cours'
+      'fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon'
+    when 'Sous surveillance'
+      'fr-badge fr-badge--warning fr-badge--sm fr-badge--no-icon'
+    when 'Terminé'
+      'fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon'
+    else
+      'fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon'
+    end
+  end
 end

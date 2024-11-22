@@ -1,45 +1,81 @@
-<h3>Filtres</h3>
-<%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form" } do |f| %>
-    <div class="fr-checkbox-group fr-mb-2w">
-      <%= check_box_tag "q[my_tracking]", "1", params.dig(:q, :my_tracking) == "1", class: "fr-checkbox" %>
-      <%= f.label :my_tracking, "Mes accompagnements", class: 'fr-label' %>
+<div class="fr-card">
+  <div class="fr-container">
+  </div>
+  <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form" } do |f| %>
+    <div class="fr-container fr-mb-3w fr-mt-3w">
+      <h4>Rechercher un accompagnement</h4>
+
+      <div class="fr-grid-row fr-grid-row--gutters">
+
+        <div class="fr-col-3">
+          <div class="fr-input-group">
+            <%= f.label :establishment_raison_sociale_cont, "Raison sociale" %>
+            <%= f.text_field :establishment_raison_sociale_cont, class: "fr-input" %>
+          </div>
+        </div>
+
+        <div class="fr-col-3">
+          <div class="fr-input-group">
+            <%= f.label :establishment_siret_cont, "SIRET" %>
+            <%= f.text_field :establishment_siret_cont, class: "fr-input" %>
+          </div>
+        </div>
+
+        <div class="fr-col-3">
+          <div class="fr-input-group">
+            <%= f.label :establishment_department_id_in, "Départements" %>
+            <%= f.collection_select :establishment_department_id_in, current_user.geo_access.departments, :id, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+          </div>
+        </div>
+
+        <div class="fr-col-3">
+          <div class="fr-input-group">
+            <%= f.label :state_in, "Statuts" %>
+            <%= f.collection_select :state_in, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, :last, :first, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+          </div>
+        </div>
+      </div>
+      <!-- Hidden Filters -->
+      <div data-controller="toggle">
+
+        <div data-toggle-target="hiddenFilters" style="display: none">
+          <div class="fr-grid-row fr-grid-row--gutters">
+
+          <div class="fr-col-3">
+            <div class="fr-checkbox-group fr-mb-2w">
+              <%= check_box_tag "q[my_tracking]", "1", params.dig(:q, :my_tracking) == "1", class: "fr-checkbox" %>
+              <%= f.label :my_tracking, "Mes accompagnements", class: 'fr-label' %>
+            </div>
+          </div>
+
+          <div class="fr-col-3">
+            <div class="fr-input-group">
+              <%= f.label :tracking_labels_id_in, "Étiquettes" %>
+              <%= f.select :tracking_labels_id_in,
+                           grouped_labels_for_select,
+                           {},
+                           { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+            </div>
+          </div>
+
+          <div class="fr-col-3">
+            <div class="fr-input-group">
+              <%= f.label :start_date_gteq, "Date de début à partir de" %>
+              <%= f.date_field :start_date_gteq, class: "fr-input" %>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="fr-grid-row fr-grid-row--right">
+          <div class="fr-input-group">
+            <%= button_tag "Afficher plus de filtres", type: "button", class: "fr-btn fr-btn--tertiary", data: { action: "toggle#toggle" } %>
+            <%= f.submit "Filtrer", class: "fr-btn" %>
+            <%= link_to "Réinitialiser les filtres", establishment_trackings_path, class: "fr-btn fr-btn--secondary" %>
+          </div>
+        </div>
+      </div>
     </div>
+  <% end %>
 
-  <div class="fr-input-group">
-    <%= f.label :establishment_department_id_in, "Départements" %>
-    <%= f.collection_select :establishment_department_id_in, current_user.geo_access.departments, :id, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
-  </div>
-
-  <div class="fr-input-group">
-    <%= f.label :state_in, "Statuts" %>
-    <%= f.collection_select :state_in, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, :last, :first, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
-  </div>
-
-  <div class="fr-input-group">
-    <%= f.label :tracking_labels_id_in, "Étiquettes" %>
-    <%= f.select :tracking_labels_id_in,
-                 grouped_labels_for_select,
-                 {},
-                 { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
-  </div>
-
-  <div class="fr-input-group">
-    <%= f.label :establishment_siret_cont, "SIRET" %>
-    <%= f.text_field :establishment_siret_cont, class: "fr-input" %>
-  </div>
-
-  <div class="fr-input-group">
-    <%= f.label :establishment_raison_sociale_cont, "Raison sociale" %>
-    <%= f.text_field :establishment_raison_sociale_cont, class: "fr-input" %>
-  </div>
-
-  <div class="fr-input-group">
-    <%= f.label :start_date_gteq, "Date de début à partir de" %>
-    <%= f.date_field :start_date_gteq, class: "fr-input" %>
-  </div>
-
-  <div class="fr-input-group">
-    <%= f.submit "Filtrer", class: "fr-btn" %>
-    <%= link_to "Réinitialiser les filtres", establishment_trackings_path, class: "fr-btn fr-btn--secondary" %>
-  </div>
-<% end %>
+</div>
