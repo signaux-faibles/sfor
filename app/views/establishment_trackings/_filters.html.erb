@@ -4,30 +4,25 @@
   <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form" } do |f| %>
     <div class="fr-container fr-mb-3w fr-mt-3w">
       <h4>Rechercher un accompagnement</h4>
-
-      <div class="fr-grid-row fr-grid-row--gutters">
-
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
         <div class="fr-col-3">
           <div class="fr-input-group">
             <%= f.label :establishment_raison_sociale_cont, "Raison sociale" %>
             <%= f.text_field :establishment_raison_sociale_cont, class: "fr-input" %>
           </div>
         </div>
-
         <div class="fr-col-3">
           <div class="fr-input-group">
             <%= f.label :establishment_siret_cont, "SIRET" %>
             <%= f.text_field :establishment_siret_cont, class: "fr-input" %>
           </div>
         </div>
-
         <div class="fr-col-3">
           <div class="fr-input-group">
             <%= f.label :establishment_department_id_in, "Départements" %>
             <%= f.collection_select :establishment_department_id_in, current_user.geo_access.departments, :id, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
-
         <div class="fr-col-3">
           <div class="fr-input-group">
             <%= f.label :state_in, "Statuts" %>
@@ -37,39 +32,68 @@
       </div>
       <!-- Hidden Filters -->
       <div data-controller="toggle">
+        <%= f.hidden_field :filters_open,
+                           value: params.dig(:q, :filters_open) || "false",
+                           id: "filters_open",
+                           data: { toggle_target: "filtersOpenInput" } %>
 
-        <div data-toggle-target="hiddenFilters" style="display: none">
-          <div class="fr-grid-row fr-grid-row--gutters">
+        <div data-toggle-target="hiddenFilters" style="display: <%= params.dig(:q, :filters_open) == "true" ? "block" : "none" %>">
 
-          <div class="fr-col-3">
-            <div class="fr-checkbox-group fr-mb-2w">
-              <%= check_box_tag "q[my_tracking]", "1", params.dig(:q, :my_tracking) == "1", class: "fr-checkbox" %>
-              <%= f.label :my_tracking, "Mes accompagnements", class: 'fr-label' %>
+          <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+            <div class="fr-col-3">
+              <div class="fr-input-group">
+                <%= f.label :tracking_labels_id_in, "Étiquettes" %>
+                <%= f.select :tracking_labels_id_in,
+                             grouped_labels_for_select,
+                             {},
+                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+              </div>
+            </div>
+            <div class="fr-col-3">
+              <div class="fr-input-group">
+                <%= f.label :start_date_gteq, "Date de début à partir de" %>
+                <%= f.date_field :start_date_gteq, class: "fr-input" %>
+              </div>
             </div>
           </div>
-
-          <div class="fr-col-3">
-            <div class="fr-input-group">
-              <%= f.label :tracking_labels_id_in, "Étiquettes" %>
-              <%= f.select :tracking_labels_id_in,
-                           grouped_labels_for_select,
-                           {},
-                           { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
-            </div>
-          </div>
-
-          <div class="fr-col-3">
-            <div class="fr-input-group">
-              <%= f.label :start_date_gteq, "Date de début à partir de" %>
-              <%= f.date_field :start_date_gteq, class: "fr-input" %>
+          <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+            <div class="fr-col-12">
+              <fieldset class="fr-fieldset" id="radio-inline" aria-labelledby="radio-inline-legend radio-inline-messages">
+                <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-inline-legend">
+                  Afficher
+                </legend>
+                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                  <div class="fr-radio-group fr-mb-2w">
+                    <input type="radio" id="radio-inline-1" name="q[my_tracking]" value="1"
+                           class="fr-radio" <%= params.dig(:q, :my_tracking) == "1" ? "checked" : "" %>>
+                    <label class="fr-label" for="radio-inline-1">
+                      Mes accompagnements
+                    </label>
+                  </div>
+                </div>
+                <div class="fr-fieldset__element fr-fieldset__element--inline">
+                  <div class="fr-radio-group fr-mb-2w">
+                    <input type="radio" id="radio-inline-2" name="q[my_tracking]" value="0"
+                           class="fr-radio" <%= params.dig(:q, :my_tracking) != "1" ? "checked" : "" %>>
+                    <label class="fr-label" for="radio-inline-2">
+                      Tous les accompagnements
+                    </label>
+                  </div>
+                </div>
+                <div class="fr-messages-group" id="radio-inline-messages" aria-live="assertive">
+                </div>
+              </fieldset>
             </div>
           </div>
         </div>
-        </div>
-
         <div class="fr-grid-row fr-grid-row--right">
           <div class="fr-input-group">
-            <%= button_tag "Afficher plus de filtres", type: "button", class: "fr-btn fr-btn--tertiary", data: { action: "toggle#toggle" } %>
+            <%= button_tag type: "button",
+                           class: "fr-btn fr-btn--tertiary fr-btn--icon-left",
+                           data: { action: "toggle#toggle", toggle_target: "toggleButton" } do %>
+              <span class="<%= params.dig(:q, :filters_open) == "true" ? 'fr-icon-arrow-up-line' : 'fr-icon-arrow-down-line' %>" aria-hidden="true"></span>
+              <%= params.dig(:q, :filters_open) == "true" ? 'Réduire les critères supplémentaires' : 'Afficher des critères supplémentaires' %>
+            <% end %>
             <%= f.submit "Filtrer", class: "fr-btn" %>
             <%= link_to "Réinitialiser les filtres", establishment_trackings_path, class: "fr-btn fr-btn--secondary" %>
           </div>
@@ -77,5 +101,4 @@
       </div>
     </div>
   <% end %>
-
 </div>
