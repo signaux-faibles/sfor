@@ -17,7 +17,6 @@ class CommentPolicy < ApplicationPolicy
   end
 
   def edit?
-    puts "checking edition policy"
     user == record.user
   end
 

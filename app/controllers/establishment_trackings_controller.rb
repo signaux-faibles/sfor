@@ -9,7 +9,7 @@ class EstablishmentTrackingsController < ApplicationController
     # Removing `view` from `q` so it doesn't affect Ransack
     clean_params = params[:q]&.except(:view)
 
-    @q = EstablishmentTracking.ransack(clean_params)
+    @q =  policy_scope(EstablishmentTracking).ransack(clean_params)
 
     if params.dig(:q, :my_tracking) == '1'
       @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)

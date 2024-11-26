@@ -7,9 +7,6 @@ class CommentsController < ApplicationController
     @comment = @establishment_tracking.comments.new(comment_params)
     @comment.user = current_user
 
-    puts "Comment"
-    puts @comment.inspect
-
     if @comment.network.nil?
       @comment.network = current_user.networks.where.not(name: 'codefi').first
     end
