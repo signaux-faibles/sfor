@@ -44,51 +44,53 @@ namespace :users do
   end
 
   def create_or_update_user(row)
-    email = row['ADRESSE MAIL']&.strip&.downcase
-    puts "Creating new user: #{email}"
-    return if %w[admin keycloakadmin].include?(email)
-
-    user = User.find_or_initialize_by(email: email)
-    user.first_name = row['PRENOM']
-    user.last_name = row['NOM']
-    user.level = row['NIVEAU HABILITATION']
-    user.description = row['FONCTION']
-
-    # Entity association
-    entity_name = row['ENTITES']
-    entity = Entity.find_or_create_by(name: entity_name)
-    user.entity = entity
-
-    # Segment association
     segment_name = row['SEGMENT']
-    segment = Segment.find_or_create_by(name: segment_name) do |seg|
-      seg.network = determine_network_for_segment(segment_name)
-    end
-    user.segment = segment
+    if ['crp', 'dreets_reseaucrp', 'finances'].include? segment_name
+      email = row['ADRESSE MAIL']&.strip&.downcase
+      puts "Creating new user: #{email}"
+      return if %w[admin keycloakadmin].include?(email)
 
-    # Network associations
-    assign_networks(user, segment_name)
+      user = User.find_or_initialize_by(email: email)
+      user.first_name = row['PRENOM']
+      user.last_name = row['NOM']
+      user.level = row['NIVEAU HABILITATION']
+      user.description = row['FONCTION']
+
+      # Entity association
+      entity_name = row['ENTITES']
+      entity = Entity.find_or_create_by(name: entity_name)
+      user.entity = entity
+
+      # Segment association
+      segment = Segment.find_or_create_by(name: segment_name) do |seg|
+        seg.network = determine_network_for_segment(segment_name)
+      end
+      user.segment = segment
+
+      # Network associations
+      assign_networks(user, segment_name)
 
 
-    # GeoAccess association
-    geo_access_name = row['ACCES GEOGRAPHIQUE']
+      # GeoAccess association
+      geo_access_name = row['ACCES GEOGRAPHIQUE']
 
-    assign_geo_access(user, geo_access_name)
+      assign_geo_access(user, geo_access_name)
 
-    # Password management for Devise
-    if user.new_record?
-      user.password = Devise.friendly_token[0, 20]
-    end
+      # Password management for Devise
+      if user.new_record?
+        user.password = Devise.friendly_token[0, 20]
+      end
 
-    # Assign roles the same way IamUpdater does it (signaux-faibles/IamUpdater/blob/master/user.go)
-    roles = determine_roles(user, row)
-    user.roles = Role.where(name: roles)
+      # Assign roles the same way IamUpdater does it (signaux-faibles/IamUpdater/blob/master/user.go)
+      roles = determine_roles(user, row)
+      user.roles = Role.where(name: roles)
 
-    # Save the user and handle any errors
-    if user.save
-      puts "User #{user.email} saved successfully"
-    else
-      puts "Error creating/updating user #{user.email}: #{user.errors.full_messages.join(', ')}"
+      # Save the user and handle any errors
+      if user.save
+        puts "User #{user.email} saved successfully"
+      else
+        puts "Error creating/updating user #{user.email}: #{user.errors.full_messages.join(', ')}"
+      end
     end
   end
 

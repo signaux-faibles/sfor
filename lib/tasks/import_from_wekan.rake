@@ -58,7 +58,6 @@ def create_establishment_tracking(card, creator, establishment, lists, siret, us
     establishment_tracking.contact = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }[:value]
   end
 
-
   if establishment_tracking.save
     begin
       establishment_tracking.discard!
@@ -81,7 +80,7 @@ end
 def create_summary(card, establishment_tracking, siret)
   summary = Summary.find_or_initialize_by(establishment_tracking: establishment_tracking)
   summary.content = card[:description]
-  summary.segment = Segment.find_by(name: "sf") # TODO à changer en crp
+  summary.network = Network.find_by(name: "CRP")
 
   if summary.save
     summary.update_column(:updated_at, card[:modifiedAt])
@@ -95,11 +94,10 @@ def create_all_comments(card, card_comments, establishment_tracking, siret, user
   card_comments.find({ cardId: card[:_id] }).each do |card_comment|
     comment = Comment.find_or_initialize_by(created_at: card_comment[:createdAt])
     comment.establishment_tracking = establishment_tracking
-    comment.segment = Segment.find_by(name: "sf") # TODO à changer en crp
+    comment.network = Network.find_by(name: "CRP")
     comment_creator_mongo = users.find({ "_id": card_comment[:userId] }).first
     comment.user = User.find_by(email: comment_creator_mongo[:username])
     comment.content = card_comment[:text]
-
 
     if comment.save
       comment.update_column(:created_at, card_comment[:createdAt])
@@ -122,131 +120,82 @@ def create_all_labels(board_label, card, establishment_tracking)
           puts "error creating tracking_label #{tracking_label.full_messages}"
         end
 
-       unless establishment_tracking.save
+        unless establishment_tracking.save
           puts "error creating establishment_tracking #{establishment_tracking.full_messages}"
-       end
+        end
       end
     end
   end
 end
 
 namespace :import_from_wekan do
-  desc "Import user data from wekan (MongoDB) to rails users table (PostgreSQL)"
-  #TODO Do we really need this ? We can import users from the habilitations file
-  task users: :environment do
-    mongo_host = ENV['MONGO_DB_HOST'] || 'wekan-db' # The name of the wekan db podman container in local dev mode
+  desc "Import cards from Wekan and create corresponding Rails models"
+  task cards: :environment do
+    mongo_host = ENV['MONGO_DB_HOST'] || '10.2.0.231'
     mongo_port = ENV['MONGO_DB_PORT'] || '27017'
     mongo_db_name = ENV['MONGO_DB_NAME'] || 'test'
+    mongo_user = ENV['MONGO_DB_USER'] || 'wekan.racine'
+    mongo_password = ENV['MONGO_DB_PASSWORD'] || 'XXX'
 
-    client = Mongo::Client.new([ "#{mongo_host}:#{mongo_port}" ], database: mongo_db_name)
-    mongo_collection = client[:users]
+    client = Mongo::Client.new(["#{mongo_host}:#{mongo_port}"], database: mongo_db_name, user: mongo_user, password: mongo_password, auth_source: 'admin')
 
-    # Loop through each user document in the wekan MongoDB collection
-    mongo_collection.find.each do |document|
+    boards = client[:boards]
+    swimlanes = client[:swimlanes]
+    cards = client[:cards]
+    users = client[:users]
+    lists = client[:lists]
+    card_comments = client[:card_comments]
+    custom_fields = client[:customFields]
 
-      # Looks like the uid in keycloak is the user email
-      email = document.dig('services', 'oidc', 'id')
-      next unless email
+    sf_siret_regex = /(\d{14})/
+    extract_department_from_swimlane_title_regex = /(\d+[A|B]?) \(.*\)/
 
-      full_name = document.dig('profile', 'fullname') || ''
-      first_name, last_name = full_name.split(' ', 2)
-      first_name ||= ''
-      last_name ||= ''
+    # boards_ids = boards.find({ title: { "$regex": '^Tableau CRP HDF' } }).to_a.map { |board| board[:_id]}
+    boards_ids = boards.find({ title: { "$regex": '^Tableau CRP' } }).to_a.map { |board| board[:_id] }
 
-      # Find or initialize a PostgreSQL user by email
-      user = User.find_or_initialize_by(email: email)
-      user.provider = 'oidc'
-      user.email = document.dig('services', 'oidc', 'id')
-      user.first_name = first_name
-      user.last_name = last_name
+    unique_emails = Set.new
 
-      # Store the MongoDB _id to then link companies and users through establishment_follower in another rake task
-      user.wekan_document_id = document['_id'].to_s
+    swimlanes.find({ boardId: { "$in": boards_ids } }).sort(title: 1).each do |swimlane|
+      puts swimlane[:title]
+      board_label = boards.find(_id: swimlane[:boardId]).first[:labels].map { |obj| [obj["_id"], obj["name"]] }.to_h
+      department_string = swimlane[:title].match(extract_department_from_swimlane_title_regex)[1]
+      department = Department.find_by(code: department_string)
+      cards.find({ swimlaneId: swimlane[:_id] }).each do |card|
+        custom_field_siret = card[:customFields].find { |customField| customField["value"] =~ sf_siret_regex }&.dig(:value)
 
-      user.password = Devise.friendly_token[0, 20] if user.new_record?
+        if custom_field_siret&.match(sf_siret_regex)
+          siret = custom_field_siret&.match(sf_siret_regex)[1]
+          siren = siret[0, 9]
 
-      if user.save
-        puts "Imported wekan user: #{user.email}"
-      else
-        puts "Failed to import wekan user: #{user.email} - #{user.errors.full_messages.join(', ')}"
-      end
-    end
+          company = create_company(card, department, siren, siret)
 
-    puts "Wekan data import completed."
-  end
+          establishment = create_establishment(card, company, department, siren, siret)
 
-  # Code de migration oneshot dirty, bourré de N+1, à ne pas prendre exemple !
-  namespace :import_from_wekan do
-    desc "Import cards from Wekan and create corresponding Rails models"
-    task cards: :environment do
-      mongo_host = ENV['MONGO_DB_HOST'] || '10.2.0.231'
-      mongo_port = ENV['MONGO_DB_PORT'] || '27017'
-      mongo_db_name = ENV['MONGO_DB_NAME'] || 'test'
-      mongo_user = ENV['MONGO_DB_USER'] || 'wekan.racine'
-      mongo_password = ENV['MONGO_DB_PASSWORD'] || 'XXX'
+          mongo_creator = users.find({ "_id": card[:userId] }).first
+          creator = User.find_by(email: mongo_creator[:username])
 
+          if creator
+            establishment_tracking = create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
+            create_summary(card, establishment_tracking, siret)
 
-
-
-      client = Mongo::Client.new(["#{mongo_host}:#{mongo_port}"], database: mongo_db_name, user: mongo_user, password: mongo_password, auth_source: 'admin')
-
-      boards = client[:boards]
-      swimlanes = client[:swimlanes]
-      cards = client[:cards]
-      users = client[:users]
-      lists = client[:lists]
-      card_comments = client[:card_comments]
-      custom_fields = client[:customFields]
-
-      sf_siret_regex = /(\d{14})/
-      extract_department_from_swimlane_title_regex = /(\d+[A|B]?) \(.*\)/
-
-      # boards_ids = boards.find({ title: { "$regex": '^Tableau CRP HDF' } }).to_a.map { |board| board[:_id]}
-      boards_ids = boards.find({ title: { "$regex": '^Tableau CRP' } }).to_a.map { |board| board[:_id]}
-
-      unique_emails = Set.new
-
-      swimlanes.find({ boardId: { "$in": boards_ids } }).sort(title: 1).each do |swimlane|
-        puts swimlane[:title]
-        board_label = boards.find(_id: swimlane[:boardId]).first[:labels].map { |obj| [obj["_id"], obj["name"]] }.to_h
-        department_string = swimlane[:title].match(extract_department_from_swimlane_title_regex)[1]
-        department = Department.find_by(code: department_string)
-        cards.find({ swimlaneId: swimlane[:_id]}).each do |card|
-          custom_field_siret = card[:customFields].find { |customField| customField["value"] =~ sf_siret_regex }&.dig(:value)
-
-          if custom_field_siret&.match(sf_siret_regex)
-            siret = custom_field_siret&.match(sf_siret_regex)[1]
-            siren = siret[0, 9]
-
-            company = create_company(card, department, siren, siret)
-
-            establishment = create_establishment(card, company, department, siren, siret)
-
-            mongo_creator = users.find({"_id": card[:userId]}).first
-            creator = User.find_by(email: mongo_creator[:username])
-
-            if creator
-              establishment_tracking = create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
-              create_summary(card, establishment_tracking, siret)
-
-              create_all_comments(card, card_comments, establishment_tracking, siret, users)
-              create_all_labels(board_label, card, establishment_tracking)
-            else
-              unique_emails.add(mongo_creator[:username])
-            end
-
+            create_all_comments(card, card_comments, establishment_tracking, siret, users)
+            create_all_labels(board_label, card, establishment_tracking)
           else
-            puts "Aucun siret correspondant trouvé pour l'entreprise #{card[:title]}"
-            # puts card[:customFields]
-            # puts card[:customFields].find { |customField| customField["value"] =~ sf_siret_regex }
+            unique_emails.add(mongo_creator[:username])
           end
+
+        else
+          puts "Aucun siret correspondant trouvé pour l'entreprise #{card[:title]}"
+          # puts card[:customFields]
+          # puts card[:customFields].find { |customField| customField["value"] =~ sf_siret_regex }
         end
       end
-      puts "Les utilisateurs qui n'existent pas dans rails sont :\n #{unique_emails}"
-
-      client.close
-
-      puts "Wekan crp cards import completed!"
     end
+    puts "Les utilisateurs qui n'existent pas dans rails sont :\n #{unique_emails}"
+
+    client.close
+
+    puts "Wekan crp cards import completed!"
   end
 end
+
