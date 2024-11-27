@@ -1,8 +1,16 @@
 <%= turbo_frame_tag dom_id(comment) do %>
-  <hr class="fr-mt-4w fr-mb-4w" />
-  <p><%= simple_format(auto_link(comment.content)) %></p>
-  <p><strong><%= comment.user.full_name %></strong> <em>(<%= l(comment.created_at, format: :custom) %>)</em></p>
-  <% if comment.user == current_user %><%= link_to "Modifier", edit_establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), data: { turbo_frame: dom_id(comment), turbo_stream: true }, class: "fr-btn fr-btn--sm" %>
-    <%= link_to "Supprimer", establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?", turbo_method: :delete, turbo_stream: true }, class: "fr-btn fr-btn--sm fr-btn--secondary" %>
-  <% end %>
+  <div class="fr-grid-row fr-grid-row--<%= comment.user == current_user ? 'right' : 'left' %> fr-mb-1w">
+    <div class="<%= "message-container #{comment.user == current_user ? 'current-user' : 'other-user'}" %>">
+      <p class="message-text"><%= simple_format(auto_link(comment.content), {}, wrapper_tag: 'p class="message-text"') %></p>
+      <span class="message-meta">
+        Envoyé par <%= comment.user.full_name %> le <%= l(comment.created_at, format: :custom) %>
+      </span>
+      <% if comment.user == current_user %>
+        <div class="comment-actions">
+          <%= link_to "Modifier", edit_establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), data: { turbo_frame: dom_id(comment), turbo_stream: true }, class: "edit-link" %>
+          <%= link_to "Supprimer", establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?", turbo_method: :delete, turbo_stream: true }, class: "delete-link" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 <% end %>

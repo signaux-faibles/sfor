@@ -26,6 +26,9 @@
     <main class="fr-pt-4w">
       <%= yield %>
     </main>
+
+    <%= render 'layouts/footer' %>
+
     <!-- Non-module script for older browsers -->
     <script src="<%= asset_path 'dsfr.nomodule.min.js' %>" nomodule></script>
   </body>

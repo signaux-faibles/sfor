@@ -1,92 +1,122 @@
-<div class="fr-col-12 fr-col-sm-10 fr-col-md-8 fr-mb-3w">
-  <div class="fr-container">
-    <%= breadcrumb %>
+<div class="fr-container--fluid">
+  <%= breadcrumb %>
 
-    <div class="accompagnement__header-container">
-      <h1>Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
+  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
+    <h1 style="margin: 0;">Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
+    <span class="<%= badge_class_for(@establishment_tracking.aasm.human_state) %>">
+    <%= @establishment_tracking.aasm.human_state %>
+  </span>
+  </div>
 
-      <% if policy(@establishment_tracking).edit? %>
-        <%= link_to 'Modifier', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-mb-2w' %>
-      <% end %>
-    </div>
-
-    <ul class="fr-tags-group">
-      <% @establishment_tracking.tracking_labels.each do |label| %>
-        <li>
-          <p class="fr-tag fr-tag--sm"><%= label.name %></p>
+  <div class="fr-tabs">
+    <ul class="fr-tabs__list custom-background fr-pb-0" role="tablist">
+      <!-- Establishment information tab -->
+      <li role="presentation">
+        <button id="tabpanel-404" class="fr-tabs__tab fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">
+          Informations
+        </button>
+      </li>
+      <!-- User networks tabs -->
+      <% current_user.networks.each_with_index do |network, index| %>
+        <li role="presentation">
+          <button id="tabpanel-<%= index %>"
+                  class="fr-tabs__tab fr-tabs__tab--icon-left"
+                  tabindex="<%= index.zero? ? 0 : -1 %>"
+                  role="tab"
+                  aria-selected="<%= index.zero? ? 'true' : 'false' %>"
+                  aria-controls="tabpanel-<%= index %>-panel">
+            <%= network.name %>
+          </button>
         </li>
       <% end %>
     </ul>
-
-    <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
-    <p><strong>Créateur :</strong> <%= full_name(@establishment_tracking.creator) %></p>
-    <p><strong>Date de début :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %></p>
-    <p><strong>Date de fin :</strong> <%= @establishment_tracking.end_date.present? ? l(@establishment_tracking.end_date, format: :default) : '-' %></p>
-
-
-
-    <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
-    <p><strong>Assignés :</strong>
-      <%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %>
-    </p>
-    <p><strong>Participants :</strong>
-      <%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %>
-    </p>
-    <p><strong>Actions :</strong>
-      <%= @establishment_tracking.actions.any? ? @establishment_tracking.actions.map { |action| action.name }.join(', ') : 'Pas d\'actions renseignées' %>
-    </p>
-
-
-    <div class="fr-tabs">
-      <ul class="fr-tabs__list" role="tablist">
-        <% current_user.networks.each_with_index do |network, index| %>
-          <li role="presentation">
-            <button id="tabpanel-<%= index %>"
-                    class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left"
-                    tabindex="<%= index.zero? ? 0 : -1 %>"
-                    role="tab"
-                    aria-selected="<%= index.zero? ? 'true' : 'false' %>"
-                    aria-controls="tabpanel-<%= index %>-panel">
-              <%= network.name %>
-            </button>
-          </li>
-        <% end %>
-      </ul>
-
-      <% current_user.networks.each_with_index do |network, index| %>
-        <div id="tabpanel-<%= index %>-panel"
-             class="fr-tabs__panel <%= 'fr-tabs__panel--selected' if index.zero? %>"
-             role="tabpanel"
-             aria-labelledby="tabpanel-<%= index %>"
-             tabindex="0">
-
-          <h3>Synthèse <%= network.name %></h3>
-          <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
-            <% if network.name.downcase == 'codefi' %>
-              <%= render @codefi_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
-            <% else %>
-              <%= render @user_network_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
-            <% end %>
-          <% end %>
-
-          <hr class="fr-mt-4w fr-mb-4w" />
-
-          <h3>Commentaires <%= network.name %></h3>
-          <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
-            <%= render "comments/form", comment: Comment.new(network: network), network: network %>
-          <% end %>
-
-          <div id="comments_<%= network.name.parameterize %>">
-            <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
-              <% if network.name.downcase == 'codefi' %>
-                <%= render @codefi_comments, network: network %>
-              <% else %>
-                <%= render @user_network_comments, network: network %>
+    <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-404" tabindex="0">
+      <div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6" style="border-right: 1px solid #e5e5e5;">
+            <div class="accompagnement__tab-title">
+              <h3>Détails</h3>
+              <% if policy(@establishment_tracking).edit? %>
+                <%= link_to 'Modifier les informations et/ou le statut', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-mb-2w' %>
               <% end %>
-            <% end %>
+            </div>
+
+            <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
+            <p><strong>Créateur :</strong> <%= full_name(@establishment_tracking.creator) %></p>
+            <p><strong>Date de début :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %></p>
+            <p><strong>Date de fin :</strong> <%= @establishment_tracking.end_date.present? ? l(@establishment_tracking.end_date, format: :default) : '-' %></p>
+            <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
+            <p>
+              <strong>Etiquettes :</strong>
+              <% @establishment_tracking.tracking_labels.each do |label| %>
+                <span class="fr-tag fr-tag--sm"><%= label.name %></span>
+              <% end %>
+            </p>
+            <p><strong>Actions :</strong><%= @establishment_tracking.actions.any? ? @establishment_tracking.actions.map { |action| action.name }.join(', ') : 'Pas d\'actions renseignées' %></p>
+          </div>
+
+          <div class="fr-col-6">
+            <div class="accompagnement__tab-title">
+              <h3>Contributeurs</h3>
+              <% if policy(@establishment_tracking).edit? %>
+                <%= link_to 'Gérer les contributeurs', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-mb-2w' %>
+              <% end %>
+            </div>
+
+            <p><strong>Assignés : </strong></p>
+            <p><%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %></p>
+            <p><strong>Participants : </strong></p>
+            <p><%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %></p>
           </div>
         </div>
-      <% end %>
+      </div>
     </div>
+
+    <!-- User networks tabs content -->
+    <% current_user.networks.each_with_index do |network, index| %>
+      <div id="tabpanel-<%= index %>-panel"
+           class="fr-tabs__panel <%= 'fr-tabs__panel--selected' if index.zero? %>"
+           role="tabpanel"
+           aria-labelledby="tabpanel-<%= index %>"
+           tabindex="0">
+
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-6">
+            <h4>Suivi de l'accompagnement en cours</h4>
+            <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
+              <% if network.name.downcase == 'codefi' %>
+                <%= render @codefi_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
+              <% else %>
+                <%= render @user_network_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
+              <% end %>
+            <% end %>
+
+            <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
+              <%= render "comments/form", comment: Comment.new(network: network), network: network %>
+            <% end %>
+
+            <div class="chat-container">
+              <div id="comments_<%= network.name.parameterize %>">
+                <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
+                  <% grouped_comments = (network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments).group_by { |comment| comment.created_at.to_date } %>
+                  <% grouped_comments.each do |date, comments| %>
+                    <div class="date-separator"><%= l(date, format: :long) %></div>
+                    <% comments.each do |comment| %>
+                      <%= render "comments/comment", comment: comment %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+
+
+
+          </div>
+
+        </div>
+
+
+      </div>
+    <% end %>
   </div>
 </div>

@@ -19,7 +19,7 @@ module ApplicationHelper
   end
 
   def breadcrumb
-    content_tag(:nav, role: 'navigation', class: 'fr-breadcrumb', aria: { label: 'vous êtes ici :' }) do
+    content_tag(:nav, role: 'navigation', class: 'fr-ml-4w fr-breadcrumb', aria: { label: 'vous êtes ici :' }) do
       safe_join([
                   button_tag('Voir le fil d’Ariane', class: 'fr-breadcrumb__button', aria: { expanded: 'false', controls: 'breadcrumb-1' }),
                   content_tag(:div, class: 'fr-collapse', id: 'breadcrumb-1') do

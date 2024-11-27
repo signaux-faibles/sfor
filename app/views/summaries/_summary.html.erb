@@ -1,7 +1,10 @@
+
+<p class="fr-p-2w" style="background: var(--background-action-low-blue-france); color: var(--text-default-info)" ><strong>Synthèse du <%= summary.created_at.present? ? l(summary.created_at, format: :default) : '-' %></strong></p>
 <p><%= markdown(summary.content) %></p>
+
 <p><em>Dernière modification le <%= l(summary.updated_at, format: :custom) %></em></p>
 <% if summary.locked? %>
   <%= button_tag "En cours d'édition par #{User.find(summary.locked_by).email}", class: "fr-btn", disabled: true %>
 <% else %>
-  <%= link_to "Modifier", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn" %>
+  <%= link_to "Modifier", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn fr-btn--secondary" %>
 <% end %>

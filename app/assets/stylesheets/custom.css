@@ -1,6 +1,81 @@
-.accompagnement__header-container {
+.accompagnement__tab-title {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: 1rem;
+}
+
+.custom-background {
+    background-color: #F5F5FE;
+}
+
+/* Comments */
+
+/* Date separator */
+.date-separator {
+    text-align: center;
+    font-weight: bold;
+    color: #888;
+    margin: 20px 0;
+}
+
+/* Message container */
+.message-container {
+    padding: 15px;
+    border-radius: 10px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+/* Current user messages */
+.message-container.current-user {
+    background-color: #e6e8ff; /* Light purple */
+    color: #333;
+}
+
+/* Other user messages */
+.message-container.other-user {
+    background-color: #f8f9fa; /* Light gray */
+    color: #333;
+}
+
+/* Message text */
+.message-text {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Metadata (e.g., sender and timestamp) */
+.message-meta {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #666;
+    text-align: right; /* Force alignment to the right */
+    display: block; /* Ensure it's treated as a block element */
+    width: 100%; /* Take up the full width of the bubble */
+}
+
+/* Comment actions (edit/delete links) */
+.comment-actions {
+    margin-top: 10px;
+    text-align: right; /* Always align to the right */
+}
+
+/* Markdown tables in network tabs */
+.fr-tabs__panel table {
+    border-collapse: collapse; /* Ensure borders are collapsed for a cleaner look */
+    width: 100%;
+}
+
+.fr-tabs__panel table th,
+.fr-tabs__panel table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.fr-tabs__panel table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
 }
