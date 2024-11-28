@@ -108,36 +108,118 @@ def create_all_comments(card, card_comments, establishment_tracking, siret, user
   end
 end
 
-def create_all_labels(board_label, card, establishment_tracking)
+def create_all_labels(board_labels, card, establishment_tracking)
   if card[:labelIds]
     card[:labelIds].each do |label_id|
-      if board_label[label_id]
-        tracking_label = TrackingLabel.find_or_initialize_by(name: board_label[label_id])
-        tracking_label.name = board_label[label_id]
-        tracking_label.system = false
-        establishment_tracking.tracking_labels << tracking_label
-        unless tracking_label.save
-          puts "error creating tracking_label #{tracking_label.full_messages}"
+      label_name = board_labels[label_id] # In wekan each board holds all the labels which can then be used in the cards
+
+      if label_name.nil?
+        puts "Label with ID #{label_id} not found in board_labels."
+        next
+      end
+
+      case label_name
+      when 'tpe', 'pme', 'eti', 'ge'
+        # Map Wekan label to Rails Size model
+        size_name = label_name.upcase
+        size = Size.find_by(name: size_name)
+        if size
+          if establishment_tracking.size.nil?
+            establishment_tracking.size = size
+            establishment_tracking.save || log_errors(establishment_tracking, "size assignment")
+          else
+            puts "Size already assigned for EstablishmentTracking #{establishment_tracking.id}. Skipping #{label_name}."
+          end
+        else
+          puts "Size not found for label: #{label_name}."
         end
 
-        unless establishment_tracking.save
-          puts "error creating establishment_tracking #{establishment_tracking.full_messages}"
+      when 'Niveau rouge', 'Niveau orange', 'Niveau vert'
+        criticality = Criticality.find_by(name: label_name)
+
+        if criticality
+          if establishment_tracking.criticality.nil?
+            establishment_tracking.criticality = criticality
+            if establishment_tracking.save
+              puts "Assigned criticality '#{criticality.name}' to EstablishmentTracking #{establishment_tracking.id}."
+            else
+              log_errors(establishment_tracking, "criticality assignment")
+            end
+          else
+            puts "Criticality already assigned for EstablishmentTracking #{establishment_tracking.id}. Skipping '#{label_name}'."
+          end
+        else
+          puts "Criticality not found for label '#{label_name}'."
+        end
+
+      when 'AR-PB', 'CIRI'
+        # Assign as a 'sytem' Tracking Label
+        tracking_label = TrackingLabel.find_by(name: label_name)
+        if tracking_label.save
+          establishment_tracking.tracking_labels << tracking_label unless establishment_tracking.tracking_labels.include?(tracking_label)
+        else
+          log_errors(tracking_label, "label creation")
+        end
+
+      when 'ALERTE MRE', 'ALERTE DIRE'
+        label_sf_name = case label_name
+                        when 'ALERTE MRE' then 'Alerte MRE'
+                        when 'ALERTE DIRE' then 'Alerte DIRE'
+                        end
+        # Assign as a 'sytem' Tracking Label
+        tracking_label = TrackingLabel.find_by(name: label_sf_name)
+        if tracking_label.save
+          establishment_tracking.tracking_labels << tracking_label unless establishment_tracking.tracking_labels.include?(tracking_label)
+        else
+          log_errors(tracking_label, "label creation")
+        end
+
+      when 'aéronautique', 'agroalimentaire', 'automobile', 'bois', 'chimie', 'construction', 'déchets',
+        'eau', 'électronique', 'ferroviaire', 'métallurgie', 'mode', 'naval', 'nucléaire',
+        'numérique', 'papeterie', 'santé', 'textile', 'tourisme', 'défense', 'autres', 'hotel./restaur.'
+        # Assign Sectors
+        sector_name = (label_name == 'hotel./restaur.') ? 'hôtel et restauration' : label_name
+        sector = Sector.find_by(name: sector_name)
+        if sector
+          establishment_tracking.sectors << sector unless establishment_tracking.sectors.include?(sector)
+        else
+          puts "Sector not found for label: #{label_name}."
+        end
+
+      else
+        # Create a non-system Tracking Label for unrecognized labels
+        tracking_label = TrackingLabel.find_or_initialize_by(name: label_name)
+        tracking_label.system = false
+        if tracking_label.save
+          establishment_tracking.tracking_labels << tracking_label unless establishment_tracking.tracking_labels.include?(tracking_label)
+        else
+          log_errors(tracking_label, "unrecognized label creation")
         end
       end
     end
   end
 end
 
+# Helper method to log errors
+def log_errors(record, context)
+  puts "Error during #{context}: #{record.errors.full_messages.join(', ')}"
+end
+
 namespace :import_from_wekan do
   desc "Import cards from Wekan and create corresponding Rails models"
   task cards: :environment do
-    mongo_host = ENV['MONGO_DB_HOST'] || '10.2.0.231'
-    mongo_port = ENV['MONGO_DB_PORT'] || '27017'
-    mongo_db_name = ENV['MONGO_DB_NAME'] || 'test'
-    mongo_user = ENV['MONGO_DB_USER'] || 'wekan.racine'
-    mongo_password = ENV['MONGO_DB_PASSWORD'] || 'XXX'
+    mongo_host = ENV['WEKAN_MONGO_DB_HOST'] || '10.2.0.231'
+    mongo_port = ENV['WEKAN_MONGO_DB_PORT'] || '27017'
+    mongo_db_name = ENV['WEKAN_MONGO_DB_NAME'] || 'test'
+    mongo_user = ENV['WEKAN_MONGO_DB_USER'] || 'wekan.racine'
+    mongo_password = ENV['WEKAN_MONGO_DB_PASSWORD'] || 'XXX'
 
+    # PROD
     client = Mongo::Client.new(["#{mongo_host}:#{mongo_port}"], database: mongo_db_name, user: mongo_user, password: mongo_password, auth_source: 'admin')
+
+    # DEV
+    # client = Mongo::Client.new([ "#{mongo_host}:#{mongo_port}" ], database: mongo_db_name)
+
 
     boards = client[:boards]
     swimlanes = client[:swimlanes]

@@ -31,9 +31,24 @@
       <div class="fr-input-group">
         <%= form.label :tracking_label_ids, 'Étiquettes' %>
         <%= form.select :tracking_label_ids,
-                        grouped_labels_for_select,
+                        @sytem_labels,
                         {},
                         { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+      </div>
+
+      <div class="fr-input-group">
+        <%= form.label :size_id, 'Taille de l\'entreprise' %>
+        <%= form.collection_select :size_id, Size.all, :id, :name, {}, { class: 'fr-select' } %>
+      </div>
+
+      <div class="fr-input-group">
+        <%= form.label :sector_ids, 'Secteurs' %>
+        <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+      </div>
+
+      <div class="fr-input-group">
+        <%= form.label :criticality_id, 'Criticité' %>
+        <%= form.collection_select :criticality_id, Criticality.all, :id, :name, {}, { class: 'fr-select' } %>
       </div>
 
       <div class="fr-input-group">

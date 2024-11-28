@@ -22,6 +22,11 @@ class EstablishmentTracking < ApplicationRecord
   has_many :summaries, dependent: :destroy
   has_many :comments, dependent: :destroy
 
+  belongs_to :size, optional: true
+  belongs_to :criticality, optional: true
+
+  has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
+
   validates :referents, presence: true
 
   validate :single_in_progress_tracking, if: :in_progress?
@@ -36,11 +41,11 @@ class EstablishmentTracking < ApplicationRecord
   }
 
   def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "updated_at"]
+    ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "criticality_id", "size_id", "updated_at"]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["comments", "creator", "establishment", "establishment_tracking_labels", "participants", "referents", "summaries", "tracking_labels", "tracking_participants", "tracking_referents"]
+    ["comments", "creator", "establishment", "establishment_tracking_labels", "participants", "referents", "summaries", "tracking_labels", "tracking_participants", "tracking_referents", "sectors"]
   end
 
   aasm column: 'state' do

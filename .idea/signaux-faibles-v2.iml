@@ -583,12 +583,7 @@
           </RakeTaskImpl>
           <RakeTaskImpl id="import_from_wekan">
             <subtasks>
-              <RakeTaskImpl id="import_from_wekan">
-                <subtasks>
-                  <RakeTaskImpl description="Import cards from Wekan and create corresponding Rails models" fullCommand="import_from_wekan:import_from_wekan:cards" id="cards" />
-                </subtasks>
-              </RakeTaskImpl>
-              <RakeTaskImpl description="Import user data from wekan (MongoDB) to rails users table (PostgreSQL)" fullCommand="import_from_wekan:users" id="users" />
+              <RakeTaskImpl description="Import cards from Wekan and create corresponding Rails models" fullCommand="import_from_wekan:cards" id="cards" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl id="importmap">

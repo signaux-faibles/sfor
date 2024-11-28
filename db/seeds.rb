@@ -14,6 +14,6 @@ require_relative 'seeds/lists_seeds'
 require_relative 'seeds/activity_sectors_seeds'
 require_relative 'seeds/establishments_seeds'
 require_relative 'seeds/trackings_seeds'
-require_relative 'seeds/tracking_labels_seeds'
+require_relative 'seeds/labels_and_tracking_metadata_seeds'
 
 puts "Database seeded"

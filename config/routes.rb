@@ -15,22 +15,18 @@ Rails.application.routes.draw do
     resources :users do
       get '/impersonate' => "users#impersonate"
     end
-    resources :establishments
-    resources :establishment_trackings
-    resources :activity_sectors
-    resources :campaigns
-    resources :companies
-    resources :roles
     resources :entities
     resources :networks
     resources :segments
     resources :departments
     resources :regions
     resources :geo_accesses
-    resources :label_groups
+    resources :companies
+    resources :establishments
+    resources :establishment_trackings
     resources :tracking_labels
 
-    root to: "activity_sectors#index"
+    root to: "users#index"
   end
 
   resources :users do

@@ -29,6 +29,7 @@ fr:
       tracking_label:
         establishment_trackings: Accompagnements
         name: Nom
+        system: Système
       label_group:
         name: Nom
         tracking_labels: Etiquettes
@@ -41,9 +42,19 @@ fr:
         roles: Rôles
         entity: Entité
         geo_access: Accès géographique
+        networks: Réseaux
       network:
         name: Nom
         users: Utilisateurs
+      entity:
+        name: Nom
+        users: Utilisateurs
+        created_at: Créée le
+      segment:
+        name: Nom
+        users: Utilisateurs
+        network: Réseau
+        created_at: créé le
     models:
       geo_access:
         one: Accès géographique
@@ -79,14 +90,17 @@ fr:
         one: Utilisateur
         other: Utilisateurs
       entity:
-        one: Campagne
-        other: Campagnes
+        one: Organisation
+        other: Organisations
       campaign:
         one: Campagne
         other: Campagnes
       network:
         one: Réseau
         other: Réseaux
+      region:
+        one: Région
+        other: Régions
     errors:
       messages:
         record_invalid: 'La validation a échoué : %{errors}'

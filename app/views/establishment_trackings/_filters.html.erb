@@ -45,11 +45,41 @@
               <div class="fr-input-group">
                 <%= f.label :tracking_labels_id_in, "Étiquettes" %>
                 <%= f.select :tracking_labels_id_in,
-                             grouped_labels_for_select,
+                             TrackingLabel.pluck(:name, :id),
                              {},
                              { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
               </div>
             </div>
+            <div class="fr-col-3">
+              <div class="fr-input-group">
+                <%= f.label :sectors_id_in, "Filières" %>
+                <%= f.select :sectors_id_in,
+                             Sector.pluck(:name, :id),
+                             {},
+                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+              </div>
+            </div>
+            <div class="fr-col-3">
+              <div class="fr-input-group">
+                <%= f.label :size_id_eq, "Taille" %>
+                <%= f.select :size_id_eq,
+                             Size.pluck(:name, :id),
+                             { include_blank: "Tous" },
+                             { class: "fr-select" } %>
+              </div>
+            </div>
+            <div class="fr-col-3">
+              <div class="fr-input-group">
+                <%= f.label :criticality_id_eq, "Criticité" %>
+                <%= f.select :criticality_id_eq,
+                             Criticality.pluck(:name, :id),
+                             { include_blank: "Tous" },
+                             { class: "fr-select" } %>
+              </div>
+            </div>
+
+          </div>
+          <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :start_date_gteq, "Date de début à partir de" %>

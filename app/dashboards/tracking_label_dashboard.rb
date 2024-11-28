@@ -13,7 +13,6 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
     establishment_trackings: Field::HasMany,
     name: Field::String,
     system: Field::Boolean,
-    label_group: Field::BelongsTo,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
@@ -26,7 +25,6 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
-    label_group
     system
   ].freeze
 
@@ -35,7 +33,6 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     id
     name
-    label_group
     system
     created_at
     updated_at
@@ -46,7 +43,6 @@ class TrackingLabelDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
-    label_group
     system
   ].freeze
 

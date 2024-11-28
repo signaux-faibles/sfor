@@ -33,16 +33,16 @@ class EstablishmentTrackingsController < ApplicationController
     end
   end
   def show
-    user_network_ids = current_user.networks.pluck(:id) # ['Codefi' and user's specific network]
+    user_network_ids = current_user.networks.pluck(:id) # ['CODEFI' and user's specific network]
     @summaries = Summary.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
 
-    @codefi_summaries = @summaries.find { |s| s.network.name.downcase == 'codefi' }
-    @user_network_summaries = @summaries.find { |s| s.network.id == current_user.networks.where.not(name: 'Codefi').pluck(:id).first }
+    @codefi_summaries = @summaries.find { |s| s.network.name == 'CODEFI' }
+    @user_network_summaries = @summaries.find { |s| s.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
 
     @comments = Comment.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
 
-    @codefi_comments = @comments.select { |c| c.network.name.downcase == 'codefi' }
-    @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'Codefi').pluck(:id).first }
+    @codefi_comments = @comments.select { |c| c.network.name == 'CODEFI' }
+    @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
 
   rescue Pundit::NotAuthorizedError
     flash[:alert] = "Vous n'êtes pas autorisé à voir certains éléments."
@@ -52,6 +52,7 @@ class EstablishmentTrackingsController < ApplicationController
   def new
     @establishment_tracking = @establishment.establishment_trackings.new
     @establishment_tracking.referents << current_user
+    @sytem_labels = TrackingLabel.where(system: true).pluck(:name, :id)
   end
 
   def new_by_siret
@@ -86,6 +87,7 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def edit
+    @sytem_labels = TrackingLabel.where(system: true).pluck(:name, :id)
   end
 
   def update
@@ -145,7 +147,7 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def tracking_params
-    params.require(:establishment_tracking).permit(:state, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [])
+    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [],sector_ids: [])
   end
 
   def generate_excel(establishment_trackings)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_28_143728) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -88,6 +88,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
     t.index ["list_id"], name: "index_company_lists_on_list_id"
   end
 
+  create_table "criticalities", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "department_geo_accesses", force: :cascade do |t|
     t.bigint "geo_access_id", null: false
     t.bigint "department_id", null: false
@@ -131,6 +137,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
     t.index ["tracking_label_id"], name: "index_establishment_tracking_labels_on_tracking_label_id"
   end
 
+  create_table "establishment_tracking_sectors", force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "sector_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_tracking_id"], name: "idx_on_establishment_tracking_id_dc92224b30"
+    t.index ["sector_id"], name: "index_establishment_tracking_sectors_on_sector_id"
+  end
+
   create_table "establishment_trackings", force: :cascade do |t|
     t.bigint "creator_id", null: false
     t.bigint "establishment_id", null: false
@@ -141,10 +156,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
     t.datetime "updated_at", null: false
     t.text "contact"
     t.datetime "discarded_at"
+    t.bigint "size_id"
+    t.bigint "criticality_id"
     t.index ["creator_id"], name: "index_establishment_trackings_on_creator_id"
+    t.index ["criticality_id"], name: "index_establishment_trackings_on_criticality_id"
     t.index ["discarded_at"], name: "index_establishment_trackings_on_discarded_at"
     t.index ["establishment_id", "state"], name: "index_single_in_progress_per_establishment", unique: true, where: "((state)::text = 'in_progress'::text)"
     t.index ["establishment_id"], name: "index_establishment_trackings_on_establishment_id"
+    t.index ["size_id"], name: "index_establishment_trackings_on_size_id"
   end
 
   create_table "establishments", force: :cascade do |t|
@@ -226,12 +245,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
     t.index ["name"], name: "index_geo_accesses_on_name", unique: true
   end
 
-  create_table "label_groups", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "lists", force: :cascade do |t|
     t.string "label", null: false
     t.string "code", null: false
@@ -273,12 +286,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
     t.bigint "role_id", null: false
   end
 
+  create_table "sectors", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "segments", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "network_id", null: false
     t.index ["network_id"], name: "index_segments_on_network_id"
+  end
+
+  create_table "sizes", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "summaries", force: :cascade do |t|
@@ -301,8 +326,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
     t.boolean "system", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "label_group_id"
-    t.index ["label_group_id"], name: "index_tracking_labels_on_label_group_id"
   end
 
   create_table "tracking_participants", force: :cascade do |t|
@@ -393,7 +416,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
   add_foreign_key "establishment_tracking_actions", "establishment_trackings"
   add_foreign_key "establishment_tracking_labels", "establishment_trackings"
   add_foreign_key "establishment_tracking_labels", "tracking_labels"
+  add_foreign_key "establishment_tracking_sectors", "establishment_trackings"
+  add_foreign_key "establishment_tracking_sectors", "sectors"
+  add_foreign_key "establishment_trackings", "criticalities"
   add_foreign_key "establishment_trackings", "establishments"
+  add_foreign_key "establishment_trackings", "sizes"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "establishments", "activity_sectors"
   add_foreign_key "establishments", "activity_sectors", column: "level_one_activity_sector_id"
@@ -405,7 +432,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_19_103703) do
   add_foreign_key "segments", "networks"
   add_foreign_key "summaries", "establishment_trackings"
   add_foreign_key "summaries", "networks"
-  add_foreign_key "tracking_labels", "label_groups"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
   add_foreign_key "tracking_referents", "establishment_trackings"

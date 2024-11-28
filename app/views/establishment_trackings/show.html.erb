@@ -57,6 +57,15 @@
               :</strong> <%= @establishment_tracking.end_date.present? ? l(@establishment_tracking.end_date, format: :default) : '-' %>
             </p>
             <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
+            <p><strong>Criticité :</strong> <%= @establishment_tracking.criticality&.name || '-' %></p>
+            <p><strong>Taille de l'établissement :</strong> <%= @establishment_tracking.size&.name || '-' %></p>
+            <p><strong>Filières :</strong>
+              <% if @establishment_tracking.sectors.any? %>
+                <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
+              <% else %>
+                Pas de filières renseignées
+              <% end %>
+            </p>
             <p>
               <strong>Etiquettes :</strong>
               <% @establishment_tracking.tracking_labels.each do |label| %>
