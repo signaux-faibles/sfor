@@ -9,7 +9,7 @@ class EstablishmentTrackingsController < ApplicationController
     # Removing `view` from `q` so it doesn't affect Ransack
     clean_params = params[:q]&.except(:view)
 
-    @q =  policy_scope(EstablishmentTracking).ransack(clean_params)
+    @q = policy_scope(EstablishmentTracking).ransack(clean_params)
 
     if params.dig(:q, :my_tracking) == '1'
       @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)
@@ -25,13 +25,14 @@ class EstablishmentTrackingsController < ApplicationController
         all_establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels)
 
         response.headers['Cache-Control'] = 'no-store'
-        send_data generate_excel(all_establishment_trackings),
+        send_data generate_excel(all_establishment_trackings, @q),
                   filename: "accompagnements.xlsx",
                   type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                   disposition: 'attachment'
       end
     end
   end
+
   def show
     user_network_ids = current_user.networks.pluck(:id) # ['CODEFI' and user's specific network]
     @summaries = Summary.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
@@ -147,32 +148,10 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def tracking_params
-    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [],sector_ids: [])
+    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [], sector_ids: [])
   end
 
-  def generate_excel(establishment_trackings)
-    package = Axlsx::Package.new
-    workbook = package.workbook
-
-    workbook.add_worksheet(name: "Accompagnements") do |sheet|
-      sheet.add_row ["Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Statut", "Synthèse"]
-
-
-      establishment_trackings.each do |tracking|
-        summary = tracking.summaries.find_by(network: @user_network)
-        sheet.add_row [
-                        tracking.establishment.raison_sociale,
-                        tracking.establishment.siret,
-                        tracking.establishment&.department.name,
-                        tracking.participants.map(&:full_name).join(', '),
-                        tracking.referents.map(&:full_name).join(', '),
-                        tracking.start_date.present? ? tracking.start_date.strftime('%d/%m/%Y') : '-',
-                        tracking.aasm.human_state,
-                        summary&.content || 'Aucune synthèse rédigée'
-                      ]
-      end
-    end
-
-    package.to_stream.read
+  def generate_excel(establishment_trackings, filters)
+    EstablishmentTrackingExcelGenerator.new(establishment_trackings, filters, current_user).generate
   end
 end

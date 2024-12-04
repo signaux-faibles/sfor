@@ -67,6 +67,10 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
+  def non_codefi_network
+    networks.where.not(name: 'CODEFI').first
+  end
+
   private
 
   def extract_roles_from_token(token)
