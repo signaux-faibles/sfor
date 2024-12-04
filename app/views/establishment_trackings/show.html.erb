@@ -1,6 +1,21 @@
 <div class="fr-container--fluid">
-  <%= breadcrumb %>
-  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
+  <nav role="navigation" class="fr-ml-4w fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">
+      Voir le fil d’Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <%= link_to 'Accompagnements', establishment_trackings_path, class: 'fr-breadcrumb__link' %>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">
+            <%= @establishment_tracking.establishment.raison_sociale %>
+          </a>
+        </li>
+      </ol>
+    </div>
+  </nav>  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
     <h1 style="margin: 0;">Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
     <span class="<%= badge_class_for(@establishment_tracking.aasm.human_state) %>">
     <%= @establishment_tracking.aasm.human_state %>
@@ -33,65 +48,7 @@
       <% end %>
     </ul>
 
-    <!-- Establishment Information Panel -->
-    <div id="tabpanel-informations-panel"
-         class="fr-tabs__panel fr-tabs__panel--selected"
-         role="tabpanel"
-         aria-labelledby="tabpanel-informations"
-         tabindex="0">
-      <div>
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-6" style="border-right: 1px solid #e5e5e5;">
-            <div class="accompagnement__tab-title">
-              <h3>Détails</h3>
-              <% if policy(@establishment_tracking).edit? %>
-                <%= link_to 'Modifier les informations et/ou le statut', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-mb-2w' %>
-              <% end %>
-            </div>
-            <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
-            <p><strong>Créateur :</strong> <%= full_name(@establishment_tracking.creator) %></p>
-            <p><strong>Date de début
-              :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %>
-            </p>
-            <p><strong>Date de fin
-              :</strong> <%= @establishment_tracking.end_date.present? ? l(@establishment_tracking.end_date, format: :default) : '-' %>
-            </p>
-            <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
-            <p><strong>Criticité :</strong> <%= @establishment_tracking.criticality&.name || '-' %></p>
-            <p><strong>Taille de l'établissement :</strong> <%= @establishment_tracking.size&.name || '-' %></p>
-            <p><strong>Filières :</strong>
-              <% if @establishment_tracking.sectors.any? %>
-                <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
-              <% else %>
-                Pas de filières renseignées
-              <% end %>
-            </p>
-            <p>
-              <strong>Etiquettes :</strong>
-              <% @establishment_tracking.tracking_labels.each do |label| %>
-                <span class="fr-tag fr-tag--sm"><%= label.name %></span>
-              <% end %>
-            </p>
-            <p><strong>Actions
-              :</strong> <%= @establishment_tracking.actions.any? ? @establishment_tracking.actions.map { |action| action.name }.join(', ') : 'Pas d\'actions renseignées' %>
-            </p>
-          </div>
-
-          <div class="fr-col-6">
-            <div class="accompagnement__tab-title">
-              <h3>Contributeurs</h3>
-              <% if policy(@establishment_tracking).edit? %>
-                <%= link_to 'Gérer les contributeurs', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-mb-2w' %>
-              <% end %>
-            </div>
-            <p><strong>Assignés :</strong></p>
-            <p><%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %></p>
-            <p><strong>Participants :</strong></p>
-            <p><%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %></p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <%= render 'info_panel' %>
 
     <!-- User Networks Panels -->
     <% current_user.networks.each do |network| %>

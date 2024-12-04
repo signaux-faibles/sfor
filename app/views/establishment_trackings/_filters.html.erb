@@ -1,11 +1,9 @@
 <div class="fr-card">
-  <div class="fr-container">
-  </div>
   <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
     <%= f.hidden_field :view, value: @current_view || "table", data: { view_toggle_target: "hiddenInput" } %>
-    <div class="fr-container fr-mb-3w fr-mt-3w">
+    <div class="fr-container--fluid fr-m-2w">
       <h4>Rechercher un accompagnement</h4>
-      <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-3">
           <div class="fr-input-group">
             <%= f.label :establishment_raison_sociale_cont, "Raison sociale" %>

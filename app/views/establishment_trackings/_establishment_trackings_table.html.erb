@@ -45,10 +45,11 @@
                 <th>Raison sociale</th>
                 <th>Siret</th>
                 <th>Statut</th>
-                <th><%= sort_link @q, :start_date, "Date de démarrage" %></th>
+                <th>Criticité</th>
                 <th>Assignés</th>
-                <th>Étiquettes</th>
-                <th colspan="2">Actions</th>
+                <th><%= sort_link @q, :start_date, "Date de démarrage" %></th>
+                <th>Département</th>
+                <th>Actions</th>
               </tr>
               </thead>
               <tbody>
@@ -57,9 +58,14 @@
                   <td><%= tracking.establishment.raison_sociale %></td>
                   <td><%= tracking.establishment.siret %></td>
                   <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
-                  <td><%= tracking.start_date.present? ? l(tracking.start_date, format: :default) : '-' %></td>
+                  <td>
+                    <% if tracking.criticality.present? %>
+                      <%= content_tag :p, tracking.criticality.name, class: badge_class_for(tracking.criticality.name) %>
+                    <% end %>
+                  </td>
                   <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
-                  <td><%= tracking.tracking_labels.map(&:name).join(', ') %></td>
+                  <td><%= tracking.start_date.present? ? l(tracking.start_date, format: :default) : '-' %></td>
+                  <td><%= tracking.establishment.department.code %></td>
                   <td>
                     <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
                   </td>

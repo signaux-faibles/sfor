@@ -1,9 +1,13 @@
-.accompagnement__tab-title {
+.accompagnement__tab-title h3 {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     gap: 1rem;
 }
+
+.accompagnement__tab-title .fr-btn {
+    margin: 0 !important;
+}
+
 
 .custom-background {
     background-color: #F5F5FE;

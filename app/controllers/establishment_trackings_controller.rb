@@ -45,9 +45,7 @@ class EstablishmentTrackingsController < ApplicationController
     @codefi_comments = @comments.select { |c| c.network.name == 'CODEFI' }
     @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
 
-  rescue Pundit::NotAuthorizedError
-    flash[:alert] = "Vous n'êtes pas autorisé à voir certains éléments."
-    redirect_back(fallback_location: root_path)
+    @other_trackings = @establishment_tracking.establishment.establishment_trackings.where.not(id: @establishment_tracking.id)
   end
 
   def new
@@ -104,6 +102,8 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
     @establishment_tracking.start_date ||= Date.today
+
+    @sytem_labels = TrackingLabel.where(system: true).pluck(:name, :id)
 
     if @establishment_tracking.save
       flash[:success] = 'L\'accompagnement a été créé avec succès.'
