@@ -8,6 +8,9 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
 
     @user_a = users(:user_crp_paris)
     @user_b = users(:user_crp_paris_2)
+
+    @establishment_tracking.referents << [@user_a, @user_b]
+
   end
 
   test "user A sees tabs for CODEFI and CRP networks" do

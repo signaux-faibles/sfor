@@ -59,30 +59,52 @@
            tabindex="0">
 
         <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-6">
-            <h4>Suivi de l'accompagnement en cours</h4>
-            <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
-              <% if network.name.downcase == 'codefi' %>
-                <%= render @codefi_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
-              <% else %>
-                <%= render @user_network_summaries || "summaries/form", summary: Summary.new(network: network), network: network %>
-              <% end %>
-            <% end %>
-
-            <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
-              <%= render "comments/form", comment: Comment.new(network: network), network: network %>
-            <% end %>
-            <div class="chat-container">
-              <div id="comments_<%= network.name.parameterize %>">
-                <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
-                  <% grouped_comments = (network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments).group_by { |comment| comment.created_at.to_date } %>
-                  <% grouped_comments.each do |date, comments| %>
-                    <div class="date-separator"><%= l(date, format: :long) %></div>
-                    <% comments.each do |comment| %>
-                      <%= render "comments/comment", comment: comment %>
-                    <% end %>
+          <div class="fr-col-8">
+            <div class="fr-mb-3w">
+              <h3>Suivi de l'accompagnement en cours</h3>
+              <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
+                <% summaries = network.name.downcase == 'codefi' ? @codefi_summaries : @user_network_summaries %>
+                <% if summaries.present? %>
+                  <%= render summaries %>
+                <% else %>
+                  <% if policy(@establishment_tracking).edit? %>
+                    <%= render "summaries/form", summary: Summary.new(network: network), network: network %>
+                  <% else %>
+                    <div class="fr-ml-3w">
+                      <h4>Synthèse</h4>
+                      <p>Aucune synthèse pour ce réseau.</p>
+                    </div>
                   <% end %>
                 <% end %>
+              <% end %>
+            </div>
+
+            <div class="fr-pl-3w">
+              <h4>Commentaires</h4>
+
+              <% if policy(@establishment_tracking).edit? %>
+                <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
+                  <%= render "comments/form", comment: Comment.new(network: network), network: network %>
+                <% end %>
+              <% end %>
+
+              <div class="chat-container">
+                <div id="comments_<%= network.name.parameterize %>">
+                  <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
+                    <% grouped_comments = (network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments).group_by { |comment| comment.created_at.to_date } %>
+
+                    <% if grouped_comments.any? %>
+                      <% grouped_comments.each do |date, comments| %>
+                        <div class="date-separator"><%= l(date, format: :long) %></div>
+                        <% comments.each do |comment| %>
+                          <%= render "comments/comment", comment: comment %>
+                        <% end %>
+                      <% end %>
+                    <% else %>
+                      <p>Il n'y a pas encore de commentaires pour ce suivi</p>
+                    <% end %>
+                  <% end %>
+                </div>
               </div>
             </div>
           </div>

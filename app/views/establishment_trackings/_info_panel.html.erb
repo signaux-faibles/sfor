@@ -9,8 +9,8 @@
       <div class="fr-col-6" style="border-right: 1px solid #e5e5e5;">
         <div class="accompagnement__tab-title">
           <h3>Informations sur l'accompagnement
-          <% if policy(@establishment_tracking).edit? %>
-            <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
+            <% if policy(@establishment_tracking).edit? %>
+              <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
             <% end %>
           </h3>
         </div>
@@ -64,8 +64,8 @@
       <div class="fr-col-6">
         <div class="accompagnement__tab-title">
           <h3>Contributeurs
-            <% if policy(@establishment_tracking).edit? %>
-              <%= link_to 'Gérer les contributeurs', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-settings-5-line fr-mb-2w' %>
+            <% if policy(@establishment_tracking).manage_contributors? %>
+              <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-settings-5-line fr-mb-2w' %>
             <% end %>
           </h3>
         </div>

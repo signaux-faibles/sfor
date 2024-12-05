@@ -1,6 +1,7 @@
 class EstablishmentTrackingsController < ApplicationController
   before_action :set_establishment, except: %i[new_by_siret index]
-  before_action :set_tracking, only: %i[show destroy edit update]
+  before_action :set_tracking, only: %i[show destroy edit update manage_contributors update_contributors]
+  before_action :set_system_labels, only: %i[new new_by_siret edit update create]
 
   def index
     # Storing user's layout choice (cards or table)
@@ -51,7 +52,6 @@ class EstablishmentTrackingsController < ApplicationController
   def new
     @establishment_tracking = @establishment.establishment_trackings.new
     @establishment_tracking.referents << current_user
-    @sytem_labels = TrackingLabel.where(system: true).pluck(:name, :id)
   end
 
   def new_by_siret
@@ -86,7 +86,6 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def edit
-    @sytem_labels = TrackingLabel.where(system: true).pluck(:name, :id)
   end
 
   def update
@@ -102,8 +101,6 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
     @establishment_tracking.start_date ||= Date.today
-
-    @sytem_labels = TrackingLabel.where(system: true).pluck(:name, :id)
 
     if @establishment_tracking.save
       flash[:success] = 'L\'accompagnement a été créé avec succès.'
@@ -121,6 +118,22 @@ class EstablishmentTrackingsController < ApplicationController
     redirect_to @establishment
   end
 
+  def manage_contributors
+    authorize @establishment_tracking
+  end
+
+  def update_contributors
+    authorize @establishment_tracking, :manage_contributors?
+
+    if @establishment_tracking.update(contributor_params)
+      flash[:success] = "Contributeurs mis à jour avec succès."
+      redirect_to [@establishment, @establishment_tracking]
+    else
+      flash[:error] = "Erreur lors de la mise à jour des contributeurs."
+      render :manage_contributors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_establishment
@@ -130,6 +143,10 @@ class EstablishmentTrackingsController < ApplicationController
   def set_tracking
     @establishment_tracking = EstablishmentTracking.find(params[:id])
     authorize @establishment_tracking
+  end
+
+  def set_system_labels
+    @system_labels = TrackingLabel.where(system: true).pluck(:name, :id)
   end
 
   def update_state
@@ -148,7 +165,11 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def tracking_params
-    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, participant_ids: [], referent_ids: [], tracking_label_ids: [], action_ids: [], sector_ids: [])
+    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, tracking_label_ids: [], action_ids: [], sector_ids: [])
+  end
+
+  def contributor_params
+    params.require(:establishment_tracking).permit(participant_ids: [], referent_ids: [])
   end
 
   def generate_excel(establishment_trackings, filters)

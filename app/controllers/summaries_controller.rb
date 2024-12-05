@@ -20,6 +20,7 @@ class SummariesController < ApplicationController
 
   def edit
     @summary = @establishment_tracking.summaries.find(params[:id])
+    authorize @establishment_tracking, :edit?
 
     if @summary.locked? && @summary.locked_by != current_user.id
       render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",

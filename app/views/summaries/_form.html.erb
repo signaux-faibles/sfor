@@ -1,18 +1,22 @@
-<%= form_with(model: [ @establishment, @establishment_tracking, summary ], local: false) do |form| %>
-  <%= form.hidden_field :network_id, value: network.id %>
-  <div class="fr-input-group <%= 'fr-input-group--error' if summary.errors.any? %>">
-    <%= form.label :content, "Contenu de la synthèse" %>
-    <%= form.text_area :content, class: "fr-input" %>
-    <% summary.errors.each do |error| %>
-      <% if error.attribute == :content || error.attribute == :network %>
-        <p id=<%= "summary_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
-          <%= error.full_message %>
-        </p>
+<% if policy(@establishment_tracking).edit? %>
+  <div class="fr-ml-3w">
+    <%= form_with(model: [ @establishment, @establishment_tracking, summary ], local: false) do |form| %>
+      <%= form.hidden_field :network_id, value: network.id %>
+      <div class="fr-input-group <%= 'fr-input-group--error' if summary.errors.any? %>">
+        <%= form.label :content, "Contenu de la synthèse" %>
+        <%= form.text_area :content, class: "fr-input" %>
+        <% summary.errors.each do |error| %>
+          <% if error.attribute == :content || error.attribute == :network %>
+            <p id=<%= "summary_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
+              <%= error.full_message %>
+            </p>
+          <% end %>
+        <% end %>
+      </div>
+      <%= form.submit "Sauvegarder", class: "fr-btn fr-btn--secondary" %>
+      <% if summary.persisted? %>
+        <%= link_to "Annuler", cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), class: "fr-btn fr-btn--secondary", data: { turbo_stream: true, confirm: "Êtes-vous sûr de vouloir annuler ?" } %>
       <% end %>
     <% end %>
   </div>
-  <%= form.submit "Sauvegarder", class: "fr-btn fr-btn--secondary" %>
-  <% if summary.persisted? %>
-    <%= link_to "Annuler", cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), class: "fr-btn fr-btn--secondary", data: { turbo_stream: true, confirm: "Êtes-vous sûr de vouloir annuler ?" } %>
-  <% end %>
 <% end %>

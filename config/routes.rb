@@ -43,6 +43,8 @@ Rails.application.routes.draw do
         get :complete
         get :start_surveillance
         get :resume
+        get :manage_contributors
+        patch :update_contributors
       end
       resources :summaries, only: [:create, :edit, :update] do
         get :cancel, on: :member

@@ -7,6 +7,7 @@ export default class extends Controller {
         new TomSelect(this.element, {
             plugins: ['remove_button'],
             maxOptions: null,
+            persist: false,
             create: false,
             sortField: {
                 field: "text",
@@ -25,7 +26,15 @@ export default class extends Controller {
                 no_results: function(data, escape) {
                     return '<div class="no-results">' + 'Aucun résultat' + '</div>';
                 }
+            },
+
+            onItemAdd: function(value, item) {
+                this.setTextboxValue('');
+                this.refreshOptions();
             }
-        });
+
+
+
+            });
     }
 }
