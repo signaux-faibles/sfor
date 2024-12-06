@@ -3,8 +3,7 @@ name: Publish rails container to ghcr.io
 # Run workflow on tags starting with v (eg. v2, v1.2.0)
 on:
   pull_request:
-    branches:
-      - 'main'
+    branches: [ main preprod ]
   push:
     tags:
       - '*'
