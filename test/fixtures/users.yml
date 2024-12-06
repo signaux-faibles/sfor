@@ -20,6 +20,17 @@ user_crp_paris_2:
     - network_crp
     - network_codefi
 
+user_crp_paris_3:
+  email: test3@crp_paris.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_crp
+  entity: entity_dreets
+  geo_access: geo_access_paris
+  departments: department_paris
+  networks:
+    - network_crp
+    - network_codefi
+
 user_crp_finistere:
   email: test@crp_finistere.com
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>

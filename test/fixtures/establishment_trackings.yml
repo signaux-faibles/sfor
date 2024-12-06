@@ -5,6 +5,13 @@ establishment_tracking_paris:
   creator: user_crp_paris
   tracking_labels: tracking_label_1
 
+establishment_tracking_paris_no_content:
+    state: 'in_progress'
+    establishment: establishment_paris_2
+    start_date: 2023-02-02
+    creator: user_crp_paris
+    tracking_labels: tracking_label_1
+
 establishment_tracking_finistere:
   state: 'in_progress'
   establishment: establishment_finistere

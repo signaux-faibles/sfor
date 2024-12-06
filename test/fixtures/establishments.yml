@@ -4,6 +4,12 @@ establishment_paris:
   raison_sociale: 'Etablissement Paris'
   department: department_paris
 
+establishment_paris_2:
+    siren: '123456710'
+    siret: '12345678900010'
+    raison_sociale: 'Etablissement Paris 2'
+    department: department_paris
+
 establishment_finistere:
   siren: '987654321'
   siret: '98765432100002'
