@@ -86,7 +86,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
     get establishment_establishment_tracking_path(@establishment, @establishment_tracking)
 
-    @user_a.networks.each do |network|
+    @user_a.networks.where.not(name: 'CODEFI').each do |network|
       assert_select "form[action=?]", establishment_establishment_tracking_comments_path(@establishment, @establishment_tracking)
       assert_select "input[type=hidden][value=?]", network.id.to_s
     end

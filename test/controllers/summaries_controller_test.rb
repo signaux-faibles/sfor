@@ -13,17 +13,16 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
 
   end
 
-  test "user A sees tabs for CODEFI and CRP networks" do
+  test "user A sees tabs CRP networks" do
     sign_in @user_a
 
     get establishment_establishment_tracking_path(@establishment, @establishment_tracking)
 
     assert_select "button", text: "Informations", count: 1
-    assert_select "button", text: "CODEFI", count: 1
     assert_select "button", text: "CRP", count: 1
 
     # The user should only see three tabs (one for establishment details, his/her network and one for the CODEFI network)
-    assert_select "button.fr-tabs__tab", count: 3
+    assert_select "button.fr-tabs__tab", count: 2
   end
 
   test "user A can lock and edit the summary" do
