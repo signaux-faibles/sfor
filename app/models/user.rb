@@ -27,6 +27,7 @@ class User < ApplicationRecord
   has_many :user_departments, dependent: :destroy
   has_many :departments, through: :user_departments
 
+  validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name), allow_nil: true }
   validates :email, presence: true, uniqueness: true
   validates :level, presence: true
   validate :validate_network_memberships

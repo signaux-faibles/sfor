@@ -30,7 +30,10 @@ Rails.application.routes.draw do
   end
 
   resources :users do
-    post :stop_impersonating, on: :collection
+    collection do
+      post :stop_impersonating
+      post :set_time_zone
+    end
   end
 
   devise_scope :user do

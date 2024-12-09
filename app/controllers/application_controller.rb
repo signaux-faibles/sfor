@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   impersonates :user
+  around_action :set_time_zone
   before_action :authenticate_user!
   before_action :check_user_segment
   include Pundit::Authorization
@@ -25,5 +26,9 @@ class ApplicationController < ActionController::Base
     if current_user && !%w[crp dreets_reseaucrp].include?(current_user.segment.name)
       redirect_to unauthorized_path, alert: "Vous n'êtes pas autorisé à accéder à cette section."
     end
+  end
+
+  def set_time_zone
+    Time.use_zone(current_user&.time_zone || 'Paris') { yield }
   end
 end
