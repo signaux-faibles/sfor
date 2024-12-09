@@ -1,6 +1,14 @@
 class Users::SessionsController < Devise::SessionsController
   skip_before_action :verify_authenticity_token, only: [:create]
 
+  def new
+    if user_signed_in?
+      redirect_to root_path
+    else
+      redirect_to "#{ENV['VUE_APP_FRONTEND_URL']}", allow_other_host: true
+    end
+  end
+
   def create
     token = params[:token]
     decoded_token = decode_token(token)
