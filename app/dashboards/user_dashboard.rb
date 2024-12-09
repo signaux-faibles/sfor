@@ -42,6 +42,7 @@ class UserDashboard < Administrate::BaseDashboard
       searchable: false
     ),    created_at: Field::DateTime,
     updated_at: Field::DateTime,
+    discarded_at: Field::DateTime,
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -57,6 +58,7 @@ class UserDashboard < Administrate::BaseDashboard
     segment
     networks
     geo_access
+    discarded_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -81,6 +83,7 @@ class UserDashboard < Administrate::BaseDashboard
     id_token
     created_at
     updated_at
+    discarded_at
   ].freeze
 
   # FORM_ATTRIBUTES
