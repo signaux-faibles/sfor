@@ -88,17 +88,14 @@
                 <% end %>
               <% end %>
 
-              <div class="chat-container">
+              <div class="fr-mt-4w">
                 <div id="comments_<%= network.name.parameterize %>">
                   <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
-                    <% grouped_comments = (network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments).group_by { |comment| comment.created_at.to_date } %>
+                    <% comments = network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments %>
 
-                    <% if grouped_comments.any? %>
-                      <% grouped_comments.each do |date, comments| %>
-                        <div class="date-separator"><%= l(date, format: :long) %></div>
-                        <% comments.each do |comment| %>
-                          <%= render "comments/comment", comment: comment %>
-                        <% end %>
+                    <% if comments.any? %>
+                      <% comments.each do |comment| %>
+                        <%= render "comments/comment", comment: comment %>
                       <% end %>
                     <% else %>
                       <p>Il n'y a pas encore de commentaires pour ce suivi</p>

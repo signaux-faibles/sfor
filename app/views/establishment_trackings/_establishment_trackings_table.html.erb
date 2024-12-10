@@ -84,7 +84,7 @@
 
   <div class="fr-grid-row fr-grid-row--gutters">
     <% @paginated_establishment_trackings.each do |tracking| %>
-      <div class="fr-col-sm-4 fr-col">
+      <div class="<%= @paginated_establishment_trackings.size == 1 ? 'fr-col' : 'fr-col-sm-4 fr-col' %>">
         <div class="fr-card fr-enlarge-link">
           <div class="fr-card__body">
             <div class="fr-card__content">
