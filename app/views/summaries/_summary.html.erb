@@ -1,6 +1,6 @@
 <div class="fr-p-3w" style="border: #6A6AF4 1px solid">
   <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h4>Synthèse du <%= summary.created_at.present? ? l(summary.created_at, format: :custom) : '-' %></h4>
+    <h4>Synthèse</h4>
     <% if policy(@establishment_tracking).edit? %>
       <% if summary.locked? %>
         <%= button_tag "En cours d'édition par #{User.find(summary.locked_by).email}", class: "fr-btn", disabled: true %>

@@ -68,7 +68,6 @@
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-8">
             <div class="fr-mb-3w">
-              <h3>Suivi de l'accompagnement en cours</h3>
               <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
                 <% summaries = network.name.downcase == 'codefi' ? @codefi_summaries : @user_network_summaries %>
                 <% if summaries.present? %>

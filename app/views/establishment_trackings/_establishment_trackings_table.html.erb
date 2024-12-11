@@ -7,7 +7,7 @@
 <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
   <div class="fr-col-6">
     <%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!), class: 'fr-link--download fr-link', download: "true" do %>
-      Télécharger les <%= @paginated_establishment_trackings.total_count %> accompagnements retrouvés
+      Télécharger les <%= @paginated_establishment_trackings.total_count %> résultats de la recherche
       <span class="fr-link__detail">XLS</span>
     <% end %>
   </div>
@@ -43,11 +43,11 @@
               <thead>
               <tr>
                 <th>Raison sociale</th>
-                <th>Siret</th>
+                <th>SIRET</th>
                 <th>Statut</th>
                 <th>Criticité</th>
                 <th>Assignés</th>
-                <th><%= sort_link @q, :start_date, "Date de démarrage" %></th>
+                <th><%= sort_link @q, :start_date, "Dernière modification" %></th>
                 <th>Département</th>
                 <th>Actions</th>
               </tr>
