@@ -1,12 +1,11 @@
 <% if policy(@establishment_tracking).edit? %>
-  <%= form_with(model: [ @establishment, @establishment_tracking, comment ], local: false) do |form| %>
+  <%= form_with(model: [ @establishment, @establishment_tracking, comment ], local: false, class: 'fr-mb-3w') do |form| %>
     <%= form.hidden_field :network_id, value: network.id %>
     <div class="fr-input-group <%= 'fr-input-group--error' if comment.errors[:content].any? %>">
       <%= form.text_area :content,
                          class: "fr-input",
                          placeholder: "Taper votre nouveau commentaire",
-                         data: { controller: "auto-resize", action: "input->auto-resize#adjust" } %>
-      <% comment.errors.each do |error| %>
+                         data: { controller: "auto-resize", action: "input->auto-resize#resize" } %>      <% comment.errors.each do |error| %>
         <% if error.attribute == :content || error.attribute == :network %>
           <p id=<%= "comment_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
             <%= error.full_message %>
