@@ -80,15 +80,15 @@
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
             <div class="fr-col-3">
               <div class="fr-input-group">
-                <%= f.label :start_date_gteq, "Date de début à partir de" %>
-                <%= f.date_field :start_date_gteq, class: "fr-input" %>
+                <%= f.label :modified_at_gteq, "Début de la période : jj/mm/aaaa" %>
+                <%= f.date_field :modified_at_gteq, class: "fr-input" %>
               </div>
             </div>
 
             <div class="fr-col-3">
               <div class="fr-input-group">
-                <%= f.label :start_date_lteq, "Date de début jusqu'à" %>
-                <%= f.date_field :start_date_lteq, class: "fr-input" %>
+                <%= f.label :modified_at_lteq, "Fin de la période : jj/mm/aaaa" %>
+                <%= f.date_field :modified_at_lteq, class: "fr-input" %>
               </div>
             </div>
           </div>

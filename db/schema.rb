@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_09_102310) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_11_152436) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -158,6 +158,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_09_102310) do
     t.datetime "discarded_at"
     t.bigint "size_id"
     t.bigint "criticality_id"
+    t.date "modified_at"
     t.index ["creator_id"], name: "index_establishment_trackings_on_creator_id"
     t.index ["criticality_id"], name: "index_establishment_trackings_on_criticality_id"
     t.index ["discarded_at"], name: "index_establishment_trackings_on_discarded_at"

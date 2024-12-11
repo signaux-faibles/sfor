@@ -47,7 +47,7 @@
                 <th>Statut</th>
                 <th>Criticité</th>
                 <th>Assignés</th>
-                <th><%= sort_link @q, :start_date, "Dernière modification" %></th>
+                <th><%= sort_link @q, :modified_at, "Dernière modification" %></th>
                 <th>Département</th>
                 <th>Actions</th>
               </tr>
@@ -64,7 +64,7 @@
                     <% end %>
                   </td>
                   <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
-                  <td><%= tracking.start_date.present? ? l(tracking.start_date, format: :default) : '-' %></td>
+                  <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
                   <td><%= tracking.establishment.department.code %></td>
                   <td>
                     <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>

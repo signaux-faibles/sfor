@@ -27,6 +27,9 @@ class EstablishmentTracking < ApplicationRecord
 
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
 
+  before_create :set_modified_at
+  before_save :update_modified_at_if_criticality_changed
+
   validates :referents, presence: true
 
   validate :single_in_progress_tracking, if: :in_progress?
@@ -41,7 +44,7 @@ class EstablishmentTracking < ApplicationRecord
   }
 
   def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "criticality_id", "size_id", "updated_at"]
+    ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "criticality_id", "size_id", "updated_at", "modified_at"]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -75,5 +78,13 @@ class EstablishmentTracking < ApplicationRecord
     if establishment.establishment_trackings.where(state: 'in_progress').where.not(id: id).exists?
       errors.add(:state, 'Il ne peut y avoir qu\'un seul accompagnement en cours pour un établissement donné')
     end
+  end
+
+  def set_modified_at
+    self.modified_at ||= Date.current
+  end
+
+  def update_modified_at_if_criticality_changed
+    self.modified_at = Date.current if criticality_id_changed?
   end
 end

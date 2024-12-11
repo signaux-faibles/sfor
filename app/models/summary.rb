@@ -5,6 +5,8 @@ class Summary < ApplicationRecord
   belongs_to :network, optional: false
   belongs_to :locked_by_user, class_name: 'User', foreign_key: 'locked_by', optional: true
 
+  after_save :update_establishment_tracking_modified_at
+
   validates :content, presence: true
   validates :network_id, presence: true
   validates :establishment_tracking_id, uniqueness: { scope: :network_id }
@@ -25,4 +27,8 @@ class Summary < ApplicationRecord
   end
 
   private
+
+  def update_establishment_tracking_modified_at
+    establishment_tracking.update(modified_at: Date.current)
+  end
 end
