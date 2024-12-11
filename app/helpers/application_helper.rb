@@ -52,4 +52,17 @@ module ApplicationHelper
       'fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon'
     end
   end
+
+  def paragraph_style_for(level)
+    case level
+    when 'Niveau rouge'
+      'background-color: var(--warning-950-100); color: var(--error-425-625);'
+    when 'Niveau orange'
+      'background-color: var(--brown-opera-950-100); color: var(--warning-425-625);'
+    when 'Niveau vert'
+      'background-color: var(--success-950-100); color: var(--success-425-625);'
+    else
+      'background-color: grey; color: black;'
+    end
+  end
 end

@@ -60,7 +60,7 @@
                   <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
                   <td>
                     <% if tracking.criticality.present? %>
-                      <%= content_tag :p, tracking.criticality.name, class: badge_class_for(tracking.criticality.name) %>
+                      <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name)}  %>
                     <% end %>
                   </td>
                   <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
@@ -94,12 +94,17 @@
               <ul class="fr-card__desc" style="list-style:none;">
                 <li>SIRET: <%= tracking.establishment.siret %></li>
                 <li>Assignés: <%= tracking.referents.map(&:full_name).join(', ') %></li>
-                <li>Département: <%= tracking.establishment.department.name %></li>
+                <li>Département: <%= tracking.establishment&.department&.code %></li>
               </ul>
               <div class="fr-card__start">
                 <ul class="fr-badges-group">
                   <li>
                     <%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %>
+                  </li>
+                  <li>
+                    <% if tracking.criticality.present? %>
+                      <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name)} %>
+                    <% end %>
                   </li>
                 </ul>
               </div>

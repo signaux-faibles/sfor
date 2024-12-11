@@ -17,9 +17,16 @@
     </div>
   </nav>  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
     <h1 style="margin: 0;">Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
-    <span class="<%= badge_class_for(@establishment_tracking.aasm.human_state) %>">
-    <%= @establishment_tracking.aasm.human_state %>
-  </span>
+      <ul class="fr-badges-group fr-pt-1w">
+        <li>
+          <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state) %>
+        </li>
+        <li>
+          <% if @establishment_tracking.criticality.present? %>
+            <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: paragraph_style_for(@establishment_tracking.criticality.name)} %>
+          <% end %>
+        </li>
+      </ul>
   </div>
   <div class="fr-tabs">
     <ul class="fr-tabs__list custom-background fr-pb-0" role="tablist" aria-label="Gestion des onglets">
