@@ -64,11 +64,17 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def new_by_siret
-    # TODO. ce code a vocation à disparaître. Dans le futur on veut avoir la base de SIREN/SIRET dans la bdd de l'appli rails
     @establishment = Establishment.find_by(siret: params[:siret])
 
     if @establishment
-      redirect_to new_establishment_establishment_tracking_path(@establishment)
+      # Check if there's an existing in-progress tracking
+      in_progress_tracking = @establishment.establishment_trackings.find_by(state: 'in_progress')
+      if in_progress_tracking
+        redirect_to establishment_establishment_tracking_path(@establishment, in_progress_tracking),
+                    alert: "Il y a déjà un accompagnement en cours pour cet établissement."
+      else
+        redirect_to new_establishment_establishment_tracking_path(@establishment)
+      end
     else
       department = Department.find_by(code: params[:code_departement])
 
@@ -87,7 +93,8 @@ class EstablishmentTrackingsController < ApplicationController
       )
 
       if @establishment.save
-        redirect_to new_establishment_establishment_tracking_path(@establishment), notice: 'Établissement créé avec succès.'
+        redirect_to new_establishment_establishment_tracking_path(@establishment),
+                    notice: 'Établissement créé avec succès.'
       else
         redirect_to root_path, alert: "Impossible de créer l'établissement: #{@establishment.errors.full_messages.join(', ')}"
       end
