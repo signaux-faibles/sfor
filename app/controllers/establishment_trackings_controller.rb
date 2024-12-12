@@ -174,7 +174,7 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def tracking_params
-    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, tracking_label_ids: [], action_ids: [], sector_ids: [])
+    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, tracking_label_ids: [], action_ids: [], sector_ids: [], participant_ids: [], referent_ids: [])
   end
 
   def contributor_params
