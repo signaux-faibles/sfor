@@ -4,7 +4,16 @@ class EstablishmentTrackingsController < ApplicationController
   before_action :set_system_labels, only: %i[new new_by_siret edit update create]
 
   def index
-    # Storing user's layout choice (cards or table)
+    if params[:clear_filters]
+      session[:establishment_tracking_filters] = nil
+      params[:q] = {}
+    elsif params[:q].present?
+      session[:establishment_tracking_filters] = params[:q]
+    elsif session[:establishment_tracking_filters].present?
+      params[:q] = session[:establishment_tracking_filters]
+    end
+
+    # Storing user's layout choice (cards or table). TODO put it in the session
     @current_view = params.dig(:q, :view) || "table"
 
     # Removing `view` from `q` so it doesn't affect Ransack

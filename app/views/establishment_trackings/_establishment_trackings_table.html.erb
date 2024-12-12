@@ -32,7 +32,7 @@
     </div>
   </div>
 </div>
-<div data-view-toggle-target="tableView" style="<%= @current_view == 'cards' ? 'display: none;' : 'display: block;' %>">
+<div id="results" data-view-toggle-target="tableView" style="<%= @current_view == 'cards' ? 'display: none;' : 'display: block;' %>">
 
   <div class="fr-table" id="table-md-component">
     <div class="fr-table__wrapper">
@@ -117,6 +117,6 @@
 </div>
 
 <div class="fr-mt-3w fr-mb-3w" data-view-toggle-target="pagination">
-  <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit! } %>
+  <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit!, anchor: 'results' } %>
 </div>
 

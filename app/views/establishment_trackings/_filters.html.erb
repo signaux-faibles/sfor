@@ -131,7 +131,7 @@
               <%= params.dig(:q, :filters_open) == "true" ? 'Réduire les critères supplémentaires' : 'Afficher des critères supplémentaires' %>
             <% end %>
             <%= f.submit "Filtrer", class: "fr-btn" %>
-            <%= link_to "Réinitialiser les filtres", establishment_trackings_path, class: "fr-btn fr-btn--secondary" %>
+            <%= link_to "Réinitialiser les filtres", establishment_trackings_path(clear_filters: true), class: "fr-btn fr-btn--secondary", data: { turbo: false} %>
           </div>
         </div>
       </div>
