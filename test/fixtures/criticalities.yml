@@ -1,7 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
+niveau_vert:
+  name: 'niveau vert'
 
-two:
-  name: MyString
+niveau_orange:
+  name: 'niveau orange'
+
+niveau_rouge:
+  name: 'niveau rouge'

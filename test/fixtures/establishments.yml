@@ -10,6 +10,12 @@ establishment_paris_2:
     raison_sociale: 'Etablissement Paris 2'
     department: department_paris
 
+establishment_paris_no_trackings:
+  siren: '123456711'
+  siret: '12345678900011'
+  raison_sociale: 'Etablissement Paris No trackings'
+  department: department_paris
+
 establishment_finistere:
   siren: '987654321'
   siret: '98765432100002'

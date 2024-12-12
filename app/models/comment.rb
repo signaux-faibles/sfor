@@ -11,6 +11,7 @@ class Comment < ApplicationRecord
   private
 
   def update_establishment_tracking_modified_at
-    establishment_tracking.update(modified_at: Date.current)
+    puts "Updating establishment_tracking modified_at"
+    establishment_tracking.update!(modified_at: Date.current)
   end
 end
