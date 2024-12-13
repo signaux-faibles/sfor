@@ -22,8 +22,12 @@
 
         <p>
           <strong>Etiquettes :</strong>
-          <% @establishment_tracking.tracking_labels.each do |label| %>
-            <span class="fr-tag fr-tag--sm"><%= label.name %></span>
+          <% if @establishment_tracking.tracking_labels.any? %>
+            <% @establishment_tracking.tracking_labels.each do |label| %>
+              <span class="fr-tag fr-tag--sm"><%= label.name %></span>
+            <% end %>
+          <% else %>
+            <span>Pas d'étiquette</span>
           <% end %>
         </p>
         <p><strong>Actions réalisées
@@ -44,6 +48,14 @@
             <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
           <% else %>
             Pas de filière renseignée
+          <% end %>
+        </p>
+        <p>
+          <strong>Coordonnées du dirigeant :</strong>
+          <% if @establishment_tracking.contact %>
+            <%= @establishment_tracking.contact%>
+          <% else %>
+            Pas de coordonnées renseignées
           <% end %>
         </p>
         <h3>Autres accompagnements</h3>

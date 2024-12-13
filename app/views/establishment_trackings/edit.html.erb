@@ -1,62 +1,106 @@
-<div class="fr-container">
-  <div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
-    <h1>Modifier l'accompagnement pour <%= @establishment.siret %></h1>
-    <%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
-      <% if @establishment_tracking.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@establishment_tracking.errors.count, "erreur") %> lors de la modification de cet accompagnement :</h2>
-          <ul>
-            <% @establishment_tracking.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
+<%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
+
+  <div class="fr-container">
+    <h1>Modifier les informations</h1>
+
+
+    <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
+      <div class="fr-col-6">
+
+        <div class="fr-p-3w">
+          <h2>Informations sur l'accompagnement</h2>
+          <% if @establishment_tracking.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@establishment_tracking.errors.count, "erreur") %> lors de la modification de cet
+                accompagnement :</h2>
+              <ul>
+                <% @establishment_tracking.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <% if policy(@establishment_tracking).manage_state? %>
+            <div class="fr-input-group">
+              <%= form.label :state, 'Statut' %>
+              <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
+            </div>
+          <% else %>
+            <%= form.hidden_field :state, value: @establishment_tracking.state %>
+          <% end %>
+
+          <div class="fr-input-group">
+            <%= form.label :criticality_id, 'Criticité' %>
+            <%= form.collection_select :criticality_id, Criticality.all, :id, :name, {}, { class: 'fr-select' } %>
+          </div>
+
+          <div class="fr-input-group">
+            <%= form.label :tracking_label_ids, 'Étiquettes' %>
+            <%= form.select :tracking_label_ids,
+                            @system_labels,
+                            {},
+                            { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+          </div>
+
+          <div class="fr-input-group">
+            <%= form.label :action_ids, 'Actions réalisées' %>
+            <%= form.collection_select :action_ids, Action.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
+      <div class="fr-col-6">
+        <div class="fr-p-3w">
+          <h2>Informations sur l'établissement</h2>
+
+          <p class="fr-m-0"><strong>SIRET</strong></p>
+          <p><%= @establishment_tracking.establishment.siret %></p>
+          <div class="fr-input-group">
+            <%= form.label :size_id, 'Taille de l\'entreprise' %>
+            <%= form.collection_select :size_id, Size.all, :id, :name, {}, { class: 'fr-select' } %>
+          </div>
+
+          <div class="fr-input-group">
+            <%= form.label :sector_ids, 'Secteurs' %>
+            <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+          </div>
+
+          <div class="fr-input-group">
+            <%= form.label :contact, "Coordonnées du dirigeant" %>
+            <%= form.text_area :contact,
+                               class: "fr-input",
+                               data: { controller: "auto-resize", action: "input->auto-resize#adjust" } %>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="fr-grid-row fr-grid-row--left fr-mb-3w">
+      <div class="fr-col-6">
+        <div class="">
+
+
+          <ul class="fr-btns-group fr-btns-group--inline-md">
+            <li>
+              <%= form.submit 'Enregistrer les modifications', class: 'fr-btn' %>
+            </li>
+            <li>
+              <%= link_to 'Annuler', establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary' %>
+            </li>
           </ul>
         </div>
-      <% end %>
-
-      <% if policy(@establishment_tracking).manage_state? %>
-        <div class="fr-input-group">
-          <%= form.label :state, 'Statut' %>
-          <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
-        </div>
-      <% else %>
-        <%= form.hidden_field :state, value: @establishment_tracking.state %>
-      <% end %>
-
-      <div class="fr-input-group">
-        <%= form.label :tracking_label_ids, 'Étiquettes' %>
-        <%= form.select :tracking_label_ids,
-                        @system_labels,
-                        {},
-                        { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
       </div>
+    </div>
 
-      <div class="fr-input-group">
-        <%= form.label :size_id, 'Taille de l\'entreprise' %>
-        <%= form.collection_select :size_id, Size.all, :id, :name, {}, { class: 'fr-select' } %>
-      </div>
 
-      <div class="fr-input-group">
-        <%= form.label :sector_ids, 'Secteurs' %>
-        <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
-      </div>
-
-      <div class="fr-input-group">
-        <%= form.label :criticality_id, 'Criticité' %>
-        <%= form.collection_select :criticality_id, Criticality.all, :id, :name, {}, { class: 'fr-select' } %>
-      </div>
-
-      <div class="fr-input-group">
-        <%= form.label :action_ids, 'Actions réalisées' %>
-        <%= form.collection_select :action_ids, Action.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
-      </div>
-      <ul class="fr-btns-group fr-btns-group--inline-md">
-        <li>
-          <%= form.submit 'Mettre à jour l\'accompagnement', class: 'fr-btn' %>
-        </li>
-        <li>
-          <%= link_to 'Annuler', establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary' %>
-        </li>
-      </ul>
-    <% end %>
   </div>
-</div>
+
+
+<% end %>
+
+
