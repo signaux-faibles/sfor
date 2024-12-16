@@ -13,7 +13,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     end_date: Field::Date,
     establishment: Field::BelongsToSearch.with_options(
       searchable: true,
-      searchable_fields: ['name']
+      searchable_fields: ['raison_sociale']
     ),
     participants: Field::HasMany,
     start_date: Field::Date,

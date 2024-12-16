@@ -55,4 +55,24 @@ class EstablishmentTrackingTest < ActiveSupport::TestCase
     assert_not_equal original_modified_at, tracking.modified_at
     assert_equal Date.current, tracking.modified_at
   end
+
+  test "cannot create a new tracking if one is in_progress or under_surveillance" do
+    establishment = establishments(:establishment_paris_no_trackings)
+
+    establishment.establishment_trackings.create!(
+      state: 'in_progress',
+      creator: users(:user_crp_paris),
+      referents: [users(:user_crp_paris)]
+    )
+
+    new_tracking = establishment.establishment_trackings.new(
+      state: 'in_progress',
+      creator: users(:user_crp_paris),
+      referents: [users(:user_crp_paris)]
+    )
+
+    # Validate the new tracking is invalid
+    assert_not new_tracking.valid?
+    assert_includes new_tracking.errors[:base], 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.'
+  end
 end

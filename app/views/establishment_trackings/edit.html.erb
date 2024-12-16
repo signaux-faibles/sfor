@@ -1,8 +1,7 @@
 <%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
 
   <div class="fr-container">
-    <h1>Modifier les informations</h1>
-
+    <h1>Modifier les informations - <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
 
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
       <div class="fr-col-6">

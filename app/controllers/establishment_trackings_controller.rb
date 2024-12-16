@@ -19,7 +19,9 @@ class EstablishmentTrackingsController < ApplicationController
     # Removing `view` from `q` so it doesn't affect Ransack
     clean_params = params[:q]&.except(:view)
 
-    @q = policy_scope(EstablishmentTracking).ransack(clean_params)
+    # We don't want discarded trackings
+    base_scope = policy_scope(EstablishmentTracking).kept
+    @q = base_scope.ransack(clean_params)
 
     if params.dig(:q, :my_tracking) == '1'
       @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)
@@ -68,9 +70,9 @@ class EstablishmentTrackingsController < ApplicationController
 
     if @establishment
       # Check if there's an existing in-progress tracking
-      in_progress_tracking = @establishment.establishment_trackings.find_by(state: 'in_progress')
-      if in_progress_tracking
-        redirect_to establishment_establishment_tracking_path(@establishment, in_progress_tracking),
+      active_tracking = @establishment.establishment_trackings.find_by(state: ['in_progress', 'under_surveillance'])
+      if active_tracking
+        redirect_to establishment_establishment_tracking_path(@establishment, active_tracking),
                     alert: "Il y a déjà un accompagnement en cours pour cet établissement."
       else
         redirect_to new_establishment_establishment_tracking_path(@establishment)
@@ -105,12 +107,24 @@ class EstablishmentTrackingsController < ApplicationController
   end
 
   def update
-    if update_state && @establishment_tracking.update(tracking_params)
-      flash[:success] = 'L\'accompagnement a été mis à jour avec succès.'
-      redirect_to [@establishment, @establishment_tracking]
-    else
-      render :edit, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      submitted_label_ids = tracking_params[:tracking_label_ids].reject(&:blank?).map(&:to_i)
+
+      existing_non_system_label_ids = @establishment_tracking.tracking_labels.where(system: false).pluck(:id)
+
+      combined_label_ids = (submitted_label_ids + existing_non_system_label_ids).uniq
+
+      params_to_update = tracking_params.except(:tracking_label_ids).merge(tracking_label_ids: combined_label_ids)
+
+      if update_state && @establishment_tracking.update(params_to_update)
+        flash[:success] = 'L\'accompagnement a été mis à jour avec succès.'
+        redirect_to [@establishment, @establishment_tracking]
+      else
+        raise ActiveRecord::Rollback
+      end
     end
+  rescue ActiveRecord::Rollback
+    render :edit, status: :unprocessable_entity
   end
 
   def create

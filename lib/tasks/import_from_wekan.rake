@@ -58,6 +58,8 @@ def create_establishment_tracking(card, creator, establishment, lists, siret, us
     establishment_tracking.contact = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }[:value]
   end
 
+  establishment_tracking.modified_at = card[:modifiedAt] || DateTime.now
+
   if establishment_tracking.save
     begin
       establishment_tracking.discard!
