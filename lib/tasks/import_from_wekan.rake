@@ -145,7 +145,7 @@ def create_all_labels(board_labels, card, establishment_tracking)
           if establishment_tracking.criticality.nil?
             establishment_tracking.criticality = criticality
             if establishment_tracking.save
-              puts "Assigned criticality '#{criticality.name}' to EstablishmentTracking #{establishment_tracking.id}."
+              #puts "Assigned criticality '#{criticality.name}' to EstablishmentTracking #{establishment_tracking.id}."
             else
               log_errors(establishment_tracking, "criticality assignment")
             end
