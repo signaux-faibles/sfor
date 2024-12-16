@@ -39,11 +39,10 @@ class EstablishmentTrackingExcelGenerator
 
   def add_filter_details_sheet(workbook)
     workbook.add_worksheet(name: "Filtres") do |sheet|
-      sheet.add_row ["Filtre", "Condition", "Valeurs"]
+      sheet.add_row ["Filtre", "Valeurs"]
       extract_filters.each do |filter|
         sheet.add_row [
                         filter_label(filter[:attribute]),
-                        filter[:predicate],
                         filter[:values]
                       ]
       end
