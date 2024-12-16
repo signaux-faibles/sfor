@@ -244,8 +244,21 @@ namespace :import_from_wekan do
     swimlanes.find({ boardId: { "$in": boards_ids } }).sort(title: 1).each do |swimlane|
       puts swimlane[:title]
       board_label = boards.find(_id: swimlane[:boardId]).first[:labels].map { |obj| [obj["_id"], obj["name"]] }.to_h
-      department_string = swimlane[:title].match(extract_department_from_swimlane_title_regex)[1]
+
+      title_match = swimlane[:title].match(extract_department_from_swimlane_title_regex)
+      unless title_match
+        puts "No department information found in swimlane title: #{swimlane[:title]}"
+        next
+      end
+
+      department_string = title_match[1]
       department = Department.find_by(code: department_string)
+
+      unless department
+        puts "Department not found for code: #{department_string}"
+        next
+      end
+
       cards.find({ swimlaneId: swimlane[:_id] }).each do |card|
         custom_field_siret = card[:customFields].find { |customField| customField["value"] =~ sf_siret_regex }&.dig(:value)
 
