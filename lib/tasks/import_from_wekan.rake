@@ -62,7 +62,9 @@ def create_establishment_tracking(card, creator, establishment, lists, siret, us
 
   if establishment_tracking.save
     begin
-      establishment_tracking.discard!
+      if card[:archived]
+        establishment_tracking.discard!
+      end
     rescue Discard::RecordNotDiscarded => e
       if establishment_tracking.discarded?
         # puts "Accompagnement is already discarded: #{card[:siret]}"
