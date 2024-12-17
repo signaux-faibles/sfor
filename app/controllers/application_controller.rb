@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   def check_user_segment
     return if devise_controller? || request.path == unauthorized_path
 
-    if current_user && !%w[crp dreets_reseaucrp].include?(current_user.segment.name)
+    if current_user && !%w[crp dreets_reseaucrp finances].include?(current_user.segment.name)
       redirect_to unauthorized_path, alert: "Vous n'êtes pas autorisé à accéder à cette section."
     end
   end
