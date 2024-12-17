@@ -4,14 +4,7 @@ class EstablishmentTrackingsController < ApplicationController
   before_action :set_system_labels, only: %i[new new_by_siret edit update create]
 
   def index
-    if params[:clear_filters]
-      session[:establishment_tracking_filters] = nil
-      params[:q] = {}
-    elsif params[:q].present?
-      session[:establishment_tracking_filters] = params[:q]
-    elsif session[:establishment_tracking_filters].present?
-      params[:q] = session[:establishment_tracking_filters]
-    end
+    params[:q] = handle_filters(params)
 
     # Storing user's layout choice (cards or table). TODO put it in the session
     @current_view = params.dig(:q, :view) || "table"
@@ -34,13 +27,7 @@ class EstablishmentTrackingsController < ApplicationController
     respond_to do |format|
       format.html
       format.xlsx do
-        all_establishment_trackings = @establishment_trackings.includes(:referents, :participants, :criticality, establishment: :department)
-
-        response.headers['Cache-Control'] = 'no-store'
-        send_data generate_excel(all_establishment_trackings, @q),
-                  filename: "accompagnements.xlsx",
-                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                  disposition: 'attachment'
+        export_establishment_trackings(@establishment_trackings, @q)
       end
     end
   end
@@ -52,7 +39,7 @@ class EstablishmentTrackingsController < ApplicationController
     @codefi_summaries = @summaries.find { |s| s.network.name == 'CODEFI' }
     @user_network_summaries = @summaries.find { |s| s.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
 
-    @comments = Comment.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
+    @comments = Comment.includes([:network, :user]).where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
 
     @codefi_comments = @comments.select { |c| c.network.name == 'CODEFI' }
     @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
@@ -204,5 +191,26 @@ class EstablishmentTrackingsController < ApplicationController
 
   def generate_excel(establishment_trackings, filters)
     EstablishmentTrackingExcelGenerator.new(establishment_trackings, filters, current_user).generate
+  end
+
+  def handle_filters(params)
+    if params[:clear_filters]
+      session[:establishment_tracking_filters] = nil
+      {}
+    elsif params[:q].present?
+      session[:establishment_tracking_filters] = params[:q]
+      params[:q]
+    else
+      session[:establishment_tracking_filters] || {}
+    end
+  end
+
+  def export_establishment_trackings(establishment_trackings, query)
+    all_establishment_trackings = establishment_trackings.includes(:establishment, :referents)
+    response.headers['Cache-Control'] = 'no-store'
+    send_data generate_excel(all_establishment_trackings, query),
+              filename: "accompagnements.xlsx",
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              disposition: 'attachment'
   end
 end
