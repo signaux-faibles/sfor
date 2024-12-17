@@ -23,7 +23,6 @@ class EntityDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
-    users
     created_at
   ].freeze
 

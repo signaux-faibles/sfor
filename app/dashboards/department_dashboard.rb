@@ -24,7 +24,6 @@ class DepartmentDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     code
-    establishments
     name
   ].freeze
 

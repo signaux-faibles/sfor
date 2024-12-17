@@ -24,7 +24,6 @@ class RegionDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     code
-    departments
     libelle
   ].freeze
 

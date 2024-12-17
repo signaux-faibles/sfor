@@ -24,8 +24,6 @@ class NetworkDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
-    segments
-    users
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES

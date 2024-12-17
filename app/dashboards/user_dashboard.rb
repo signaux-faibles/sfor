@@ -97,8 +97,6 @@ class UserDashboard < Administrate::BaseDashboard
     entity
     networks
     geo_access
-    participated_trackings
-    referent_trackings
     roles
     password
     password_confirmation

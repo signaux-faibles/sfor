@@ -32,11 +32,11 @@ class EstablishmentTracking < ApplicationRecord
 
   validates :referents, presence: true
 
-  validate :single_active_tracking, on: :create
+  validate :single_active_tracking, if: -> { state.in?(['in_progress', 'under_surveillance']) }
 
   scope :in_progress, -> { where(state: 'in_progress') }
   scope :completed, -> { where(state: 'completed') }
-  scope :cancelled, -> { where(state: 'cancelled') }
+  scope :under_surveillance, -> { where(state: 'under_surveillance') }
 
   scope :with_user_as_referent_or_participant, ->(user) {
     joins(:tracking_participants, :tracking_referents)
@@ -75,7 +75,10 @@ class EstablishmentTracking < ApplicationRecord
   private
 
   def single_active_tracking
-    if establishment.establishment_trackings.where(state: ['in_progress', 'under_surveillance']).exists?
+    if establishment.establishment_trackings
+                    .where(state: ['in_progress', 'under_surveillance'])
+                    .where.not(id: id) # Exclude the current record if updating
+                    .exists?
       errors.add(:base, 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.')
     end
   end

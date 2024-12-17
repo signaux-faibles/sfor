@@ -16,13 +16,14 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
       searchable_fields: ['raison_sociale']
     ),
     participants: Field::HasMany,
+    referents: Field::HasMany,
     start_date: Field::Date,
     state: Field::String,
-    tracking_participants: Field::HasMany,
     tracking_labels: Field::HasMany,
     establishment_tracking_labels: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
+    modified_at: Field::DateTime,
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -35,6 +36,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     creator
     end_date
     establishment
+    modified_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -45,11 +47,12 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     end_date
     establishment
     participants
+    referents
     start_date
     state
-    tracking_participants
     created_at
     updated_at
+    modified_at
   ].freeze
 
   # FORM_ATTRIBUTES
@@ -59,6 +62,8 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     creator
     establishment
     participants
+    referents
+    state
     tracking_labels
     start_date
     end_date

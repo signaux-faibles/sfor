@@ -25,7 +25,6 @@ class SegmentDashboard < Administrate::BaseDashboard
     id
     name
     network
-    users
     created_at
   ].freeze
 

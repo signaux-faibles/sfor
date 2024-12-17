@@ -29,12 +29,12 @@ class EstablishmentTrackingsController < ApplicationController
       @establishment_trackings = @q.result
     end
 
-    @paginated_establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels).page(params[:page]).per(15)
+    @paginated_establishment_trackings = @establishment_trackings.includes(:referents, :criticality, establishment: :department).page(params[:page]).per(15)
 
     respond_to do |format|
       format.html
       format.xlsx do
-        all_establishment_trackings = @establishment_trackings.includes(:establishment, :referents, :tracking_labels)
+        all_establishment_trackings = @establishment_trackings.includes(:referents, :participants, :criticality, establishment: :department)
 
         response.headers['Cache-Control'] = 'no-store'
         send_data generate_excel(all_establishment_trackings, @q),

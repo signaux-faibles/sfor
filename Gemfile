@@ -115,6 +115,7 @@ group :development do
 
   # Generate erd diagrams
   gem 'rails-erd'
+  gem 'bullet'
 end
 
 group :test do

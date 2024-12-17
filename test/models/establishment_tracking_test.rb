@@ -8,7 +8,6 @@ class EstablishmentTrackingTest < ActiveSupport::TestCase
       referents: [users(:user_crp_paris)]
     )
 
-    puts tracking.modified_at
     assert_equal Date.current, tracking.modified_at
   end
 
