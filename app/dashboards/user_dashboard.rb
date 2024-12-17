@@ -99,7 +99,6 @@ class UserDashboard < Administrate::BaseDashboard
     geo_access
     participated_trackings
     referent_trackings
-    departments
     roles
     password
     password_confirmation
