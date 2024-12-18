@@ -72,10 +72,13 @@ class ImportEstablishmentTrackingsService
 
           if creator
             establishment_tracking = create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
-            create_summary(card, establishment_tracking, siret)
-
-            create_all_comments(card, card_comments, establishment_tracking, siret, users)
-            create_all_labels(board_label, card, establishment_tracking)
+            if establishment_tracking.present?
+              create_summary(card, establishment_tracking, siret)
+              create_all_comments(card, card_comments, establishment_tracking, siret, users)
+              create_all_labels(board_label, card, establishment_tracking)
+            else
+              puts "Failed to create EstablishmentTracking for card #{card[:title]} (SIRET: #{siret})."
+            end
           else
             unique_emails.add(mongo_creator[:username])
           end
@@ -158,22 +161,23 @@ class ImportEstablishmentTrackingsService
     case wekan_status
     when 'Suivi terminé'
       establishment_tracking.state = 'completed'
-      save_tracking(establishment_tracking, siret, card[:title])
+      return save_tracking(establishment_tracking, siret, card[:title]) ? establishment_tracking : nil
     when 'A définir', 'Suivi en cours'
       establishment_tracking.state = 'in_progress'
       unless save_tracking(establishment_tracking, siret, card[:title])
         log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
+        return nil
       end
     when 'Veille'
       establishment_tracking.state = 'under_surveillance'
       unless save_tracking(establishment_tracking, siret, card[:title])
         log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
+        return nil
       end
     else
       puts "Colonne inconnue : #{wekan_status} for SIRET #{siret}."
+      return nil
     end
-
-    establishment_tracking
   end
 
   def create_summary(card, establishment_tracking, siret)
