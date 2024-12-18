@@ -40,8 +40,6 @@ class ImportEstablishmentTrackingsService
       puts swimlane[:title]
       board_label = boards.find(_id: swimlane[:boardId]).first[:labels].map { |obj| [obj["_id"], obj["name"]] }.to_h
 
-      puts "Tableau : #{board_label}"
-
       title_match = swimlane[:title].match(extract_department_from_swimlane_title_regex)
       unless title_match
         puts "No department information found in swimlane title: #{swimlane[:title]}"
