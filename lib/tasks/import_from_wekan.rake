@@ -154,30 +154,40 @@ class ImportEstablishmentTrackingsService
     # If cards are archived in wekan, we want the with state 'completed' and discarded in rails
     if card[:archived]
       establishment_tracking.state = 'completed'
-      save_and_discard_tracking(establishment_tracking, siret, card[:title])
-      return
+      unless save_and_discard_tracking(establishment_tracking, siret, card[:title])
+        puts "Failed to save and discard tracking for archived card: #{card[:title]} (SIRET: #{siret})."
+        return nil
+      end
+      return establishment_tracking
     end
 
     case wekan_status
     when 'Suivi terminé'
       establishment_tracking.state = 'completed'
-      return save_tracking(establishment_tracking, siret, card[:title]) ? establishment_tracking : nil
+      unless save_tracking(establishment_tracking, siret, card[:title])
+        puts "Failed to save completed tracking for card: #{card[:title]} (SIRET: #{siret})."
+        return nil
+      end
     when 'A définir', 'Suivi en cours'
       establishment_tracking.state = 'in_progress'
       unless save_tracking(establishment_tracking, siret, card[:title])
+        puts "Failed to save in-progress tracking for card: #{card[:title]} (SIRET: #{siret})."
         log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
         return nil
       end
     when 'Veille'
       establishment_tracking.state = 'under_surveillance'
       unless save_tracking(establishment_tracking, siret, card[:title])
+        puts "Failed to save under-surveillance tracking for card: #{card[:title]} (SIRET: #{siret})."
         log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
         return nil
       end
     else
-      puts "Colonne inconnue : #{wekan_status} for SIRET #{siret}."
+      puts "Unknown column: #{wekan_status} for card: #{card[:title]} (SIRET: #{siret})."
       return nil
     end
+
+    establishment_tracking
   end
 
   def create_summary(card, establishment_tracking, siret)
@@ -322,12 +332,13 @@ class ImportEstablishmentTrackingsService
   end
 
   def log_save_error(tracking, siret, title)
-    puts "Impossible de créer la fiche pour #{siret}, title: #{title}."
-    puts tracking.errors.full_messages
+    puts "Failed to save EstablishmentTracking for card #{title} (SIRET: #{siret})."
+    puts "Errors: #{tracking.errors.full_messages.join(', ')}"
+    puts "Attributes: #{tracking.attributes.inspect}"
   end
 
   def log_error(siret, title, error_message)
-    puts "Erreur : #{error_message} for SIRET #{siret}, title: #{title}."
+    puts "Error for card #{title} (SIRET: #{siret}): #{error_message}"
   end
 
   def log_errors(record, context)
