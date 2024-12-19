@@ -5,15 +5,16 @@
 require 'faker'
 
 require_relative 'seeds/actions_seeds'
-require_relative 'seeds/roles_seeds'
 require_relative 'seeds/departments_seeds'
 require_relative 'seeds/geo_accesses_seed'
-require_relative 'seeds/users_seeds'
-require_relative 'seeds/campaigns_seeds'
-require_relative 'seeds/lists_seeds'
-require_relative 'seeds/activity_sectors_seeds'
-require_relative 'seeds/establishments_seeds'
-require_relative 'seeds/trackings_seeds'
+require_relative 'seeds/networks_entities_segments_seeds'
+require_relative 'seeds/admin_users_seeds'
 require_relative 'seeds/labels_and_tracking_metadata_seeds'
+
+unless Rails.env.production?
+  require_relative 'seeds/establishments_seeds'
+  require_relative 'seeds/trackings_seeds'
+  require_relative 'seeds/users_seeds'
+end
 
 puts "Database seeded"

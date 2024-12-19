@@ -587,7 +587,7 @@
           </RakeTaskImpl>
           <RakeTaskImpl id="import_from_wekan">
             <subtasks>
-              <RakeTaskImpl description="Import cards from Wekan and create corresponding Rails models" fullCommand="import_from_wekan:cards" id="cards" />
+              <RakeTaskImpl description="Import data from Wekan" fullCommand="import_from_wekan:cards" id="cards" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl id="importmap">

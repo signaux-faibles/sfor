@@ -39,7 +39,7 @@ class EstablishmentTrackingsController < ApplicationController
     @codefi_summaries = @summaries.find { |s| s.network.name == 'CODEFI' }
     @user_network_summaries = @summaries.find { |s| s.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
 
-    @comments = Comment.includes([:network, :user]).where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
+    @comments = Comment.includes([:network, :user]).where(establishment_tracking: @establishment_tracking, network_id: user_network_ids).order(created_at: :desc)
 
     @codefi_comments = @comments.select { |c| c.network.name == 'CODEFI' }
     @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
