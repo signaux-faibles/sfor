@@ -8,7 +8,6 @@ require_relative 'seeds/actions_seeds'
 require_relative 'seeds/departments_seeds'
 require_relative 'seeds/geo_accesses_seed'
 require_relative 'seeds/networks_entities_segments_seeds'
-require_relative 'seeds/admin_users_seeds'
 require_relative 'seeds/labels_and_tracking_metadata_seeds'
 
 unless Rails.env.production?
