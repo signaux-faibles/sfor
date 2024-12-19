@@ -2,6 +2,8 @@ require 'faker'
 
 puts "Creating users..."
 codefi_network = Network.find_by(name: 'CODEFI')
+crp_network = Network.find_by(name: 'CRP')
+geo_access = GeoAccess.find_by(name: 'France entière')
 
 crp_entity = Entity.find_by(name: 'DREETS')
 

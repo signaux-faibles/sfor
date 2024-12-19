@@ -11,9 +11,10 @@ require_relative 'seeds/networks_entities_segments_seeds'
 require_relative 'seeds/labels_and_tracking_metadata_seeds'
 
 unless Rails.env.production?
+  require_relative 'seeds/activity_sectors_seeds'
   require_relative 'seeds/establishments_seeds'
-  require_relative 'seeds/trackings_seeds'
   require_relative 'seeds/users_seeds'
+  require_relative 'seeds/trackings_seeds'
 end
 
 puts "Database seeded"

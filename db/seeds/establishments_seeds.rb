@@ -153,6 +153,7 @@ end
 
 puts "Done creating companies and establishments"
 
+=begin
 puts "Assigning Companies to Campaigns..."
 
 campaigns = Campaign.all
@@ -180,6 +181,7 @@ lists.each do |list|
 end
 
 puts "Companies assigned to Lists."
+=end
 
 
 
