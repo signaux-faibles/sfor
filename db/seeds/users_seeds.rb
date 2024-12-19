@@ -1,7 +1,7 @@
 require 'faker'
 
 puts "Creating users..."
-codefi_network = Network.create!(name: 'CODEFI')
+codefi_network = Network.find_by(name: 'CODEFI')
 
 crp_entity = Entity.find_by(name: 'DREETS')
 

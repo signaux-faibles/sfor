@@ -6,7 +6,7 @@ Network.create!(name: 'CODEFI')
 
 puts "Creating entities..."
 
-ntity.create!(name: 'SIGNAUX FAIBLES')
+Entity.create!(name: 'SIGNAUX FAIBLES')
 Entity.create!(name: 'DREETS')
 
 puts "Creating segments..."
