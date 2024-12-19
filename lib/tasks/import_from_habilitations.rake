@@ -45,7 +45,7 @@ namespace :users do
 
   def create_or_update_user(row)
     segment_name = row['SEGMENT']
-    if ['crp', 'dreets_reseaucrp', 'finances'].include? segment_name
+    if ['crp', 'dreets_reseaucrp', 'finances', 'sf'].include? segment_name
       email = row['ADRESSE MAIL']&.strip&.downcase
       puts "Creating new user: #{email}"
       return if %w[admin keycloakadmin].include?(email)
