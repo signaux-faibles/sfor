@@ -18,17 +18,11 @@
             </div>
           </div>
           <div class="fr-header__service">
-            <%= link_to "#Home", title: "Accueil - Signaux Faibles)"  do %>
+            <%= link_to root_path, title: "Accueil - Signaux Faibles)"  do %>
               <p class="fr-header__service-title">
                 Signaux Faibles
               </p>
             <% end %>
-            <% if user_signed_in? %>
-              <p class="fr-header__service-tagline">
-                Mieux cibler les interventions en remédiation de l’État vers les entreprises en difficulté
-              </p>
-            <% end %>
-
           </div>
         </div>
         <div class="fr-header__tools">
