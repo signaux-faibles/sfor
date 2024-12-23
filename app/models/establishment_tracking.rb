@@ -27,8 +27,8 @@ class EstablishmentTracking < ApplicationRecord
 
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
 
-  before_save :set_or_update_modified_at
-
+  before_save :update_modified_at_if_criticality_changed
+  before_create :set_modified_at
 
   validates :referents, presence: true
 
@@ -83,11 +83,11 @@ class EstablishmentTracking < ApplicationRecord
     end
   end
 
-  def set_or_update_modified_at
-    if new_record?
-      self.modified_at = modified_at.presence || Date.current
-    elsif criticality_id_changed?
-      self.modified_at = Date.current
-    end
+  def set_modified_at
+    self.modified_at = self.modified_at.presence || Date.current
+  end
+
+  def update_modified_at_if_criticality_changed
+    self.modified_at = Date.current if criticality_id_changed?
   end
 end

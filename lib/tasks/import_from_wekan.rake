@@ -150,6 +150,8 @@ class ImportEstablishmentTrackingsService
     # Wekan status
     wekan_status = lists.find("_id": card[:listId]).first[:title]
 
+    EstablishmentTracking.skip_callback(:save, :before, :update_modified_at_if_criticality_changed)
+
     # If cards are archived in wekan, we want the with state 'completed' and discarded in rails
     if card[:archived]
       establishment_tracking.state = 'completed'
@@ -185,6 +187,8 @@ class ImportEstablishmentTrackingsService
       puts "Unknown column: #{wekan_status} for card: #{card[:title]} (SIRET: #{siret})."
       return nil
     end
+
+    EstablishmentTracking.set_callback(:save, :before, :update_modified_at_if_criticality_changed)
 
     establishment_tracking
   end
