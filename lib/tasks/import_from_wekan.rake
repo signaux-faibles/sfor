@@ -141,6 +141,8 @@ class ImportEstablishmentTrackingsService
 
     establishment_tracking.modified_at = card[:modifiedAt].to_date rescue Date.current
 
+    establishment_tracking.skip_update_modified_at = true
+
     # Contact details
     id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
     if card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
@@ -149,8 +151,6 @@ class ImportEstablishmentTrackingsService
 
     # Wekan status
     wekan_status = lists.find("_id": card[:listId]).first[:title]
-
-    EstablishmentTracking.skip_callback(:save, :before, :update_modified_at_if_criticality_changed, raise: false)
 
     # If cards are archived in wekan, we want the with state 'completed' and discarded in rails
     if card[:archived]
@@ -187,8 +187,6 @@ class ImportEstablishmentTrackingsService
       puts "Unknown column: #{wekan_status} for card: #{card[:title]} (SIRET: #{siret})."
       return nil
     end
-
-    EstablishmentTracking.set_callback(:save, :before, :update_modified_at_if_criticality_changed, raise: false)
 
     establishment_tracking
   end

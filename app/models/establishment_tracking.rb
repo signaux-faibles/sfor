@@ -30,6 +30,8 @@ class EstablishmentTracking < ApplicationRecord
   before_save :update_modified_at_if_criticality_changed
   before_create :set_modified_at
 
+  attr_accessor :skip_update_modified_at
+
   validates :referents, presence: true
 
   validate :single_active_tracking, if: -> { state.in?(['in_progress', 'under_surveillance']) }
@@ -88,6 +90,8 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def update_modified_at_if_criticality_changed
+    return if skip_update_modified_at
+
     self.modified_at = Date.current if criticality_id_changed?
   end
 end
