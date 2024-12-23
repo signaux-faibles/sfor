@@ -84,7 +84,7 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def set_modified_at
-    self.modified_at ||= Date.current
+    self.modified_at = self.modified_at.presence || Date.current
   end
 
   def update_modified_at_if_criticality_changed

@@ -138,7 +138,7 @@ class ImportEstablishmentTrackingsService
     # Determine dates
     establishment_tracking.start_date = card[:startAt] || card[:createdAt]
     establishment_tracking.end_date = card[:endAt]
-    establishment_tracking.modified_at = card[:modifiedAt]
+    establishment_tracking.modified_at = card[:modifiedAt].to_date rescue Date.current
 
     # Contact details
     id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
