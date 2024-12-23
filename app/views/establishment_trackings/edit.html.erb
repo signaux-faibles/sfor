@@ -65,7 +65,7 @@
           </div>
 
           <div class="fr-input-group">
-            <%= form.label :sector_ids, 'Secteurs' %>
+            <%= form.label :sector_ids, 'Filières' %>
             <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
           </div>
 
@@ -82,14 +82,12 @@
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w">
       <div class="fr-col-6">
         <div class="">
-
-
           <ul class="fr-btns-group fr-btns-group--inline-md">
             <li>
-              <%= form.submit 'Enregistrer les modifications', class: 'fr-btn' %>
+              <%= link_to 'Annuler', establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary' %>
             </li>
             <li>
-              <%= link_to 'Annuler', establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary' %>
+              <%= form.submit 'Enregistrer les modifications', class: 'fr-btn' %>
             </li>
           </ul>
         </div>

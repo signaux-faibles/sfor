@@ -9,6 +9,7 @@ export default class extends Controller {
             maxOptions: null,
             persist: false,
             create: false,
+            dropdownParent: 'body',
             sortField: {
                 field: "text",
                 direction: "asc"
