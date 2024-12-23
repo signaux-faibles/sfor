@@ -108,9 +108,10 @@
                 <%= link_to tracking.establishment.raison_sociale, [tracking.establishment, tracking] %>
               </h3>
               <ul class="fr-card__desc" style="list-style:none;">
-                <li>SIRET: <%= tracking.establishment.siret %></li>
-                <li>Assignés: <%= tracking.referents.map(&:full_name).join(', ') %></li>
-                <li>Département: <%= tracking.establishment&.department&.code %></li>
+                <li>SIRET : <%= tracking.establishment.siret %></li>
+                <li>Assignés : <%= tracking.referents.map(&:full_name).join(', ') %></li>
+                <li>Département : <%= tracking.establishment&.department&.code %></li>
+                <li>Dernière modification : <%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></li>
               </ul>
               <div class="fr-card__start">
                 <ul class="fr-badges-group">
