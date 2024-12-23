@@ -27,8 +27,8 @@ class EstablishmentTracking < ApplicationRecord
 
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
 
-  before_create :set_modified_at
   before_save :update_modified_at_if_criticality_changed
+  before_create :set_modified_at
 
   validates :referents, presence: true
 
@@ -84,10 +84,6 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def set_modified_at
-    Rails.logger.info("set_modified_at called. Current value: #{self.modified_at}")
-
-    puts "set_modified_at called. Current value: #{self.modified_at}"
-
     self.modified_at = self.modified_at.presence || Date.current
   end
 
