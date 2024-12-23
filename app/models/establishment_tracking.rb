@@ -84,6 +84,10 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def set_modified_at
+    Rails.logger.info("set_modified_at called. Current value: #{self.modified_at}")
+
+    puts "set_modified_at called. Current value: #{self.modified_at}"
+
     self.modified_at = self.modified_at.presence || Date.current
   end
 
