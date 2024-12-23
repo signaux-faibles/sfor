@@ -2,7 +2,7 @@
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <h4>Synthèse</h4>
     <% if policy(@establishment_tracking).edit? %>
-      <% if summary.locked? %>
+      <% if summary.locked? && summary.locked_by != current_user.id %>
         <%= button_tag "En cours d'édition par #{User.find(summary.locked_by).email}", class: "fr-btn", disabled: true %>
       <% else %>
         <%= link_to "Modifier la synthèse", edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), data: { turbo_frame: dom_id(summary), turbo_stream: true }, class: "fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-settings-5-line" %>
