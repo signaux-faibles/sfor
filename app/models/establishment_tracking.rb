@@ -90,7 +90,7 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def update_modified_at_if_criticality_changed
-    return if skip_update_modified_at
+    return if @skip_modified_at_update
 
     self.modified_at = Date.current if criticality_id_changed?
   end

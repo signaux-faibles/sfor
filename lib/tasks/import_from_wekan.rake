@@ -141,7 +141,7 @@ class ImportEstablishmentTrackingsService
 
     establishment_tracking.modified_at = card[:modifiedAt]
 
-    establishment_tracking.skip_update_modified_at = true
+    establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
     # Contact details
     id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
