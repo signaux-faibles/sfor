@@ -11,6 +11,7 @@ class Comment < ApplicationRecord
   private
 
   def update_establishment_tracking_modified_at
+    return if establishment_tracking.skip_modified_at_update
     establishment_tracking.update!(modified_at: Date.current)
   end
 end

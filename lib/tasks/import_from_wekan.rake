@@ -139,7 +139,7 @@ class ImportEstablishmentTrackingsService
     establishment_tracking.start_date = card[:startAt] || card[:createdAt]
     establishment_tracking.end_date = card[:endAt]
 
-    establishment_tracking.modified_at = card[:modifiedAt].to_date rescue Date.current
+    establishment_tracking.modified_at = card[:modifiedAt]
 
     establishment_tracking.skip_update_modified_at = true
 
