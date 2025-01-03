@@ -196,7 +196,7 @@ class EstablishmentTrackingsController < ApplicationController
   def handle_filters(params)
     if params[:clear_filters]
       session[:establishment_tracking_filters] = nil
-      {}
+      redirect_to action: :index and {}
     elsif params[:q].present?
       session[:establishment_tracking_filters] = params[:q]
       params[:q]
