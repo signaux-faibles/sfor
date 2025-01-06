@@ -1,35 +1,48 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>SignauxFaiblesV2</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<head>
+  <title>SignauxFaiblesV2</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= stylesheet_link_tag asset_path('dsfr.css'), media: 'all' %>
-    <%= stylesheet_link_tag asset_path('utility.css'), media: 'all' %>
-    <%= javascript_importmap_tags %>
-  </head>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag asset_path('dsfr.css'), media: 'all' %>
+  <%= stylesheet_link_tag asset_path('utility.css'), media: 'all' %>
 
-  <body>
-    <%= render 'layouts/header' %>
-    <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
-    <div id="flash">
-      <% flash.delete(:timedout).each do |type, msg| %>
-        <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm">
-          <p><%= msg %></p>
-        </div>
-      <% end %>
+  <% if Rails.env.production? %>
+    <script>
+        window.sentryOnLoad = function () {
+            Sentry.init({
+                environment: "<%= ENV['SENTRY_ENV'] || Rails.env %>",
+            });
+        };
+    </script>
+
+    <script src="https://sentry.incubateur.net/js-sdk-loader/f22a298b4de4a246c7c618ef1188d340.min.js" crossorigin="anonymous"></script>
+  <% end %>
+
+  <%= javascript_importmap_tags %>
+</head>
+
+<body>
+<%= render 'layouts/header' %>
+<!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
+<div id="flash">
+  <% flash.delete(:timedout).each do |type, msg| %>
+    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm">
+      <p><%= msg %></p>
     </div>
+  <% end %>
+</div>
 
-    <main class="fr-pt-4w">
-      <%= yield %>
-    </main>
+<main class="fr-pt-4w">
+  <%= yield %>
+</main>
 
-    <%# render 'layouts/footer' %>
+<%# render 'layouts/footer' %>
 
-    <!-- Non-module script for older browsers -->
-    <script src="<%= asset_path 'dsfr.nomodule.min.js' %>" nomodule></script>
-  </body>
+<!-- Non-module script for older browsers -->
+<script src="<%= asset_path 'dsfr.nomodule.min.js' %>" nomodule></script>
+</body>
 </html>

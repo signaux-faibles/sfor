@@ -8,6 +8,8 @@ export default class extends Controller {
         this.switchView(currentView);
         // We need to include the selected view dynamically into pagination request
         this.updatePaginationLinks(currentView);
+        throw new Error('Error from view toggle');
+
     }
 
     change(event) {
