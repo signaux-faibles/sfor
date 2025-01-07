@@ -10,17 +10,26 @@
   <%= stylesheet_link_tag asset_path('dsfr.css'), media: 'all' %>
   <%= stylesheet_link_tag asset_path('utility.css'), media: 'all' %>
 
-  <% if Rails.env.production? %>
-    <script>
-        window.sentryOnLoad = function () {
-            Sentry.init({
-                environment: "<%= ENV['SENTRY_ENV'] || Rails.env %>",
-            });
-        };
-    </script>
+  <script
+    src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.min.js"
+    integrity="sha384-wYec/atCKBIhxMeAqO4JgQzLgv7nPphrOELh1UduVUFqt5DXn0Ey8pqiYEyYvZZ3"
+    crossorigin="anonymous"
+    defer>
+  </script>
 
-    <script src="https://sentry.incubateur.net/js-sdk-loader/f22a298b4de4a246c7c618ef1188d340.min.js" crossorigin="anonymous"></script>
-  <% end %>
+  <script defer>
+      document.addEventListener('DOMContentLoaded', function () {
+          Sentry.init({
+              dsn: "<%= ENV['SENTRY_DSN'] %>",
+              environment: "<%= ENV['SENTRY_ENV'] || Rails.env %>",
+              tracesSampleRate: 0.1,
+          });
+
+          <% if user_signed_in? %>
+                Sentry.setUser({email: "<%= current_user.email %>"});
+          <% end %>
+      });
+  </script>
 
   <%= javascript_importmap_tags %>
 </head>
