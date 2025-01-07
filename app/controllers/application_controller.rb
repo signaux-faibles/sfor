@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   around_action :set_time_zone
   before_action :authenticate_user!
   before_action :check_user_segment
+  before_action :set_sentry_user
+
   include Pundit::Authorization
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -30,5 +32,15 @@ class ApplicationController < ActionController::Base
 
   def set_time_zone
     Time.use_zone(current_user&.time_zone || 'Paris') { yield }
+  end
+
+  def set_sentry_user
+    if user_signed_in?
+      Sentry.set_user(
+        email: current_user.email
+      )
+    else
+      Sentry.set_user({})
+    end
   end
 end
