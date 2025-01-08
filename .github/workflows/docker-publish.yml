@@ -106,3 +106,43 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max`
+
+  upload_sourcemaps:
+    needs: [ run_tests, build_and_publish ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Precompile Rails Assets
+        run: |
+          SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bundle exec rails assets:precompile
+
+      - name: Minify JavaScript with Terser and Generate Sourcemaps
+        run: |
+          npm install -g terser
+          find ./public/assets -name '*.js' -exec terser {} --compress --mangle --source-map "content=inline,url='{}.map'" -o {} \;
+
+      - name: Upload Sourcemaps to Sentry
+        uses: getsentry/action-release@v1
+        with:
+          environment: production
+          version: ${{ github.sha }}
+          projects: sfor
+          sourcemaps: ./public/assets
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_URL: https://sentry.incubateur.net/
