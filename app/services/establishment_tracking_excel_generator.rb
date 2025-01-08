@@ -25,14 +25,15 @@ class EstablishmentTrackingExcelGenerator
         summary = tracking.summaries.find_by(network: @user.non_codefi_network)
         sheet.add_row [
                         tracking.establishment.raison_sociale,
-                        tracking.establishment.siret,
-                        tracking.establishment&.department.name,
+                        tracking.establishment.siret.to_s,
+                        tracking.establishment&.department&.name,
                         tracking.participants.map(&:full_name).join(', '),
                         tracking.referents.map(&:full_name).join(', '),
                         tracking.start_date.present? ? tracking.start_date.strftime('%d/%m/%Y') : '-',
                         tracking.aasm.human_state,
                         summary&.content || 'Aucune synthèse rédigée'
-                      ]
+                      ],
+                      types: [nil, :string, nil, nil, nil, nil, nil, nil]
       end
     end
   end
