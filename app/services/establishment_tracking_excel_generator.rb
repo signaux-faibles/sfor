@@ -20,7 +20,7 @@ class EstablishmentTrackingExcelGenerator
 
   def add_tracking_details_sheet(workbook)
     workbook.add_worksheet(name: "Accompagnements") do |sheet|
-      sheet.add_row ["Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Statut", "Synthèse"]
+      sheet.add_row ["Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Date de fin", "Statut", "Synthèse"]
       @establishment_trackings.each do |tracking|
         summary = tracking.summaries.find_by(network: @user.non_codefi_network)
         sheet.add_row [
@@ -30,6 +30,7 @@ class EstablishmentTrackingExcelGenerator
                         tracking.participants.map(&:full_name).join(', '),
                         tracking.referents.map(&:full_name).join(', '),
                         tracking.start_date.present? ? tracking.start_date.strftime('%d/%m/%Y') : '-',
+                        tracking.end_date.present? ? tracking.end_date.strftime('%d/%m/%Y') : '-',
                         tracking.aasm.human_state,
                         summary&.content || 'Aucune synthèse rédigée'
                       ],
