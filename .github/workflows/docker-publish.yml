@@ -141,6 +141,7 @@ jobs:
           version: ${{ github.sha }}
           projects: sfor
           sourcemaps: ./public/assets
+          ignore_missing: true
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
