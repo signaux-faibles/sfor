@@ -1,142 +1,144 @@
 <% if @paginated_establishment_trackings.any? %>
   <h4>Résultats de la recherche (<%= @paginated_establishment_trackings.total_count %>)</h4>
-<% else %>
-  <p>Aucun accompagnement trouvé pour cette combinaison de filtres.</p>
-<% end %>
-
-<div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-  <div class="fr-col-6">
-    <%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!),
-                class: 'fr-link--download fr-link',
-                data: { controller: 'download', action: 'click->download#disable', download_target: 'button' },
-                id: 'download-button' do %>
-      Télécharger les <%= @paginated_establishment_trackings.total_count %> résultats de la recherche
-      <span class="fr-link__detail">XLS</span>
-    <% end %>
-  </div>
-  <div class="fr-col-6">
-    <div class="fr-grid-row fr-grid-row--right">
-      <fieldset class="fr-segmented fr-segmented--sm">
-        <div class="fr-segmented__elements">
-          <div class="fr-segmented__element">
-            <input type="radio" id="view-table" name="q[toto]" value="table"
-                   data-action="view-toggle#change" data-view-toggle-target="radioInput"
-                   <%= @current_view == "table" ? "checked" : "" %>>
-            <label class="fr-label fr-icon-table-line" for="view-table">Tableau</label>
+  <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+    <div class="fr-col-6">
+      <%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!),
+                  class: 'fr-link--download fr-link',
+                  data: { controller: 'download', action: 'click->download#disable', download_target: 'button' },
+                  id: 'download-button' do %>
+        Télécharger les <%= @paginated_establishment_trackings.total_count %> résultats de la recherche
+        <span class="fr-link__detail">XLS</span>
+      <% end %>
+    </div>
+    <div class="fr-col-6">
+      <div class="fr-grid-row fr-grid-row--right">
+        <fieldset class="fr-segmented fr-segmented--sm">
+          <div class="fr-segmented__elements">
+            <div class="fr-segmented__element">
+              <input type="radio" id="view-table" name="q[toto]" value="table"
+                     data-action="view-toggle#change" data-view-toggle-target="radioInput"
+                     <%= @current_view == "table" ? "checked" : "" %>>
+              <label class="fr-label fr-icon-table-line" for="view-table">Tableau</label>
+            </div>
+            <div class="fr-segmented__element">
+              <input type="radio" id="view-cards" name="q[toto]" value="cards"
+                     data-action="view-toggle#change" data-view-toggle-target="radioInput"
+                     <%= @current_view == "cards" ? "checked" : "" %>>
+              <label class="fr-label fr-icon-layout-grid-fill" for="view-cards">Vignettes</label>
+            </div>
           </div>
-          <div class="fr-segmented__element">
-            <input type="radio" id="view-cards" name="q[toto]" value="cards"
-                   data-action="view-toggle#change" data-view-toggle-target="radioInput"
-                   <%= @current_view == "cards" ? "checked" : "" %>>
-            <label class="fr-label fr-icon-layout-grid-fill" for="view-cards">Vignettes</label>
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
     </div>
   </div>
-</div>
-<div id="results" data-view-toggle-target="tableView" style="<%= @current_view == 'cards' ? 'display: none;' : 'display: block;' %>">
+  <div id="results" data-view-toggle-target="tableView" style="<%= @current_view == 'cards' ? 'display: none;' : 'display: block;' %>">
 
-  <div class="fr-table" id="table-md-component">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table id="table-md">
-            <% if @paginated_establishment_trackings.any? %>
-              <thead>
-              <tr>
-                <th>Raison sociale</th>
-                <th>SIRET</th>
-                <th>Statut</th>
-                <th>Criticité</th>
-                <th>Assignés</th>
-                <th><%= sort_link @q, :modified_at, "Dernière modif." %></th>
-                <th>Dépt.</th>
-                <th>Actions</th>
-              </tr>
-              </thead>
-              <tbody>
-              <% @paginated_establishment_trackings.each do |tracking| %>
+    <div class="fr-table" id="table-md-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-md">
+              <% if @paginated_establishment_trackings.any? %>
+                <thead>
                 <tr>
-                  <td>
+                  <th>Raison sociale</th>
+                  <th>SIRET</th>
+                  <th>Statut</th>
+                  <th>Criticité</th>
+                  <th>Assignés</th>
+                  <th><%= sort_link @q, :modified_at, "Dernière modif." %></th>
+                  <th>Dépt.</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% @paginated_establishment_trackings.each do |tracking| %>
+                  <tr>
+                    <td>
                     <span title="<%= tracking.establishment.raison_sociale %>">
                       <%= tracking.establishment.raison_sociale.truncate(20) %>
                     </span>
-                  </td>
-                  <td><%= tracking.establishment.siret %></td>
-                  <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
-                  <td>
-                    <% if tracking.criticality.present? %>
-                      <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
-                    <% end %>
-                  </td>
-                  <td>
-                    <% if tracking.referents.any? %>
-                      <% first_referent = tracking.referents.first %>
-                      <span title="<%= tracking.referents.map(&:full_name).join(', ') %>">
+                    </td>
+                    <td><%= tracking.establishment.siret %></td>
+                    <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
+                    <td>
+                      <% if tracking.criticality.present? %>
+                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if tracking.referents.any? %>
+                        <% first_referent = tracking.referents.first %>
+                        <span title="<%= tracking.referents.map(&:full_name).join(', ') %>">
                         <%= truncate(first_referent.full_name, length: 20) %>
                       </span>
-                      <% if tracking.referents.size > 1 %>
-                        <span>+<%= tracking.referents.size - 1 %></span>
+                        <% if tracking.referents.size > 1 %>
+                          <span>+<%= tracking.referents.size - 1 %></span>
+                        <% end %>
+                      <% else %>
+                        <span>Aucun assigné</span>
                       <% end %>
-                    <% else %>
-                      <span>Aucun assigné</span>
-                    <% end %>
-                  </td>
-                  <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
-                  <td><%= tracking.establishment.department.code %></td>
-                  <td>
-                    <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
-                  </td>
-                </tr>
+                    </td>
+                    <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
+                    <td><%= tracking.establishment.department.code %></td>
+                    <td>
+                      <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                    </td>
+                  </tr>
+                <% end %>
+                </tbody>
               <% end %>
-              </tbody>
-            <% end %>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div data-view-toggle-target="cardsView" style="<%= @current_view == 'cards' ? 'display: flex;' : 'display: none;' %>">
+  <div data-view-toggle-target="cardsView" style="<%= @current_view == 'cards' ? 'display: flex;' : 'display: none;' %>">
 
-  <div class="fr-grid-row fr-grid-row--gutters">
-    <% @paginated_establishment_trackings.each do |tracking| %>
-      <div class="<%= @paginated_establishment_trackings.size == 1 ? 'fr-col' : 'fr-col-sm-4 fr-col' %>">
-        <div class="fr-card fr-enlarge-link">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <h3 class="fr-card__title">
-                <%= link_to tracking.establishment.raison_sociale, [tracking.establishment, tracking] %>
-              </h3>
-              <ul class="fr-card__desc" style="list-style:none;">
-                <li>SIRET : <%= tracking.establishment.siret %></li>
-                <li>Assignés : <%= tracking.referents.map(&:full_name).join(', ') %></li>
-                <li>Département : <%= tracking.establishment&.department&.code %></li>
-                <li>Dernière modification : <%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></li>
-              </ul>
-              <div class="fr-card__start">
-                <ul class="fr-badges-group">
-                  <li>
-                    <%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %>
-                  </li>
-                  <li>
-                    <% if tracking.criticality.present? %>
-                      <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
-                    <% end %>
-                  </li>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <% @paginated_establishment_trackings.each do |tracking| %>
+        <div class="<%= @paginated_establishment_trackings.size == 1 ? 'fr-col' : 'fr-col-sm-4 fr-col' %>">
+          <div class="fr-card fr-enlarge-link">
+            <div class="fr-card__body">
+              <div class="fr-card__content">
+                <h3 class="fr-card__title">
+                  <%= link_to tracking.establishment.raison_sociale, [tracking.establishment, tracking] %>
+                </h3>
+                <ul class="fr-card__desc" style="list-style:none;">
+                  <li>SIRET : <%= tracking.establishment.siret %></li>
+                  <li>Assignés : <%= tracking.referents.map(&:full_name).join(', ') %></li>
+                  <li>Département : <%= tracking.establishment&.department&.code %></li>
+                  <li>Dernière modification
+                    : <%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></li>
                 </ul>
+                <div class="fr-card__start">
+                  <ul class="fr-badges-group">
+                    <li>
+                      <%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %>
+                    </li>
+                    <li>
+                      <% if tracking.criticality.present? %>
+                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
+                      <% end %>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
-</div>
 
-<div class="fr-mt-3w fr-mb-3w" data-view-toggle-target="pagination">
-  <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit!, anchor: 'results' } %>
-</div>
+  <div class="fr-mt-3w fr-mb-3w" data-view-toggle-target="pagination">
+    <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit!, anchor: 'results' } %>
+  </div>
+<% else %>
+  <p>Aucun accompagnement trouvé pour cette combinaison de filtres.</p>
+<% end %>
+
+
 
