@@ -63,8 +63,16 @@
           <ul>
             <% @other_trackings.each do |track| %>
               <li>
-                <%= link_to "#{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.end_date.present? ? l(track.end_date, format: :default) : 'Date de fin inconnue'} - #{track.actions.any? ? track.actions.map(&:name).join(', ') : 'Pas d\'action renseignée'}",
-                            establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                <% if track.completed? %>
+                  <%= link_to "#{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.end_date.present? ? l(track.end_date, format: :default) : 'Date de fin inconnue'} - #{track.actions.any? ? track.actions.map(&:name).join(', ') : 'Pas d\'action renseignée'}",
+                              establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                  <% elsif %w[in_progress under_surveillance].include?(track.state) %>
+                  <%= link_to "Commencé le #{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.aasm.human_state}",
+                              establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                <% else %>
+                  <%= link_to "#{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.end_date.present? ? l(track.end_date, format: :default) : 'Date de fin inconnue'} - Etat inconnu",
+                              establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                <% end %>
               </li>
             <% end %>
           </ul>
