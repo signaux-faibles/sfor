@@ -11,3 +11,5 @@
     <%= notice %>
   </div>
 <% end %>
+
+<%= turbo_stream.remove "no_comments_message_#{@comment.network.name.parameterize}" %>

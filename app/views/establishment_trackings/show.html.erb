@@ -104,7 +104,7 @@
                         <%= render "comments/comment", comment: comment %>
                       <% end %>
                     <% else %>
-                      <p>Il n'y a pas encore de commentaires pour ce suivi</p>
+                      <p id="no_comments_message_<%= network.name.parameterize %>">Il n'y a pas encore de commentaires pour ce suivi</p>
                     <% end %>
                   <% end %>
                 </div>
