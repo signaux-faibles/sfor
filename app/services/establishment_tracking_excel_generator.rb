@@ -43,7 +43,7 @@ class EstablishmentTrackingExcelGenerator
                         summary&.content || 'Aucune synthèse rédigée'
                       ],
                       style: Array.new(9, centered_style(sheet)) + [summary_style(sheet)],
-                      types: [nil, :string, nil, nil, nil, nil, nil, nil, nil, :string]
+                      types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, :string]
       end
 
       # Autosize des colonnes (sauf les colonnes fixes)
