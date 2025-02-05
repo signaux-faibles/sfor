@@ -42,7 +42,7 @@
       </li>
 
       <!-- User Networks Tabs -->
-      <% current_user.networks.where.not(name: 'CODEFI').each do |network| %>
+      <% current_user.networks.each do |network| %>
         <li role="presentation">
           <button id="tabpanel-<%= network.name.parameterize %>"
                   class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left"
@@ -58,7 +58,7 @@
     <%= render 'info_panel' %>
 
     <!-- User Networks Panels -->
-    <% current_user.networks.where.not(name: 'CODEFI').each do |network| %>
+    <% current_user.networks.each do |network| %>
       <div id="tabpanel-<%= network.name.parameterize %>-panel"
            class="fr-tabs__panel"
            role="tabpanel"
