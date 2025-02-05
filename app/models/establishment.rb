@@ -7,6 +7,7 @@ class Establishment < ApplicationRecord
   has_many :child_establishments, class_name: 'Establishment', foreign_key: 'parent_establishment_id'
 
   has_many :establishment_trackings
+  has_many :contacts
 
   validates :siren, presence: true, length: { is: 9 }
   validates :siret, presence: true, length: { is: 14 }, uniqueness: { scope: :siren }

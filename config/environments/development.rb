@@ -84,7 +84,7 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   # Allow the web console to work in a docker env
-  config.web_console.permissions = '192.168.65.1'
+  config.web_console.permissions = '172.20.0.1'
 
   # Devise conf (required by the devise installer) :
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }

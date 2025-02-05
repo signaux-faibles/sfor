@@ -1,0 +1,86 @@
+<%= form_with(model: [establishment, establishment_tracking, contact], local: true) do |f| %>
+  <div class="fr-input-group <%= @contact.errors[:first_name].any? ? 'fr-input-group--error' : '' %>">
+    <%= f.label :first_name, "Prénom", class: "fr-label" %>
+    <%= f.text_field :first_name,
+                     class: "fr-input #{ @contact.errors[:first_name].any? ? 'fr-input--error' : '' }",
+                     'aria-describedby': @contact.errors[:first_name].any? ? "first-name-error" : nil %>
+    <% if @contact.errors[:first_name].any? %>
+      <p id="first-name-error" class="fr-error-text">
+        <%= @contact.errors[:first_name].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="fr-input-group <%= @contact.errors[:last_name].any? ? 'fr-input-group--error' : '' %>">
+    <%= f.label :last_name, "Nom", class: "fr-label" %>
+    <%= f.text_field :last_name,
+                     class: "fr-input #{ @contact.errors[:last_name].any? ? 'fr-input--error' : '' }",
+                     'aria-describedby': @contact.errors[:last_name].any? ? "last-name-error" : nil %>
+    <% if @contact.errors[:last_name].any? %>
+      <p id="last-name-error" class="fr-error-text">
+        <%= @contact.errors[:last_name].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="fr-input-group <%= @contact.errors[:role].any? ? 'fr-input-group--error' : '' %>">
+    <%= f.label :role, "Fonction", class: "fr-label" %>
+    <%= f.select :role, ['Dirigeant', 'DAF', 'DRH', 'Autre'], {},
+                 class: "fr-select #{ @contact.errors[:role].any? ? 'fr-input--error' : '' }" %>
+    <% if @contact.errors[:role].any? %>
+      <p class="fr-error-text">
+        <%= @contact.errors[:role].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="fr-input-group <%= @contact.errors[:phone_number_primary].any? ? 'fr-input-group--error' : '' %>">
+    <%= f.label :phone_number_primary, "Numéro de téléphone principal", class: "fr-label" %>
+    <%= f.telephone_field :phone_number_primary,
+                          class: "fr-input #{ @contact.errors[:phone_number_primary].any? ? 'fr-input--error' : '' }",
+                          'aria-describedby': @contact.errors[:phone_number_primary].any? ? "phone-number-primary-error" : nil %>
+    <% if @contact.errors[:phone_number_primary].any? %>
+      <p id="phone-number-primary-error" class="fr-error-text">
+        <%= @contact.errors[:phone_number_primary].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="fr-input-group <%= @contact.errors[:phone_number_secondary].any? ? 'fr-input-group--error' :  '' %>">
+    <%= f.label :phone_number_secondary, "Numéro de téléphone secondaire", class: "fr-label" %>
+    <%= f.telephone_field :phone_number_secondary,
+                          class: "fr-input #{ @contact.errors[:phone_number_secondary].any? ? 'fr-input--error' :  '' }",
+                          'aria-describedby': @contact.errors[:phone_number_secondary].any? ? "phone-number-secondary-error" : nil %>
+    <% if @contact.errors[:phone_number_secondary].any? %>
+      <p id="phone-number-secondary-error" class="fr-error-text">
+        <%= @contact.errors[:phone_number_secondary].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="fr-input-group <%= @contact.errors[:email].any? ? 'fr-input-group--error' :  '' %>">
+    <%= f.label :email, "Adresse email", class: "fr-label" %>
+    <%= f.email_field :email,
+                      class: "fr-input #{ @contact.errors[:email].any? ? 'fr-input--error' : '' }",
+                      'aria-describedby': @contact.errors[:email].any? ? "email-error" : nil %>
+    <% if @contact.errors[:email].any? %>
+      <p id="email-error" class="fr-error-text">
+        <%= @contact.errors[:email].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="fr-btn-group">
+    <%= f.submit "Enregistrer", class: "fr-btn" %>
+    <%= link_to "Annuler", establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: "fr-btn fr-btn--secondary" %>
+  </div>
+<% end %>
+
+<% if @contact.persisted? %>
+  <div class="fr-btn-group fr-mt-4v">
+    <%= link_to 'Archiver',
+                archive_establishment_establishment_tracking_contact_path(@establishment, @establishment_tracking, contact),
+                class: 'fr-btn fr-btn--tertiary-fr-icon fr-btn--sm',
+                data: { turbo: false } %>
+  </div>
+<% end %>

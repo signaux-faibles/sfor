@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_11_152436) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_04_131152) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -86,6 +86,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_11_152436) do
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_company_lists_on_company_id"
     t.index ["list_id"], name: "index_company_lists_on_list_id"
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.bigint "establishment_id", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.string "role"
+    t.string "phone_number_primary"
+    t.string "phone_number_secondary"
+    t.string "email"
+    t.datetime "discarded_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_id"], name: "index_contacts_on_establishment_id"
   end
 
   create_table "criticalities", force: :cascade do |t|
@@ -411,6 +425,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_11_152436) do
   add_foreign_key "companies", "departments"
   add_foreign_key "company_lists", "companies"
   add_foreign_key "company_lists", "lists"
+  add_foreign_key "contacts", "establishments"
   add_foreign_key "department_geo_accesses", "departments"
   add_foreign_key "department_geo_accesses", "geo_accesses"
   add_foreign_key "departments", "regions"

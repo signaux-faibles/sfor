@@ -53,6 +53,11 @@ Rails.application.routes.draw do
         get :cancel, on: :member
       end
       resources :comments, only: [:create, :edit, :update, :destroy]
+      resources :contacts, only: %i[new create edit update destroy] do
+        member do
+          get :archive
+        end
+      end
     end
   end
 

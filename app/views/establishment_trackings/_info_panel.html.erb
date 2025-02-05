@@ -18,7 +18,9 @@
         <p><strong>Date de début de l'accompagnement
           :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %>
         </p>
-        <p><strong>Criticité :</strong> <%= @establishment_tracking.criticality&.name || 'Pas de criticité renseignée' %></p>
+        <p>
+          <strong>Criticité :</strong> <%= @establishment_tracking.criticality&.name || 'Pas de criticité renseignée' %>
+        </p>
 
         <p>
           <strong>Etiquettes :</strong>
@@ -42,7 +44,8 @@
         </p>
         <h3>Informations sur l'établissement</h3>
         <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
-        <p><strong>Taille de l'entreprise :</strong> <%= @establishment_tracking.size&.name || 'Pas de taille renseignée' %></p>
+        <p><strong>Taille de l'entreprise
+          :</strong> <%= @establishment_tracking.size&.name || 'Pas de taille renseignée' %></p>
         <p><strong>Filières :</strong>
           <% if @establishment_tracking.sectors.any? %>
             <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
@@ -51,13 +54,16 @@
           <% end %>
         </p>
         <p>
-          <strong>Coordonnées du dirigeant :</strong>
+          <strong>Note de contact :</strong>
           <% if @establishment_tracking.contact %>
-            <%= @establishment_tracking.contact%>
+            <%= @establishment_tracking.contact %>
           <% else %>
-            Pas de coordonnées renseignées
+            Pas de note de contact renseignée
           <% end %>
         </p>
+
+        <%= render 'establishment_trackings/contacts_list', establishment: @establishment, establishment_tracking: @establishment_tracking %>
+
         <h3>Historique des accompagnements</h3>
         <% if @other_trackings.any? %>
           <ul>
@@ -66,7 +72,7 @@
                 <% if track.completed? %>
                   <%= link_to "#{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.end_date.present? ? l(track.end_date, format: :default) : 'Date de fin inconnue'} - #{track.actions.any? ? track.actions.map(&:name).join(', ') : 'Pas d\'action renseignée'}",
                               establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
-                  <% elsif %w[in_progress under_surveillance].include?(track.state) %>
+                <% elsif %w[in_progress under_surveillance].include?(track.state) %>
                   <%= link_to "Commencé le #{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.aasm.human_state}",
                               establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
                 <% else %>
