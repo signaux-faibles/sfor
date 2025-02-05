@@ -1,0 +1,17 @@
+one:
+  establishment: establishment_paris
+  first_name: Jean
+  last_name: Dupont
+  role: Directeur
+  phone_number_primary: 0102030405
+  phone_number_secondary: 0607080910
+  email: jean.dupont@example.com
+
+two:
+  establishment: establishment_paris
+  first_name: Alice
+  last_name: Martin
+  role: Manager
+  phone_number_primary: 0504030201
+  phone_number_secondary:
+  email: alice.martin@example.com
