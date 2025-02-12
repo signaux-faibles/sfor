@@ -6,14 +6,17 @@
           <div class="fr-header__brand-top">
             <div class="fr-header__logo">
               <p class="fr-logo">
-                Signaux Faibles
+                République
+                <br>française
               </p>
             </div>
-            <div class="fr-header__navbar">
-              <button class="fr-btn--menu fr-btn" data-fr-opened="false" aria-controls="modal-499" aria-haspopup="menu" id="button-500" title="Menu">
-                Menu
-              </button>
-            </div>
+          </div>
+          <div class="fr-header__service">
+            <a href="/" title="Accueil - Signaux Faibles">
+              <p class="fr-header__service-title">
+                Signaux Faibles
+              </p>
+            </a>
           </div>
         </div>
         <div class="fr-header__tools">
@@ -21,18 +24,18 @@
             <ul class="fr-btns-group">
               <li>
                 <% if current_user != true_user && current_user&.segment&.name != "sf" %>
-                  <%= button_to("Retour à l'admin", stop_impersonating_users_path, data: { turbo: false },  class: 'fr-btn fr-icon-settings-5-fill') %>
+                  <%= button_to("Retour à l'admin", stop_impersonating_users_path, data: { turbo: false }, class: 'fr-btn fr-icon-settings-5-fill') %>
                 <% end %>
               </li>
               <li>
-                  <% if current_user&.segment&.name == "sf" %>
-                    <%= link_to admin_root_path, class: 'fr-btn fr-icon-settings-5-fill' do %>
-                      Administration centrale
-                    <% end %>
+                <% if current_user&.segment&.name == "sf" %>
+                  <%= link_to admin_root_path, class: 'fr-btn fr-icon-settings-5-fill' do %>
+                    Administration centrale
                   <% end %>
+                <% end %>
               </li>
               <li>
-                <%= link_to "#{current_user&.full_name}","#", class: 'fr-btn fr-icon-account-circle-fill' %>
+                <%= link_to "#{current_user&.full_name}", "#", class: 'fr-btn fr-icon-account-circle-fill' %>
               </li>
               <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
                 <%= submit_tag 'Se déconnecter', class: 'fr-btn fr-icon-logout-box-r-fill' %>
