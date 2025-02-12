@@ -19,7 +19,9 @@ class ImportEstablishmentTrackingsService
     # @mongo_client = Mongo::Client.new([ "#{mongo_host}:#{mongo_port}" ], database: mongo_db_name)
   end
 
-  def perform
+  def perform(board_title)
+    puts "Starting import for board: #{board_title}"
+
     boards = @mongo_client[:boards]
     swimlanes = @mongo_client[:swimlanes]
     cards = @mongo_client[:cards]
@@ -31,8 +33,15 @@ class ImportEstablishmentTrackingsService
     sf_siret_regex = /(\d{14})/
     extract_department_from_swimlane_title_regex = /(\d+[A|B]?) \(.*\)/
 
-    # boards_ids = boards.find({ title: { "$regex": '^Tableau CRP HDF' } }).to_a.map { |board| board[:_id]}
-    boards_ids = boards.find({ title: { "$regex": '^Tableau CRP' } }).to_a.map { |board| board[:_id] }
+    boards_ids = boards.find({ title: { "$regex": "^#{board_title}" } }).to_a.map { |board| board[:_id] }
+
+    # Vérification : arrêter l'import si aucun tableau n'est trouvé
+    if boards_ids.empty?
+      puts "No board found with title matching '#{board_title}'. Stopping import."
+      return
+    end
+
+    puts "Found #{boards_ids.count} board(s) matching '#{board_title}'. Proceeding with import..."
 
     unique_emails = Set.new
 
@@ -351,7 +360,16 @@ end
 
 namespace :import_from_wekan do
   desc "Import data from Wekan"
-  task cards: :environment do
-    ImportEstablishmentTrackingsService.new.perform
+  task :cards, [:board_title] => :environment do |task, args|
+    if args[:board_title].nil?
+      puts "Error: You must provide a board title as an argument, e.g., rake import_from_wekan:cards['Board Title']"
+      exit(1)
+    end
+
+    board_title = args[:board_title]
+    puts "Launching import for board: #{board_title}"
+
+    service = ImportEstablishmentTrackingsService.new
+    service.perform(board_title)
   end
 end
