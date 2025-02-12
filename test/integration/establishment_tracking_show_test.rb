@@ -19,26 +19,26 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
     get establishment_establishment_tracking_path(@establishment_tracking.establishment, @establishment_tracking)
 
     assert_select "form[action*='/summaries']" do |forms|
-      assert_equal 1, forms.size
+      assert_equal 2, forms.size
 
       forms.each do |form|
         hidden_field = form.css("input[type=hidden][name='summary[network_id]']")
         assert hidden_field.present?, "Each form should have a hidden field for network_id"
         network_id = hidden_field.attr("value").to_s
         network = Network.find(network_id)
-        assert_includes ["CRP"], network.name, "The network_id should correspond to CODEFI or CRP"
+        assert_includes ["CRP", "CODEFI"], network.name, "The network_id should correspond to CODEFI or CRP"
       end
     end
 
     assert_select "form[action*='/comments']" do |forms|
-      assert_equal 1, forms.size
+      assert_equal 2, forms.size
 
       forms.each do |form|
         hidden_field = form.css("input[type=hidden][name='comment[network_id]']")
         assert hidden_field.present?, "Each form should have a hidden field for network_id"
         network_id = hidden_field.attr("value").to_s
         network = Network.find(network_id)
-        assert_includes ["CRP"], network.name, "The network_id should correspond to CODEFI or CRP"
+        assert_includes ["CRP", "CODEFI"], network.name, "The network_id should correspond to CODEFI or CRP"
       end
     end
 
@@ -57,14 +57,14 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
     get establishment_establishment_tracking_path(@establishment_tracking.establishment, @establishment_tracking)
 
     assert_select "form[action*='/summaries']" do |forms|
-      assert_equal 1, forms.size
+      assert_equal 2, forms.size
 
       forms.each do |form|
         hidden_field = form.css("input[type=hidden][name='summary[network_id]']")
         assert hidden_field.present?, "Each form should have a hidden field for network_id"
         network_id = hidden_field.attr("value").to_s
         network = Network.find(network_id)
-        assert_includes ["CRP"], network.name, "The network_id should correspond to CODEFI or CRP"
+        assert_includes ["CRP", "CODEFI"], network.name, "The network_id should correspond to CODEFI or CRP"
       end
     end
 
