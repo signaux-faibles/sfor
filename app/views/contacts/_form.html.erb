@@ -71,16 +71,13 @@
   </div>
 
   <div class="fr-btn-group">
-    <%= f.submit "Enregistrer", class: "fr-btn" %>
     <%= link_to "Annuler", establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: "fr-btn fr-btn--secondary" %>
-  </div>
-<% end %>
-
-<% if @contact.persisted? %>
-  <div class="fr-btn-group fr-mt-4v">
-    <%= link_to 'Archiver',
-                archive_establishment_establishment_tracking_contact_path(@establishment, @establishment_tracking, contact),
-                class: 'fr-btn fr-btn--tertiary-fr-icon fr-btn--sm',
-                data: { turbo: false } %>
+    <%= f.submit "Enregistrer", class: "fr-btn" %>
+    <% if @contact.persisted? %>
+        <%= link_to 'Archiver',
+                    archive_establishment_establishment_tracking_contact_path(@establishment, @establishment_tracking, contact),
+                    class: 'fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-folder-2-line',
+                    data: { turbo: false } %>
+    <% end %>
   </div>
 <% end %>
