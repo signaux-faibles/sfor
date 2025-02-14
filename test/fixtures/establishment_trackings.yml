@@ -14,6 +14,14 @@ establishment_tracking_paris_no_content:
   tracking_labels: tracking_label_1
   referents: [ user_crp_paris ]
 
+establishment_tracking_paris_with_urssaf_referents:
+  state: 'in_progress'
+  establishment: establishment_paris_3
+  start_date: 2023-01-01
+  creator: user_urssaf_paris
+  tracking_labels: tracking_label_1
+  referents: [ user_urssaf_paris ]
+
 establishment_tracking_finistere:
   state: 'in_progress'
   establishment: establishment_finistere
