@@ -18,6 +18,8 @@ class EstablishmentTrackingsController < ApplicationController
 
     if params.dig(:q, :my_tracking) == '1'
       @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)
+    elsif params.dig(:q, :my_tracking) == 'network'
+      @establishment_trackings = @q.result.by_network(current_user.network_ids).distinct
     else
       @establishment_trackings = @q.result
     end

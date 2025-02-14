@@ -45,6 +45,23 @@ class EstablishmentTracking < ApplicationRecord
       .where('tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id', user_id: user.id).distinct
   }
 
+  scope :by_network_participants, ->(network_ids) {
+    left_joins(tracking_participants: { user: { network_memberships: :network } })
+      .where.not(networks: { name: 'CODEFI' })
+      .where(networks: { id: network_ids })
+  }
+
+  scope :by_network_referents, ->(network_ids) {
+    left_joins(tracking_referents: { user: { network_memberships: :network } })
+      .where.not(networks: { name: 'CODEFI' })
+      .where(networks: { id: network_ids })
+  }
+
+  scope :by_network, ->(network_ids) {
+    where(id: by_network_participants(network_ids))
+      .or(where(id: by_network_referents(network_ids)))
+  }
+
   def self.ransackable_attributes(auth_object = nil)
     ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "criticality_id", "size_id", "updated_at", "modified_at"]
   end
