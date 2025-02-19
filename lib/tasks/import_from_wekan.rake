@@ -81,7 +81,7 @@ class ImportEstablishmentTrackingsService
             establishment_tracking = create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
             if establishment_tracking.present?
               create_summary(card, establishment_tracking, siret)
-              create_all_comments(card, card_comments, establishment_tracking, siret, users)
+              # create_all_comments(card, card_comments, establishment_tracking, siret, users)
               create_all_labels(board_label, card, establishment_tracking)
             else
               puts "Failed to create EstablishmentTracking for card #{card[:title]} (SIRET: #{siret})."
