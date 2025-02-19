@@ -31,7 +31,7 @@ class ContactsController < ApplicationController
 
   def archive
     @contact.discard
-    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking), notice: 'Contact archivé avec succès.'
+    redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking), notice: 'Contact supprimé avec succès.'
   end
 
   def destroy
@@ -56,6 +56,6 @@ class ContactsController < ApplicationController
     authorize @contact
   end
   def contact_params
-    params.require(:contact).permit(:first_name, :last_name, :role, :phone_number_primary, :phone_number_secondary, :email)
+    params.require(:contact).permit(:first_name, :last_name, :role, :phone_number_primary, :phone_number_secondary, :email, :description)
   end
 end

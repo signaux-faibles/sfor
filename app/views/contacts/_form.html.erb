@@ -1,4 +1,4 @@
-<%= form_with(model: [establishment, establishment_tracking, contact], local: true) do |f| %>
+<%= form_with(model: [establishment, establishment_tracking, contact], local: true, class: "fr-mb-3w") do |f| %>
   <div class="fr-input-group <%= @contact.errors[:first_name].any? ? 'fr-input-group--error' : '' %>">
     <%= f.label :first_name, "Prénom", class: "fr-label" %>
     <%= f.text_field :first_name,
@@ -70,11 +70,23 @@
     <% end %>
   </div>
 
+  <div class="fr-input-group <%= @contact.errors[:description].any? ? 'fr-input-group--error' : '' %>">
+    <%= f.label :description, "Notes de contact", class: "fr-label" %>
+    <%= f.text_area :description,
+                     class: "fr-input #{ @contact.errors[:description].any? ? 'fr-input--error' : '' }",
+                     'aria-describedby': @contact.errors[:description].any? ? "last-name-error" : nil %>
+    <% if @contact.errors[:description].any? %>
+      <p id="last-name-error" class="fr-error-text">
+        <%= @contact.errors[:description].join(', ') %>
+      </p>
+    <% end %>
+  </div>
+
   <div class="fr-btn-group">
     <%= link_to "Annuler", establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: "fr-btn fr-btn--secondary" %>
     <%= f.submit "Enregistrer", class: "fr-btn" %>
     <% if @contact.persisted? %>
-        <%= link_to 'Archiver',
+        <%= link_to 'Supprimer',
                     archive_establishment_establishment_tracking_contact_path(@establishment, @establishment_tracking, contact),
                     class: 'fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-folder-2-line',
                     data: { turbo: false } %>

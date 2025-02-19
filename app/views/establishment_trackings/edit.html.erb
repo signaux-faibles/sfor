@@ -68,13 +68,6 @@
             <%= form.label :sector_ids, 'Filières' %>
             <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
           </div>
-
-          <div class="fr-input-group">
-            <%= form.label :contact, "Coordonnées du dirigeant" %>
-            <%= form.text_area :contact,
-                               class: "fr-input",
-                               data: { controller: "auto-resize", action: "input->auto-resize#adjust" } %>
-          </div>
         </div>
 
       </div>

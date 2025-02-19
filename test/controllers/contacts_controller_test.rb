@@ -15,7 +15,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
 
     get establishment_establishment_tracking_path(@establishment, @establishment_tracking)
 
-    assert_select "h4", text: "#{@contact.first_name} #{@contact.last_name}"
+    assert_includes @response.body, "#{@contact.first_name} #{@contact.last_name}"
   end
 
   test "user A can create a new contact" do

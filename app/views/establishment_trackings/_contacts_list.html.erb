@@ -11,10 +11,10 @@
       <div class="fr-col-12 fr-col-md-6">
         <div class="fr-card fr-card--horizontal fr-card--shadow">
           <div class="fr-card__body fr-pt-2w fr-pb-2w">
-            <h4 class="">
+            <p class="fr-text--sm fr-bg--alt">
               <span class="fr-icon-user-line" aria-hidden="true"></span>
-              <%= "#{contact.first_name} #{contact.last_name}" %>
-            </h4>
+              <strong><%= "#{contact.first_name} #{contact.last_name}" %></strong>
+            </p>
 
             <p class="fr-text--sm fr-bg--alt">
               <strong><span class="fr-icon-briefcase-line" aria-hidden="true"></span> Fonction : </strong>
@@ -39,15 +39,19 @@
               <strong><span class="fr-icon-mail-line" aria-hidden="true"></span> Email : </strong>
               <%= mail_to contact.email, nil, class: "fr-link" if contact.email.present? %>
             </p>
+
+            <% if contact.description? %>
+              <p class="fr-text--sm">
+                <strong><span class="fr-icon-draft-line" aria-hidden="true"></span> Note : </strong>
+                <%= contact.description %>
+              </p>
+            <% end %>
+
             <% if policy(@establishment_tracking).edit? %>
               <div class="fr-btn-group fr-mt-4v">
                 <%= link_to 'Modifier',
                             edit_establishment_establishment_tracking_contact_path(establishment, establishment_tracking, contact),
                             class: 'fr-btn fr-btn--secondary fr-btn--sm' %>
-                <%= link_to 'Archiver',
-                            archive_establishment_establishment_tracking_contact_path(establishment, establishment_tracking, contact),
-                            class: 'fr-btn fr-btn--tertiary-fr-icon fr-btn--sm',
-                            data: { turbo: false } %>
               </div>
             <% end %>
 

@@ -53,14 +53,6 @@
             Pas de filière renseignée
           <% end %>
         </p>
-        <p>
-          <strong>Note de contact :</strong>
-          <% if @establishment_tracking.contact %>
-            <%= @establishment_tracking.contact %>
-          <% else %>
-            Pas de note de contact renseignée
-          <% end %>
-        </p>
 
         <%= render 'establishment_trackings/contacts_list', establishment: @establishment, establishment_tracking: @establishment_tracking %>
 
