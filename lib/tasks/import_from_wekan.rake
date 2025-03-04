@@ -82,7 +82,7 @@ class ImportEstablishmentTrackingsService
             if establishment_tracking.present?
               create_summary(card, establishment_tracking, siret)
               # create_all_comments(card, card_comments, establishment_tracking, siret, users)
-              create_all_labels(board_label, card, establishment_tracking)
+              # create_all_labels(board_label, card, establishment_tracking)
             else
               puts "Failed to create EstablishmentTracking for card #{card[:title]} (SIRET: #{siret})."
             end
@@ -154,8 +154,14 @@ class ImportEstablishmentTrackingsService
 
     # Contact details
     id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
-    if card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
-      establishment_tracking.contact = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }[:value]
+    contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+
+    if contact_field.present? && contact_field[:value].present?
+      establishment.contacts.create!(
+        description: contact_field[:value],
+        first_name: "Prénom",
+        last_name: "Nom"
+      )
     end
 
     # Wekan status
@@ -178,13 +184,14 @@ class ImportEstablishmentTrackingsService
         puts "Failed to save completed tracking for card: #{card[:title]} (SIRET: #{siret})."
         return nil
       end
-    when 'A définir', 'Suivi en cours'
+    when 'Suivi en cours'
       establishment_tracking.state = 'in_progress'
       unless save_tracking(establishment_tracking, siret, card[:title])
         puts "Failed to save in-progress tracking for card: #{card[:title]} (SIRET: #{siret})."
         log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
         return nil
       end
+=begin
     when 'Veille'
       establishment_tracking.state = 'under_surveillance'
       unless save_tracking(establishment_tracking, siret, card[:title])
@@ -192,6 +199,7 @@ class ImportEstablishmentTrackingsService
         log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
         return nil
       end
+=end
     else
       puts "Unknown column: #{wekan_status} for card: #{card[:title]} (SIRET: #{siret})."
       return nil
@@ -203,7 +211,7 @@ class ImportEstablishmentTrackingsService
   def create_summary(card, establishment_tracking, siret)
     summary = Summary.find_or_initialize_by(establishment_tracking: establishment_tracking)
     summary.content = card[:description]
-    summary.network = Network.find_by(name: "CRP")
+    summary.network = Network.find_by(name: "CODEFI")
 
     if summary.save
       summary.update_column(:updated_at, card[:modifiedAt])
