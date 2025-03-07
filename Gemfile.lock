@@ -345,8 +345,9 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  aasm (~> 5.5.0)
+  aasm (~> 5.5)
   administrate (= 1.0.0.beta3)
+  administrate-field-belongs_to_search (~> 0.9.0)
   bootsnap (~> 1.18.4)
   bullet
   capybara

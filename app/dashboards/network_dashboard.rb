@@ -10,6 +10,7 @@ class NetworkDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     name: Field::String,
+    active: Field::Boolean,
     segments: Field::HasMany,
     users: Field::HasMany,
     created_at: Field::DateTime,
@@ -24,6 +25,7 @@ class NetworkDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
+    active
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -31,6 +33,7 @@ class NetworkDashboard < Administrate::BaseDashboard
   SHOW_PAGE_ATTRIBUTES = %i[
     id
     name
+    active
     segments
     created_at
     updated_at
@@ -41,6 +44,7 @@ class NetworkDashboard < Administrate::BaseDashboard
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
     name
+    active
     segments
   ].freeze
 
