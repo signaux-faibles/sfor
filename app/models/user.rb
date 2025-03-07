@@ -68,6 +68,10 @@ class User < ApplicationRecord
     "#{first_name} #{last_name}"
   end
 
+  def display_name
+    "#{full_name} (#{entity.name})"
+  end
+
   def non_codefi_network
     networks.where.not(name: 'CODEFI').first
   end
