@@ -1,8 +1,11 @@
 network_crp:
   name: "CRP"
+  active: true
 
 network_urssaf:
   name: "URSSAF"
+  active: false
 
 network_codefi:
   name: "CODEFI"
+  active: true

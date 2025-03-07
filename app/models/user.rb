@@ -72,6 +72,10 @@ class User < ApplicationRecord
     networks.where.not(name: 'CODEFI').first
   end
 
+  def active_networks
+    networks.where(active: true).sort_by { |network| network.name == 'CODEFI' ? 0 : 1 }
+  end
+
   private
 
   def extract_roles_from_token(token)

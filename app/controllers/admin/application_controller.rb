@@ -11,7 +11,8 @@ module Admin
 
     def authenticate_admin
       unless current_user && current_user.segment.name == "sf"
-        redirect_to root_url, alert: "Vous n'avez pas l'authorisation d'accéder à cette section"
+        flash.now[:alert] = "Vous n'avez pas l'authorisation d'accéder à cette section"
+        redirect_to root_url
       end
     end
 

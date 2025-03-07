@@ -57,7 +57,7 @@ gem 'rack-cors', "~> 2.0.2"
 gem 'ransack', "~> 4.2.1"
 
 # Basic admin
-gem 'administrate', '1.0.0.beta1'
+gem 'administrate', '1.0.0.beta3'
 gem 'administrate-field-belongs_to_search', '~> 0.9.0'
 
 # Authorizations
