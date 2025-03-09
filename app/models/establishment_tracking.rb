@@ -26,6 +26,7 @@ class EstablishmentTracking < ApplicationRecord
   belongs_to :criticality, optional: true
 
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
+  has_and_belongs_to_many :difficulties
 
   before_save :update_modified_at_if_criticality_changed
   before_create :set_modified_at
