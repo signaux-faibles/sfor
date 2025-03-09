@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_07_140825) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -126,6 +126,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_140825) do
     t.bigint "region_id", null: false
     t.index ["name"], name: "index_departments_on_name", unique: true
     t.index ["region_id"], name: "index_departments_on_region_id"
+  end
+
+  create_table "difficulties", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_difficulties_on_name", unique: true
+  end
+
+  create_table "difficulties_establishment_trackings", id: false, force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "difficulty_id", null: false
+    t.index ["difficulty_id", "establishment_tracking_id"], name: "idx_on_difficulty_id_establishment_tracking_id_777c1bd376", unique: true
+    t.index ["establishment_tracking_id", "difficulty_id"], name: "idx_on_establishment_tracking_id_difficulty_id_833af32417", unique: true
   end
 
   create_table "entities", force: :cascade do |t|
