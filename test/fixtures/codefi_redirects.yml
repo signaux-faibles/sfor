@@ -1,0 +1,4 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+'cci-cma':
+  name: "CCI-CMA-Chambre Agriculture"
