@@ -10,15 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_11_101452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "actions", force: :cascade do |t|
-    t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "activity_sectors", force: :cascade do |t|
     t.integer "depth", null: false
@@ -41,6 +35,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
     t.datetime "updated_at", null: false
     t.index ["campaign_id"], name: "index_campaign_companies_on_campaign_id"
     t.index ["company_id"], name: "index_campaign_companies_on_company_id"
+  end
+
+  create_table "campaign_establishments", force: :cascade do |t|
+    t.bigint "campaign_id", null: false
+    t.bigint "establishment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_campaign_establishments_on_campaign_id"
+    t.index ["establishment_id"], name: "index_campaign_establishments_on_establishment_id"
   end
 
   create_table "campaigns", force: :cascade do |t|
@@ -150,11 +153,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
 
   create_table "establishment_tracking_actions", force: :cascade do |t|
     t.bigint "establishment_tracking_id", null: false
-    t.bigint "action_id", null: false
+    t.bigint "user_action_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["action_id"], name: "index_establishment_tracking_actions_on_action_id"
     t.index ["establishment_tracking_id"], name: "idx_on_establishment_tracking_id_282caecb1d"
+    t.index ["user_action_id"], name: "index_establishment_tracking_actions_on_user_action_id"
   end
 
   create_table "establishment_tracking_labels", force: :cascade do |t|
@@ -377,6 +380,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
     t.index ["user_id"], name: "index_tracking_referents_on_user_id"
   end
 
+  create_table "user_actions", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_company_interests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "company_id", null: false
+    t.bigint "campaign_id", null: false
+    t.boolean "interested", null: false
+    t.string "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_user_company_interests_on_campaign_id"
+    t.index ["company_id"], name: "index_user_company_interests_on_company_id"
+    t.index ["user_id"], name: "index_user_company_interests_on_user_id"
+  end
+
   create_table "user_departments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "department_id", null: false
@@ -384,6 +406,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_user_departments_on_department_id"
     t.index ["user_id"], name: "index_user_departments_on_user_id"
+  end
+
+  create_table "user_establishment_interests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "establishment_id", null: false
+    t.bigint "campaign_id", null: false
+    t.boolean "interested", null: false
+    t.string "reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campaign_id"], name: "index_user_establishment_interests_on_campaign_id"
+    t.index ["establishment_id"], name: "index_user_establishment_interests_on_establishment_id"
+    t.index ["user_id"], name: "index_user_establishment_interests_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -434,6 +469,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
   add_foreign_key "activity_sectors", "activity_sectors", column: "parent_id"
   add_foreign_key "campaign_companies", "campaigns"
   add_foreign_key "campaign_companies", "companies"
+  add_foreign_key "campaign_establishments", "campaigns"
+  add_foreign_key "campaign_establishments", "establishments"
   add_foreign_key "comments", "establishment_trackings"
   add_foreign_key "comments", "networks"
   add_foreign_key "comments", "users"
@@ -445,8 +482,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
   add_foreign_key "department_geo_accesses", "departments"
   add_foreign_key "department_geo_accesses", "geo_accesses"
   add_foreign_key "departments", "regions"
-  add_foreign_key "establishment_tracking_actions", "actions"
   add_foreign_key "establishment_tracking_actions", "establishment_trackings"
+  add_foreign_key "establishment_tracking_actions", "user_actions"
   add_foreign_key "establishment_tracking_labels", "establishment_trackings"
   add_foreign_key "establishment_tracking_labels", "tracking_labels"
   add_foreign_key "establishment_tracking_sectors", "establishment_trackings"
@@ -469,8 +506,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_07_172043) do
   add_foreign_key "tracking_participants", "users"
   add_foreign_key "tracking_referents", "establishment_trackings"
   add_foreign_key "tracking_referents", "users"
+  add_foreign_key "user_company_interests", "campaigns"
+  add_foreign_key "user_company_interests", "companies"
+  add_foreign_key "user_company_interests", "users"
   add_foreign_key "user_departments", "departments"
   add_foreign_key "user_departments", "users"
+  add_foreign_key "user_establishment_interests", "campaigns"
+  add_foreign_key "user_establishment_interests", "establishments"
+  add_foreign_key "user_establishment_interests", "users"
   add_foreign_key "users", "entities"
   add_foreign_key "users", "geo_accesses"
   add_foreign_key "users", "segments"

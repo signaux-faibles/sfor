@@ -17,7 +17,7 @@ class EstablishmentTracking < ApplicationRecord
   has_many :tracking_labels, through: :establishment_tracking_labels
 
   has_many :establishment_tracking_actions, dependent: :destroy
-  has_many :actions, through: :establishment_tracking_actions
+  has_many :user_actions, through: :establishment_tracking_actions
 
   has_many :summaries, dependent: :destroy
   has_many :comments, dependent: :destroy

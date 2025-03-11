@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     resources :establishment_trackings
     resources :tracking_labels
     resources :difficulties
+    resources :user_actions
 
     root to: "users#index"
   end

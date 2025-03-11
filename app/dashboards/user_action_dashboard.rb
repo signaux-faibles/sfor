@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class DifficultyDashboard < Administrate::BaseDashboard
+class UserActionDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,6 +9,7 @@ class DifficultyDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
+    establishment_tracking_actions: Field::HasMany,
     establishment_trackings: Field::HasMany,
     name: Field::String,
     created_at: Field::DateTime,
@@ -23,7 +24,6 @@ class DifficultyDashboard < Administrate::BaseDashboard
   COLLECTION_ATTRIBUTES = %i[
     id
     name
-    created_at
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
@@ -54,10 +54,10 @@ class DifficultyDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how difficulties are displayed
+  # Overwrite this method to customize how user actions are displayed
   # across all pages of the admin dashboard.
   #
-  # def display_resource(difficulty)
-  #   "Difficulty ##{difficulty.id}"
+  # def display_resource(user_action)
+  #   "UserAction ##{user_action.id}"
   # end
 end
