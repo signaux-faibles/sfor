@@ -31,16 +31,7 @@
             <span>Pas d'étiquette</span>
           <% end %>
         </p>
-        <p><strong>Actions réalisées
-          :</strong>
-          <% if @establishment_tracking.user_actions.any? %>
-            <% @establishment_tracking.user_actions.each do |action| %>
-              <span class="fr-tag fr-tag--sm"><%= action.name %></span>
-            <% end %>
-          <% else %>
-            <span>Pas d'action renseignée</span>
-          <% end %>
-        </p>
+
         <p><strong>Difficultés
           :</strong>
           <% if @establishment_tracking.difficulties.any? %>
@@ -51,6 +42,28 @@
             <span>Pas de difficulté renseignée</span>
           <% end %>
         </p>
+
+        <p><strong>Actions réalisées
+          :</strong>
+          <% if @establishment_tracking.user_actions.any? %>
+            <% @establishment_tracking.user_actions.each do |action| %>
+              <span class="fr-tag fr-tag--sm"><%= action.name %></span>
+            <% end %>
+          <% else %>
+            <span>Pas d'action renseignée</span>
+          <% end %>
+        </p>
+
+        <p><strong>Redirections CODEFI :</strong>
+          <% if @establishment_tracking.codefi_redirects.any? %>
+            <% @establishment_tracking.codefi_redirects.each do |redirect| %>
+              <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
+            <% end %>
+          <% else %>
+            <span>Pas de redirection CODEFI renseignée</span>
+          <% end %>
+        </p>
+
         <h3>Informations sur l'établissement</h3>
         <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
         <p><strong>Taille de l'entreprise

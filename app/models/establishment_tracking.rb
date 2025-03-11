@@ -27,9 +27,11 @@ class EstablishmentTracking < ApplicationRecord
 
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
   has_and_belongs_to_many :difficulties
+  has_and_belongs_to_many :codefi_redirects
 
   before_save :update_modified_at_if_criticality_changed
   before_create :set_modified_at
+  after_update :add_codefi_redirect_user_action
 
   attr_accessor :skip_update_modified_at
 
@@ -112,4 +114,18 @@ class EstablishmentTracking < ApplicationRecord
 
     self.modified_at = Date.current if criticality_id_changed?
   end
+
+  def add_codefi_redirect_user_action
+    redirect_action = UserAction.find_or_create_by(name: "Réorientation externe au codéfi")
+
+    if codefi_redirects.any?
+      # Ajouter l'action si elle n'est pas déjà présente
+      user_actions << redirect_action unless user_actions.include?(redirect_action)
+    else
+      # Retirer l'action si elle est présente
+      user_actions.delete(redirect_action) if user_actions.include?(redirect_action)
+    end
+  end
+
+
 end

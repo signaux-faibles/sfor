@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_11_101452) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_11_105802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_11_101452) do
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "codefi_redirects", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "codefi_redirects_establishment_trackings", id: false, force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "codefi_redirect_id", null: false
+    t.index ["codefi_redirect_id", "establishment_tracking_id"], name: "idx_on_codefi_redirect_id_establishment_tracking_id_fd377a9600", unique: true
+    t.index ["establishment_tracking_id", "codefi_redirect_id"], name: "idx_on_establishment_tracking_id_codefi_redirect_id_9ac2c8f291", unique: true
   end
 
   create_table "comments", force: :cascade do |t|

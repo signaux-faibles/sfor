@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     resources :tracking_labels
     resources :difficulties
     resources :user_actions
+    resources :codefi_redirects
 
     root to: "users#index"
   end
