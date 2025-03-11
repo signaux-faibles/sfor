@@ -81,7 +81,7 @@ class ImportEstablishmentTrackingsService
             establishment_tracking = create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
             if establishment_tracking.present?
               create_summary(card, establishment_tracking, siret)
-              # create_all_comments(card, card_comments, establishment_tracking, siret, users)
+              create_all_comments(card, card_comments, establishment_tracking, siret, users)
               # create_all_labels(board_label, card, establishment_tracking)
             else
               puts "Failed to create EstablishmentTracking for card #{card[:title]} (SIRET: #{siret})."
@@ -133,39 +133,104 @@ class ImportEstablishmentTrackingsService
   end
 
   def create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
-    establishment_tracking = EstablishmentTracking.new(establishment: establishment)
-    establishment_tracking.creator = creator
+    wekan_status = lists.find("_id": card[:listId]).first[:title]
 
-    # Participants and Referents
-    mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
-    participants = User.where(email: mongo_participants)
-    establishment_tracking.participants = participants.empty? ? [creator] : participants
-    mongo_referents = users.find({ "_id": { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
-    referents = User.where(email: mongo_referents)
-    establishment_tracking.referents = referents.empty? ? [creator] : referents
+    if wekan_status == 'Suivi terminé'
+      establishment_tracking = EstablishmentTracking.new(establishment: establishment)
+      establishment_tracking.creator = creator
+      establishment_tracking.state = 'completed'
 
-    # Determine dates
-    establishment_tracking.start_date = card[:startAt] || card[:createdAt]
-    establishment_tracking.end_date = card[:endAt]
+      # Participants and Referents
+      mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+      participants = User.where(email: mongo_participants)
+      establishment_tracking.participants = participants.empty? ? [creator] : participants
+      mongo_referents = users.find({ "_id": { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+      referents = User.where(email: mongo_referents)
+      establishment_tracking.referents = referents.empty? ? [creator] : referents
 
-    establishment_tracking.modified_at = card[:modifiedAt]
+      # Determine dates
+      establishment_tracking.start_date = card[:startAt] || card[:createdAt]
+      establishment_tracking.end_date = card[:endAt]
 
-    establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
+      establishment_tracking.modified_at = card[:modifiedAt]
+      establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
-    # Contact details
-    id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
-    contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+      # Contact details
+      id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
+      contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
 
-    if contact_field.present? && contact_field[:value].present?
-      establishment.contacts.create!(
-        description: contact_field[:value],
-        first_name: "Prénom",
-        last_name: "Nom"
-      )
+      if contact_field.present? && contact_field[:value].present?
+        establishment.contacts.create!(
+          description: contact_field[:value],
+          first_name: "Prénom",
+          last_name: "Nom"
+        )
+      end
+
+      if save_tracking(establishment_tracking, siret, card[:title])
+        puts "completed Establishment tracking with id #{establishment_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
+        return establishment_tracking
+      else
+        puts "Failed to save completed tracking for card: #{card[:title]} (SIRET: #{siret})."
+        return nil
+      end
     end
 
-    # Wekan status
-    wekan_status = lists.find("_id": card[:listId]).first[:title]
+    if wekan_status == 'Suivi en cours'
+      existing_tracking = establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).first
+
+      if existing_tracking
+        mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+        new_participants = User.where(email: mongo_participants).to_a
+        existing_tracking.participants |= new_participants
+
+        mongo_referents = users.find({ "_id": { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+        new_referents = User.where(email: mongo_referents).to_a
+        existing_tracking.referents |= new_referents # Fusionner les référents sans doublons
+
+        if existing_tracking.save
+          puts "Establishment tracking with id #{existing_tracking.id} updated with participants and referents from card: #{card[:title]} (SIRET: #{siret})."
+          return existing_tracking
+        else
+          puts "Failed to update existing tracking (SIRET: #{siret}). Errors: #{existing_tracking.errors.full_messages.join(', ')}"
+          return nil
+        end
+      else
+        # Aucun tracking existant trouvé, créer un nouveau
+        new_tracking = EstablishmentTracking.new(establishment: establishment)
+        new_tracking.creator = creator
+        new_tracking.state = 'in_progress'
+        new_tracking.start_date = card[:startAt] || card[:createdAt]
+        new_tracking.end_date = card[:endAt]
+        new_tracking.modified_at = card[:modifiedAt]
+
+        # Participants et référents depuis Wekan
+        mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+        participants = User.where(email: mongo_participants)
+        new_tracking.participants = participants.empty? ? [creator] : participants
+
+        mongo_referents = users.find({ "_id": { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+        referents = User.where(email: mongo_referents)
+        new_tracking.referents = referents.empty? ? [creator] : referents
+
+        if save_tracking(new_tracking, siret, card[:title])
+          return new_tracking
+        else
+          puts "Failed to save new in-progress tracking for card: #{card[:title]} (SIRET: #{siret})."
+          return nil
+        end
+      end
+    end
+
+
+
+
+
+
+
+
+
+
 
     # If cards are archived in wekan, we want the with state 'completed' and discarded in rails
     if card[:archived]
@@ -225,7 +290,7 @@ class ImportEstablishmentTrackingsService
     card_comments.find({ cardId: card[:_id] }).each do |card_comment|
       comment = Comment.find_or_initialize_by(created_at: card_comment[:createdAt])
       comment.establishment_tracking = establishment_tracking
-      comment.network = Network.find_by(name: "CRP")
+      comment.network = Network.find_by(name: "CODEFI")
       comment_creator_mongo = users.find({ "_id": card_comment[:userId] }).first
       comment.user = User.find_by(email: comment_creator_mongo[:username])
       comment.content = card_comment[:text]
