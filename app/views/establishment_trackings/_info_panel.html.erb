@@ -41,6 +41,16 @@
             <span>Pas d'action renseignée</span>
           <% end %>
         </p>
+        <p><strong>Difficultés
+          :</strong>
+          <% if @establishment_tracking.difficulties.any? %>
+            <% @establishment_tracking.difficulties.each do |difficulty| %>
+              <span class="fr-tag fr-tag--sm"><%= difficulty.name %></span>
+            <% end %>
+          <% else %>
+            <span>Pas de difficulté renseignée</span>
+          <% end %>
+        </p>
         <h3>Informations sur l'établissement</h3>
         <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
         <p><strong>Taille de l'entreprise
