@@ -14,7 +14,7 @@ actions = [
 ]
 
 actions.each do |action_name|
-  Action.find_or_create_by(name: action_name)
+  UserAction.find_or_create_by(name: action_name)
 end
 
 puts "Actions seeded!"

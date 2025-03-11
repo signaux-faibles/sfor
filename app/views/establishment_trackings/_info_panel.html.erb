@@ -33,8 +33,8 @@
         </p>
         <p><strong>Actions réalisées
           :</strong>
-          <% if @establishment_tracking.actions.any? %>
-            <% @establishment_tracking.actions.each do |action| %>
+          <% if @establishment_tracking.user_actions.any? %>
+            <% @establishment_tracking.user_actions.each do |action| %>
               <span class="fr-tag fr-tag--sm"><%= action.name %></span>
             <% end %>
           <% else %>
@@ -71,7 +71,7 @@
             <% @other_trackings.each do |track| %>
               <li>
                 <% if track.completed? %>
-                  <%= link_to "#{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.end_date.present? ? l(track.end_date, format: :default) : 'Date de fin inconnue'} - #{track.actions.any? ? track.actions.map(&:name).join(', ') : 'Pas d\'action renseignée'}",
+                  <%= link_to "#{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.end_date.present? ? l(track.end_date, format: :default) : 'Date de fin inconnue'} - #{track.user_actions.any? ? track.user_actions.map(&:name).join(', ') : 'Pas d\'action renseignée'}",
                               establishment_establishment_tracking_path(track.establishment, track), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
                 <% elsif %w[in_progress under_surveillance].include?(track.state) %>
                   <%= link_to "Commencé le #{track.start_date.present? ? l(track.start_date, format: :default) : 'Date de début inconnue'} - #{track.aasm.human_state}",
