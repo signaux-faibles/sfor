@@ -25,11 +25,13 @@ class EstablishmentTrackingExcelGenerator
       sheet.add_row []
 
       # Ligne d'en-tête avec style centré, bordures et couleur
-      sheet.add_row ["", "Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Date de fin", "Statut", "Synthèse"],
-                    style: Array.new(10) { |i| i.zero? ? nil : header_style(sheet) }
+      sheet.add_row ["", "Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Date de fin", "Statut", "Synthèse", "Synthèse CODEFI"],
+                    style: Array.new(11) { |i| i.zero? ? nil : header_style(sheet) }
 
       @establishment_trackings.each do |tracking|
         summary = tracking.summaries.find_by(network: @user.non_codefi_network)
+        codefi_summary = tracking.summaries.find_by(network: Network.find_by(name: 'CODEFI'))
+
         sheet.add_row [
                         "",
                         tracking.establishment.raison_sociale,
@@ -40,10 +42,11 @@ class EstablishmentTrackingExcelGenerator
                         tracking.start_date.present? ? tracking.start_date.strftime('%d/%m/%Y') : '-',
                         tracking.end_date.present? ? tracking.end_date.strftime('%d/%m/%Y') : '-',
                         tracking.aasm.human_state,
-                        summary&.content || 'Aucune synthèse rédigée'
-                      ],
-                      style: Array.new(9, centered_style(sheet)) + [summary_style(sheet)],
-                      types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, :string]
+                        summary&.content || 'Aucune synthèse rédigée par mon administration',
+                        codefi_summary&.content || 'Aucune synthèse CODEFI rédigée'
+        ],
+                      style: Array.new(9, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
+                      types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, :string, :string]
       end
 
       # Autosize des colonnes (sauf les colonnes fixes)
