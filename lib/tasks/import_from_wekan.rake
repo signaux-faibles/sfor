@@ -135,7 +135,7 @@ class ImportEstablishmentTrackingsService
   def create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
     wekan_status = lists.find("_id": card[:listId]).first[:title]
 
-    if wekan_status == 'Suivi terminé'
+    if wekan_status == 'Suivi terminé' && !card[:archived]
       establishment_tracking = EstablishmentTracking.new(establishment: establishment)
       establishment_tracking.creator = creator
       establishment_tracking.state = 'completed'
@@ -176,7 +176,7 @@ class ImportEstablishmentTrackingsService
       end
     end
 
-    if wekan_status == 'Suivi en cours'
+    if wekan_status == 'Suivi en cours' && !card[:archived]
       existing_tracking = establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).first
 
       if existing_tracking
@@ -188,6 +188,18 @@ class ImportEstablishmentTrackingsService
         new_referents = User.where(email: mongo_referents).to_a
         existing_tracking.referents |= new_referents # Fusionner les référents sans doublons
 
+        # Contact details
+        id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
+        contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+
+        if contact_field.present? && contact_field[:value].present?
+          establishment.contacts.create!(
+            description: contact_field[:value],
+            first_name: "Prénom",
+            last_name: "Nom"
+          )
+        end
+
         if existing_tracking.save
           puts "Establishment tracking with id #{existing_tracking.id} updated with participants and referents from card: #{card[:title]} (SIRET: #{siret})."
           return existing_tracking
@@ -196,7 +208,6 @@ class ImportEstablishmentTrackingsService
           return nil
         end
       else
-        # Aucun tracking existant trouvé, créer un nouveau
         new_tracking = EstablishmentTracking.new(establishment: establishment)
         new_tracking.creator = creator
         new_tracking.state = 'in_progress'
@@ -204,7 +215,6 @@ class ImportEstablishmentTrackingsService
         new_tracking.end_date = card[:endAt]
         new_tracking.modified_at = card[:modifiedAt]
 
-        # Participants et référents depuis Wekan
         mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
         participants = User.where(email: mongo_participants)
         new_tracking.participants = participants.empty? ? [creator] : participants
@@ -214,63 +224,57 @@ class ImportEstablishmentTrackingsService
         new_tracking.referents = referents.empty? ? [creator] : referents
 
         if save_tracking(new_tracking, siret, card[:title])
+          puts "New in progress establishment tracking with id #{new_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
           return new_tracking
         else
-          puts "Failed to save new in-progress tracking for card: #{card[:title]} (SIRET: #{siret})."
+          puts "Failed to save new in progress tracking for card: #{card[:title]} (SIRET: #{siret})."
           return nil
         end
       end
     end
 
-
-
-
-
-
-
-
-
-
-
     # If cards are archived in wekan, we want the with state 'completed' and discarded in rails
     if card[:archived]
       establishment_tracking.state = 'completed'
-      unless save_and_discard_tracking(establishment_tracking, siret, card[:title])
-        puts "Failed to save and discard tracking for archived card: #{card[:title]} (SIRET: #{siret})."
-        return nil
-      end
-      return establishment_tracking
-    end
 
-    case wekan_status
-    when 'Suivi terminé'
-      establishment_tracking.state = 'completed'
-      unless save_tracking(establishment_tracking, siret, card[:title])
-        puts "Failed to save completed tracking for card: #{card[:title]} (SIRET: #{siret})."
-        return nil
-      end
-    when 'Suivi en cours'
-      establishment_tracking.state = 'in_progress'
-      unless save_tracking(establishment_tracking, siret, card[:title])
-        puts "Failed to save in-progress tracking for card: #{card[:title]} (SIRET: #{siret})."
-        log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
-        return nil
-      end
-=begin
-    when 'Veille'
-      establishment_tracking.state = 'under_surveillance'
-      unless save_tracking(establishment_tracking, siret, card[:title])
-        puts "Failed to save under-surveillance tracking for card: #{card[:title]} (SIRET: #{siret})."
-        log_error(siret, card[:title], "Un accompagnement 'en cours' ou 'sous surveillance' existe déjà.")
-        return nil
-      end
-=end
-    else
-      puts "Unknown column: #{wekan_status} for card: #{card[:title]} (SIRET: #{siret})."
-      return nil
-    end
+      establishment_tracking = EstablishmentTracking.new(establishment: establishment)
+      establishment_tracking.creator = creator
 
-    establishment_tracking
+      # Participants and Referents
+      mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+      participants = User.where(email: mongo_participants)
+      establishment_tracking.participants = participants.empty? ? [creator] : participants
+      mongo_referents = users.find({ "_id": { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+      referents = User.where(email: mongo_referents)
+      establishment_tracking.referents = referents.empty? ? [creator] : referents
+
+      # Determine dates
+      establishment_tracking.start_date = card[:startAt] || card[:createdAt]
+      establishment_tracking.end_date = card[:endAt]
+
+      establishment_tracking.modified_at = card[:modifiedAt]
+      establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
+
+      # Contact details
+      id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
+      contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+
+      if contact_field.present? && contact_field[:value].present?
+        establishment.contacts.create!(
+          description: contact_field[:value],
+          first_name: "Prénom",
+          last_name: "Nom"
+        )
+      end
+
+      if save_and_discard_tracking(establishment_tracking, siret, card[:title])
+        puts "New discarded establishment tracking with id #{new_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
+        return establishment_tracking
+      else
+        puts "Failed to save new discarded tracking for card: #{card[:title]} (SIRET: #{siret})."
+        return nil
+      end
+    end
   end
 
   def create_summary(card, establishment_tracking, siret)
