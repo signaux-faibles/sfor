@@ -11,10 +11,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     id: Field::Number,
     creator: Field::BelongsTo,
     end_date: Field::Date,
-    establishment: Field::BelongsToSearch.with_options(
-      searchable: true,
-      searchable_fields: ['raison_sociale', 'siret']
-    ),
+    establishment: Field::BelongsTo,
     participants: Field::HasMany,
     referents: Field::HasMany,
     start_date: Field::Date,

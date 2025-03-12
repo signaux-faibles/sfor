@@ -109,11 +109,9 @@ class EstablishmentTrackingsController < ApplicationController
         flash[:success] = 'L\'accompagnement a été mis à jour avec succès.'
         redirect_to [@establishment, @establishment_tracking]
       else
-        raise ActiveRecord::Rollback
+        render :edit, status: :unprocessable_entity
       end
     end
-  rescue ActiveRecord::Rollback
-    render :edit, status: :unprocessable_entity
   end
 
   def create
@@ -173,11 +171,11 @@ class EstablishmentTrackingsController < ApplicationController
 
     case desired_state
     when 'completed'
-      @establishment_tracking.complete! if @establishment_tracking.may_complete?
+      return @establishment_tracking.complete! if @establishment_tracking.may_complete?
     when 'under_surveillance'
-      @establishment_tracking.start_surveillance! if @establishment_tracking.may_start_surveillance?
+      return @establishment_tracking.start_surveillance! if @establishment_tracking.may_start_surveillance?
     when 'in_progress'
-      @establishment_tracking.resume! if @establishment_tracking.may_resume?
+      return @establishment_tracking.resume! if @establishment_tracking.may_resume?
     else
       false
     end
