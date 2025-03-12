@@ -106,7 +106,8 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def set_modified_at
-    self.modified_at = self.modified_at.presence || Date.current
+    return if @skip_modified_at_update
+    self.modified_at = Date.current
   end
 
   def update_modified_at_if_criticality_changed

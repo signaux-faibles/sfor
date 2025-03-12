@@ -200,6 +200,8 @@ class ImportEstablishmentTrackingsService
           )
         end
 
+        establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
+
         if existing_tracking.save
           puts "Establishment tracking with id #{existing_tracking.id} updated with participants and referents from card: #{card[:title]} (SIRET: #{siret})."
           return existing_tracking
