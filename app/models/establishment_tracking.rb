@@ -101,7 +101,7 @@ class EstablishmentTracking < ApplicationRecord
                     .where(state: ['in_progress', 'under_surveillance'])
                     .where.not(id: id) # Exclude the current record if updating
                     .exists?
-      errors.add(:base, 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.')
+      errors.add(:state, 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.')
     end
   end
 

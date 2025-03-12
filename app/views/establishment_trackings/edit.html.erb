@@ -8,55 +8,61 @@
 
         <div class="fr-p-3w">
           <h2>Informations sur l'accompagnement</h2>
-          <% if @establishment_tracking.errors.any? %>
-            <div id="error_explanation">
-              <h2><%= pluralize(@establishment_tracking.errors.count, "erreur") %> lors de la modification de cet
-                accompagnement :</h2>
-              <ul>
-                <% @establishment_tracking.errors.full_messages.each do |message| %>
-                  <li><%= message %></li>
-                <% end %>
-              </ul>
-            </div>
-          <% end %>
 
           <% if policy(@establishment_tracking).manage_state? %>
-            <div class="fr-input-group">
+            <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
               <%= form.label :state, 'Statut' %>
               <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
+              <% @establishment_tracking.errors[:state].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
             </div>
           <% else %>
             <%= form.hidden_field :state, value: @establishment_tracking.state %>
           <% end %>
 
-          <div class="fr-input-group">
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:criticality_id].any? %>">
             <%= form.label :criticality_id, 'Criticité' %>
             <%= form.collection_select :criticality_id, Criticality.all, :id, :name, {}, { class: 'fr-select' } %>
+            <% @establishment_tracking.errors[:criticality_id].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
 
-          <div class="fr-input-group">
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>">
             <%= form.label :tracking_label_ids, 'Étiquettes' %>
             <%= form.select :tracking_label_ids,
                             @system_labels,
                             {},
                             { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+            <% @establishment_tracking.errors[:tracking_label_ids].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
 
-          <div class="fr-input-group">
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>">
             <%= form.label :Difficultés %>
             <%= form.collection_select :difficulty_ids, Difficulty.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+            <% @establishment_tracking.errors[:difficulty_ids].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
 
-          <div class="fr-input-group">
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>">
             <%= form.label :user_action_ids, 'Actions réalisées' %>
             <%= form.collection_select :user_action_ids, UserAction.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+            <% @establishment_tracking.errors[:user_action_ids].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
 
-          <div class="fr-input-group">
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>">
             <%= form.label :codefi_redirect_ids, 'Réorientation externe au CODEFI' %>
             <%= form.collection_select :codefi_redirect_ids, CodefiRedirect.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+            <% @establishment_tracking.errors[:codefi_redirect_ids].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
-
         </div>
       </div>
     </div>
@@ -64,21 +70,28 @@
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
       <div class="fr-col-6">
         <div class="fr-p-3w">
-          <h2>Informations sur l'établissement</h2>
 
+          <h2>Informations sur l'établissement</h2>
           <p class="fr-m-0"><strong>SIRET</strong></p>
+
           <p><%= @establishment_tracking.establishment.siret %></p>
-          <div class="fr-input-group">
+
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:size_id].any? %>">
             <%= form.label :size_id, 'Taille de l\'entreprise' %>
             <%= form.collection_select :size_id, Size.all, :id, :name, {}, { class: 'fr-select' } %>
+            <% @establishment_tracking.errors[:size_id].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
 
-          <div class="fr-input-group">
+          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>">
             <%= form.label :sector_ids, 'Filières' %>
             <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+            <% @establishment_tracking.errors[:sector_ids].each do |error| %>
+              <p class="fr-error-text"><%= error %></p>
+            <% end %>
           </div>
         </div>
-
       </div>
     </div>
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w">
@@ -95,11 +108,7 @@
         </div>
       </div>
     </div>
-
-
   </div>
-
-
 <% end %>
 
 

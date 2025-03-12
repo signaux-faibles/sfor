@@ -72,6 +72,6 @@ class EstablishmentTrackingTest < ActiveSupport::TestCase
 
     # Validate the new tracking is invalid
     assert_not new_tracking.valid?
-    assert_includes new_tracking.errors[:base], 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.'
+    assert_includes new_tracking.errors[:state], 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.'
   end
 end

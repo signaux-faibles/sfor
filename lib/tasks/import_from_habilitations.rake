@@ -23,7 +23,7 @@ namespace :users do
     @crp_network = Network.find_or_create_by(name: 'CRP')
     @urssaf_network = Network.find_or_create_by(name: 'URSSAF')
     @banque_de_france_network = Network.find_or_create_by(name: 'Banque de France')
-    @dgfip_network = Network.find_or_create_by(name: 'DGFIP')
+    @dgfip_network = Network.find_or_create_by(name: 'DGFiP')
     @dgefp_network = Network.find_or_create_by(name: 'DGEFP')
 
     users_worksheet.sheet_data.rows[1..-1].each do |row|

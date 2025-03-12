@@ -88,6 +88,7 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     siret
     activity_sector
     parent_establishment
+    establishment_trackings
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
