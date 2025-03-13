@@ -3,13 +3,29 @@ import { Controller } from "@hotwired/stimulus"
 // Tom Select est déjà  chargé globalement par Importmap
 
 export default class extends Controller {
+
+
+
+
+
+
     connect() {
-        new TomSelect(this.element, {
+
+        const minSearchAttr = this.element.dataset.minSearch;
+        const threshold = minSearchAttr ? parseInt(minSearchAttr, 10) : 1;
+
+        console.log(threshold);
+
+
+        const options = {
+            clearOnBlur: false,
+            persist: true,
+            closeAfterSelect: true,
             plugins: ['remove_button'],
             maxOptions: null,
-            persist: false,
             create: false,
             dropdownParent: 'body',
+            openOnFocus: false,
             sortField: {
                 field: "text",
                 direction: "asc"
@@ -26,16 +42,24 @@ export default class extends Controller {
                 },
                 no_results: function(data, escape) {
                     return '<div class="no-results">' + 'Aucun résultat' + '</div>';
-                }
+                },
             },
 
             onItemAdd: function(value, item) {
                 this.setTextboxValue('');
                 this.refreshOptions();
+            },
+
+            onType: function(str) {
+                if (str.length >= 3) {
+                    this.refreshOptions(true);
+                } else {
+                    this.close();
+                    this.setTextboxValue(str);
+                }
             }
+        }
 
-
-
-            });
+        new TomSelect(this.element, options);
     }
 }
