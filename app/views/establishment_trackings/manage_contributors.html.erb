@@ -14,13 +14,19 @@
       <% end %>
 
       <div class="fr-input-group">
-        <%= form.label 'Assignés' %>
-        <%= form.collection_select :referent_ids, User.kept, :id, :display_name, {}, { multiple: true, class: 'tom-select', autocomplete: "off", data: { controller: "tom-select" } } %>
+        <%= form.label :referent_ids do %>
+          Assignés
+          <span class="fr-hint-text">Saisissez au moins 3 caractères</span>
+      <% end %>
+        <%= form.collection_select :referent_ids, User.kept, :id, :display_name, {}, { multiple: true, class: 'tom-select', autocomplete: "off", data: { controller: "tom-select", min_search: "3" } } %>
       </div>
 
       <div class="fr-input-group">
-        <%= form.label :Participants %>
-        <%= form.collection_select :participant_ids, User.kept, :id, :display_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+        <%= form.label :participant_ids do %>
+          Participants
+          <span class="fr-hint-text">Saisissez au moins 3 caractères</span>
+        <% end %>
+        <%= form.collection_select :participant_ids, User.kept, :id, :display_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", min_search: "3" } } %>
       </div>
 
       <ul class="fr-btns-group fr-btns-group--inline-md">
