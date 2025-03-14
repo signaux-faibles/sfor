@@ -25,7 +25,7 @@ export default class extends Controller {
             maxOptions: null,
             create: false,
             dropdownParent: 'body',
-            openOnFocus: false,
+            openOnFocus: !minSearchAttr,
             sortField: {
                 field: "text",
                 direction: "asc"
@@ -51,7 +51,7 @@ export default class extends Controller {
             },
 
             onType: function(str) {
-                if (str.length >= 3) {
+                if (str.length >= threshold) {
                     this.refreshOptions(true);
                 } else {
                     this.close();
