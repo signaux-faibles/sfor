@@ -12,17 +12,29 @@ class EstablishmentTrackingsController < ApplicationController
     # Removing `view` from `q` so it doesn't affect Ransack
     clean_params = params[:q]&.except(:view)
 
-    # We don't want discarded trackings
-    base_scope = policy_scope(EstablishmentTracking).kept
-    @q = base_scope.ransack(clean_params)
-
     if params.dig(:q, :my_tracking) == '1'
-      @establishment_trackings = @q.result.with_user_as_referent_or_participant(current_user)
+      base_scope = EstablishmentTracking.kept
+      @q = base_scope.ransack(clean_params)
+      all_trackings = @q.result
+
+      user_tracking_ids = EstablishmentTracking.kept.with_user_as_referent_or_participant(current_user).select(:id)
+
+      @establishment_trackings = all_trackings.
+        joins(establishment: :department).
+        where("establishments.department_id IN (?) OR establishment_trackings.id IN (?)",
+              current_user.department_ids, user_tracking_ids).
+        distinct
+
     elsif params.dig(:q, :my_tracking) == 'network'
+      base_scope = policy_scope(EstablishmentTracking).kept
+      @q = base_scope.ransack(clean_params)
       @establishment_trackings = @q.result.by_network(current_user.network_ids).distinct
     else
+      base_scope = policy_scope(EstablishmentTracking).kept
+      @q = base_scope.ransack(clean_params)
       @establishment_trackings = @q.result
     end
+
 
     @paginated_establishment_trackings = @establishment_trackings.includes(:referents, :criticality, establishment: :department).page(params[:page]).per(15)
 
