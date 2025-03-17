@@ -133,9 +133,13 @@ class ImportEstablishmentTrackingsService
   end
 
   def create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
+    puts "Processing siret #{siret} with card #{card[:title]}."
     wekan_status = lists.find("_id": card[:listId]).first[:title]
 
     if wekan_status == 'Suivi terminé' && !card[:archived]
+
+      puts "Processing siret #{siret} wekan status is #{wekan_status} and card is not archived."
+
       establishment_tracking = EstablishmentTracking.new(establishment: establishment)
       establishment_tracking.creator = creator
       establishment_tracking.state = 'completed'
@@ -177,9 +181,14 @@ class ImportEstablishmentTrackingsService
     end
 
     if wekan_status == 'Suivi en cours' && !card[:archived]
+
+      puts "Processing siret #{siret} Wekan status is #{wekan_status} and card is not archived."
+
       existing_tracking = establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).first
 
       if existing_tracking
+        puts "Processing siret #{siret}, existing in rails"
+
         mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
         new_participants = User.where(email: mongo_participants).to_a
         existing_tracking.participants |= new_participants
@@ -200,7 +209,7 @@ class ImportEstablishmentTrackingsService
           )
         end
 
-        establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
+        existing_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
         if existing_tracking.save
           puts "Establishment tracking with id #{existing_tracking.id} updated with participants and referents from card: #{card[:title]} (SIRET: #{siret})."
@@ -210,6 +219,9 @@ class ImportEstablishmentTrackingsService
           return nil
         end
       else
+
+        puts "Processing siret #{siret}, not existing in rails"
+
         new_tracking = EstablishmentTracking.new(establishment: establishment)
         new_tracking.creator = creator
         new_tracking.state = 'in_progress'
@@ -237,6 +249,9 @@ class ImportEstablishmentTrackingsService
 
     # If cards are archived in wekan, we want the with state 'completed' and discarded in rails
     if card[:archived]
+
+      puts "Processing siret #{siret} Wekan status is #{wekan_status} and card is archived."
+
       establishment_tracking.state = 'completed'
 
       establishment_tracking = EstablishmentTracking.new(establishment: establishment)
