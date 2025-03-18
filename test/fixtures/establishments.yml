@@ -3,27 +3,46 @@ establishment_paris:
   siret: '12345678900001'
   raison_sociale: 'Etablissement Paris'
   department: department_paris
+  company: company_paris
 
 establishment_paris_2:
-    siren: '123456710'
+    siren: '123456789'
     siret: '12345678900010'
     raison_sociale: 'Etablissement Paris 2'
     department: department_paris
+    company: company_paris
 
 establishment_paris_3:
-  siren: '123456712'
+  siren: '123456789'
   siret: '12345678900012'
   raison_sociale: 'Etablissement Paris 3'
   department: department_paris
+  company: company_paris
+
+establishment_paris_4:
+  siren: '123456789'
+  siret: '12345678900013'
+  raison_sociale: 'Etablissement Paris 4'
+  department: department_paris
+  company: company_paris
+
+establishment_paris_5:
+  siren: '123456789'
+  siret: '12345678900014'
+  raison_sociale: 'Etablissement Paris 5'
+  department: department_paris
+  company: company_paris
 
 establishment_paris_no_trackings:
-  siren: '123456711'
+  siren: '123456789'
   siret: '12345678900011'
   raison_sociale: 'Etablissement Paris No trackings'
   department: department_paris
+  company: company_paris
 
 establishment_finistere:
   siren: '987654321'
   siret: '98765432100002'
   raison_sociale: 'Etablissement Bretagne'
   department: department_finistere
+  company: company_finistere

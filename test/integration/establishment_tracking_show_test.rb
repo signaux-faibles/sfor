@@ -42,7 +42,7 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_select "a", text: "Modifier les informations", count: 1
+    assert_select "a", text: "Modifier les informations", count: 2
     assert_select "a", text: "Gérer les contributeurs", count: 1
   end
 
@@ -68,7 +68,7 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
       end
     end
 
-    assert_select "a", text: "Modifier les informations", count: 1
+    assert_select "a", text: "Modifier les informations", count: 2
     assert_select "a", text: "Gérer les contributeurs", count: 1
   end
 

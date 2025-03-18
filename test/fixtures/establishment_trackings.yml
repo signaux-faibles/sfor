@@ -5,9 +5,25 @@ establishment_tracking_paris:
   creator: user_crp_paris
   tracking_labels: tracking_label_1
   referents: [user_crp_paris]
+  
+establishment_tracking_paris_2:
+  state: 'in_progress'
+  establishment: establishment_paris_4
+  start_date: 2023-01-01
+  creator: user_urssaf_paris
+  tracking_labels: tracking_label_1
+  referents: [ user_crp_paris_2 ]
+
+establishment_tracking_paris_3:
+  state: 'in_progress'
+  establishment: establishment_paris_5
+  start_date: 2023-01-01
+  creator: user_urssaf_paris
+  tracking_labels: tracking_label_1
+  participants: [ user_crp_paris_3 ]
 
 establishment_tracking_paris_no_content:
-  state: 'in_progress'
+  state: 'completed'
   establishment: establishment_paris_2
   start_date: 2023-02-02
   creator: user_crp_paris
