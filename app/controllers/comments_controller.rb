@@ -14,7 +14,6 @@ class CommentsController < ApplicationController
     if @comment.save
       flash.now[:notice] = "Commentaire ajouté avec succès."
     else
-      puts @comment.errors.full_messages
       render turbo_stream: turbo_stream.update("new_comment_#{@comment.network.name.parameterize}",
                                                 partial: "comments/form",
                                                 locals: { comment: @comment, network: @comment.network },

@@ -47,9 +47,6 @@ Rails.application.routes.draw do
   resources :establishments, only: [:show], path: 'etablissements' do
     resources :establishment_trackings, only: [:new, :create, :show, :destroy, :edit, :update], path: 'accompagnements' do
       member do
-        get :complete
-        get :start_surveillance
-        get :resume
         get :manage_contributors
         patch :update_contributors
       end

@@ -15,18 +15,19 @@
         </li>
       </ol>
     </div>
-  </nav>  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
+  </nav>
+  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
     <h1 style="margin: 0;">Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
-      <ul class="fr-badges-group fr-pt-1w">
-        <li>
-          <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state) %>
-        </li>
-        <li>
-          <% if @establishment_tracking.criticality.present? %>
-            <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: paragraph_style_for(@establishment_tracking.criticality.name)} %>
-          <% end %>
-        </li>
-      </ul>
+    <ul class="fr-badges-group fr-pt-1w">
+      <li>
+        <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state) %>
+      </li>
+      <li>
+        <% if @establishment_tracking.criticality.present? %>
+          <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: paragraph_style_for(@establishment_tracking.criticality.name) } %>
+        <% end %>
+      </li>
+    </ul>
   </div>
   <div class="fr-tabs">
     <ul class="fr-tabs__list custom-background fr-pb-0" role="tablist" aria-label="Gestion des onglets">
@@ -54,6 +55,8 @@
         </li>
       <% end %>
     </ul>
+
+
 
     <%= render 'info_panel' %>
 
@@ -104,7 +107,8 @@
                         <%= render "comments/comment", comment: comment %>
                       <% end %>
                     <% else %>
-                      <p id="no_comments_message_<%= network.name.parameterize %>">Il n'y a pas encore de commentaires pour ce suivi</p>
+                      <p id="no_comments_message_<%= network.name.parameterize %>">Il n'y a pas encore de commentaires
+                        pour ce suivi</p>
                     <% end %>
                   <% end %>
                 </div>
@@ -114,5 +118,78 @@
         </div>
       </div>
     <% end %>
+  </div>
+  <div class="fr-container--fluid">
+    <div class="fr-grid-row">
+      <div class="fr-col-12">
+        <div class="fr-m-4w">
+          <h3>Tous les accompagnements de l'entreprise <%= @establishment.company.siren %></h3>
+          <div class="fr-table" id="table-md-component">
+            <div class="fr-table__wrapper">
+              <div class="fr-table__container">
+                <div class="fr-table__content">
+                  <table id="table-md">
+                    <% if @company_trackings.any? %>
+                      <thead>
+                      <tr>
+                        <th>Raison sociale</th>
+                        <th>SIRET</th>
+                        <th>Statut</th>
+                        <th>Criticité</th>
+                        <th>Assignés</th>
+                        <th>Dernière modification</th>
+                        <th>Dépt.</th>
+                        <th>Actions</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <% @company_trackings.each do |tracking| %>
+                        <tr>
+                          <td>
+                    <span title="<%= tracking.establishment.raison_sociale %>">
+                      <%= tracking.establishment.raison_sociale.truncate(20) %>
+                    </span>
+                          </td>
+                          <td><%= tracking.establishment.siret %></td>
+                          <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
+                          <td>
+                            <% if tracking.criticality.present? %>
+                              <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
+                            <% end %>
+                          </td>
+                          <td>
+                            <% if tracking.referents.any? %>
+                              <% first_referent = tracking.referents.first %>
+                              <span title="<%= tracking.referents.map(&:full_name).join(', ') %>">
+                                <%= truncate(first_referent.full_name, length: 20) %>
+                              </span>
+                              <% if tracking.referents.size > 1 %>
+                                <span>+<%= tracking.referents.size - 1 %></span>
+                              <% end %>
+                            <% else %>
+                              <span>Aucun assigné</span>
+                            <% end %>
+                          </td>
+                          <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
+                          <td><%= tracking.establishment.department.code %></td>
+                          <td>
+                            <% if policy(tracking).show? %>
+                              <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                            <% else %>
+                            <span>-</span>
+                            <% end %>
+                          </td>
+                        </tr>
+                      <% end %>
+                      </tbody>
+                    <% end %>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

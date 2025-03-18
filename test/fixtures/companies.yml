@@ -1,0 +1,11 @@
+company_paris:
+  siren: '123456789'
+  siret: '12345678900001'
+  raison_sociale: 'Company Paris'
+  department: department_paris
+
+company_finistere:
+  siren: '987654321'
+  siret: '98765432100002'
+  raison_sociale: 'Company Finistere'
+  department: department_finistere 

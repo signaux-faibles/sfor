@@ -59,6 +59,11 @@ class EstablishmentTrackingsController < ApplicationController
     @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
 
     @other_trackings = @establishment_tracking.establishment.establishment_trackings.where.not(id: @establishment_tracking.id)
+    @company_trackings = EstablishmentTracking
+                           .joins(:establishment)
+                           .where(establishments: { company_id: @establishment_tracking.establishment.company_id })
+                           .where.not(id: @establishment_tracking.id)
+                           .distinct
   end
 
   def new
@@ -135,7 +140,6 @@ class EstablishmentTrackingsController < ApplicationController
       flash[:success] = 'L\'accompagnement a été créé avec succès.'
       redirect_to @establishment
     else
-      puts @establishment_tracking.errors.inspect
       render :new, status: :unprocessable_entity
     end
   end

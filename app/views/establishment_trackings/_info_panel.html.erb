@@ -6,75 +6,83 @@
      tabindex="0">
   <div>
     <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-6" style="border-right: 1px solid #e5e5e5;">
-        <div class="accompagnement__tab-title">
-          <h3>Informations sur l'accompagnement
-            <% if policy(@establishment_tracking).edit? %>
-              <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
+      <div class="fr-col-6">
+        <div class="fr-callout fr-icon-information-line">
+          <h3 class="fr-callout__title">Informations sur l'accompagnement</h3>
+          <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
+          <p><strong>Date de début de l'accompagnement
+            :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %>
+          </p>
+          <p>
+            <strong>Criticité
+              :</strong> <%= @establishment_tracking.criticality&.name || 'Pas de criticité renseignée' %>
+          </p>
+          <p>
+            <strong>Etiquettes :</strong>
+            <% if @establishment_tracking.tracking_labels.any? %>
+              <% @establishment_tracking.tracking_labels.each do |label| %>
+                <span class="fr-tag fr-tag--sm"><%= label.name %></span>
+              <% end %>
+            <% else %>
+              <span>Pas d'étiquette</span>
             <% end %>
-          </h3>
+          </p>
+
+          <p><strong>Difficultés
+            :</strong>
+            <% if @establishment_tracking.difficulties.any? %>
+              <% @establishment_tracking.difficulties.each do |difficulty| %>
+                <span class="fr-tag fr-tag--sm"><%= difficulty.name %></span>
+              <% end %>
+            <% else %>
+              <span>Pas de difficulté renseignée</span>
+            <% end %>
+          </p>
+
+          <p><strong>Actions réalisées
+            :</strong>
+            <% if @establishment_tracking.user_actions.any? %>
+              <% @establishment_tracking.user_actions.each do |action| %>
+                <span class="fr-tag fr-tag--sm"><%= action.name %></span>
+              <% end %>
+            <% else %>
+              <span>Pas d'action renseignée</span>
+            <% end %>
+          </p>
+
+          <p><strong>Redirections CODEFI :</strong>
+            <% if @establishment_tracking.codefi_redirects.any? %>
+              <% @establishment_tracking.codefi_redirects.each do |redirect| %>
+                <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
+              <% end %>
+            <% else %>
+              <span>Pas de redirection CODEFI renseignée</span>
+            <% end %>
+          </p>
+          <% if policy(@establishment_tracking).edit? %>
+            <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
+          <% end %>
         </div>
-        <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
-        <p><strong>Date de début de l'accompagnement
-          :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %>
-        </p>
-        <p>
-          <strong>Criticité :</strong> <%= @establishment_tracking.criticality&.name || 'Pas de criticité renseignée' %>
-        </p>
-        <p>
-          <strong>Etiquettes :</strong>
-          <% if @establishment_tracking.tracking_labels.any? %>
-            <% @establishment_tracking.tracking_labels.each do |label| %>
-              <span class="fr-tag fr-tag--sm"><%= label.name %></span>
-            <% end %>
-          <% else %>
-            <span>Pas d'étiquette</span>
-          <% end %>
-        </p>
 
-        <p><strong>Difficultés
-          :</strong>
-          <% if @establishment_tracking.difficulties.any? %>
-            <% @establishment_tracking.difficulties.each do |difficulty| %>
-              <span class="fr-tag fr-tag--sm"><%= difficulty.name %></span>
-            <% end %>
-          <% else %>
-            <span>Pas de difficulté renseignée</span>
-          <% end %>
-        </p>
 
-        <p><strong>Actions réalisées
-          :</strong>
-          <% if @establishment_tracking.user_actions.any? %>
-            <% @establishment_tracking.user_actions.each do |action| %>
-              <span class="fr-tag fr-tag--sm"><%= action.name %></span>
+        <div class="fr-callout fr-icon-information-line">
+          <h3 class="fr-callout__title">Informations sur l'établissement</h3>
+          <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
+          <p><strong>Taille de l'entreprise
+            :</strong> <%= @establishment_tracking.size&.name || 'Pas de taille renseignée' %></p>
+          <p><strong>Filières :</strong>
+            <% if @establishment_tracking.sectors.any? %>
+              <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
+            <% else %>
+              Pas de filière renseignée
             <% end %>
-          <% else %>
-            <span>Pas d'action renseignée</span>
+          </p>
+          <% if policy(@establishment_tracking).edit? %>
+            <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
           <% end %>
-        </p>
+        </div>
 
-        <p><strong>Redirections CODEFI :</strong>
-          <% if @establishment_tracking.codefi_redirects.any? %>
-            <% @establishment_tracking.codefi_redirects.each do |redirect| %>
-              <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
-            <% end %>
-          <% else %>
-            <span>Pas de redirection CODEFI renseignée</span>
-          <% end %>
-        </p>
 
-        <h3>Informations sur l'établissement</h3>
-        <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
-        <p><strong>Taille de l'entreprise
-          :</strong> <%= @establishment_tracking.size&.name || 'Pas de taille renseignée' %></p>
-        <p><strong>Filières :</strong>
-          <% if @establishment_tracking.sectors.any? %>
-            <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
-          <% else %>
-            Pas de filière renseignée
-          <% end %>
-        </p>
 
         <%= render 'establishment_trackings/contacts_list', establishment: @establishment, establishment_tracking: @establishment_tracking %>
 
@@ -102,18 +110,20 @@
       </div>
 
       <div class="fr-col-6">
-        <div class="accompagnement__tab-title">
-          <h3>Contributeurs
-            <% if policy(@establishment_tracking).manage_contributors? %>
-              <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-settings-5-line fr-mb-2w' %>
-            <% end %>
-          </h3>
-        </div>
-        <p><strong>Assignés :</strong></p>
-        <p><%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %></p>
-        <p><strong>Participants :</strong></p>
-        <p><%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %></p>
+        <div class="fr-callout fr-icon-group-line"><h3 class="fr-callout__title">Contributeurs</h3>
+          <p><strong>Assignés :</strong></p>
+          <p><%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %></p>
+          <p><strong>Participants :</strong></p>
+          <p><%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %></p>
+          <% if policy(@establishment_tracking).manage_contributors? %>
+            <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-add-line fr-mb-2w' %>
+          <% end %>      </div>
+
       </div>
+
+
+
+
     </div>
   </div>
 </div>
