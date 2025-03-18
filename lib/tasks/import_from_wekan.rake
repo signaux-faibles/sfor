@@ -228,6 +228,7 @@ class ImportEstablishmentTrackingsService
         new_tracking.start_date = card[:startAt] || card[:createdAt]
         new_tracking.end_date = card[:endAt]
         new_tracking.modified_at = card[:modifiedAt]
+        new_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
         mongo_participants = users.find({ "_id": { "$in": card[:members] } }).to_a.map { |user| user[:username] }
         participants = User.where(email: mongo_participants)
