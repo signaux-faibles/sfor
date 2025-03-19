@@ -34,7 +34,7 @@
   <%= javascript_importmap_tags %>
 </head>
 
-<body>
+<body data-controller="theme">
 <%= render 'layouts/header' %>
 <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
 <div id="flash">
@@ -48,6 +48,9 @@
 <main class="fr-pt-4w">
   <%= yield %>
 </main>
+
+<%= render 'layouts/theme_modal' %>
+
 
 <%# render 'layouts/footer' %>
 
