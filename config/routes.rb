@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   }
 
   get 'unauthorized', to: 'pages#unauthorized'
+  get 'statistiques', to: 'statistics#index'
 
   namespace :admin do
     resources :users do
