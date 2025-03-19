@@ -3,6 +3,13 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   setup do
+    setup_test_data
+    sign_in @user_crp_paris
+  end
+
+  private
+
+  def setup_test_data
     @establishment_tracking_paris = establishment_trackings(:establishment_tracking_paris)
     @establishment_tracking_paris_2 = establishment_trackings(:establishment_tracking_paris_2)
     @establishment_tracking_paris_3 = establishment_trackings(:establishment_tracking_paris_3)
@@ -14,68 +21,63 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     @user_crp_paris = users(:user_crp_paris)
     @user_urssaf_paris = users(:user_urssaf_paris)
     @user_crp_paris_2 = users(:user_crp_paris_2)
-
-    sign_in @user_crp_paris
   end
 
+  def assert_tracking_included(tracking)
+    assert_includes response.body, tracking.establishment.raison_sociale
+  end
+
+  def assert_tracking_not_included(tracking)
+    assert_not_includes response.body, tracking.establishment.raison_sociale
+  end
+
+  # Index tests
   test "should get index" do
     get establishment_trackings_url
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris.establishment.raison_sociale
-    assert_not_includes response.body, @establishment_tracking_finistere.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris)
+    assert_tracking_not_included(@establishment_tracking_finistere)
   end
 
   test "should show trackings where user is referent when my_tracking=1" do
     get establishment_trackings_url, params: { q: { my_tracking: "1" } }
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris.establishment.raison_sociale
-    assert_includes response.body, @establishment_tracking_paris_with_urssaf_referents.establishment.raison_sociale
-    assert_not_includes response.body, @establishment_tracking_finistere.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris)
+    assert_tracking_included(@establishment_tracking_paris_with_urssaf_referents)
+    assert_tracking_not_included(@establishment_tracking_finistere)
   end
 
   test "should show trackings where user is participant when my_tracking=1" do
     @establishment_tracking_paris_with_urssaf_referents.participants << @user_crp_paris
-
     get establishment_trackings_url, params: { q: { my_tracking: "1" } }
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris_with_urssaf_referents.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris_with_urssaf_referents)
   end
 
   test "should show trackings where establishment department matches user departments when my_tracking=1" do
     get establishment_trackings_url, params: { q: { my_tracking: "1" } }
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris_3.establishment.raison_sociale
-  end
-
-  test "should not show trackings from other departments when my_tracking=1" do
-    get establishment_trackings_url, params: { q: { my_tracking: "1" } }
-    assert_response :success
-    assert_not_includes response.body, @establishment_tracking_finistere.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris_3)
   end
 
   test "should show trackings from user's networks when my_tracking=network" do
     get establishment_trackings_url, params: { q: { my_tracking: "network" } }
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris.establishment.raison_sociale
-    assert_not_includes response.body, @establishment_tracking_finistere.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris)
+    assert_tracking_not_included(@establishment_tracking_finistere)
   end
 
-  test "should show trackings where referents share the same network as current user when my_tracking=network" do
+  test "should show trackings where referents share the same network when my_tracking=network" do
     get establishment_trackings_url, params: { q: { my_tracking: "network" } }
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris_2.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris_2)
   end
 
-  test "should show trackings where participants share the same network as current user when my_tracking=network" do
-    get establishment_trackings_url, params: { q: { my_tracking: "network" } }
-    assert_response :success
-    assert_includes response.body, @establishment_tracking_paris_3.establishment.raison_sociale
-  end
-
+  # CRUD tests
   test "should get show" do
     get establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     assert_response :success
-    assert_includes response.body, @establishment_tracking_paris.establishment.raison_sociale
+    assert_tracking_included(@establishment_tracking_paris)
   end
 
   test "should get new" do
@@ -156,6 +158,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 'L\'accompagnement a été supprimé avec succès.', flash[:success]
   end
 
+  # Contributor management tests
   test "should get manage_contributors" do
     get manage_contributors_establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     assert_response :success
@@ -173,6 +176,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Contributeurs mis à jour avec succès.", flash[:success]
   end
 
+  # SIRET-based tracking creation tests
   test "should handle new_by_siret with existing establishment" do
     get new_establishment_tracking_by_siret_url, params: {
       siret: @establishment_paris.siret,
