@@ -253,9 +253,8 @@ class ImportEstablishmentTrackingsService
 
       puts "Processing siret #{siret} Wekan status is #{wekan_status} and card is archived."
 
-      establishment_tracking.state = 'completed'
-
       establishment_tracking = EstablishmentTracking.new(establishment: establishment)
+      establishment_tracking.state = 'completed'
       establishment_tracking.creator = creator
 
       # Participants and Referents
@@ -286,7 +285,7 @@ class ImportEstablishmentTrackingsService
       end
 
       if save_and_discard_tracking(establishment_tracking, siret, card[:title])
-        puts "New discarded establishment tracking with id #{new_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
+        puts "New discarded establishment tracking with id #{establishment_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
         return establishment_tracking
       else
         puts "Failed to save new discarded tracking for card: #{card[:title]} (SIRET: #{siret})."
