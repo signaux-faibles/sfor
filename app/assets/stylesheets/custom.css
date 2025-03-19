@@ -88,3 +88,9 @@
     background-color: #f4f4f4;
     font-weight: bold;
 }
+
+.fr-icon-shake-hands-line::before,
+.fr-icon-shake-hands-line::after {
+    -webkit-mask-image: url("../../../icons/business/shake-hands-line.svg");
+    mask-image: url("../../../icons/business/shake-hands-line.svg");
+}

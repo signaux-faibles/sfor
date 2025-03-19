@@ -34,7 +34,7 @@
       <!-- Establishment Information Tab -->
       <li role="presentation">
         <button id="tabpanel-informations"
-                class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left"
+                class="fr-tabs__tab fr-icon-information-line fr-tabs__tab--icon-left"
                 tabindex="0" role="tab"
                 aria-selected="true"
                 aria-controls="tabpanel-informations-panel">
@@ -46,7 +46,7 @@
       <% current_user.active_networks.each do |network| %>
         <li role="presentation">
           <button id="tabpanel-<%= network.name.parameterize %>"
-                  class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left"
+                  class="fr-tabs__tab fr-icon-question-answer-line fr-tabs__tab--icon-left"
                   tabindex="-1" role="tab"
                   aria-selected="false"
                   aria-controls="tabpanel-<%= network.name.parameterize %>-panel">
