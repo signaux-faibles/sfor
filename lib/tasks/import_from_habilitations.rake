@@ -154,7 +154,10 @@ namespace :users do
   end
 
   def assign_networks(user, segment_name)
-    user.networks << @codefi_network unless user.networks.include?(@codefi_network)
+    # Only add CODEFI network if the segment is not dreets_reseaucrp
+    unless segment_name.downcase == 'dreets_reseaucrp'
+      user.networks << @codefi_network unless user.networks.include?(@codefi_network)
+    end
 
     # Assign additional network based on the segment
     network = determine_network_for_segment(segment_name)
