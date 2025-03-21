@@ -1,0 +1,59 @@
+<div>
+  <div class="accompagnement__tab-title">
+    <h3>Informations sur l'accompagnement
+      <% if policy(@establishment_tracking).edit? %>
+        <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
+      <% end %>
+    </h3>
+  </div>
+  <p><strong>Statut :</strong> <%= @establishment_tracking.aasm.human_state %></p>
+  <p><strong>Date de début de l'accompagnement
+    :</strong> <%= @establishment_tracking.start_date.present? ? l(@establishment_tracking.start_date, format: :default) : '-' %>
+  </p>
+  <p>
+    <strong>Criticité
+      :</strong> <%= @establishment_tracking.criticality&.name || 'Pas de criticité renseignée' %>
+  </p>
+  <p>
+    <strong>Etiquettes :</strong>
+    <% if @establishment_tracking.tracking_labels.any? %>
+      <% @establishment_tracking.tracking_labels.each do |label| %>
+        <span class="fr-tag fr-tag--sm"><%= label.name %></span>
+      <% end %>
+    <% else %>
+      <span>Pas d'étiquette</span>
+    <% end %>
+  </p>
+
+  <p><strong>Difficultés
+    :</strong>
+    <% if @establishment_tracking.difficulties.any? %>
+      <% @establishment_tracking.difficulties.each do |difficulty| %>
+        <span class="fr-tag fr-tag--sm"><%= difficulty.name %></span>
+      <% end %>
+    <% else %>
+      <span>Pas de difficulté renseignée</span>
+    <% end %>
+  </p>
+
+  <p><strong>Actions réalisées
+    :</strong>
+    <% if @establishment_tracking.user_actions.any? %>
+      <% @establishment_tracking.user_actions.each do |action| %>
+        <span class="fr-tag fr-tag--sm"><%= action.name %></span>
+      <% end %>
+    <% else %>
+      <span>Pas d'action renseignée</span>
+    <% end %>
+  </p>
+
+  <p><strong>Redirections CODEFI :</strong>
+    <% if @establishment_tracking.codefi_redirects.any? %>
+      <% @establishment_tracking.codefi_redirects.each do |redirect| %>
+        <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
+      <% end %>
+    <% else %>
+      <span>Pas de redirection CODEFI renseignée</span>
+    <% end %>
+  </p>
+</div> 

@@ -1,0 +1,69 @@
+<div class="fr-grid-row fr-mt-4w">
+  <div class="fr-col-12">
+    <h3>Tous les accompagnements de l'entreprise <%= @establishment.company.siren %></h3>
+    <div class="fr-table" id="table-md-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-md">
+              <% if @company_trackings.any? %>
+                <thead>
+                <tr>
+                  <th>Raison sociale</th>
+                  <th>SIRET</th>
+                  <th>Statut</th>
+                  <th>Criticité</th>
+                  <th>Assignés</th>
+                  <th>Dernière modification</th>
+                  <th>Dépt.</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% @company_trackings.each do |tracking| %>
+                  <tr>
+                    <td>
+                      <span title="<%= tracking.establishment.raison_sociale %>">
+                        <%= tracking.establishment.raison_sociale.truncate(20) %>
+                      </span>
+                    </td>
+                    <td><%= tracking.establishment.siret %></td>
+                    <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
+                    <td>
+                      <% if tracking.criticality.present? %>
+                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% if tracking.referents.any? %>
+                        <% first_referent = tracking.referents.first %>
+                        <span title="<%= tracking.referents.map(&:full_name).join(', ') %>">
+                          <%= truncate(first_referent.full_name, length: 20) %>
+                        </span>
+                        <% if tracking.referents.size > 1 %>
+                          <span>+<%= tracking.referents.size - 1 %></span>
+                        <% end %>
+                      <% else %>
+                        <span>Aucun assigné</span>
+                      <% end %>
+                    </td>
+                    <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
+                    <td><%= tracking.establishment.department.code %></td>
+                    <td>
+                      <% if policy(tracking).show? %>
+                        <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                      <% else %>
+                        <span>-</span>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+                </tbody>
+              <% end %>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
