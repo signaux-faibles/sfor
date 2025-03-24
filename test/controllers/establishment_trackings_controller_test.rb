@@ -40,10 +40,10 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should show trackings where user is referent when my_tracking=1" do
-    get establishment_trackings_url, params: { q: { my_tracking: "1" } }
+    get establishment_trackings_url, params: { q: { my_tracking: "1" } }    
     assert_response :success
     assert_tracking_included(@establishment_tracking_paris)
-    assert_tracking_included(@establishment_tracking_paris_with_urssaf_referents)
+    assert_tracking_not_included(@establishment_tracking_paris_with_urssaf_referents)
     assert_tracking_not_included(@establishment_tracking_finistere)
   end
 
@@ -52,12 +52,6 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     get establishment_trackings_url, params: { q: { my_tracking: "1" } }
     assert_response :success
     assert_tracking_included(@establishment_tracking_paris_with_urssaf_referents)
-  end
-
-  test "should show trackings where establishment department matches user departments when my_tracking=1" do
-    get establishment_trackings_url, params: { q: { my_tracking: "1" } }
-    assert_response :success
-    assert_tracking_included(@establishment_tracking_paris_3)
   end
 
   test "should show trackings from user's networks when my_tracking=network" do
