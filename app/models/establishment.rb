@@ -1,5 +1,5 @@
 class Establishment < ApplicationRecord
-  belongs_to :company, optional: true
+  belongs_to :company
   belongs_to :activity_sector, optional: true
   belongs_to :level_one_activity_sector, class_name: 'ActivitySector', optional: true
   belongs_to :department, optional: false

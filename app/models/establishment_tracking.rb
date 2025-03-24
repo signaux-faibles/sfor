@@ -6,6 +6,7 @@ class EstablishmentTracking < ApplicationRecord
 
   belongs_to :creator, class_name: 'User'
   belongs_to :establishment
+  belongs_to :company
 
   has_many :tracking_referents, dependent: :destroy
   has_many :referents, through: :tracking_referents, source: :user

@@ -93,18 +93,31 @@ class EstablishmentTrackingsController < ApplicationController
 
       siren = params[:siret][0, 9] # Les 9 premiers chiffres du SIRET sont le SIREN
 
-      @establishment = Establishment.new(
-        siret: params[:siret],
-        raison_sociale: params[:denomination],
-        siren: siren,
-        department: department
-      )
+      begin
+        ActiveRecord::Base.transaction do
+          # TODO : Find a way to update the department via GeoSirene (The establishment's department is not always the company's department)
+          company = Company.find_or_create_by!(siren: siren) do |c|
+            c.siret = params[:siret]
+            c.department_id = department.id
+          end
 
-      if @establishment.save
-        redirect_to new_establishment_establishment_tracking_path(@establishment),
-                    notice: 'Établissement créé avec succès.'
-      else
-        redirect_to root_path, alert: "Impossible de créer l'établissement: #{@establishment.errors.full_messages.join(', ')}"
+          @establishment = Establishment.new(
+            siret: params[:siret],
+            raison_sociale: params[:denomination],
+            siren: siren,
+            department: department,
+            company: company
+          )
+
+          if @establishment.save
+            redirect_to new_establishment_establishment_tracking_path(@establishment),
+                        notice: 'Établissement créé avec succès.'
+            return
+          end
+        end
+      rescue ActiveRecord::RecordInvalid => e
+        redirect_to root_path, alert: "Impossible de créer l'établissement: #{e.record.errors.full_messages.join(', ')}"
+        return
       end
     end
   end
