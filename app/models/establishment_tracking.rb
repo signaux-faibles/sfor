@@ -45,7 +45,7 @@ class EstablishmentTracking < ApplicationRecord
   scope :under_surveillance, -> { where(state: 'under_surveillance') }
 
   scope :with_user_as_referent_or_participant, ->(user) {
-    joins(:tracking_participants, :tracking_referents)
+    left_joins(:tracking_participants, :tracking_referents)
       .where('tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id', user_id: user.id).distinct
   }
 
