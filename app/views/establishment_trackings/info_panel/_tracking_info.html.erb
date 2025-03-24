@@ -25,6 +25,17 @@
     <% end %>
   </p>
 
+  <p>
+    <strong>Suivi par :</strong>
+    <% if @establishment_tracking.supporting_services.any? %>
+      <% @establishment_tracking.supporting_services.each do |service| %>
+        <span class="fr-tag fr-tag--sm"><%= service.name %></span>
+      <% end %>
+    <% else %>
+      <span>Pas de suivis</span>
+    <% end %>
+  </p>
+
   <p><strong>Difficultés
     :</strong>
     <% if @establishment_tracking.difficulties.any? %>

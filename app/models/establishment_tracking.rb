@@ -6,7 +6,6 @@ class EstablishmentTracking < ApplicationRecord
 
   belongs_to :creator, class_name: 'User'
   belongs_to :establishment
-  belongs_to :company
 
   has_many :tracking_referents, dependent: :destroy
   has_many :referents, through: :tracking_referents, source: :user
@@ -29,6 +28,7 @@ class EstablishmentTracking < ApplicationRecord
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
   has_and_belongs_to_many :difficulties
   has_and_belongs_to_many :codefi_redirects
+  has_and_belongs_to_many :supporting_services, join_table: :establishment_tracking_supporting_services
 
   before_save :update_modified_at_if_criticality_changed
   before_create :set_modified_at
