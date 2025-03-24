@@ -20,10 +20,7 @@ class EstablishmentTrackingsController < ApplicationController
       user_tracking_ids = EstablishmentTracking.kept.with_user_as_referent_or_participant(current_user).select(:id)
 
       @establishment_trackings = all_trackings.
-        joins(establishment: :department).
-        where("establishments.department_id IN (?) OR establishment_trackings.id IN (?)",
-              current_user.department_ids, user_tracking_ids).
-        distinct
+        where("establishment_trackings.id IN (?)", user_tracking_ids).distinct
 
     elsif params.dig(:q, :my_tracking) == 'network'
       base_scope = policy_scope(EstablishmentTracking).kept
