@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_21_154427) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_24_150917) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -180,6 +180,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_21_154427) do
     t.datetime "updated_at", null: false
     t.index ["establishment_tracking_id"], name: "idx_on_establishment_tracking_id_dc92224b30"
     t.index ["sector_id"], name: "index_establishment_tracking_sectors_on_sector_id"
+  end
+
+  create_table "establishment_tracking_supporting_services", force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "supporting_service_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["establishment_tracking_id", "supporting_service_id"], name: "idx_on_establishment_tracking_id_supporting_service_60be013b8d", unique: true
+    t.index ["establishment_tracking_id"], name: "idx_on_establishment_tracking_id_5d689fa02e"
+    t.index ["supporting_service_id"], name: "idx_on_supporting_service_id_400181f324"
   end
 
   create_table "establishment_trackings", force: :cascade do |t|
@@ -359,6 +369,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_21_154427) do
     t.index ["network_id"], name: "index_summaries_on_network_id"
   end
 
+  create_table "supporting_services", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "tracking_labels", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "system", default: true, null: false
@@ -464,6 +480,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_21_154427) do
   add_foreign_key "establishment_tracking_labels", "tracking_labels"
   add_foreign_key "establishment_tracking_sectors", "establishment_trackings"
   add_foreign_key "establishment_tracking_sectors", "sectors"
+  add_foreign_key "establishment_tracking_supporting_services", "establishment_trackings"
+  add_foreign_key "establishment_tracking_supporting_services", "supporting_services"
   add_foreign_key "establishment_trackings", "criticalities"
   add_foreign_key "establishment_trackings", "establishments"
   add_foreign_key "establishment_trackings", "sizes"
