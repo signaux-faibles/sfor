@@ -44,9 +44,9 @@
             </h3>
           </div>
           <p><strong>Référents :</strong></p>
-          <p><%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %></p>
+          <p><%= @establishment_tracking.referents.map { |participant| participant.display_name }.join(', ') %></p>
           <p><strong>Participants :</strong></p>
-          <p><%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %></p>
+          <p><%= @establishment_tracking.participants.map { |participant| participant.display_name }.join(', ') %></p>
         </div>
       </div>
     </div>
