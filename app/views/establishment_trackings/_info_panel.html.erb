@@ -37,13 +37,13 @@
       <div class="fr-col-6">
         <div>
           <div class="accompagnement__tab-title">
-            <h3>Contributeurs
+            <h3>Contributeurs de l'accompagnement
               <% if policy(@establishment_tracking).manage_contributors? %>
                 <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-add-line fr-mb-2w' %>
               <% end %>
             </h3>
           </div>
-          <p><strong>Assignés :</strong></p>
+          <p><strong>Référents :</strong></p>
           <p><%= @establishment_tracking.referents.map { |participant| full_name(participant) }.join(', ') %></p>
           <p><strong>Participants :</strong></p>
           <p><%= @establishment_tracking.participants.map { |participant| full_name(participant) }.join(', ') %></p>

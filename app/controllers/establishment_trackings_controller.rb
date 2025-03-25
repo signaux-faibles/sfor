@@ -169,10 +169,10 @@ class EstablishmentTrackingsController < ApplicationController
     authorize @establishment_tracking, :manage_contributors?
 
     if @establishment_tracking.update(contributor_params)
-      flash[:success] = "Contributeurs mis à jour avec succès."
+      flash[:success] = "Contributeurs de l'accompagnement mis à jour avec succès."
       redirect_to [@establishment, @establishment_tracking]
     else
-      flash[:error] = "Erreur lors de la mise à jour des contributeurs."
+      flash[:error] = "Erreur lors de la mise à jour des contributeurs de l'accompagnement."
       render :manage_contributors, status: :unprocessable_entity
     end
   end

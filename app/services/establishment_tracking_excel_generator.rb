@@ -25,7 +25,7 @@ class EstablishmentTrackingExcelGenerator
       sheet.add_row []
 
       # Ligne d'en-tête avec style centré, bordures et couleur
-      sheet.add_row ["", "Raison sociale", "Siret", "Département", "Participants", "Assignés", "Date de début", "Date de fin", "Statut", "Synthèse", "Synthèse CODEFI"],
+      sheet.add_row ["", "Raison sociale", "Siret", "Département", "Participants", "Référents", "Date de début", "Date de fin", "Statut", "Synthèse de mon administration", "Synthèse CODEFI"],
                     style: Array.new(11) { |i| i.zero? ? nil : header_style(sheet) }
 
       @establishment_trackings.each do |tracking|

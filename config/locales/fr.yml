@@ -15,7 +15,7 @@ fr:
         network: Réseau
         content: Contenu
       establishment_tracking:
-        referents: Assignés
+        referents: Référents
         state:
           one: 'Statut'
           in_progress: "En cours"
@@ -69,8 +69,8 @@ fr:
         one: 'Secteurd''activité'
         other: 'Secteurs d''activité'
       referent:
-        one: Assigné
-        other: Assignés
+        one: Référent
+        other: Référents
       establishment:
         one: Etablissement
         other: Etablissements
