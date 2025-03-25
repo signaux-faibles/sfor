@@ -1,0 +1,29 @@
+<div class="fr-table fr-table--bordered fr-mt-4w" id="table-md-component">
+  <table>
+    <caption><%= title %></caption>
+    <thead>
+    <tr>
+      <th>Date de début</th>
+      <th>Date de fin</th>
+      <th>Statut</th>
+      <th>Assignés</th>
+      <th>Participants</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% trackings.each do |tracking| %>
+      <tr>
+        <td><%= tracking.start_date.present? ? l(tracking.start_date, format: :default) : '-' %></td>
+        <td><%= tracking.end_date.present? ? l(tracking.end_date, format: :default) : '-' %></td>
+        <td><%= tracking.aasm.human_state %></td>
+        <td><%= tracking.referents.map(&:full_name).join(', ') %></td>
+        <td><%= tracking.participants.map(&:full_name).join(', ') %></td>
+        <td>
+          <%= link_to 'Voir', establishment_establishment_tracking_path(@establishment, tracking), class: 'fr-btn' %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
