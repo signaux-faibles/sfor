@@ -167,7 +167,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
-    assert_equal "Contributeurs mis à jour avec succès.", flash[:success]
+    assert_equal "Contributeurs de l'accompagnement mis à jour avec succès.", flash[:success]
   end
 
   # SIRET-based tracking creation tests

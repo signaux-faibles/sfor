@@ -45,7 +45,7 @@
                   <th>SIRET</th>
                   <th>Statut</th>
                   <th>Criticité</th>
-                  <th>Assignés</th>
+                  <th>Référents</th>
                   <th><%= sort_link @q, :modified_at, "Dernière modif." %></th>
                   <th>Dépt.</th>
                   <th>Actions</th>
@@ -76,7 +76,7 @@
                           <span>+<%= tracking.referents.size - 1 %></span>
                         <% end %>
                       <% else %>
-                        <span>Aucun assigné</span>
+                        <span>Aucun référent</span>
                       <% end %>
                     </td>
                     <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
@@ -108,7 +108,7 @@
                 </h3>
                 <ul class="fr-card__desc" style="list-style:none;">
                   <li>SIRET : <%= tracking.establishment.siret %></li>
-                  <li>Assignés : <%= tracking.referents.map(&:full_name).join(', ') %></li>
+                  <li>Référents : <%= tracking.referents.map(&:full_name).join(', ') %></li>
                   <li>Département : <%= tracking.establishment&.department&.code %></li>
                   <li>Dernière modification
                     : <%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></li>
