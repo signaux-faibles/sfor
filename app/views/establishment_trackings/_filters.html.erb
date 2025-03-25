@@ -50,6 +50,15 @@
             </div>
             <div class="fr-col-3">
               <div class="fr-input-group">
+                <%= f.label :supporting_services_id_in, "Suivi par" %>
+                <%= f.select :supporting_services_id_in,
+                             SupportingService.pluck(:name, :id),
+                             {},
+                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+              </div>
+            </div>
+            <div class="fr-col-3">
+              <div class="fr-input-group">
                 <%= f.label :sectors_id_in, "Filières" %>
                 <%= f.select :sectors_id_in,
                              Sector.pluck(:name, :id),
