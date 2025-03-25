@@ -58,13 +58,13 @@
     <% end %>
   </p>
 
-  <p><strong>Redirections CODEFI :</strong>
+  <p><strong>Réorientation hors CODEFI :</strong>
     <% if @establishment_tracking.codefi_redirects.any? %>
       <% @establishment_tracking.codefi_redirects.each do |redirect| %>
         <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
       <% end %>
     <% else %>
-      <span>Pas de redirection CODEFI renseignée</span>
+      <span>Pas de réorientation hors CODEFI renseignée</span>
     <% end %>
   </p>
 </div> 
