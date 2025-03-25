@@ -110,6 +110,9 @@ fr:
       codefi_redirect:
         one: Redirection CODEFI
         other: Redirections CODEFI
+      supporting_service:
+        one: Service d'accompagnement
+        other: Services d'accompagnement
     errors:
       messages:
         record_invalid: 'La validation a échoué : %{errors}'

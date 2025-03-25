@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :difficulties
     resources :user_actions
     resources :codefi_redirects
+    resources :supporting_services
 
     root to: "users#index"
   end
