@@ -71,7 +71,7 @@ class EstablishmentTracking < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["comments", "creator", "establishment", "establishment_tracking_labels", "participants", "referents", "summaries", "tracking_labels", "tracking_participants", "tracking_referents", "sectors"]
+    %w[comments creator establishment establishment_tracking_labels participants referents summaries tracking_labels tracking_participants tracking_referents sectors supporting_services]
   end
 
   aasm column: 'state' do
