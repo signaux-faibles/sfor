@@ -1,67 +1,69 @@
-<div class="accompagnement__tab-title">
-  <h3>Contacts disponibles
-    <%= link_to 'Ajouter un contact', new_establishment_establishment_tracking_contact_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-add-line fr-mb-2w' %>
-  </h3>
-</div>
+<% if current_user.networks.exists?(name: 'CRP') %>
+  <div class="accompagnement__tab-title">
+    <h3>Contacts disponibles
+      <%= link_to 'Ajouter un contact', new_establishment_establishment_tracking_contact_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-add-line fr-mb-2w' %>
+    </h3>
+  </div>
 
 
-<div class="fr-grid-row fr-grid-row--gutters fr-pb-2w">
-  <% if establishment_tracking.establishment.contacts.any? %>
-    <% establishment_tracking.establishment.contacts.kept.order(:last_name).each do |contact| %>
-      <div class="fr-col-12 fr-col-md-6">
-        <div class="fr-card fr-card--horizontal fr-card--shadow">
-          <div class="fr-card__body fr-pt-2w fr-pb-2w">
-            <p class="fr-text--sm fr-bg--alt">
-              <span class="fr-icon-user-line" aria-hidden="true"></span>
-              <strong><%= "#{contact.first_name} #{contact.last_name}" %></strong>
-            </p>
-
-            <p class="fr-text--sm fr-bg--alt">
-              <strong><span class="fr-icon-briefcase-line" aria-hidden="true"></span> Fonction : </strong>
-              <%= contact.role.presence || "Non spécifié" %>
-            </p>
-
-            <% if contact.phone_number_primary.present? %>
-              <p class="fr-text--sm">
-                <strong><span class="fr-icon-phone-line" aria-hidden="true"></span> Téléphone 1 : </strong>
-                <%= contact.phone_number_primary %>
+  <div class="fr-grid-row fr-grid-row--gutters fr-pb-2w">
+    <% if establishment_tracking.establishment.contacts.any? %>
+      <% establishment_tracking.establishment.contacts.kept.order(:last_name).each do |contact| %>
+        <div class="fr-col-12 fr-col-md-6">
+          <div class="fr-card fr-card--horizontal fr-card--shadow">
+            <div class="fr-card__body fr-pt-2w fr-pb-2w">
+              <p class="fr-text--sm fr-bg--alt">
+                <span class="fr-icon-user-line" aria-hidden="true"></span>
+                <strong><%= "#{contact.first_name} #{contact.last_name}" %></strong>
               </p>
-            <% end %>
 
-            <% if contact.phone_number_secondary.present? %>
-              <p class="fr-text--sm">
-                <strong><span class="fr-icon-phone-line" aria-hidden="true"></span> Téléphone 2 : </strong>
-                <%= contact.phone_number_secondary %>
+              <p class="fr-text--sm fr-bg--alt">
+                <strong><span class="fr-icon-briefcase-line" aria-hidden="true"></span> Fonction : </strong>
+                <%= contact.role.presence || "Non spécifié" %>
               </p>
-            <% end %>
 
-            <p class="fr-text--sm">
-              <strong><span class="fr-icon-mail-line" aria-hidden="true"></span> Email : </strong>
-              <%= mail_to contact.email, nil, class: "fr-link" if contact.email.present? %>
-            </p>
+              <% if contact.phone_number_primary.present? %>
+                <p class="fr-text--sm">
+                  <strong><span class="fr-icon-phone-line" aria-hidden="true"></span> Téléphone 1 : </strong>
+                  <%= contact.phone_number_primary %>
+                </p>
+              <% end %>
 
-            <% if contact.description? %>
+              <% if contact.phone_number_secondary.present? %>
+                <p class="fr-text--sm">
+                  <strong><span class="fr-icon-phone-line" aria-hidden="true"></span> Téléphone 2 : </strong>
+                  <%= contact.phone_number_secondary %>
+                </p>
+              <% end %>
+
               <p class="fr-text--sm">
-                <strong><span class="fr-icon-draft-line" aria-hidden="true"></span> Note : </strong>
-                <%= contact.description %>
+                <strong><span class="fr-icon-mail-line" aria-hidden="true"></span> Email : </strong>
+                <%= mail_to contact.email, nil, class: "fr-link" if contact.email.present? %>
               </p>
-            <% end %>
 
-            <% if policy(@establishment_tracking).edit? %>
-              <div class="fr-btn-group fr-mt-4v">
-                <%= link_to 'Modifier',
-                            edit_establishment_establishment_tracking_contact_path(establishment, establishment_tracking, contact),
-                            class: 'fr-btn fr-btn--secondary fr-btn--sm' %>
-              </div>
-            <% end %>
+              <% if contact.description? %>
+                <p class="fr-text--sm">
+                  <strong><span class="fr-icon-draft-line" aria-hidden="true"></span> Note : </strong>
+                  <%= contact.description %>
+                </p>
+              <% end %>
 
+              <% if policy(@establishment_tracking).edit? %>
+                <div class="fr-btn-group fr-mt-4v">
+                  <%= link_to 'Modifier',
+                              edit_establishment_establishment_tracking_contact_path(establishment, establishment_tracking, contact),
+                              class: 'fr-btn fr-btn--secondary fr-btn--sm' %>
+                </div>
+              <% end %>
+
+            </div>
           </div>
         </div>
+      <% end %>
+    <% else %>
+      <div class="fr-col-12 fr-col-md-6">
+        Aucun contact renseigné
       </div>
     <% end %>
-  <% else %>
-    <div class="fr-col-12 fr-col-md-6">
-      Aucun contact renseigné
-    </div>
-  <% end %>
-</div>
+  </div>
+<% end %>
