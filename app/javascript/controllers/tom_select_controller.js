@@ -4,13 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
 
-
-
-
-
-
     connect() {
-
         const minSearchAttr = this.element.dataset.minSearch;
         const threshold = minSearchAttr ? parseInt(minSearchAttr, 10) : 1;
 
