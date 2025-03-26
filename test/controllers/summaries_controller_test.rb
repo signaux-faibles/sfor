@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class SummariesControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -10,7 +10,6 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
     @user_b = users(:user_crp_paris_2)
 
     @establishment_tracking.referents << [@user_a, @user_b]
-
   end
 
   test "user A sees tabs CRP and CODEFI networks" do
@@ -29,7 +28,8 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
   test "user A can lock and edit the summary" do
     sign_in @user_a
 
-    get edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary), as: :turbo_stream
+    get edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary),
+        as: :turbo_stream
 
     @summary.reload
     assert_equal @user_a.id, @summary.locked_by
@@ -52,22 +52,25 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user A unlocks the summary and user B can edit it" do
-      sign_in @user_a
-      get edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary), as: :turbo_stream
+    sign_in @user_a
+    get edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary),
+        as: :turbo_stream
 
-      @summary.reload
-      assert_equal @user_a.id, @summary.locked_by
-      assert @summary.locked?
+    @summary.reload
+    assert_equal @user_a.id, @summary.locked_by
+    assert @summary.locked?
 
-      get cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary), as: :turbo_stream
+    get cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary),
+        as: :turbo_stream
 
-      @summary.reload
-      assert_nil @summary.locked_by
-      assert_not @summary.locked?
+    @summary.reload
+    assert_nil @summary.locked_by
+    assert_not @summary.locked?
 
-      sign_in @user_b
-      get edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary), as: :turbo_stream
+    sign_in @user_b
+    get edit_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary),
+        as: :turbo_stream
 
-      assert_includes @response.body, @summary.content
+    assert_includes @response.body, @summary.content
   end
 end

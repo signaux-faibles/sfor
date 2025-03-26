@@ -9,12 +9,12 @@ class CampaignDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    end_date: Field::DateTime.with_options(format: '%d/%m/%Y'),
+    end_date: Field::DateTime.with_options(format: "%d/%m/%Y"),
     companies: Field::HasMany,
     name: Field::String,
-    start_date: Field::DateTime.with_options(format: '%d/%m/%Y'),
-    created_at: Field::DateTime.with_options(format: '%d/%m/%Y'),
-    updated_at: Field::DateTime.with_options(format: '%d/%m/%Y'),
+    start_date: Field::DateTime.with_options(format: "%d/%m/%Y"),
+    created_at: Field::DateTime.with_options(format: "%d/%m/%Y"),
+    updated_at: Field::DateTime.with_options(format: "%d/%m/%Y")
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -67,6 +67,6 @@ class CampaignDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(campaign)
-   "Campagne #{campaign.name}"
+    "Campagne #{campaign.name}"
   end
 end

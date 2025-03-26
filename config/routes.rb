@@ -6,15 +6,15 @@ Rails.application.routes.draw do
 
   # Authentication
   devise_for :users, controllers: {
-    sessions: 'users/sessions'
+    sessions: "users/sessions"
   }
 
-  get 'unauthorized', to: 'pages#unauthorized'
-  get 'statistiques', to: 'statistics#index'
+  get "unauthorized", to: "pages#unauthorized"
+  get "statistiques", to: "statistics#index"
 
   namespace :admin do
     resources :users do
-      get '/impersonate' => "users#impersonate"
+      get "/impersonate" => "users#impersonate"
     end
     resources :entities
     resources :networks
@@ -42,19 +42,20 @@ Rails.application.routes.draw do
   end
 
   devise_scope :user do
-    post 'authenticate', to: 'users/sessions#create'
+    post "authenticate", to: "users/sessions#create"
   end
 
-  resources :establishments, only: [:show], path: 'etablissements' do
-    resources :establishment_trackings, only: [:new, :create, :show, :destroy, :edit, :update], path: 'accompagnements' do
+  resources :establishments, only: [:show], path: "etablissements" do
+    resources :establishment_trackings, only: %i[new create show destroy edit update],
+                                        path: "accompagnements" do
       member do
         get :manage_contributors
         patch :update_contributors
       end
-      resources :summaries, only: [:create, :edit, :update] do
+      resources :summaries, only: %i[create edit update] do
         get :cancel, on: :member
       end
-      resources :comments, only: [:create, :edit, :update, :destroy]
+      resources :comments, only: %i[create edit update destroy]
       resources :contacts, only: %i[new create edit update destroy] do
         member do
           get :archive
@@ -63,10 +64,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :establishment_trackings, only: [:index], defaults: { format: :html }, path: 'accompagnements'
+  resources :establishment_trackings, only: [:index], defaults: { format: :html }, path: "accompagnements"
 
   # Build a new 'accompagnement' from the Vue JS legacy app (using siret as query param)
-  get 'establishment_trackings/new_by_siret', to: 'establishment_trackings#new_by_siret', as: 'new_establishment_tracking_by_siret'
+  get "establishment_trackings/new_by_siret", to: "establishment_trackings#new_by_siret",
+                                              as: "new_establishment_tracking_by_siret"
 
   root "establishment_trackings#index"
 end

@@ -13,7 +13,7 @@ class RegionDashboard < Administrate::BaseDashboard
     departments: Field::HasMany,
     libelle: Field::String,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

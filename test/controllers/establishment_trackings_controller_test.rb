@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
@@ -40,7 +40,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should show trackings where user is referent when my_tracking=1" do
-    get establishment_trackings_url, params: { q: { my_tracking: "1" } }    
+    get establishment_trackings_url, params: { q: { my_tracking: "1" } }
     assert_response :success
     assert_tracking_included(@establishment_tracking_paris)
     assert_tracking_not_included(@establishment_tracking_paris_with_urssaf_referents)
@@ -80,10 +80,10 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create establishment_tracking" do
-    assert_difference('EstablishmentTracking.count') do
+    assert_difference("EstablishmentTracking.count") do
       post establishment_establishment_trackings_url(@establishment_paris_2), params: {
         establishment_tracking: {
-          state: 'in_progress',
+          state: "in_progress",
           start_date: Date.today,
           referent_ids: [@user_crp_paris.id],
           tracking_label_ids: [],
@@ -97,11 +97,11 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to @establishment_paris_2
-    assert_equal 'L\'accompagnement a été créé avec succès.', flash[:success]
+    assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
   end
 
   test "should not create establishment_tracking with invalid params" do
-    assert_no_difference('EstablishmentTracking.count') do
+    assert_no_difference("EstablishmentTracking.count") do
       post establishment_establishment_trackings_url(@establishment_paris), params: {
         establishment_tracking: {
           state: nil,
@@ -128,7 +128,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   test "should update establishment_tracking" do
     patch establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris), params: {
       establishment_tracking: {
-        state: 'completed',
+        state: "completed",
         tracking_label_ids: [],
         user_action_ids: [],
         sector_ids: [],
@@ -140,21 +140,22 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
-    assert_equal 'L\'accompagnement a été mis à jour avec succès.', flash[:success]
+    assert_equal "L'accompagnement a été mis à jour avec succès.", flash[:success]
   end
 
   test "should destroy establishment_tracking" do
-    assert_difference('EstablishmentTracking.count', -1) do
+    assert_difference("EstablishmentTracking.count", -1) do
       delete establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     end
 
     assert_redirected_to @establishment_paris
-    assert_equal 'L\'accompagnement a été supprimé avec succès.', flash[:success]
+    assert_equal "L'accompagnement a été supprimé avec succès.", flash[:success]
   end
 
   # Contributor management tests
   test "should get manage_contributors" do
-    get manage_contributors_establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
+    get manage_contributors_establishment_establishment_tracking_url(@establishment_paris,
+                                                                     @establishment_tracking_paris)
     assert_response :success
   end
 
@@ -181,7 +182,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle new_by_siret with non-existing establishment" do
-    assert_difference('Establishment.count') do
+    assert_difference("Establishment.count") do
       get new_establishment_tracking_by_siret_url, params: {
         siret: "12345678901234",
         denomination: "New Company",
@@ -190,6 +191,6 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to new_establishment_establishment_tracking_url(Establishment.last)
-    assert_equal 'Établissement créé avec succès.', flash[:notice]
+    assert_equal "Établissement créé avec succès.", flash[:notice]
   end
 end

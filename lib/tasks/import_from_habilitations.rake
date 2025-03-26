@@ -5,7 +5,7 @@
 namespace :users do
   desc "Import users from an Excel file using rubyXL"
   task import: :environment do
-    file_path = ENV['file']
+    file_path = ENV.fetch("file", nil)
 
     if file_path.nil?
       puts "Please provide a file path using file=path/to/file.xlsx"
@@ -13,18 +13,18 @@ namespace :users do
     end
 
     workbook = RubyXL::Parser.parse(file_path)
-    users_worksheet = workbook['utilisateurs']
-    discard_worksheet = workbook['historique suppressions']
+    users_worksheet = workbook["utilisateurs"]
+    discard_worksheet = workbook["historique suppressions"]
 
     users_header = users_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
     discard_header = discard_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
 
-    @codefi_network = Network.find_or_create_by(name: 'CODEFI')
-    @crp_network = Network.find_or_create_by(name: 'CRP')
-    @urssaf_network = Network.find_or_create_by(name: 'URSSAF')
-    @banque_de_france_network = Network.find_or_create_by(name: 'Banque de France')
-    @dgfip_network = Network.find_or_create_by(name: 'DGFiP')
-    @dgefp_network = Network.find_or_create_by(name: 'DGEFP')
+    @codefi_network = Network.find_or_create_by(name: "CODEFI")
+    @crp_network = Network.find_or_create_by(name: "CRP")
+    @urssaf_network = Network.find_or_create_by(name: "URSSAF")
+    @banque_de_france_network = Network.find_or_create_by(name: "Banque de France")
+    @dgfip_network = Network.find_or_create_by(name: "DGFiP")
+    @dgefp_network = Network.find_or_create_by(name: "DGEFP")
 
     users_worksheet.sheet_data.rows[1..-1].each do |row|
       break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
@@ -44,19 +44,19 @@ namespace :users do
   end
 
   def create_or_update_user(row)
-    segment_name = row['SEGMENT']
-    email = row['ADRESSE MAIL']&.strip&.downcase
+    segment_name = row["SEGMENT"]
+    email = row["ADRESSE MAIL"]&.strip&.downcase
     puts "Creating new user: #{email}"
     return if %w[admin keycloakadmin].include?(email)
 
     user = User.find_or_initialize_by(email: email)
-    user.first_name = row['PRENOM']
-    user.last_name = row['NOM']
-    user.level = row['NIVEAU HABILITATION']
-    user.description = row['FONCTION']
+    user.first_name = row["PRENOM"]
+    user.last_name = row["NOM"]
+    user.level = row["NIVEAU HABILITATION"]
+    user.description = row["FONCTION"]
 
     # Entity association
-    entity_name = row['ENTITES']
+    entity_name = row["ENTITES"]
     entity = Entity.find_or_create_by(name: entity_name)
     user.entity = entity
 
@@ -70,14 +70,12 @@ namespace :users do
     assign_networks(user, segment_name)
 
     # GeoAccess association
-    geo_access_name = row['ACCES GEOGRAPHIQUE']
+    geo_access_name = row["ACCES GEOGRAPHIQUE"]
 
     assign_geo_access(user, geo_access_name)
 
     # Password management for Devise
-    if user.new_record?
-      user.password = Devise.friendly_token[0, 20]
-    end
+    user.password = Devise.friendly_token[0, 20] if user.new_record?
 
     # Assign roles the same way IamUpdater does it (signaux-faibles/IamUpdater/blob/master/user.go)
     roles = determine_roles(user, row)
@@ -93,7 +91,7 @@ namespace :users do
 
   def discard_users(row)
     create_or_update_user(row)
-    email = row['ADRESSE MAIL']&.downcase
+    email = row["ADRESSE MAIL"]&.downcase
     puts "Discarding user: #{email}"
     user = User.find_by(email: email)
     if user
@@ -128,26 +126,24 @@ namespace :users do
   def determine_roles(user, row)
     puts "Assigning roles..."
     habilitations = {
-      "a" => ["bdf", "detection", "dgefp", "pge", "score", "urssaf"],
-      "b" => ["detection", "dgefp", "pge", "score"]
+      "a" => %w[bdf detection dgefp pge score urssaf],
+      "b" => %w[detection dgefp pge score]
     }
 
     roles = habilitations[user.level.downcase] || []
 
     if user.level.downcase == "a"
-      roles += ["urssaf", "dgefp", "bdf"]
+      roles += %w[urssaf dgefp bdf]
     elsif user.level.downcase == "b"
       roles << "dgefp"
     end
 
-    if ["a", "b"].include?(user.level.downcase)
-      roles += ["score", "detection", "pge"]
-      unless user.geo_access.nil?
-        roles << user.geo_access.name
-      end
+    if %w[a b].include?(user.level.downcase)
+      roles += %w[score detection pge]
+      roles << user.geo_access.name unless user.geo_access.nil?
     end
 
-    scope = row['SCOPE'].to_s.split(',').map(&:strip)
+    scope = row["SCOPE"].to_s.split(",").map(&:strip)
     roles += scope unless scope == [""]
 
     roles.uniq
@@ -155,8 +151,8 @@ namespace :users do
 
   def assign_networks(user, segment_name)
     # Only add CODEFI network if the segment is not dreets_reseaucrp
-    unless segment_name.downcase == 'dreets_reseaucrp'
-      user.networks << @codefi_network unless user.networks.include?(@codefi_network)
+    if !(segment_name.downcase == "dreets_reseaucrp") && !user.networks.include?(@codefi_network)
+      user.networks << @codefi_network
     end
 
     # Assign additional network based on the segment
@@ -171,18 +167,16 @@ namespace :users do
 
   def determine_network_for_segment(segment_name)
     case segment_name.downcase
-    when 'crp', 'dreets_reseaucrp', 'finances'
+    when "crp", "dreets_reseaucrp", "finances"
       @crp_network
-    when 'urssaf'
+    when "urssaf"
       @urssaf_network
-    when 'bdf'
+    when "bdf"
       @banque_de_france_network
-    when 'dgfip'
+    when "dgfip"
       @dgfip_network
-    when 'darp', 'ddets', 'dgefp', 'dreets'
+    when "darp", "ddets", "dgefp", "dreets"
       @dgefp_network
-    else
-      nil
     end
   end
 end

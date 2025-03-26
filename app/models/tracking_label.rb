@@ -4,7 +4,7 @@ class TrackingLabel < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
-  def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "id", "id_value", "name", "system", "updated_at"]
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[created_at id id_value name system updated_at]
   end
 end

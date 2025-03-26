@@ -20,7 +20,7 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
     establishment_tracking_labels: Field::HasMany,
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    modified_at: Field::DateTime,
+    modified_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -82,6 +82,6 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(establishment_tracking)
-   "Accompagnement ##{establishment_tracking.id}, siret: #{establishment_tracking.establishment.siret}"
+    "Accompagnement ##{establishment_tracking.id}, siret: #{establishment_tracking.establishment.siret}"
   end
 end

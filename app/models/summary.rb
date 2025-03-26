@@ -3,7 +3,7 @@ class Summary < ApplicationRecord
 
   belongs_to :establishment_tracking
   belongs_to :network, optional: false
-  belongs_to :locked_by_user, class_name: 'User', foreign_key: 'locked_by', optional: true
+  belongs_to :locked_by_user, class_name: "User", foreign_key: "locked_by", optional: true
 
   after_save :update_establishment_tracking_modified_at
 
@@ -30,6 +30,7 @@ class Summary < ApplicationRecord
 
   def update_establishment_tracking_modified_at
     return if establishment_tracking.instance_variable_get(:@skip_modified_at_update)
+
     establishment_tracking.update(modified_at: Date.current)
   end
 end

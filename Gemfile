@@ -36,7 +36,7 @@ gem "redis", ">= 4.0.1"
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", "~> 1.2024.2", platforms: %i[ windows jruby ]
+gem "tzinfo-data", "~> 1.2024.2", platforms: %i[windows jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", "~> 1.18.4", require: false
@@ -48,73 +48,73 @@ gem "bootsnap", "~> 1.18.4", require: false
 gem "mongo", "~> 2.21.0"
 
 # Decode keycloak tokens
-gem 'jwt', "~> 2.9.3"
+gem "jwt", "~> 2.9.3"
 
 # Allow requests from legacy vue app
-gem 'rack-cors', "~> 2.0.2"
+gem "rack-cors", "~> 2.0.2"
 
 # Search the data
-gem 'ransack', "~> 4.2.1"
+gem "ransack", "~> 4.2.1"
 
 # Basic admin
-gem 'administrate', '1.0.0.beta3'
-gem 'administrate-field-belongs_to_search', '~> 0.9.0'
+gem "administrate", "1.0.0.beta3"
+gem "administrate-field-belongs_to_search", "~> 0.9.0"
 
 # Authorizations
-gem 'pundit', '~> 2.4'
+gem "pundit", "~> 2.4"
 
 # Pagination
-gem 'kaminari', '~> 1.2', '>= 1.2.2'
+gem "kaminari", "~> 1.2", ">= 1.2.2"
 
 # Import users from the habilitations file
-gem 'rubyXL', '~> 3.4', '>= 3.4.27'
+gem "rubyXL", "~> 3.4", ">= 3.4.27"
 
 # State machine for establishment trackings
-gem 'aasm', '~> 5.5'
+gem "aasm", "~> 5.5"
 
 # Links in summaries and comments made clickable
-gem 'rails_autolink', '~> 1.1', '>= 1.1.8'
+gem "rails_autolink", "~> 1.1", ">= 1.1.8"
 
 # Handle soft delete
-gem 'discard', '~> 1.2'
+gem "discard", "~> 1.2"
 
 # Track changes to models
-gem 'paper_trail', '~> 16.0'
+gem "paper_trail", "~> 16.0"
 
 # Impersonate users
-gem 'pretender', '~> 0.5.0'
+gem "pretender", "~> 0.5.0"
 
 # Generate excel files for establishment trackings
-gem 'caxlsx', '~> 4.1'
+gem "caxlsx", "~> 4.1"
 
 # Send issues to Sentry
-gem 'sentry-ruby', '~> 5.22'
-gem 'sentry-rails', '~> 5.22'
+gem "sentry-rails", "~> 5.22"
+gem "sentry-ruby", "~> 5.22"
 
 # Interpret the markdown used in the summaries
-gem "redcarpet", '~> 3.6.0'
+gem "redcarpet", "~> 3.6.0"
 
 # Authentication
-gem 'devise', '~> 4.9', '>= 4.9.4'
+gem "devise", "~> 4.9", ">= 4.9.4"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ]
+  gem "debug", platforms: %i[mri windows]
   gem "dotenv-rails"
-  
+
   # Generate fake data for development and testing
-  gem 'faker', '~> 3.5', '>= 3.5.1'
+  gem "faker", "~> 3.5", ">= 3.5.1"
 
   # Code quality and style
-  gem 'rubocop', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rspec_rails', require: false
-  gem 'rubocop-performance', require: false
-  gem 'rubocop-rake', require: false
+  gem "rubocop", require: false
+  gem "rubocop-performance", require: false
+  gem "rubocop-rails", require: false
+  gem "rubocop-rake", require: false
+  gem "rubocop-rspec", require: false
+  gem "rubocop-rspec_rails", require: false
 
   # Security scanning
-  gem 'brakeman'
+  gem "brakeman"
 end
 
 group :development do
@@ -128,20 +128,20 @@ group :development do
   gem "spring"
 
   # Generate erd diagrams
-  gem 'rails-erd'
-  gem 'bullet'
-  
+  gem "bullet"
+  gem "rails-erd"
+
   # Model annotations
-  gem 'annotate'
-  
+  gem "annotate"
+
   # Performance profiling
-  gem 'memory_profiler'
-  gem 'stackprof'
+  gem "memory_profiler"
+  gem "stackprof"
 end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  gem 'simplecov', require: false
+  gem "simplecov", require: false
 end

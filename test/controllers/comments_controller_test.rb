@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -16,9 +16,10 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "user A can create a comment" do
     sign_in @user_a
 
-    assert_difference('Comment.count', 1) do
+    assert_difference("Comment.count", 1) do
       post establishment_establishment_tracking_comments_path(@establishment, @establishment_tracking),
-           params: { comment: { content: "This is a new comment", network_id: @user_a.networks.where.not(name: 'codefi').first.id } },
+           params: { comment: { content: "This is a new comment",
+                                network_id: @user_a.networks.where.not(name: "codefi").first.id } },
            as: :turbo_stream
     end
 
@@ -38,7 +39,6 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
   test "user B cannot edit a comment created by user A" do
     sign_in @user_b
-
 
     get edit_establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, @comment),
         as: :turbo_stream
@@ -61,7 +61,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "user A can delete their comment" do
     sign_in @user_a
 
-    assert_difference('Comment.count', -1) do
+    assert_difference("Comment.count", -1) do
       delete establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, @comment),
              as: :turbo_stream
     end
@@ -73,7 +73,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "user B cannot delete a comment created by user A" do
     sign_in @user_b
 
-    assert_no_difference('Comment.count') do
+    assert_no_difference("Comment.count") do
       delete establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, @comment),
              as: :turbo_stream
     end
@@ -86,8 +86,9 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
     get establishment_establishment_tracking_path(@establishment, @establishment_tracking)
 
-    @user_a.networks.where.not(name: 'CODEFI').each do |network|
-      assert_select "form[action=?]", establishment_establishment_tracking_comments_path(@establishment, @establishment_tracking)
+    @user_a.networks.where.not(name: "CODEFI").each do |network|
+      assert_select "form[action=?]",
+                    establishment_establishment_tracking_comments_path(@establishment, @establishment_tracking)
       assert_select "input[type=hidden][value=?]", network.id.to_s
     end
   end

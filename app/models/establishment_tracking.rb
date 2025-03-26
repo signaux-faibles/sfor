@@ -4,7 +4,7 @@ class EstablishmentTracking < ApplicationRecord
   # EstablishmentTracking can be soft deleted
   include Discard::Model
 
-  belongs_to :creator, class_name: 'User'
+  belongs_to :creator, class_name: "User"
   belongs_to :establishment
 
   has_many :tracking_referents, dependent: :destroy
@@ -38,43 +38,45 @@ class EstablishmentTracking < ApplicationRecord
 
   validates :referents, presence: true
 
-  validate :single_active_tracking, if: -> { state.in?(['in_progress', 'under_surveillance']) }
+  validate :single_active_tracking, if: -> { state.in?(%w[in_progress under_surveillance]) }
 
-  scope :in_progress, -> { where(state: 'in_progress') }
-  scope :completed, -> { where(state: 'completed') }
-  scope :under_surveillance, -> { where(state: 'under_surveillance') }
+  scope :in_progress, -> { where(state: "in_progress") }
+  scope :completed, -> { where(state: "completed") }
+  scope :under_surveillance, -> { where(state: "under_surveillance") }
 
-  scope :with_user_as_referent_or_participant, ->(user) {
+  scope :with_user_as_referent_or_participant, lambda { |user|
     left_joins(:tracking_participants, :tracking_referents)
-      .where('tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id', user_id: user.id).distinct
+      .where("tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id", user_id: user.id).distinct
   }
 
-  scope :by_network_participants, ->(network_ids) {
+  scope :by_network_participants, lambda { |network_ids|
     left_joins(tracking_participants: { user: { network_memberships: :network } })
-      .where.not(networks: { name: 'CODEFI' })
+      .where.not(networks: { name: "CODEFI" })
       .where(networks: { id: network_ids })
   }
 
-  scope :by_network_referents, ->(network_ids) {
+  scope :by_network_referents, lambda { |network_ids|
     left_joins(tracking_referents: { user: { network_memberships: :network } })
-      .where.not(networks: { name: 'CODEFI' })
+      .where.not(networks: { name: "CODEFI" })
       .where(networks: { id: network_ids })
   }
 
-  scope :by_network, ->(network_ids) {
+  scope :by_network, lambda { |network_ids|
     where(id: by_network_participants(network_ids))
       .or(where(id: by_network_referents(network_ids)))
   }
 
-  def self.ransackable_attributes(auth_object = nil)
-    ["created_at", "creator_id", "end_date", "establishment_id", "id", "id_value", "start_date", "state", "criticality_id", "size_id", "updated_at", "modified_at"]
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[created_at creator_id end_date establishment_id id id_value start_date state
+       criticality_id size_id updated_at modified_at]
   end
 
-  def self.ransackable_associations(auth_object = nil)
-    %w[comments creator establishment establishment_tracking_labels participants referents summaries tracking_labels tracking_participants tracking_referents sectors supporting_services]
+  def self.ransackable_associations(_auth_object = nil)
+    %w[comments creator establishment establishment_tracking_labels participants referents summaries tracking_labels
+       tracking_participants tracking_referents sectors supporting_services]
   end
 
-  aasm column: 'state' do
+  aasm column: "state" do
     state :in_progress, initial: true
     state :completed
     state :under_surveillance
@@ -83,15 +85,15 @@ class EstablishmentTracking < ApplicationRecord
       before do
         self.end_date = Date.today
       end
-      transitions from: [:in_progress, :under_surveillance, :completed], to: :completed
+      transitions from: %i[in_progress under_surveillance completed], to: :completed
     end
 
     event :start_surveillance do
-      transitions from: [:in_progress, :completed, :under_surveillance], to: :under_surveillance
+      transitions from: %i[in_progress completed under_surveillance], to: :under_surveillance
     end
 
     event :resume do
-      transitions from: [:completed, :under_surveillance, :in_progress], to: :in_progress
+      transitions from: %i[completed under_surveillance in_progress], to: :in_progress
     end
   end
 
@@ -99,7 +101,7 @@ class EstablishmentTracking < ApplicationRecord
 
   def single_active_tracking
     if establishment.establishment_trackings
-                    .where(state: ['in_progress', 'under_surveillance'])
+                    .where(state: %w[in_progress under_surveillance])
                     .where.not(id: id) # Exclude the current record if updating
                     .exists?
       errors.add(:state, 'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.')
@@ -108,6 +110,7 @@ class EstablishmentTracking < ApplicationRecord
 
   def set_modified_at
     return if @skip_modified_at_update
+
     self.modified_at = Date.current
   end
 
@@ -128,6 +131,4 @@ class EstablishmentTracking < ApplicationRecord
       user_actions.delete(redirect_action) if user_actions.include?(redirect_action)
     end
   end
-
-
 end

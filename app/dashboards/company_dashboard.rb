@@ -13,7 +13,7 @@ class CompanyDashboard < Administrate::BaseDashboard
     siren: Field::String,
     siret: Field::String,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

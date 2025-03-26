@@ -1,12 +1,24 @@
 class SummariesController < ApplicationController
   before_action :set_establishment_and_tracking
 
+  def edit
+    @summary = @establishment_tracking.summaries.find(params[:id])
+    authorize @establishment_tracking, :edit?
+
+    if @summary.locked? && @summary.locked_by != current_user.id
+      render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
+                                               partial: "summaries/summary",
+                                               locals: { summary: @summary, establishment: @establishment,
+                                                         establishment_tracking: @establishment_tracking, network: @summary.network })
+    else
+      @summary.lock!(current_user)
+    end
+  end
+
   def create
     @summary = @establishment_tracking.summaries.new(summary_params)
 
-    if @summary.network.nil?
-      @summary.network = current_user.networks.where.not(name: 'codefi').first
-    end
+    @summary.network = current_user.networks.where.not(name: "codefi").first if @summary.network.nil?
 
     if @summary.save
       flash.now[:notice] = "Synthèse créée avec succès."
@@ -15,20 +27,6 @@ class SummariesController < ApplicationController
                                                partial: "summaries/form",
                                                locals: { summary: @summary, network: @summary.network },
                                                status: :unprocessable_entity)
-    end
-  end
-
-  def edit
-    @summary = @establishment_tracking.summaries.find(params[:id])
-    authorize @establishment_tracking, :edit?
-
-    if @summary.locked? && @summary.locked_by != current_user.id
-      render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
-                                               partial: "summaries/summary",
-                                               locals: { summary: @summary, establishment: @establishment, establishment_tracking: @establishment_tracking, network: @summary.network },
-      )
-    else
-      @summary.lock!(current_user)
     end
   end
 
@@ -42,8 +40,7 @@ class SummariesController < ApplicationController
       render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
                                                partial: "summaries/form",
                                                locals: { summary: @summary, network: @summary.network },
-                                               status: :unprocessable_entity
-      )
+                                               status: :unprocessable_entity)
     end
   end
 

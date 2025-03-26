@@ -3,13 +3,9 @@ module CompaniesHelper
     tags = []
 
     if params[:q]
-      if params[:q][:siren_cont].present?
-        tags << content_tag(:p, "SIREN: #{params[:q][:siren_cont]}", class: "fr-tag")
-      end
+      tags << content_tag(:p, "SIREN: #{params[:q][:siren_cont]}", class: "fr-tag") if params[:q][:siren_cont].present?
 
-      if params[:q][:siret_cont].present?
-        tags << content_tag(:p, "SIRET: #{params[:q][:siret_cont]}", class: "fr-tag")
-      end
+      tags << content_tag(:p, "SIRET: #{params[:q][:siret_cont]}", class: "fr-tag") if params[:q][:siret_cont].present?
 
       if params[:q][:raison_sociale_cont].present?
         tags << content_tag(:p, "Raison Sociale: #{params[:q][:raison_sociale_cont]}", class: "fr-tag")

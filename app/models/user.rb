@@ -16,7 +16,7 @@ class User < ApplicationRecord
 
   has_and_belongs_to_many :roles
 
-  has_many :created_trackings, class_name: 'EstablishmentTracking', foreign_key: 'creator_id'
+  has_many :created_trackings, class_name: "EstablishmentTracking", foreign_key: "creator_id"
 
   has_many :tracking_referents, dependent: :destroy
   has_many :referent_trackings, through: :tracking_referents, source: :establishment_tracking
@@ -73,31 +73,31 @@ class User < ApplicationRecord
   end
 
   def non_codefi_network
-    networks.where.not(name: 'CODEFI').first
+    networks.where.not(name: "CODEFI").first
   end
 
   def active_networks
-    networks.where(active: true).sort_by { |network| network.name == 'CODEFI' ? 0 : 1 }
+    networks.where(active: true).sort_by { |network| network.name == "CODEFI" ? 0 : 1 }
   end
 
   private
 
   def extract_roles_from_token(token)
     decoded_token = JWT.decode(token, nil, false)
-    resource_access = decoded_token.first['resource_access']
-    return [] unless resource_access && resource_access['signauxfaibles']
+    resource_access = decoded_token.first["resource_access"]
+    return [] unless resource_access && resource_access["signauxfaibles"]
 
-    resource_access['signauxfaibles']['roles']
-  rescue
+    resource_access["signauxfaibles"]["roles"]
+  rescue StandardError
     []
   end
 
   def update_departments_based_on_geo_access
-    if geo_access.name.downcase == 'france entière'
-      self.departments = Department.all
-    else
-      self.departments = geo_access.departments
-    end
+    self.departments = if geo_access.name.downcase == "france entière"
+                         Department.all
+                       else
+                         geo_access.departments
+                       end
   end
 
   def validate_network_memberships
@@ -105,7 +105,7 @@ class User < ApplicationRecord
       errors.add(:networks, "Un utilisateur ne peut appartenir qu'à deux réseaux dont le réseau codefi")
     end
 
-    unless networks.any? { |network| network.name == 'CODEFI' }
+    unless networks.any? { |network| network.name == "CODEFI" }
       errors.add(:networks, "Un utilisateur doit appartenir au réseau codefi")
     end
   end

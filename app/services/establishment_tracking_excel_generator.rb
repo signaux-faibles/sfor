@@ -30,20 +30,20 @@ class EstablishmentTrackingExcelGenerator
 
       @establishment_trackings.each do |tracking|
         summary = tracking.summaries.find_by(network: @user.non_codefi_network)
-        codefi_summary = tracking.summaries.find_by(network: Network.find_by(name: 'CODEFI'))
+        codefi_summary = tracking.summaries.find_by(network: Network.find_by(name: "CODEFI"))
 
         sheet.add_row [
-                        "",
-                        tracking.establishment.raison_sociale,
-                        tracking.establishment.siret.to_s,
-                        tracking.establishment&.department&.name,
-                        tracking.participants.map(&:full_name).join(', '),
-                        tracking.referents.map(&:full_name).join(', '),
-                        tracking.start_date.present? ? tracking.start_date.strftime('%d/%m/%Y') : '-',
-                        tracking.end_date.present? ? tracking.end_date.strftime('%d/%m/%Y') : '-',
-                        tracking.aasm.human_state,
-                        summary&.content || 'Aucune synthèse rédigée par mon administration',
-                        codefi_summary&.content || 'Aucune synthèse CODEFI rédigée'
+          "",
+          tracking.establishment.raison_sociale,
+          tracking.establishment.siret.to_s,
+          tracking.establishment&.department&.name,
+          tracking.participants.map(&:full_name).join(", "),
+          tracking.referents.map(&:full_name).join(", "),
+          tracking.start_date.present? ? tracking.start_date.strftime("%d/%m/%Y") : "-",
+          tracking.end_date.present? ? tracking.end_date.strftime("%d/%m/%Y") : "-",
+          tracking.aasm.human_state,
+          summary&.content || "Aucune synthèse rédigée par mon administration",
+          codefi_summary&.content || "Aucune synthèse CODEFI rédigée"
         ],
                       style: Array.new(9, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
                       types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, :string, :string]
@@ -65,12 +65,12 @@ class EstablishmentTrackingExcelGenerator
 
   def add_filter_details_sheet(workbook)
     workbook.add_worksheet(name: "Filtres") do |sheet|
-      sheet.add_row ["Filtre", "Valeurs"]
+      sheet.add_row %w[Filtre Valeurs]
       extract_filters.each do |filter|
         sheet.add_row [
-                        filter_label(filter[:attribute]),
-                        filter[:values]
-                      ]
+          filter_label(filter[:attribute]),
+          filter[:values]
+        ]
       end
     end
   end
@@ -115,17 +115,21 @@ class EstablishmentTrackingExcelGenerator
     when "establishment_department_id"
       puts "Departements"
       puts value
-      value.split(',').map { |id| Department.find_by(id: id)&.name || id }.join(", ")
+      value.split(",").map { |id| Department.find_by(id: id)&.name || id }.join(", ")
     when "tracking_labels_id"
-      value.split(',').map { |id| TrackingLabel.find_by(id: id)&.name || id }.join(", ")
+      value.split(",").map { |id| TrackingLabel.find_by(id: id)&.name || id }.join(", ")
     when "sectors_id"
-      value.split(',').map { |id| Sector.find_by(id: id)&.name || id }.join(", ")
+      value.split(",").map { |id| Sector.find_by(id: id)&.name || id }.join(", ")
     when "size_id"
       Size.find_by(id: value)&.name || value
     when "criticality_id"
       Criticality.find_by(id: value)&.name || value
     when "start_date"
-      Date.parse(value).strftime('%d/%m/%Y') rescue value
+      begin
+        Date.parse(value).strftime("%d/%m/%Y")
+      rescue StandardError
+        value
+      end
     else
       value
     end
@@ -136,22 +140,22 @@ class EstablishmentTrackingExcelGenerator
       b: true,
       alignment: { horizontal: :center, vertical: :center },
       sz: 12,
-      bg_color: 'CCCCCC',
-      border: { style: :thick, color: '000000' }
+      bg_color: "CCCCCC",
+      border: { style: :thick, color: "000000" }
     )
   end
 
   def centered_style(sheet)
     sheet.styles.add_style(
       alignment: { horizontal: :center, vertical: :center },
-      border: { style: :thin, color: '000000' }
+      border: { style: :thin, color: "000000" }
     )
   end
 
   def summary_style(sheet)
     sheet.styles.add_style(
       alignment: { horizontal: :left, vertical: :center, wrap_text: true },
-      border: { style: :thin, color: '000000' }
+      border: { style: :thin, color: "000000" }
     )
   end
 
@@ -174,7 +178,7 @@ class EstablishmentTrackingExcelGenerator
     # Appliquer les bordures uniquement à partir de la colonne B
     if last_column > 1 && last_row > 2
       range = "B3:#{('A'.ord + last_column - 1).chr}#{last_row + 2}"
-      sheet.add_style(range, border: { style: :thick, color: '000000' })
+      sheet.add_style(range, border: { style: :thick, color: "000000" })
     end
   end
 
@@ -195,11 +199,12 @@ class EstablishmentTrackingExcelGenerator
 
     wrap_text_style = sheet.styles.add_style(
       alignment: { wrap_text: true, horizontal: :center, vertical: :center },
-      border: { style: :thin, color: '000000' }
+      border: { style: :thin, color: "000000" }
     )
 
     sheet.rows.each_with_index do |row, index|
-      next if index < 3  # Ignorer les marges et l'en-tête
+      next if index < 3 # Ignorer les marges et l'en-tête
+
       row.cells[4]&.style = wrap_text_style
       row.cells[5]&.style = wrap_text_style
     end

@@ -72,7 +72,7 @@ class EstablishmentDashboard < Administrate::BaseDashboard
     valeur_score: Field::Number.with_options(decimals: 2),
     variation_ca: Field::Number.with_options(decimals: 2),
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -149,6 +149,6 @@ class EstablishmentDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(establishment)
-   "#{establishment.siret}"
+    "#{establishment.siret}"
   end
 end

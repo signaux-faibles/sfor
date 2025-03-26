@@ -12,7 +12,7 @@ class EntityDashboard < Administrate::BaseDashboard
     name: Field::String,
     users: Field::HasMany,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -60,6 +60,6 @@ class EntityDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(entity)
-   "#{entity.name}"
+    "#{entity.name}"
   end
 end
