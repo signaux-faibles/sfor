@@ -66,9 +66,6 @@ gem 'pundit', '~> 2.4'
 # Pagination
 gem 'kaminari', '~> 1.2', '>= 1.2.2'
 
-# TODO put the gem back in development group (only using it here for demo purposes)
-gem 'faker', '~> 3.5', '>= 3.5.1'
-
 # Import users from the habilitations file
 gem 'rubyXL', '~> 3.4', '>= 3.4.27'
 
@@ -97,10 +94,27 @@ gem 'sentry-rails', '~> 5.22'
 # Interpret the markdown used in the summaries
 gem "redcarpet", '~> 3.6.0'
 
+# Authentication
+gem 'devise', '~> 4.9', '>= 4.9.4'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
   gem "dotenv-rails"
+  
+  # Generate fake data for development and testing
+  gem 'faker', '~> 3.5', '>= 3.5.1'
+
+  # Code quality and style
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rspec_rails', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rake', require: false
+
+  # Security scanning
+  gem 'brakeman'
 end
 
 group :development do
@@ -108,14 +122,21 @@ group :development do
   gem "web-console"
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
-  # gem "rack-mini-profiler"
+  gem "rack-mini-profiler"
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem "spring"
+  gem "spring"
 
   # Generate erd diagrams
   gem 'rails-erd'
   gem 'bullet'
+  
+  # Model annotations
+  gem 'annotate'
+  
+  # Performance profiling
+  gem 'memory_profiler'
+  gem 'stackprof'
 end
 
 group :test do
@@ -124,6 +145,3 @@ group :test do
   gem "selenium-webdriver"
   gem 'simplecov', require: false
 end
-
-# Authentication
-gem 'devise', '~> 4.9', '>= 4.9.4'

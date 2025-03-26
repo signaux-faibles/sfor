@@ -16,6 +16,50 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+  security:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Run Brakeman
+        run: bundle exec brakeman -q -w2 --no-exit-on-warn
+
   run_tests:
     runs-on: ubuntu-latest
     services:
@@ -59,8 +103,9 @@ jobs:
       - name: Run Tests
         run: |
           bundle exec rails test  # This runs Minitest, or use 'bundle exec rspec' if using RSpec
+
   build_and_publish:
-    needs: run_tests
+    needs: [lint, security, run_tests]
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
