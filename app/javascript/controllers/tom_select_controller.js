@@ -4,17 +4,11 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
 
-
-
-
-
-
     connect() {
         // Fix the issue of the tom-select instance not being initialized when hitting back button of the browser
         if (this.element.tomselect) {
             this.element.tomselect.destroy();
         }
-
 
         const minSearchAttr = this.element.dataset.minSearch;
         const threshold = minSearchAttr ? parseInt(minSearchAttr, 10) : 1;
