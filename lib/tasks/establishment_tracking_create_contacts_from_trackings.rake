@@ -14,7 +14,7 @@ namespace :establishment_tracking do
         last_name: "Nom"
       )
       puts "Contact créé pour l'établissement d'id : ##{tracking.establishment_id}"
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error "Erreur lors du traitement de tracking ##{tracking.id}: #{e.message}"
     end
 

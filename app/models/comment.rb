@@ -12,6 +12,7 @@ class Comment < ApplicationRecord
 
   def update_establishment_tracking_modified_at
     return if establishment_tracking.instance_variable_get(:@skip_modified_at_update)
+
     establishment_tracking.update!(modified_at: Date.current)
   end
 end

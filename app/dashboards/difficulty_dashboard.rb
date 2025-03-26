@@ -12,7 +12,7 @@ class DifficultyDashboard < Administrate::BaseDashboard
     establishment_trackings: Field::HasMany,
     name: Field::String,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

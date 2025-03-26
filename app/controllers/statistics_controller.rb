@@ -5,8 +5,8 @@ class StatisticsController < ApplicationController
       params: {},
       exp: Time.now.to_i + (60 * 10)
     }
-    token = JWT.encode payload, ENV['METABASE_SECRET_KEY']
+    token = JWT.encode payload, ENV.fetch("METABASE_SECRET_KEY", nil)
 
-    @iframe_url = "#{ENV['METABASE_SITE_URL']}/embed/dashboard/#{token}#bordered=true&titled=true"
+    @iframe_url = "#{ENV.fetch('METABASE_SITE_URL', nil)}/embed/dashboard/#{token}#bordered=true&titled=true"
   end
-end 
+end

@@ -1,11 +1,11 @@
 ENV["RAILS_ENV"] ||= "test"
 
-require 'simplecov'
+require "simplecov"
 SimpleCov.start
 
 require_relative "../config/environment"
 require "rails/test_help"
-Dir[Rails.root.join("test/support/**/*.rb")].each { |file| require file }
+Dir[Rails.root.join("test", "support", "**", "*.rb")].each { |file| require file }
 
 module ActiveSupport
   class TestCase

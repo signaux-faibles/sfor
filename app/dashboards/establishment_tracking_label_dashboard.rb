@@ -12,7 +12,7 @@ class EstablishmentTrackingLabelDashboard < Administrate::BaseDashboard
     establishment_tracking: Field::BelongsTo,
     tracking_label: Field::BelongsTo,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

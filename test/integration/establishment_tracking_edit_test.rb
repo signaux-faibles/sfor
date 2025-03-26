@@ -4,7 +4,7 @@ class EstablishmentTrackingEditTest < ActionDispatch::IntegrationTest
   setup do
     @establishment_tracking = establishment_trackings(:establishment_tracking_paris_no_content)
     @referent_user = users(:user_crp_paris)
-    @codefi_redirect = codefi_redirects(:'cci-cma')
+    @codefi_redirect = codefi_redirects(:"cci-cma")
 
     @establishment_tracking.referents << @referent_user
     login_user(@referent_user)
@@ -30,6 +30,7 @@ class EstablishmentTrackingEditTest < ActionDispatch::IntegrationTest
 
     assert_includes @establishment_tracking.codefi_redirect_ids, @codefi_redirect.id
 
-    assert @establishment_tracking.user_actions.exists?(name: @redirect_action_name), "Expected the UserAction '#{@redirect_action_name}' to be added"
+    assert @establishment_tracking.user_actions.exists?(name: @redirect_action_name),
+           "Expected the UserAction '#{@redirect_action_name}' to be added"
   end
 end

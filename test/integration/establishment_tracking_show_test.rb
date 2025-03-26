@@ -26,7 +26,7 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
         assert hidden_field.present?, "Each form should have a hidden field for network_id"
         network_id = hidden_field.attr("value").to_s
         network = Network.find(network_id)
-        assert_includes ["CRP", "CODEFI"], network.name, "The network_id should correspond to CODEFI or CRP"
+        assert_includes %w[CRP CODEFI], network.name, "The network_id should correspond to CODEFI or CRP"
       end
     end
 
@@ -38,7 +38,7 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
         assert hidden_field.present?, "Each form should have a hidden field for network_id"
         network_id = hidden_field.attr("value").to_s
         network = Network.find(network_id)
-        assert_includes ["CRP", "CODEFI"], network.name, "The network_id should correspond to CODEFI or CRP"
+        assert_includes %w[CRP CODEFI], network.name, "The network_id should correspond to CODEFI or CRP"
       end
     end
 
@@ -64,7 +64,7 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
         assert hidden_field.present?, "Each form should have a hidden field for network_id"
         network_id = hidden_field.attr("value").to_s
         network = Network.find(network_id)
-        assert_includes ["CRP", "CODEFI"], network.name, "The network_id should correspond to CODEFI or CRP"
+        assert_includes %w[CRP CODEFI], network.name, "The network_id should correspond to CODEFI or CRP"
       end
     end
 

@@ -12,17 +12,17 @@ class EstablishmentTrackingsController < ApplicationController
     # Removing `view` from `q` so it doesn't affect Ransack
     clean_params = params[:q]&.except(:view)
 
-    if params.dig(:q, :my_tracking) == '1'
+    if params.dig(:q, :my_tracking) == "1"
       base_scope = EstablishmentTracking.kept
       @q = base_scope.ransack(clean_params)
       all_trackings = @q.result
 
       user_tracking_ids = EstablishmentTracking.kept.with_user_as_referent_or_participant(current_user).select(:id)
 
-      @establishment_trackings = all_trackings.
-        where("establishment_trackings.id IN (?)", user_tracking_ids).distinct
+      @establishment_trackings = all_trackings
+                                 .where("establishment_trackings.id IN (?)", user_tracking_ids).distinct
 
-    elsif params.dig(:q, :my_tracking) == 'network'
+    elsif params.dig(:q, :my_tracking) == "network"
       base_scope = policy_scope(EstablishmentTracking).kept
       @q = base_scope.ransack(clean_params)
       @establishment_trackings = @q.result.by_network(current_user.network_ids).distinct
@@ -32,8 +32,8 @@ class EstablishmentTrackingsController < ApplicationController
       @establishment_trackings = @q.result
     end
 
-
-    @paginated_establishment_trackings = @establishment_trackings.includes(:referents, :criticality, establishment: :department).page(params[:page]).per(15)
+    @paginated_establishment_trackings = @establishment_trackings.includes(:referents, :criticality,
+                                                                           establishment: :department).page(params[:page]).per(15)
 
     respond_to do |format|
       format.html
@@ -47,20 +47,25 @@ class EstablishmentTrackingsController < ApplicationController
     user_network_ids = current_user.networks.pluck(:id) # ['CODEFI' and user's specific network]
     @summaries = Summary.where(establishment_tracking: @establishment_tracking, network_id: user_network_ids)
 
-    @codefi_summaries = @summaries.includes([:network]).find { |s| s.network.name == 'CODEFI' }
-    @user_network_summaries = @summaries.find { |s| s.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
+    @codefi_summaries = @summaries.includes([:network]).find { |s| s.network.name == "CODEFI" }
+    @user_network_summaries = @summaries.find do |s|
+      s.network.id == current_user.networks.where.not(name: "CODEFI").pluck(:id).first
+    end
 
-    @comments = Comment.includes([:network, :user]).where(establishment_tracking: @establishment_tracking, network_id: user_network_ids).order(created_at: :desc)
+    @comments = Comment.includes(%i[network user]).where(establishment_tracking: @establishment_tracking,
+                                                         network_id: user_network_ids).order(created_at: :desc)
 
-    @codefi_comments = @comments.select { |c| c.network.name == 'CODEFI' }
-    @user_network_comments = @comments.select { |c| c.network.id == current_user.networks.where.not(name: 'CODEFI').pluck(:id).first }
+    @codefi_comments = @comments.select { |c| c.network.name == "CODEFI" }
+    @user_network_comments = @comments.select do |c|
+      c.network.id == current_user.networks.where.not(name: "CODEFI").pluck(:id).first
+    end
 
     @other_trackings = @establishment_tracking.establishment.establishment_trackings.where.not(id: @establishment_tracking.id)
     @company_trackings = EstablishmentTracking
-                           .joins(:establishment)
-                           .where(establishments: { company_id: @establishment_tracking.establishment.company_id })
-                           .where.not(id: @establishment_tracking.id)
-                           .distinct
+                         .joins(:establishment)
+                         .where(establishments: { company_id: @establishment_tracking.establishment.company_id })
+                         .where.not(id: @establishment_tracking.id)
+                         .distinct
   end
 
   def new
@@ -73,7 +78,7 @@ class EstablishmentTrackingsController < ApplicationController
 
     if @establishment
       # Check if there's an existing in-progress tracking
-      active_tracking = @establishment.establishment_trackings.find_by(state: ['in_progress', 'under_surveillance'])
+      active_tracking = @establishment.establishment_trackings.find_by(state: %w[in_progress under_surveillance])
       if active_tracking
         redirect_to establishment_establishment_tracking_path(@establishment, active_tracking),
                     alert: "Il y a déjà un accompagnement en cours pour cet établissement."
@@ -108,18 +113,30 @@ class EstablishmentTrackingsController < ApplicationController
 
           if @establishment.save
             redirect_to new_establishment_establishment_tracking_path(@establishment),
-                        notice: 'Établissement créé avec succès.'
+                        notice: "Établissement créé avec succès."
             return
           end
         end
       rescue ActiveRecord::RecordInvalid => e
         redirect_to root_path, alert: "Impossible de créer l'établissement: #{e.record.errors.full_messages.join(', ')}"
-        return
+        nil
       end
     end
   end
 
-  def edit
+  def edit; end
+
+  def create
+    @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
+    @establishment_tracking.creator = current_user
+    @establishment_tracking.start_date ||= Date.today
+
+    if @establishment_tracking.save
+      flash[:success] = "L'accompagnement a été créé avec succès."
+      redirect_to @establishment
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def update
@@ -133,7 +150,7 @@ class EstablishmentTrackingsController < ApplicationController
       params_to_update = tracking_params.except(:tracking_label_ids).merge(tracking_label_ids: combined_label_ids)
 
       if update_state && @establishment_tracking.update(params_to_update)
-        flash[:success] = 'L\'accompagnement a été mis à jour avec succès.'
+        flash[:success] = "L'accompagnement a été mis à jour avec succès."
         redirect_to [@establishment, @establishment_tracking]
       else
         render :edit, status: :unprocessable_entity
@@ -141,23 +158,10 @@ class EstablishmentTrackingsController < ApplicationController
     end
   end
 
-  def create
-    @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
-    @establishment_tracking.creator = current_user
-    @establishment_tracking.start_date ||= Date.today
-
-    if @establishment_tracking.save
-      flash[:success] = 'L\'accompagnement a été créé avec succès.'
-      redirect_to @establishment
-    else
-      render :new, status: :unprocessable_entity
-    end
-  end
-
   def destroy
     @establishment = @establishment_tracking.establishment
     @establishment_tracking.destroy
-    flash[:success] = 'L\'accompagnement a été supprimé avec succès.'
+    flash[:success] = "L'accompagnement a été supprimé avec succès."
     redirect_to @establishment
   end
 
@@ -196,19 +200,20 @@ class EstablishmentTrackingsController < ApplicationController
     desired_state = params[:establishment_tracking][:state]
 
     case desired_state
-    when 'completed'
-      return @establishment_tracking.complete! if @establishment_tracking.may_complete?
-    when 'under_surveillance'
-      return @establishment_tracking.start_surveillance! if @establishment_tracking.may_start_surveillance?
-    when 'in_progress'
-      return @establishment_tracking.resume! if @establishment_tracking.may_resume?
+    when "completed"
+      @establishment_tracking.complete! if @establishment_tracking.may_complete?
+    when "under_surveillance"
+      @establishment_tracking.start_surveillance! if @establishment_tracking.may_start_surveillance?
+    when "in_progress"
+      @establishment_tracking.resume! if @establishment_tracking.may_resume?
     else
       false
     end
   end
 
   def tracking_params
-    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, tracking_label_ids: [], user_action_ids: [], sector_ids: [], participant_ids: [], referent_ids: [], difficulty_ids: [], codefi_redirect_ids: [], supporting_service_ids: [])
+    params.require(:establishment_tracking).permit(:state, :criticality_id, :size_id, tracking_label_ids: [],
+                                                                                      user_action_ids: [], sector_ids: [], participant_ids: [], referent_ids: [], difficulty_ids: [], codefi_redirect_ids: [], supporting_service_ids: [])
   end
 
   def contributor_params
@@ -233,10 +238,10 @@ class EstablishmentTrackingsController < ApplicationController
 
   def export_establishment_trackings(establishment_trackings, query)
     all_establishment_trackings = establishment_trackings.includes(:establishment, :referents)
-    response.headers['Cache-Control'] = 'no-store'
+    response.headers["Cache-Control"] = "no-store"
     send_data generate_excel(all_establishment_trackings, query),
               filename: "accompagnements.xlsx",
               type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-              disposition: 'attachment'
+              disposition: "attachment"
   end
 end

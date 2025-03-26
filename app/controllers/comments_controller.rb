@@ -1,28 +1,26 @@
 class CommentsController < ApplicationController
   before_action :set_establishment_and_tracking
-  before_action :set_comment, only: [:edit, :update, :destroy]
-  before_action :authorize_comment, only: [:edit, :update, :destroy]
+  before_action :set_comment, only: %i[edit update destroy]
+  before_action :authorize_comment, only: %i[edit update destroy]
+
+  def edit
+    # Pas de besoin de rendre explicitement quoi que ce soit ici, Turbo gérera automatiquement le template `edit.turbo_stream.erb`.
+  end
 
   def create
     @comment = @establishment_tracking.comments.new(comment_params)
     @comment.user = current_user
 
-    if @comment.network.nil?
-      @comment.network = current_user.networks.where.not(name: 'codefi').first
-    end
+    @comment.network = current_user.networks.where.not(name: "codefi").first if @comment.network.nil?
 
     if @comment.save
       flash.now[:notice] = "Commentaire ajouté avec succès."
     else
       render turbo_stream: turbo_stream.update("new_comment_#{@comment.network.name.parameterize}",
-                                                partial: "comments/form",
-                                                locals: { comment: @comment, network: @comment.network },
-                                                status: :unprocessable_entity)
+                                               partial: "comments/form",
+                                               locals: { comment: @comment, network: @comment.network },
+                                               status: :unprocessable_entity)
     end
-  end
-
-  def edit
-    # Pas de besoin de rendre explicitement quoi que ce soit ici, Turbo gérera automatiquement le template `edit.turbo_stream.erb`.
   end
 
   def update
@@ -30,9 +28,9 @@ class CommentsController < ApplicationController
       flash.now[:notice] = "Commentaire mis à jour avec succès."
     else
       render turbo_stream: turbo_stream.update("comment_#{@comment.id}",
-                                                partial: "comments/form",
-                                                locals: { comment: @comment, network: @comment.network },
-                                                status: :unprocessable_entity)    end
+                                               partial: "comments/form",
+                                               locals: { comment: @comment, network: @comment.network },
+                                               status: :unprocessable_entity) end
   end
 
   def destroy

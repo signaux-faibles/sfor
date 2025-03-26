@@ -61,35 +61,35 @@ gem "administrate", "1.0.0.beta3"
 gem "administrate-field-belongs_to_search", "~> 0.9.0"
 
 # Authorizations
-gem "pundit", "~> 2.4.0"
+gem "pundit", "~> 2.4"
 
 # Pagination
-gem "kaminari", "~> 1.2.2"
+gem "kaminari", "~> 1.2", ">= 1.2.2"
 
 # Import users from the habilitations file
-gem "rubyXL", "~> 3.4.27"
+gem "rubyXL", "~> 3.4", ">= 3.4.27"
 
 # State machine for establishment trackings
-gem "aasm", "~> 5.5.0"
+gem "aasm", "~> 5.5"
 
 # Links in summaries and comments made clickable
-gem "rails_autolink", "~> 1.1.8"
+gem "rails_autolink", "~> 1.1", ">= 1.1.8"
 
 # Handle soft delete
-gem "discard", "~> 1.2.0"
+gem "discard", "~> 1.2"
 
 # Track changes to models
-gem "paper_trail", "~> 16.0.0"
+gem "paper_trail", "~> 16.0"
 
 # Impersonate users
 gem "pretender", "~> 0.5.0"
 
 # Generate excel files for establishment trackings
-gem "caxlsx", "~> 4.1.0"
+gem "caxlsx", "~> 4.1"
 
 # Send issues to Sentry
-gem "sentry-rails", "~> 5.22.0"
-gem "sentry-ruby", "~> 5.22.0"
+gem "sentry-rails", "~> 5.22"
+gem "sentry-ruby", "~> 5.22"
 
 # Interpret the markdown used in the summaries
 gem "redcarpet", "~> 3.6.0"
@@ -129,6 +129,7 @@ group :development do
 
   # Generate erd diagrams
   gem "bullet"
+  gem "rails-erd"
 
   # Model annotations
   gem "annotate"

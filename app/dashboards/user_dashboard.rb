@@ -40,9 +40,9 @@ class UserDashboard < Administrate::BaseDashboard
     ),
     password_confirmation: Field::String.with_options(
       searchable: false
-    ),    created_at: Field::DateTime,
+    ), created_at: Field::DateTime,
     updated_at: Field::DateTime,
-    discarded_at: Field::DateTime,
+    discarded_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES

@@ -5,7 +5,7 @@ class Users::SessionsController < Devise::SessionsController
     if user_signed_in?
       redirect_to root_path
     else
-      redirect_to "#{ENV['VUE_APP_FRONTEND_URL']}", allow_other_host: true
+      redirect_to "#{ENV.fetch('VUE_APP_FRONTEND_URL', nil)}", allow_other_host: true
     end
   end
 
@@ -19,16 +19,16 @@ class Users::SessionsController < Devise::SessionsController
         sign_in(resource_name, user)
         render json: { success: true }
       else
-        render json: { error: 'Votre compte est inactif' }, status: :unauthorized
+        render json: { error: "Votre compte est inactif" }, status: :unauthorized
       end
     else
-      render json: { error: 'Invalid token' }, status: :unauthorized
+      render json: { error: "Invalid token" }, status: :unauthorized
     end
   end
 
   def destroy
     super do
-      return redirect_to "#{ENV['VUE_APP_FRONTEND_URL']}/#/logout", allow_other_host: true
+      return redirect_to "#{ENV.fetch('VUE_APP_FRONTEND_URL', nil)}/#/logout", allow_other_host: true
     end
   end
 
@@ -42,9 +42,9 @@ class Users::SessionsController < Devise::SessionsController
 
   def find_or_create_user(decoded_token)
     user_info = {
-      email: decoded_token['email'],
-      first_name: decoded_token['given_name'],
-      last_name: decoded_token['family_name']
+      email: decoded_token["email"],
+      first_name: decoded_token["given_name"],
+      last_name: decoded_token["family_name"]
     }
 
     user = User.find_or_create_by(email: user_info[:email]) do |user|
@@ -58,7 +58,7 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   def update_user_roles(user, decoded_token)
-    roles = decoded_token.dig('resource_access', 'signauxfaibles', 'roles') || []
+    roles = decoded_token.dig("resource_access", "signauxfaibles", "roles") || []
     roles_from_db = Role.where(name: roles)
     user.roles = roles_from_db
   end
