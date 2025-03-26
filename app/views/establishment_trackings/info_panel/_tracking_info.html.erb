@@ -50,7 +50,7 @@
   <p><strong>Actions réalisées
     :</strong>
     <% if @establishment_tracking.user_actions.any? %>
-      <% @establishment_tracking.user_actions.each do |action| %>
+      <% @establishment_tracking.user_actions.ordered.each do |action| %>
         <span class="fr-tag fr-tag--sm"><%= action.name %></span>
       <% end %>
     <% else %>

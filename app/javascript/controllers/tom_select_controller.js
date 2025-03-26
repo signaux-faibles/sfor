@@ -26,10 +26,6 @@ export default class extends Controller {
             create: false,
             dropdownParent: 'body',
             openOnFocus: !minSearchAttr,
-            sortField: {
-                field: "text",
-                direction: "asc"
-            },
             render: {
                 option: function(data, escape) {
                     return `<div class="option" style="margin-left: 10px;">${escape(data.text)}</div>`;

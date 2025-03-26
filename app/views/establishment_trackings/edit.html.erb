@@ -58,7 +58,7 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>">
             <%= form.label :user_action_ids, 'Actions réalisées' %>
-            <%= form.collection_select :user_action_ids, UserAction.all, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+            <%= form.collection_select :user_action_ids, UserAction.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", tom_select_options: { sortField: { field: "position", direction: "asc" } } } } %>
             <% @establishment_tracking.errors[:user_action_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>
