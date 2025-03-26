@@ -118,6 +118,6 @@ class UserDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(user)
-    "#{user.email}"
+    user.email.to_s
   end
 end

@@ -34,7 +34,7 @@ class ImportEstablishmentTrackingsService
     sf_siret_regex = /(\d{14})/
     extract_department_from_swimlane_title_regex = /(\d+[A|B]?) \(.*\)/
 
-    boards_ids = boards.find({ title: { "$regex": "^#{board_title}" } }).to_a.map { |board| board[:_id] }
+    boards_ids = boards.find({ title: { "$regex": "^#{board_title}" } }).to_a.pluck(:_id)
 
     # Vérification : arrêter l'import si aucun tableau n'est trouvé
     if boards_ids.empty?
@@ -48,7 +48,7 @@ class ImportEstablishmentTrackingsService
 
     swimlanes.find({ boardId: { "$in": boards_ids } }).sort(title: 1).each do |swimlane|
       puts swimlane[:title]
-      boards.find(_id: swimlane[:boardId]).first[:labels].map { |obj| [obj["_id"], obj["name"]] }.to_h
+      boards.find(_id: swimlane[:boardId]).first[:labels].to_h { |obj| [obj["_id"], obj["name"]] }
 
       title_match = swimlane[:title].match(extract_department_from_swimlane_title_regex)
       unless title_match
@@ -147,10 +147,10 @@ class ImportEstablishmentTrackingsService
       establishment_tracking.state = "completed"
 
       # Participants and Referents
-      mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+      mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.pluck(:username)
       participants = User.where(email: mongo_participants)
       establishment_tracking.participants = participants.empty? ? [creator] : participants
-      mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+      mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.pluck(:username)
       referents = User.where(email: mongo_referents)
       establishment_tracking.referents = referents.empty? ? [creator] : referents
 
@@ -162,7 +162,7 @@ class ImportEstablishmentTrackingsService
       establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
       # Contact details
-      id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
+      id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.pluck("_id"))
       contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
 
       if contact_field.present? && contact_field[:value].present?
@@ -191,16 +191,16 @@ class ImportEstablishmentTrackingsService
       if existing_tracking
         puts "Processing siret #{siret}, existing in rails"
 
-        mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+        mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.pluck(:username)
         new_participants = User.where(email: mongo_participants).to_a
         existing_tracking.participants |= new_participants
 
-        mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+        mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.pluck(:username)
         new_referents = User.where(email: mongo_referents).to_a
         existing_tracking.referents |= new_referents # Fusionner les référents sans doublons
 
         # Contact details
-        id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
+        id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.pluck("_id"))
         contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
 
         if contact_field.present? && contact_field[:value].present?
@@ -232,11 +232,11 @@ class ImportEstablishmentTrackingsService
         new_tracking.modified_at = card[:modifiedAt]
         new_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
-        mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+        mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.pluck(:username)
         participants = User.where(email: mongo_participants)
         new_tracking.participants = participants.empty? ? [creator] : participants
 
-        mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+        mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.pluck(:username)
         referents = User.where(email: mongo_referents)
         new_tracking.referents = referents.empty? ? [creator] : referents
 
@@ -260,10 +260,10 @@ class ImportEstablishmentTrackingsService
     establishment_tracking.creator = creator
 
     # Participants and Referents
-    mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.map { |user| user[:username] }
+    mongo_participants = users.find({ _id: { "$in": card[:members] } }).to_a.pluck(:username)
     participants = User.where(email: mongo_participants)
     establishment_tracking.participants = participants.empty? ? [creator] : participants
-    mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.map { |user| user[:username] }
+    mongo_referents = users.find({ _id: { "$in": card[:assignees] } }).to_a.pluck(:username)
     referents = User.where(email: mongo_referents)
     establishment_tracking.referents = referents.empty? ? [creator] : referents
 
@@ -275,7 +275,7 @@ class ImportEstablishmentTrackingsService
     establishment_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
     # Contact details
-    id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.map { |pair| pair["_id"] })
+    id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.pluck("_id"))
     contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
 
     if contact_field.present? && contact_field[:value].present?

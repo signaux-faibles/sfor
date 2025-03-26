@@ -60,6 +60,6 @@ class EntityDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(entity)
-    "#{entity.name}"
+    entity.name.to_s
   end
 end

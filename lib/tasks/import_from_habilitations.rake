@@ -16,8 +16,8 @@ namespace :users do
     users_worksheet = workbook["utilisateurs"]
     discard_worksheet = workbook["historique suppressions"]
 
-    users_header = users_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
-    discard_header = discard_worksheet.sheet_data[0].cells.map { |cell| cell && cell.value }
+    users_header = users_worksheet.sheet_data[0].cells.map { |cell| cell&.value }
+    discard_header = discard_worksheet.sheet_data[0].cells.map { |cell| cell&.value }
 
     @codefi_network = Network.find_or_create_by(name: "CODEFI")
     @crp_network = Network.find_or_create_by(name: "CRP")
@@ -26,17 +26,17 @@ namespace :users do
     @dgfip_network = Network.find_or_create_by(name: "DGFiP")
     @dgefp_network = Network.find_or_create_by(name: "DGEFP")
 
-    users_worksheet.sheet_data.rows[1..-1].each do |row|
+    users_worksheet.sheet_data.rows[1..].each do |row|
       break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
 
-      row_data = Hash[users_header.zip(row.cells.map { |cell| cell && cell.value })]
+      row_data = users_header.zip(row.cells.map { |cell| cell && cell.value }).to_h
       create_or_update_user(row_data)
     end
 
-    discard_worksheet.sheet_data.rows[1..-1].each do |row|
+    discard_worksheet.sheet_data.rows[1..].each do |row|
       break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
 
-      row_data = Hash[discard_header.zip(row.cells.map { |cell| cell && cell.value })]
+      row_data = discard_header.zip(row.cells.map { |cell| cell && cell.value }).to_h
       discard_users(row_data)
     end
 
@@ -151,7 +151,7 @@ namespace :users do
 
   def assign_networks(user, segment_name)
     # Only add CODEFI network if the segment is not dreets_reseaucrp
-    if !(segment_name.downcase == "dreets_reseaucrp") && !user.networks.include?(@codefi_network)
+    if segment_name.downcase != "dreets_reseaucrp" && user.networks.exclude?(@codefi_network)
       user.networks << @codefi_network
     end
 

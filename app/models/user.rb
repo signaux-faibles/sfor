@@ -44,7 +44,7 @@ class User < ApplicationRecord
   end
 
   def self.from_omniauth(auth)
-    puts "auth info: #{auth.inspect}"
+    Rails.logger.debug { "auth info: #{auth.inspect}" }
 
     user = where(provider: auth.provider, uid: auth.uid).first_or_create do |user|
       user.email = auth.info.email
@@ -56,10 +56,10 @@ class User < ApplicationRecord
   end
 
   def update_roles(auth)
-    puts "auth credentials"
-    puts auth.credentials
+    Rails.logger.debug "auth credentials"
+    Rails.logger.debug auth.credentials
     roles = extract_roles_from_token(auth.credentials.token)
-    puts roles.inspect
+    Rails.logger.debug roles.inspect
     self.roles = roles.map { |role_name| Role.find_or_create_by(name: role_name) }
     save!
   end

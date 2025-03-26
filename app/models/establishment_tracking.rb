@@ -83,7 +83,7 @@ class EstablishmentTracking < ApplicationRecord
 
     event :complete do
       before do
-        self.end_date = Date.today
+        self.end_date = Time.zone.today
       end
       transitions from: %i[in_progress under_surveillance completed], to: :completed
     end
