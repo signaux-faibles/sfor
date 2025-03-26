@@ -62,6 +62,6 @@ class GeoAccessDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(geo_access)
-    "#{geo_access.name}"
+    geo_access.name.to_s
   end
 end

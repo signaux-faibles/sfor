@@ -149,6 +149,6 @@ class EstablishmentDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(establishment)
-    "#{establishment.siret}"
+    establishment.siret.to_s
   end
 end

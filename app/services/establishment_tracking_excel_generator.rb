@@ -96,7 +96,7 @@ class EstablishmentTrackingExcelGenerator
       raw_values = condition.values.map(&:value)
 
       # Remove empty strings and format values
-      cleaned_values = raw_values.reject(&:blank?).map do |value|
+      cleaned_values = raw_values.compact_blank.map do |value|
         format_value(attribute, value)
       end
 
@@ -113,8 +113,8 @@ class EstablishmentTrackingExcelGenerator
     when "state"
       EstablishmentTracking.aasm.states.find { |s| s.name.to_s == value.to_s }&.human_name || value
     when "establishment_department_id"
-      puts "Departements"
-      puts value
+      Rails.logger.debug "Departements"
+      Rails.logger.debug value
       value.split(",").map { |id| Department.find_by(id: id)&.name || id }.join(", ")
     when "tracking_labels_id"
       value.split(",").map { |id| TrackingLabel.find_by(id: id)&.name || id }.join(", ")

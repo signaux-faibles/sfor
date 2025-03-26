@@ -9,7 +9,7 @@ namespace :migrate do
     }
 
     services = {}
-    label_to_service_mapping.each do |_, service_name|
+    label_to_service_mapping.each_value do |service_name|
       services[service_name] = SupportingService.find_or_create_by!(name: service_name)
     end
 

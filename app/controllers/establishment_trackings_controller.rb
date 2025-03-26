@@ -20,7 +20,7 @@ class EstablishmentTrackingsController < ApplicationController
       user_tracking_ids = EstablishmentTracking.kept.with_user_as_referent_or_participant(current_user).select(:id)
 
       @establishment_trackings = all_trackings
-                                 .where("establishment_trackings.id IN (?)", user_tracking_ids).distinct
+                                 .where(establishment_trackings: { id: user_tracking_ids }).distinct
 
     elsif params.dig(:q, :my_tracking) == "network"
       base_scope = policy_scope(EstablishmentTracking).kept
@@ -49,7 +49,7 @@ class EstablishmentTrackingsController < ApplicationController
 
     @codefi_summaries = @summaries.includes([:network]).find { |s| s.network.name == "CODEFI" }
     @user_network_summaries = @summaries.find do |s|
-      s.network.id == current_user.networks.where.not(name: "CODEFI").pluck(:id).first
+      s.network.id == current_user.networks.where.not(name: "CODEFI").pick(:id)
     end
 
     @comments = Comment.includes(%i[network user]).where(establishment_tracking: @establishment_tracking,
@@ -57,7 +57,7 @@ class EstablishmentTrackingsController < ApplicationController
 
     @codefi_comments = @comments.select { |c| c.network.name == "CODEFI" }
     @user_network_comments = @comments.select do |c|
-      c.network.id == current_user.networks.where.not(name: "CODEFI").pluck(:id).first
+      c.network.id == current_user.networks.where.not(name: "CODEFI").pick(:id)
     end
 
     @other_trackings = @establishment_tracking.establishment.establishment_trackings.where.not(id: @establishment_tracking.id)
@@ -129,7 +129,7 @@ class EstablishmentTrackingsController < ApplicationController
   def create
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
-    @establishment_tracking.start_date ||= Date.today
+    @establishment_tracking.start_date ||= Time.zone.today
 
     if @establishment_tracking.save
       flash[:success] = "L'accompagnement a été créé avec succès."
@@ -141,7 +141,7 @@ class EstablishmentTrackingsController < ApplicationController
 
   def update
     ActiveRecord::Base.transaction do
-      submitted_label_ids = tracking_params[:tracking_label_ids].reject(&:blank?).map(&:to_i)
+      submitted_label_ids = tracking_params[:tracking_label_ids].compact_blank.map(&:to_i)
 
       existing_non_system_label_ids = @establishment_tracking.tracking_labels.where(system: false).pluck(:id)
 

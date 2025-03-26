@@ -5,7 +5,7 @@ class Users::SessionsController < Devise::SessionsController
     if user_signed_in?
       redirect_to root_path
     else
-      redirect_to "#{ENV.fetch('VUE_APP_FRONTEND_URL', nil)}", allow_other_host: true
+      redirect_to ENV.fetch("VUE_APP_FRONTEND_URL", nil).to_s, allow_other_host: true
     end
   end
 

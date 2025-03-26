@@ -84,7 +84,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
       post establishment_establishment_trackings_url(@establishment_paris_2), params: {
         establishment_tracking: {
           state: "in_progress",
-          start_date: Date.today,
+          start_date: Time.zone.today,
           referent_ids: [@user_crp_paris.id],
           tracking_label_ids: [],
           user_action_ids: [],

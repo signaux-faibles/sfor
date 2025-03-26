@@ -79,6 +79,6 @@ class ActivitySectorDashboard < Administrate::BaseDashboard
   # across all pages of the admin dashboard.
   #
   def display_resource(activity_sector)
-    "#{activity_sector.libelle}"
+    activity_sector.libelle.to_s
   end
 end
