@@ -1,0 +1,263 @@
+require:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-performance
+  - rubocop-rake
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.2
+  Exclude:
+    - 'bin/**/*'
+    - 'db/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'coverage/**/*'
+  DisplayCopNames: true
+  DisplayStyleGuide: true
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/**/*'
+
+Layout/LineLength:
+  Max: 120
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/GuardClause:
+  MinBodyLength: 3
+
+Style/MultilineIfModifier:
+  Enabled: false
+
+Style/IfInsideElse:
+  Enabled: false
+
+Style/Next:
+  Enabled: false
+
+Style/WhileUntilModifier:
+  Enabled: false
+
+Style/For:
+  Enabled: false
+
+Style/EachForSimpleLoop:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Exclude:
+    - 'spec/**/*'
+
+Rails:
+  Enabled: true
+
+Rails/ApplicationRecord:
+  Enabled: false
+
+Rails/InverseOf:
+  Enabled: false
+
+Rails/NotNullColumn:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
+
+Rails/RedundantPresenceValidationOnBelongsTo:
+  Enabled: false
+
+Rails/BulkChangeTable:
+  Enabled: false
+
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: false
+
+Rails/ActiveRecordOverride:
+  Enabled: false
+
+Rails/ReflectionClassName:
+  Enabled: false
+
+Rails/RedundantForeignKey:
+  Enabled: false
+
+Rails/Output:
+  Exclude:
+    - 'spec/**/*'
+
+Rails/HelperInstanceVariable:
+  Enabled: false
+
+Rails/FilePath:
+  EnforcedStyle: arguments
+
+Rails/OutputSafety:
+  Enabled: false
+
+Rails/PluralizationGrammar:
+  Enabled: false
+
+Rails/Present:
+  Enabled: false
+
+Rails/RakeEnvironment:
+  Enabled: false
+
+Rails/ReadWriteAttribute:
+  Enabled: false
+
+Rails/RelativeDateConstant:
+  Enabled: false
+
+Rails/RequestReferer:
+  Enabled: false
+
+Rails/ReversibleMigration:
+  Enabled: false
+
+Rails/SafeNavigation:
+  Enabled: false
+
+Rails/SaveBang:
+  Enabled: false
+
+Rails/ScopeArgs:
+  Enabled: false
+
+Rails/TimeZone:
+  Enabled: false
+
+Rails/UniqBeforePluck:
+  Enabled: false
+
+Rails/Validation:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/MultipleExpectations:
+  Max: 3
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
+RSpec/ExpectChange:
+  EnforcedStyle: block
+
+RSpec/ExpectInHook:
+  Enabled: false
+
+RSpec/InstanceVariable:
+  Enabled: false
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/MessageChain:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpecRails/InferredSpecType:
+  Enabled: false
+
+RSpecRails/AvoidSetupHook:
+  Enabled: false
+
+Performance/AncestorsInclude:
+  Enabled: false
+
+Performance/BigDecimalWithNumericArgument:
+  Enabled: false
+
+Performance/BlockGivenWithExplicitBlock:
+  Enabled: false
+
+Performance/CollectionLiteralInLoop:
+  Enabled: false
+
+Performance/ConstantRegexp:
+  Enabled: false
+
+Performance/Count:
+  Enabled: false
+
+Performance/Detect:
+  Enabled: false
+
+Performance/EndWith:
+  Enabled: false
+
+Performance/FixedSize:
+  Enabled: false
+
+Performance/InefficientHashSearch:
+  Enabled: false
+
+Performance/OpenStruct:
+  Enabled: false
+
+Performance/RedundantBlockCall:
+  Enabled: false
+
+Performance/RedundantMatch:
+  Enabled: false
+
+Performance/RedundantMerge:
+  Enabled: false
+
+Performance/RedundantSortBlock:
+  Enabled: false
+
+Performance/RedundantStringChars:
+  Enabled: false
+
+Performance/ReverseEach:
+  Enabled: false
+
+Performance/SortReverse:
+  Enabled: false
+
+Performance/Squeeze:
+  Enabled: false
+
+Performance/StringReplacement:
+  Enabled: false
+
+Performance/Sum:
+  Enabled: false
+
+Performance/TimesMap:
+  Enabled: false
+
+Performance/UnfreezeString:
+  Enabled: false
+
+Performance/UriDefaultParser:
+  Enabled: false 
