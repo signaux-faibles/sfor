@@ -60,7 +60,7 @@
 
   <p><strong>Réorientation hors CODEFI :</strong>
     <% if @establishment_tracking.codefi_redirects.any? %>
-      <% @establishment_tracking.codefi_redirects.each do |redirect| %>
+      <% @establishment_tracking.codefi_redirects.ordered.each do |redirect| %>
         <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
       <% end %>
     <% else %>
