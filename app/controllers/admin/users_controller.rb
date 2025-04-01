@@ -18,9 +18,9 @@ module Admin
       user = User.find(params[:id])
 
       if user.discard
-        flash[:notice] = "Utilisateur archivé avec succès."
+        flash[:notice] = t("admin.users.discard.success")
       else
-        flash[:alert] = "Impossible d'archiver cet utilisateur."
+        flash[:alert] = t("admin.users.discard.error")
       end
 
       redirect_to admin_users_path

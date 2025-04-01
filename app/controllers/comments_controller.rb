@@ -3,18 +3,12 @@ class CommentsController < ApplicationController
   before_action :set_comment, only: %i[edit update destroy]
   before_action :authorize_comment, only: %i[edit update destroy]
 
-  def edit
-    # Pas de besoin de rendre explicitement quoi que ce soit ici, Turbo gérera automatiquement le template `edit.turbo_stream.erb`.
-  end
+  def edit; end
 
   def create
-    @comment = @establishment_tracking.comments.new(comment_params)
-    @comment.user = current_user
-
-    @comment.network = current_user.networks.where.not(name: "codefi").first if @comment.network.nil?
-
+    @comment = build_comment
     if @comment.save
-      flash.now[:notice] = "Commentaire ajouté avec succès."
+      flash.now[:notice] = t(".success")
     else
       render turbo_stream: turbo_stream.update("new_comment_#{@comment.network.name.parameterize}",
                                                partial: "comments/form",
@@ -25,7 +19,7 @@ class CommentsController < ApplicationController
 
   def update
     if @comment.update(comment_params)
-      flash.now[:notice] = "Commentaire mis à jour avec succès."
+      flash.now[:notice] = t(".success")
     else
       render turbo_stream: turbo_stream.update("comment_#{@comment.id}",
                                                partial: "comments/form",
@@ -35,7 +29,7 @@ class CommentsController < ApplicationController
 
   def destroy
     @comment.destroy
-    flash.now[:notice] = "Commentaire supprimé avec succès."
+    flash.now[:notice] = t(".success")
   end
 
   private
@@ -55,5 +49,12 @@ class CommentsController < ApplicationController
 
   def comment_params
     params.require(:comment).permit(:content, :network_id)
+  end
+
+  def build_comment
+    comment = @establishment_tracking.comments.new(comment_params)
+    comment.user = current_user
+    comment.network ||= current_user.networks.where.not(name: "codefi").first
+    comment
   end
 end

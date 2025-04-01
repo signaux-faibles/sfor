@@ -4,7 +4,7 @@
 
 require "mongo"
 
-class ImportEstablishmentTrackingsService
+class ImportEstablishmentTrackingsService # rubocop:disable Metrics/ClassLength
   def initialize
     mongo_host = ENV["WEKAN_MONGO_DB_HOST"] || "10.2.0.231"
     mongo_port = ENV["WEKAN_MONGO_DB_PORT"] || "27017"
@@ -20,7 +20,7 @@ class ImportEstablishmentTrackingsService
     # @mongo_client = Mongo::Client.new([ "#{mongo_host}:#{mongo_port}" ], database: mongo_db_name)
   end
 
-  def perform(board_title)
+  def perform(board_title) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     puts "Starting import for board: #{board_title}"
 
     boards = @mongo_client[:boards]
@@ -46,7 +46,7 @@ class ImportEstablishmentTrackingsService
 
     unique_emails = Set.new
 
-    swimlanes.find({ boardId: { "$in": boards_ids } }).sort(title: 1).each do |swimlane|
+    swimlanes.find({ boardId: { "$in": boards_ids } }).sort(title: 1).each do |swimlane| # rubocop:disable Metrics/BlockLength
       puts swimlane[:title]
       boards.find(_id: swimlane[:boardId]).first[:labels].to_h { |obj| [obj["_id"], obj["name"]] }
 
@@ -65,8 +65,8 @@ class ImportEstablishmentTrackingsService
       end
 
       cards.find({ swimlaneId: swimlane[:_id] }).each do |card|
-        custom_field_siret = card[:customFields].find do |customField|
-          customField["value"] =~ sf_siret_regex
+        custom_field_siret = card[:customFields].find do |custom_field|
+          custom_field["value"] =~ sf_siret_regex
         end&.dig(:value)
 
         if custom_field_siret&.match(sf_siret_regex)
@@ -119,7 +119,7 @@ class ImportEstablishmentTrackingsService
     company
   end
 
-  def create_establishment(card, company, department, siren, siret)
+  def create_establishment(card, company, department, siren, siret) # rubocop:disable Metrics/MethodLength
     establishment = Establishment.find_or_initialize_by(siret: siret)
     establishment.siren = siren
     establishment.siret = siret
@@ -134,7 +134,7 @@ class ImportEstablishmentTrackingsService
     establishment
   end
 
-  def create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields)
+  def create_establishment_tracking(card, creator, establishment, lists, siret, users, custom_fields) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/ParameterLists,Metrics/MethodLength
     puts "Processing siret #{siret} with card #{card[:title]}."
     wekan_status = lists.find(_id: card[:listId]).first[:title]
 
@@ -163,7 +163,7 @@ class ImportEstablishmentTrackingsService
 
       # Contact details
       id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.pluck("_id"))
-      contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+      contact_field = card[:customFields].find { |custom_field| id_of_contact.include?(custom_field["_id"]) }
 
       if contact_field.present? && contact_field[:value].present?
         establishment.contacts.create!(
@@ -174,7 +174,8 @@ class ImportEstablishmentTrackingsService
       end
 
       if save_tracking(establishment_tracking, siret, card[:title])
-        puts "completed Establishment tracking with id #{establishment_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
+        puts "completed Establishment tracking with id #{establishment_tracking.id}" \
+             "created for card: #{card[:title]} (SIRET: #{siret})."
         return establishment_tracking
       else
         puts "Failed to save completed tracking for card: #{card[:title]} (SIRET: #{siret})."
@@ -201,7 +202,7 @@ class ImportEstablishmentTrackingsService
 
         # Contact details
         id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.pluck("_id"))
-        contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+        contact_field = card[:customFields].find { |custom_field| id_of_contact.include?(custom_field["_id"]) }
 
         if contact_field.present? && contact_field[:value].present?
           establishment.contacts.create!(
@@ -214,10 +215,12 @@ class ImportEstablishmentTrackingsService
         existing_tracking.instance_variable_set(:@skip_modified_at_update, true)
 
         if existing_tracking.save
-          puts "Establishment tracking with id #{existing_tracking.id} updated with participants and referents from card: #{card[:title]} (SIRET: #{siret})."
+          puts "Establishment tracking with id #{existing_tracking.id} updated with participants " \
+               "and referents from card: #{card[:title]} (SIRET: #{siret})."
           return existing_tracking
         else
-          puts "Failed to update existing tracking (SIRET: #{siret}). Errors: #{existing_tracking.errors.full_messages.join(', ')}"
+          puts "Failed to update existing tracking (SIRET: #{siret}). " \
+               "Errors: #{existing_tracking.errors.full_messages.join(', ')}"
           return nil
         end
       else
@@ -241,7 +244,8 @@ class ImportEstablishmentTrackingsService
         new_tracking.referents = referents.empty? ? [creator] : referents
 
         if save_tracking(new_tracking, siret, card[:title])
-          puts "New in progress establishment tracking with id #{new_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
+          puts "New in progress establishment tracking with id #{new_tracking.id}" \
+               "created for card: #{card[:title]} (SIRET: #{siret})."
           return new_tracking
         else
           puts "Failed to save new in progress tracking for card: #{card[:title]} (SIRET: #{siret})."
@@ -276,7 +280,7 @@ class ImportEstablishmentTrackingsService
 
     # Contact details
     id_of_contact = Set.new(custom_fields.find({ "name" => "Contact" }).to_a.pluck("_id"))
-    contact_field = card[:customFields].find { |customField| id_of_contact.include?(customField["_id"]) }
+    contact_field = card[:customFields].find { |custom_field| id_of_contact.include?(custom_field["_id"]) }
 
     if contact_field.present? && contact_field[:value].present?
       establishment.contacts.create!(
@@ -287,7 +291,8 @@ class ImportEstablishmentTrackingsService
     end
 
     if save_and_discard_tracking(establishment_tracking, siret, card[:title])
-      puts "New discarded establishment tracking with id #{establishment_tracking.id} created for card: #{card[:title]} (SIRET: #{siret})."
+      puts "New discarded establishment tracking with id #{establishment_tracking.id}" \
+           "created for card: #{card[:title]} (SIRET: #{siret})."
       establishment_tracking
     else
       puts "Failed to save new discarded tracking for card: #{card[:title]} (SIRET: #{siret})."
@@ -308,7 +313,7 @@ class ImportEstablishmentTrackingsService
     end
   end
 
-  def create_all_comments(card, card_comments, establishment_tracking, siret, users)
+  def create_all_comments(card, card_comments, establishment_tracking, siret, users) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     card_comments.find({ cardId: card[:_id] }).each do |card_comment|
       comment = Comment.find_or_initialize_by(created_at: card_comment[:createdAt])
       comment.establishment_tracking = establishment_tracking
@@ -326,10 +331,10 @@ class ImportEstablishmentTrackingsService
     end
   end
 
-  def create_all_labels(board_labels, card, establishment_tracking)
+  def create_all_labels(board_labels, card, establishment_tracking) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
     return unless card[:labelIds]
 
-    card[:labelIds].each do |label_id|
+    card[:labelIds].each do |label_id| # rubocop:disable Metrics/BlockLength
       label_name = board_labels[label_id] # In wekan each board holds all the labels which can then be used in the cards
 
       if label_name.nil?
@@ -359,13 +364,14 @@ class ImportEstablishmentTrackingsService
         if criticality
           if establishment_tracking.criticality.nil?
             establishment_tracking.criticality = criticality
-            if establishment_tracking.save
+            if establishment_tracking.save # rubocop:disable Metrics/BlockNesting
               # puts "Assigned criticality '#{criticality.name}' to EstablishmentTracking #{establishment_tracking.id}."
             else
               log_errors(establishment_tracking, "criticality assignment")
             end
           else
-            puts "Criticality already assigned for EstablishmentTracking #{establishment_tracking.id}. Skipping '#{label_name}'."
+            puts "Criticality already assigned for EstablishmentTracking  " \
+                 "#{establishment_tracking.id}. Skipping '#{label_name}'."
           end
         else
           puts "Criticality not found for label '#{label_name}'."

@@ -1,4 +1,5 @@
 require "test_helper"
+
 class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
@@ -10,17 +11,26 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   private
 
   def setup_test_data
+    setup_tracking_data
+    setup_user_data
+  end
+
+  def setup_tracking_data
     @establishment_tracking_paris = establishment_trackings(:establishment_tracking_paris)
-    @establishment_tracking_paris_2 = establishment_trackings(:establishment_tracking_paris_2)
-    @establishment_tracking_paris_3 = establishment_trackings(:establishment_tracking_paris_3)
+    @establishment_tracking_paris2 = establishment_trackings(:establishment_tracking_paris2)
+    @establishment_tracking_paris3 = establishment_trackings(:establishment_tracking_paris3)
     @establishment_tracking_finistere = establishment_trackings(:establishment_tracking_finistere)
-    @establishment_tracking_paris_with_urssaf_referents = establishment_trackings(:establishment_tracking_paris_with_urssaf_referents)
+    @establishment_tracking_paris_with_urssaf_referents =
+      establishment_trackings(:establishment_tracking_paris_with_urssaf_referents)
     @establishment_tracking_paris_no_content = establishment_trackings(:establishment_tracking_paris_no_content)
+  end
+
+  def setup_user_data
     @establishment_paris = establishments(:establishment_paris)
-    @establishment_paris_2 = establishments(:establishment_paris_2)
+    @establishment_paris2 = establishments(:establishment_paris2)
     @user_crp_paris = users(:user_crp_paris)
     @user_urssaf_paris = users(:user_urssaf_paris)
-    @user_crp_paris_2 = users(:user_crp_paris_2)
+    @user_crp_paris2 = users(:user_crp_paris2)
   end
 
   def assert_tracking_included(tracking)
@@ -30,8 +40,9 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   def assert_tracking_not_included(tracking)
     assert_not_includes response.body, tracking.establishment.raison_sociale
   end
+end
 
-  # Index tests
+class EstablishmentTrackingsIndexTest < EstablishmentTrackingsControllerTest
   test "should get index" do
     get establishment_trackings_url
     assert_response :success
@@ -64,10 +75,11 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   test "should show trackings where referents share the same network when my_tracking=network" do
     get establishment_trackings_url, params: { q: { my_tracking: "network" } }
     assert_response :success
-    assert_tracking_included(@establishment_tracking_paris_2)
+    assert_tracking_included(@establishment_tracking_paris2)
   end
+end
 
-  # CRUD tests
+class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest
   test "should get show" do
     get establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     assert_response :success
@@ -81,7 +93,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create establishment_tracking" do
     assert_difference("EstablishmentTracking.count") do
-      post establishment_establishment_trackings_url(@establishment_paris_2), params: {
+      post establishment_establishment_trackings_url(@establishment_paris2), params: {
         establishment_tracking: {
           state: "in_progress",
           start_date: Time.zone.today,
@@ -96,7 +108,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to @establishment_paris_2
+    assert_redirected_to @establishment_paris2
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
   end
 
@@ -151,8 +163,9 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @establishment_paris
     assert_equal "L'accompagnement a été supprimé avec succès.", flash[:success]
   end
+end
 
-  # Contributor management tests
+class EstablishmentTrackingsContributorsTest < EstablishmentTrackingsControllerTest
   test "should get manage_contributors" do
     get manage_contributors_establishment_establishment_tracking_url(@establishment_paris,
                                                                      @establishment_tracking_paris)
@@ -160,7 +173,10 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update contributors" do
-    patch update_contributors_establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris), params: {
+    patch update_contributors_establishment_establishment_tracking_url(
+      @establishment_paris,
+      @establishment_tracking_paris
+    ), params: {
       establishment_tracking: {
         referent_ids: [@user_crp_paris.id],
         participant_ids: []
@@ -170,8 +186,9 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     assert_equal "Contributeurs de l'accompagnement mis à jour avec succès.", flash[:success]
   end
+end
 
-  # SIRET-based tracking creation tests
+class EstablishmentTrackingsSiretTest < EstablishmentTrackingsControllerTest
   test "should handle new_by_siret with existing establishment" do
     get new_establishment_tracking_by_siret_url, params: {
       siret: @establishment_paris.siret,

@@ -579,6 +579,11 @@
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl description="Generate an Entity-Relationship Diagram based on your models" fullCommand="erd" id="erd" />
+          <RakeTaskImpl id="establishment_tracking">
+            <subtasks>
+              <RakeTaskImpl description="Créer des contacts pour les accompagnements avec un champ 'contact' non vide" fullCommand="establishment_tracking:create_contacts_from_trackings" id="create_contacts_from_trackings" />
+            </subtasks>
+          </RakeTaskImpl>
           <RakeTaskImpl id="establishments">
             <subtasks>
               <RakeTaskImpl description="Import establishments from a CSV file" fullCommand="establishments:import_from_insee" id="import_from_insee" />
@@ -586,7 +591,8 @@
           </RakeTaskImpl>
           <RakeTaskImpl id="import_from_wekan">
             <subtasks>
-              <RakeTaskImpl description="Import data from Wekan" fullCommand="import_from_wekan:cards" id="cards" />
+              <RakeTaskImpl description="Import data from Wekan" fullCommand="import_from_wekan:cards[board_title]" id="cards[board_title]" />
+              <RakeTaskImpl description="" fullCommand="import_from_wekan:cards" id="cards" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl id="importmap">
@@ -597,6 +603,11 @@
           <RakeTaskImpl id="log">
             <subtasks>
               <RakeTaskImpl description="Truncate all/specified *.log files in log/ to zero bytes (specify which logs with LOGS=test,development)" fullCommand="log:clear" id="clear" />
+            </subtasks>
+          </RakeTaskImpl>
+          <RakeTaskImpl id="migrate">
+            <subtasks>
+              <RakeTaskImpl description="Migrate specific tracking labels to supporting services" fullCommand="migrate:labels_to_services" id="labels_to_services" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl description="Report code statistics (KLOCs, etc) from the application or engine" fullCommand="stats" id="stats" />
@@ -681,6 +692,11 @@
                   <RakeTaskImpl description="" fullCommand="tmp:storage:clear" id="clear" />
                 </subtasks>
               </RakeTaskImpl>
+            </subtasks>
+          </RakeTaskImpl>
+          <RakeTaskImpl id="trackings">
+            <subtasks>
+              <RakeTaskImpl description="Analyse et met à jour la date de dernière modification de tous les accompagnements" fullCommand="trackings:update_modified_at" id="update_modified_at" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl id="turbo">

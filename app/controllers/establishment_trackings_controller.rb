@@ -77,50 +77,9 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment = Establishment.find_by(siret: params[:siret])
 
     if @establishment
-      # Check if there's an existing in-progress tracking
-      active_tracking = @establishment.establishment_trackings.find_by(state: %w[in_progress under_surveillance])
-      if active_tracking
-        redirect_to establishment_establishment_tracking_path(@establishment, active_tracking),
-                    alert: "Il y a déjà un accompagnement en cours pour cet établissement."
-      else
-        redirect_to new_establishment_establishment_tracking_path(@establishment)
-      end
+      handle_existing_establishment
     else
-      department = Department.find_by(code: params[:code_departement])
-
-      if department.nil?
-        redirect_to root_path, alert: "Département introuvable avec le code #{params[:code_departement]}"
-        return
-      end
-
-      siren = params[:siret][0, 9] # Les 9 premiers chiffres du SIRET sont le SIREN
-
-      begin
-        ActiveRecord::Base.transaction do
-          # TODO : Find a way to update the department via GeoSirene (The establishment's department is not always the company's department)
-          company = Company.find_or_create_by!(siren: siren) do |c|
-            c.siret = params[:siret]
-            c.department_id = department.id
-          end
-
-          @establishment = Establishment.new(
-            siret: params[:siret],
-            raison_sociale: params[:denomination],
-            siren: siren,
-            department: department,
-            company: company
-          )
-
-          if @establishment.save
-            redirect_to new_establishment_establishment_tracking_path(@establishment),
-                        notice: "Établissement créé avec succès."
-            return
-          end
-        end
-      rescue ActiveRecord::RecordInvalid => e
-        redirect_to root_path, alert: "Impossible de créer l'établissement: #{e.record.errors.full_messages.join(', ')}"
-        nil
-      end
+      create_new_establishment
     end
   end
 
@@ -132,7 +91,7 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment_tracking.start_date ||= Time.zone.today
 
     if @establishment_tracking.save
-      flash[:success] = "L'accompagnement a été créé avec succès."
+      flash[:success] = t("establishments.tracking.create.success")
       redirect_to @establishment
     else
       render :new, status: :unprocessable_entity
@@ -150,7 +109,7 @@ class EstablishmentTrackingsController < ApplicationController
       params_to_update = tracking_params.except(:tracking_label_ids).merge(tracking_label_ids: combined_label_ids)
 
       if update_state && @establishment_tracking.update(params_to_update)
-        flash[:success] = "L'accompagnement a été mis à jour avec succès."
+        flash[:success] = t("establishments.tracking.update.success")
         redirect_to [@establishment, @establishment_tracking]
       else
         render :edit, status: :unprocessable_entity
@@ -173,10 +132,10 @@ class EstablishmentTrackingsController < ApplicationController
     authorize @establishment_tracking, :manage_contributors?
 
     if @establishment_tracking.update(contributor_params)
-      flash[:success] = "Contributeurs de l'accompagnement mis à jour avec succès."
+      flash[:success] = t("establishments.tracking.contributors.update.success")
       redirect_to [@establishment, @establishment_tracking]
     else
-      flash[:error] = "Erreur lors de la mise à jour des contributeurs de l'accompagnement."
+      flash[:error] = t("establishments.tracking.contributors.update.error")
       render :manage_contributors, status: :unprocessable_entity
     end
   end
@@ -196,7 +155,7 @@ class EstablishmentTrackingsController < ApplicationController
     @system_labels = TrackingLabel.where(system: true).pluck(:name, :id)
   end
 
-  def update_state
+  def update_state # rubocop:disable Metrics/MethodLength
     desired_state = params[:establishment_tracking][:state]
 
     case desired_state
@@ -243,5 +202,64 @@ class EstablishmentTrackingsController < ApplicationController
               filename: "accompagnements.xlsx",
               type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               disposition: "attachment"
+  end
+
+  def handle_existing_establishment
+    active_tracking = @establishment.establishment_trackings.find_by(state: %w[in_progress under_surveillance])
+    if active_tracking
+      redirect_to establishment_establishment_tracking_path(@establishment, active_tracking),
+                  alert: t("establishments.tracking.active_exists")
+    else
+      redirect_to new_establishment_establishment_tracking_path(@establishment)
+    end
+  end
+
+  def create_new_establishment
+    department = find_department
+    return unless department
+
+    siren = params[:siret][0, 9]
+    create_establishment_with_company(department, siren)
+  end
+
+  def find_department
+    department = Department.find_by(code: params[:code_departement])
+    unless department
+      redirect_to root_path, alert: t("establishments.tracking.department_not_found", code: params[:code_departement])
+      return nil
+    end
+    department
+  end
+
+  def create_establishment_with_company(department, siren)
+    ActiveRecord::Base.transaction do
+      company = find_or_create_company(siren, department)
+      create_establishment(company, department, siren)
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to root_path,
+                alert: t("establishments.tracking.creation_error", errors: e.record.errors.full_messages.join(", "))
+  end
+
+  def find_or_create_company(siren, department)
+    Company.find_or_create_by!(siren: siren) do |c|
+      c.siret = params[:siret]
+      c.department_id = department.id
+    end
+  end
+
+  def create_establishment(company, department, siren) # rubocop:disable Metrics/MethodLength
+    @establishment = Establishment.new(
+      siret: params[:siret],
+      raison_sociale: params[:denomination],
+      siren: siren,
+      department: department,
+      company: company
+    )
+
+    if @establishment.save
+      redirect_to new_establishment_establishment_tracking_path(@establishment),
+                  notice: t("establishments.create.success")
+    end
   end
 end

@@ -1,5 +1,5 @@
 class Segment < ApplicationRecord
-  has_many :users
+  has_many :users, dependent: :nullify
   belongs_to :network, optional: false
 
   has_and_belongs_to_many :summaries

@@ -113,6 +113,10 @@ fr:
       supporting_service:
         one: Service d'accompagnement
         other: Services d'accompagnement
+      network_membership:
+        attributes:
+          user_id:
+            taken: "est déjà membre de ce réseau"
     errors:
       messages:
         record_invalid: 'La validation a échoué : %{errors}'
@@ -357,3 +361,44 @@ fr:
       short: "%d %b %Hh%M"
       custom: "%d/%m/%Y"
     pm: pm
+  summaries:
+    create:
+      success: "Synthèse créée avec succès."
+    update:
+      success: "Synthèse modifiée avec succès."
+    cancel:
+      success: "Modification annulée."
+  admin:
+    application:
+      unauthorized: "Vous n'avez pas l'authorisation d'accéder à cette section"
+    users:
+      discard:
+        success: "Utilisateur archivé avec succès."
+        error: "Impossible d'archiver cet utilisateur."
+  establishments:
+    not_found: "Establishment not found"
+    create:
+      success: "Établissement créé avec succès."
+    tracking:
+      active_exists: "Il y a déjà un accompagnement en cours pour cet établissement."
+      department_not_found: "Département introuvable avec le code %{code}"
+      creation_error: "Impossible de créer l'établissement: %{errors}"
+      create:
+        success: "L'accompagnement a été créé avec succès."
+      update:
+        success: "L'accompagnement a été mis à jour avec succès."
+      contributors:
+        update:
+          success: "Contributeurs de l'accompagnement mis à jour avec succès."
+          error: "Erreur lors de la mise à jour des contributeurs de l'accompagnement."
+  unauthorized:
+    access_denied: "Accès interdit."
+    action_not_allowed: "Vous n'êtes pas autorisé à effectuer cette action."
+    section_not_allowed: "Vous n'êtes pas autorisé à accéder à cette section."
+  comments:
+    create:
+      success: "Commentaire ajouté avec succès."
+    update:
+      success: "Commentaire mis à jour avec succès."
+    destroy:
+      success: "Commentaire supprimé avec succès."

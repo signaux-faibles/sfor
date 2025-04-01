@@ -21,7 +21,7 @@ class SummariesController < ApplicationController
     @summary.network = current_user.networks.where.not(name: "codefi").first if @summary.network.nil?
 
     if @summary.save
-      flash.now[:notice] = "Synthèse créée avec succès."
+      flash.now[:notice] = t(".success")
     else
       render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
                                                partial: "summaries/form",
@@ -35,7 +35,7 @@ class SummariesController < ApplicationController
     @summary.unlock!
 
     if @summary.update(summary_params)
-      flash.now[:notice] = "Synthèse modifiée avec succès."
+      flash.now[:notice] = t(".success")
     else
       render turbo_stream: turbo_stream.update("#{@summary.network.name.parameterize}_summary",
                                                partial: "summaries/form",
@@ -47,7 +47,7 @@ class SummariesController < ApplicationController
   def cancel
     @summary = @establishment_tracking.summaries.find(params[:id])
     @summary.unlock!
-    flash.now[:notice] = "Modification annulée."
+    flash.now[:notice] = t(".success")
   end
 
   private

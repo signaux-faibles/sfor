@@ -15,7 +15,10 @@ class EstablishmentTrackingEditTest < ActionDispatch::IntegrationTest
   test "editing an establishment_tracking with a CodefiRedirect automatically adds the correct UserAction" do
     assert_not @establishment_tracking.user_actions.exists?(name: @redirect_action_name)
 
-    patch establishment_establishment_tracking_path(@establishment_tracking.establishment, @establishment_tracking), params: {
+    patch establishment_establishment_tracking_path(
+      @establishment_tracking.establishment,
+      @establishment_tracking
+    ), params: {
       establishment_tracking: {
         codefi_redirect_ids: [@codefi_redirect.id],
         tracking_label_ids: [],

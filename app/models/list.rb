@@ -1,5 +1,5 @@
 class List < ApplicationRecord
-  has_many :company_lists
+  has_many :company_lists, dependent: :destroy
   has_many :companies, through: :company_lists
 
   # validates :label, presence: true, uniqueness: true

@@ -11,14 +11,15 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def user_not_authorized
+  def user_not_authorized # rubocop:disable Metrics/MethodLength
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("flash", html: "<div class='fr-alert fr-alert--error'>Accès interdit.</div>".html_safe),
+        flash_html = "<div class='fr-alert fr-alert--error'>#{t('unauthorized.access_denied')}</div>".html_safe
+        render turbo_stream: turbo_stream.replace("flash", html: flash_html),
                status: :forbidden
       end
       format.html do
-        flash[:alert] = "Vous n'êtes pas autorisé à effectuer cette action."
+        flash[:alert] = t("unauthorized.action_not_allowed")
         redirect_back(fallback_location: root_path)
       end
     end
@@ -28,7 +29,7 @@ class ApplicationController < ActionController::Base
     return if devise_controller? || request.path == unauthorized_path
 
     if current_user && current_user.segment.name == "sf"
-      redirect_to unauthorized_path, alert: "Vous n'êtes pas autorisé à accéder à cette section."
+      redirect_to unauthorized_path, alert: t("unauthorized.section_not_allowed")
     end
   end
 
