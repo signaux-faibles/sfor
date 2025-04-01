@@ -9,7 +9,7 @@ user_crp_paris:
     - network_crp
     - network_codefi
 
-user_crp_paris_2:
+user_crp_paris2:
   email: test2@crp_paris.com
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   segment: segment_crp
@@ -20,7 +20,7 @@ user_crp_paris_2:
     - network_crp
     - network_codefi
 
-user_crp_paris_3:
+user_crp_paris3:
   email: test3@crp_paris.com
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   segment: segment_crp

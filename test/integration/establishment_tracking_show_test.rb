@@ -5,12 +5,12 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
     @establishment_tracking = establishment_trackings(:establishment_tracking_paris_no_content)
 
     @referent_user = users(:user_crp_paris)
-    @participant_user = users(:user_crp_paris_2)
+    @participant_user = users(:user_crp_paris2)
 
     @establishment_tracking.referents << @referent_user
     @establishment_tracking.participants << @participant_user
 
-    @general_user = users(:user_crp_paris_3)
+    @general_user = users(:user_crp_paris3)
   end
 
   test "referent user sees all buttons and forms" do

@@ -7,7 +7,7 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
     @summary = summaries(:summary_paris_crp)
 
     @user_a = users(:user_crp_paris)
-    @user_b = users(:user_crp_paris_2)
+    @user_b = users(:user_crp_paris2)
 
     @establishment_tracking.referents << [@user_a, @user_b]
   end
@@ -21,7 +21,7 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", text: "CRP", count: 1
     assert_select "button", text: "CODEFI", count: 1
 
-    # The user should only see three tabs (one for establishment details, his/her network and one for the CODEFI network)
+    # The user should only see three tabs (one for establishment details, his/her network and one for the CODEFI)
     assert_select "button.fr-tabs__tab", count: 3
   end
 

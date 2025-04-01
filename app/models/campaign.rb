@@ -1,5 +1,5 @@
 class Campaign < ApplicationRecord
-  has_many :campaign_companies
+  has_many :campaign_companies, dependent: :destroy
   has_many :companies, through: :campaign_companies
 
   def self.ransackable_attributes(_auth_object = nil)

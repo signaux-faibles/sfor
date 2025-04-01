@@ -1,12 +1,12 @@
 class Company < ApplicationRecord
   belongs_to :department
   belongs_to :activity_sector, optional: true
-  has_many :establishments
+  has_many :establishments, dependent: :nullify
 
-  has_many :campaign_companies
+  has_many :campaign_companies, dependent: :destroy
   has_many :campaigns, through: :campaign_companies
 
-  has_many :company_lists
+  has_many :company_lists, dependent: :destroy
   has_many :lists, through: :company_lists
 
   validates :siren, presence: true, uniqueness: true

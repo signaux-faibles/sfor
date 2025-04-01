@@ -7,9 +7,7 @@ class EstablishmentsController < ApplicationController
   end
 
   def show
-    @in_progress_trackings = policy_scope(@establishment.establishment_trackings).includes(:creator).in_progress.order(start_date: :asc)
-    @completed_trackings = policy_scope(@establishment.establishment_trackings).includes(:creator).completed.order(start_date: :asc)
-    @under_surveillance_trackings = policy_scope(@establishment.establishment_trackings).includes(:creator).under_surveillance.order(start_date: :asc)
+    load_trackings
   end
 
   def new
@@ -18,7 +16,7 @@ class EstablishmentsController < ApplicationController
       @establishment_tracking = EstablishmentTracking.new(establishment: @establishment)
       # Autres initialisations si nécessaire
     else
-      redirect_to some_path, alert: "Establishment not found"
+      redirect_to some_path, alert: t("establishments.not_found")
     end
   end
 
@@ -26,5 +24,18 @@ class EstablishmentsController < ApplicationController
 
   def set_establishment
     @establishment = Establishment.find(params[:id])
+  end
+
+  def load_trackings
+    @in_progress_trackings = load_trackings_by_state(:in_progress)
+    @completed_trackings = load_trackings_by_state(:completed)
+    @under_surveillance_trackings = load_trackings_by_state(:under_surveillance)
+  end
+
+  def load_trackings_by_state(state)
+    policy_scope(@establishment.establishment_trackings)
+      .includes(:creator)
+      .send(state)
+      .order(start_date: :asc)
   end
 end

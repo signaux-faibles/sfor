@@ -5,28 +5,28 @@ establishment_paris:
   department: department_paris
   company: company_paris
 
-establishment_paris_2:
+establishment_paris2:
     siren: '123456789'
     siret: '12345678900010'
     raison_sociale: 'Etablissement Paris 2'
     department: department_paris
     company: company_paris
 
-establishment_paris_3:
+establishment_paris3:
   siren: '123456789'
   siret: '12345678900012'
   raison_sociale: 'Etablissement Paris 3'
   department: department_paris
   company: company_paris
 
-establishment_paris_4:
+establishment_paris4:
   siren: '123456789'
   siret: '12345678900013'
   raison_sociale: 'Etablissement Paris 4'
   department: department_paris
   company: company_paris
 
-establishment_paris_5:
+establishment_paris5:
   siren: '123456789'
   siret: '12345678900014'
   raison_sociale: 'Etablissement Paris 5'

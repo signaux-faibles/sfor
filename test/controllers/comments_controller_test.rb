@@ -6,7 +6,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
     @establishment = @establishment_tracking.establishment
 
     @user_a = users(:user_crp_paris)
-    @user_b = users(:user_crp_paris_2)
+    @user_b = users(:user_crp_paris2)
 
     @establishment_tracking.referents << [@user_a, @user_b]
 
