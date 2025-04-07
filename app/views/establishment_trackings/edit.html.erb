@@ -86,7 +86,7 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:size_id].any? %>">
             <%= form.label :size_id, 'Taille de l\'entreprise' %>
-            <%= form.collection_select :size_id, Size.all, :id, :name, {}, { class: 'fr-select' } %>
+            <%= form.collection_select :size_id, Size.all, :id, :name, { include_blank: "Sélectionner une taille" }, { class: 'fr-select' } %>
             <% @establishment_tracking.errors[:size_id].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>
