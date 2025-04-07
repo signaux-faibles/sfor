@@ -1,5 +1,5 @@
 # lib/tasks/force_trackings_modified_at.rake
-# Force the update of the modified_at attribute for all EstablishmentTrackings if a more recent summary or comment is found
+# Force the update of the modified_at attribute for EstablishmentTrackings if a more recent summary or comment is found
 # usage : rake trackings:update_modified_at
 
 namespace :trackings do

@@ -18,7 +18,7 @@ module ApplicationHelper
     end
   end
 
-  def markdown(text)
+  def markdown(text) # rubocop:disable Metrics/MethodLength
     options = {
       filter_html: true,
       hard_wrap: true,
@@ -49,7 +49,7 @@ module ApplicationHelper
     when "Terminé"
       "fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon"
     else
-      "fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon"
+      "fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon"
     end
   end
 

@@ -46,7 +46,8 @@ class EstablishmentTracking < ApplicationRecord
 
   scope :with_user_as_referent_or_participant, lambda { |user|
     left_joins(:tracking_participants, :tracking_referents)
-      .where("tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id", user_id: user.id).distinct
+      .where("tracking_participants.user_id = :user_id OR tracking_referents.user_id = :user_id", user_id: user.id)
+      .distinct
   }
 
   scope :by_network_participants, lambda { |network_ids|

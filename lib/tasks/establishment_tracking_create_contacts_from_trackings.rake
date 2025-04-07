@@ -1,5 +1,5 @@
 # lib/tasks/establishment_tracking_contacts.rake
-# Create contact instances for establishments based on the value of the "contact" attribute of the establishment_trackings
+# Create contact instances for establishments based on the value of the contact attribute of the establishment_trackings
 # usage : rake establishment_tracking:create_contacts_from_trackings
 
 namespace :establishment_tracking do
