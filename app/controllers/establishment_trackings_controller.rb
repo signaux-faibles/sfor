@@ -4,9 +4,12 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   include EstablishmentTrackings::Creatable
   include EstablishmentTrackings::StateManageable
   include EstablishmentTrackings::Loadable
+  include EstablishmentTrackings::ContributorsManageable
 
   before_action :set_establishment, except: %i[new_by_siret index]
-  before_action :set_tracking, only: %i[show destroy edit update manage_contributors update_contributors]
+  before_action :set_tracking,
+                only: %i[show destroy edit update manage_contributors update_contributors remove_referent
+                         remove_participant]
   before_action :set_system_labels, only: %i[new new_by_siret edit update create]
 
   def index
@@ -92,6 +95,32 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
       flash[:error] = t("establishments.tracking.contributors.update.error")
       render :manage_contributors, status: :unprocessable_entity
     end
+  end
+
+  def remove_referent
+    authorize @establishment_tracking, :manage_contributors?
+    user = User.find(params[:user_id])
+
+    if @establishment_tracking.tracking_referents.find_by(user: user)&.destroy
+      flash[:success] = t("establishments.tracking.contributors.remove_referent.success")
+    else
+      flash[:error] = t("establishments.tracking.contributors.remove_referent.error")
+    end
+
+    redirect_to [@establishment, @establishment_tracking]
+  end
+
+  def remove_participant
+    authorize @establishment_tracking, :manage_contributors?
+    user = User.find(params[:user_id])
+
+    if @establishment_tracking.tracking_participants.find_by(user: user)&.destroy
+      flash[:success] = t("establishments.tracking.contributors.remove_participant.success")
+    else
+      flash[:error] = t("establishments.tracking.contributors.remove_participant.error")
+    end
+
+    redirect_to [@establishment, @establishment_tracking]
   end
 
   private
