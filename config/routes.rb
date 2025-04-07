@@ -51,6 +51,8 @@ Rails.application.routes.draw do
       member do
         get :manage_contributors
         patch :update_contributors
+        delete :remove_referent
+        delete :remove_participant
       end
       resources :summaries, only: %i[create edit update] do
         get :cancel, on: :member

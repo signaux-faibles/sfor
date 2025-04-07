@@ -31,6 +31,14 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
     show?
   end
 
+  def remove_referent?
+    show?
+  end
+
+  def remove_participant?
+    show?
+  end
+
   def manage_state?
     user_is_referent? # Only referents can manage the state
   end
