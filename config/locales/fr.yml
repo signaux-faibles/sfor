@@ -387,6 +387,8 @@ fr:
         success: "L'accompagnement a été créé avec succès."
       update:
         success: "L'accompagnement a été mis à jour avec succès."
+      destroy:
+        success: "L'accompagnement a été supprimé avec succès."
       contributors:
         update:
           success: "Contributeurs de l'accompagnement mis à jour avec succès."
@@ -402,3 +404,10 @@ fr:
       success: "Commentaire mis à jour avec succès."
     destroy:
       success: "Commentaire supprimé avec succès."
+  contacts:
+    create:
+      success: "Contact créé avec succès."
+    update:
+      success: "Contact mis à jour avec succès."
+    destroy:
+      success: "Contact supprimé avec succès."

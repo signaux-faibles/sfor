@@ -111,7 +111,7 @@ module FilterHelpers
   end
 end
 
-class EstablishmentTrackingExcelGenerator
+class EstablishmentTrackingExcelGenerator # rubocop:disable Metrics/ClassLength
   include ExcelStyles
   include FilterHelpers
 
@@ -219,7 +219,7 @@ class EstablishmentTrackingExcelGenerator
     last_column = sheet.rows.first&.cells&.size.to_i
 
     # Appliquer les bordures à partir de la première colonne
-    if last_column > 0 && last_row > 2
+    if last_column.positive? && last_row > 2
       range = "A1:#{('A'.ord + last_column - 1).chr}#{last_row}"
       sheet.add_style(range, border: { style: :thick, color: "000000" })
     end

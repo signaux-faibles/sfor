@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class EstablishmentDashboard < Administrate::BaseDashboard
+class EstablishmentDashboard < Administrate::BaseDashboard # rubocop:disable Metrics/ClassLength
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #

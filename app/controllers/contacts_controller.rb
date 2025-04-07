@@ -16,7 +16,7 @@ class ContactsController < ApplicationController
 
     if @contact.save
       redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking),
-                  notice: "Contact créé avec succès."
+                  notice: t(".success")
     else
       render :new, status: :unprocessable_entity
     end
@@ -25,7 +25,7 @@ class ContactsController < ApplicationController
   def update
     if @contact.update(contact_params)
       redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking),
-                  notice: "Contact mis à jour avec succès."
+                  notice: t(".success")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -34,13 +34,13 @@ class ContactsController < ApplicationController
   def archive
     @contact.discard
     redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking),
-                notice: "Contact supprimé avec succès."
+                notice: t("contacts.destroy.success")
   end
 
   def destroy
     @contact.destroy
     redirect_to establishment_establishment_tracking_path(@establishment, @establishment_tracking),
-                notice: "Contact supprimé avec succès."
+                notice: t(".success")
   end
 
   private

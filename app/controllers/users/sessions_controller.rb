@@ -9,7 +9,7 @@ class Users::SessionsController < Devise::SessionsController
     end
   end
 
-  def create
+  def create # rubocop:disable Metrics/MethodLength
     token = params[:token]
     decoded_token = decode_token(token)
 
@@ -40,17 +40,17 @@ class Users::SessionsController < Devise::SessionsController
     nil
   end
 
-  def find_or_create_user(decoded_token)
+  def find_or_create_user(decoded_token) # rubocop:disable Metrics/MethodLength
     user_info = {
       email: decoded_token["email"],
       first_name: decoded_token["given_name"],
       last_name: decoded_token["family_name"]
     }
 
-    user = User.find_or_create_by(email: user_info[:email]) do |user|
-      user.first_name = user_info[:first_name]
-      user.last_name = user_info[:last_name]
-      user.password = Devise.friendly_token[0, 20]
+    user = User.find_or_create_by(email: user_info[:email]) do |new_user|
+      new_user.first_name = user_info[:first_name]
+      new_user.last_name = user_info[:last_name]
+      new_user.password = Devise.friendly_token[0, 20]
     end
 
     update_user_roles(user, decoded_token)
