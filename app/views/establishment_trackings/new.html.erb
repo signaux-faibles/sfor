@@ -19,12 +19,12 @@
 
         <div class="fr-input-group">
           <%= form.label 'Référents' %>
-          <%= form.collection_select :referent_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+          <%= form.collection_select :referent_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", min_search: "3" } } %>
         </div>
 
         <div class="fr-input-group">
           <%= form.label :Participants %>
-          <%= form.collection_select :participant_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+          <%= form.collection_select :participant_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", min_search: "3" } } %>
         </div>
 
         <div class="fr-input-group">
