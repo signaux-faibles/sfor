@@ -3,6 +3,8 @@ class CommentsController < ApplicationController
   before_action :set_comment, only: %i[edit update destroy]
   before_action :authorize_comment, only: %i[edit update destroy]
 
+  before_action :set_paper_trail_whodunnit
+
   def edit; end
 
   def create

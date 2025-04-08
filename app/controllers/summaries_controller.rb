@@ -1,6 +1,8 @@
 class SummariesController < ApplicationController
   before_action :set_establishment_and_tracking
 
+  before_action :set_paper_trail_whodunnit
+
   def edit
     @summary = @establishment_tracking.summaries.find(params[:id])
     authorize @establishment_tracking, :edit?

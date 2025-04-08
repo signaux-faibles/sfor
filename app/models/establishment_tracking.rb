@@ -1,5 +1,6 @@
-class EstablishmentTracking < ApplicationRecord
+class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassLength
   include AASM
+  has_paper_trail
 
   # EstablishmentTracking can be soft deleted
   include Discard::Model
@@ -98,6 +99,26 @@ class EstablishmentTracking < ApplicationRecord
     event :resume do
       transitions from: %i[completed under_surveillance in_progress], to: :in_progress
     end
+  end
+
+  # Add a method to get summary-related versions
+  def summary_versions
+    versions.where(event: %w[summary_created summary_updated])
+  end
+
+  # Add a method to get the last summary change
+  def last_summary_change
+    summary_versions.last
+  end
+
+  # Add a method to get comment-related versions
+  def comment_versions
+    versions.where(event: %w[comment_created comment_modified comment_deleted])
+  end
+
+  # Add a method to get the last comment change
+  def last_comment_change
+    comment_versions.last
   end
 
   private
