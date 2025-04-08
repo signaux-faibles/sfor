@@ -1,6 +1,6 @@
 require "administrate/base_dashboard"
 
-class EstablishmentTrackingDashboard < Administrate::BaseDashboard
+class SummaryDashboard < Administrate::BaseDashboard
   # ATTRIBUTE_TYPES
   # a hash that describes the type of each of the model's fields.
   #
@@ -9,24 +9,10 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     id: Field::Number,
-    siret: Field::String,
-    name: Field::String,
-    address: Field::String,
-    city: Field::String,
-    postal_code: Field::String,
-    department: Field::String,
-    region: Field::String,
-    activity_code: Field::String,
-    legal_form: Field::String,
+    content: Field::Text,
+    establishment_tracking: Field::BelongsTo,
     created_at: Field::DateTime,
-    updated_at: Field::DateTime,
-    contact: Field::HasOne,
-    size: Field::BelongsTo,
-    criticality: Field::BelongsTo,
-    difficulties: Field::HasMany,
-    supporting_services: Field::HasMany,
-    summaries: Field::HasMany,
-    comments: Field::HasMany
+    updated_at: Field::DateTime
   }.freeze
 
   # COLLECTION_ATTRIBUTES
@@ -36,55 +22,26 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    siret
-    name
-    city
+    content
+    establishment_tracking
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
   # an array of attributes that will be displayed on the model's show page.
   SHOW_PAGE_ATTRIBUTES = %i[
     id
-    siret
-    name
-    address
-    city
-    postal_code
-    department
-    region
-    activity_code
-    legal_form
+    content
+    establishment_tracking
     created_at
     updated_at
-    contact
-    size
-    criticality
-    difficulties
-    supporting_services
-    summaries
-    comments
   ].freeze
 
   # FORM_ATTRIBUTES
   # an array of attributes that will be displayed
   # on the model's form (`new` and `edit`) pages.
   FORM_ATTRIBUTES = %i[
-    siret
-    name
-    address
-    city
-    postal_code
-    department
-    region
-    activity_code
-    legal_form
-    contact
-    size
-    criticality
-    difficulties
-    supporting_services
-    summaries
-    comments
+    content
+    establishment_tracking
   ].freeze
 
   # COLLECTION_FILTERS
@@ -99,10 +56,10 @@ class EstablishmentTrackingDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
-  # Overwrite this method to customize how establishment trackings are displayed
+  # Overwrite this method to customize how summaries are displayed
   # across all pages of the admin dashboard.
   #
-  def display_resource(establishment_tracking)
-    establishment_tracking.id
+  def display_resource(summary)
+    summary.content.truncate(50)
   end
 end
