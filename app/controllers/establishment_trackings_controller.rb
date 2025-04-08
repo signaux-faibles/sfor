@@ -6,6 +6,8 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   include EstablishmentTrackings::Loadable
   include EstablishmentTrackings::ContributorsManageable
 
+  before_action :set_paper_trail_whodunnit
+
   before_action :set_establishment, except: %i[new_by_siret index]
   before_action :set_tracking,
                 only: %i[show destroy edit update manage_contributors update_contributors remove_referent
