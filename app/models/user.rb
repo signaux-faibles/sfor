@@ -61,6 +61,12 @@ class User < ApplicationRecord
     networks.where(active: true).sort_by { |network| network.name == "CODEFI" ? 0 : 1 }
   end
 
+  def networks_for_establishment(establishment)
+    active_networks.reject do |network|
+      network.name == "CODEFI" && departments.exclude?(establishment.department)
+    end
+  end
+
   private
 
   def update_departments_based_on_geo_access
