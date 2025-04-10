@@ -18,18 +18,21 @@ export default class extends Controller {
     }
 
     updateHiddenInput(view) {
-        if (this.hiddenInputTarget) {
+        if (this.hasHiddenInputTarget) {
             this.hiddenInputTarget.value = view;
         }
     }
 
     switchView(view) {
-        if (view === "cards") {
-            this.cardsViewTarget.style.display = "flex";
-            this.tableViewTarget.style.display = "none";
-        } else {
-            this.cardsViewTarget.style.display = "none";
-            this.tableViewTarget.style.display = "block";
+        // Only try to switch views if both targets exist
+        if (this.hasCardsViewTarget && this.hasTableViewTarget) {
+            if (view === "cards") {
+                this.cardsViewTarget.style.display = "flex";
+                this.tableViewTarget.style.display = "none";
+            } else {
+                this.cardsViewTarget.style.display = "none";
+                this.tableViewTarget.style.display = "block";
+            }
         }
     }
 

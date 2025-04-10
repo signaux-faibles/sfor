@@ -4,7 +4,12 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
     connect() {
-        new TomSelect(this.element, {
+        // Fix the issue of the tom-select instance not being initialized when hitting back button of the browser
+        if (this.element.tomselect) {
+            this.element.tomselect.destroy();
+        }
+
+        this.tomSelectInstance = new TomSelect(this.element, {
             plugins: ['remove_button'],
             maxOptions: null,
             persist: false,
@@ -28,14 +33,17 @@ export default class extends Controller {
                     return '<div class="no-results">' + 'Aucun résultat' + '</div>';
                 }
             },
-
             onItemAdd: function(value, item) {
                 this.setTextboxValue('');
                 this.refreshOptions();
             }
-
-
-
-            });
+        });
+    }
+    
+    // Fix the issue of the tom-select instance not being initialized when hitting back button of the browser
+    disconnect() {
+        if (this.tomSelectInstance) {
+            this.tomSelectInstance.destroy();
+        }
     }
 }
