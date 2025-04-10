@@ -1,13 +1,106 @@
 <div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
   <div class="fr-container">
-
     <h1>Historique des accompagnements - <%= @establishment&.raison_sociale %></h1>
 
-<!--
-      <button class="fr-btn">
-        <%#= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment) %>
-      </button>
--->
+    <% if @sirene_data %>
+      <div class="fr-card fr-card--no-arrow">
+        <div class="fr-card__body">
+          <div class="fr-card__content">
+            <h3 class="fr-card__title">
+              <%= t('.sirene.title') %>
+            </h3>
+            <div class="fr-card__desc">
+              <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-6">
+                  <h4><%= t('.sirene.establishment') %></h4>
+                  <dl class="fr-description-list">
+                    <dt><%= t('.sirene.siret') %></dt>
+                    <dd><%= @sirene_data['data']['siret'] %></dd>
+
+                    <dt><%= t('.sirene.enseigne') %></dt>
+                    <dd><%= @sirene_data['data']['enseigne'] %></dd>
+
+                    <dt><%= t('.sirene.etat_administratif') %></dt>
+                    <dd><%= @sirene_data['data']['etat_administratif'] %></dd>
+
+                    <dt><%= t('.sirene.date_creation') %></dt>
+                    <dd><%= @sirene_data['data']['date_creation'] ? Time.at(@sirene_data['data']['date_creation']).strftime('%d/%m/%Y') : '-' %></dd>
+
+                    <dt><%= t('.sirene.date_fermeture') %></dt>
+                    <dd><%= @sirene_data['data']['date_fermeture'] ? Time.at(@sirene_data['data']['date_fermeture']).strftime('%d/%m/%Y') : '-' %></dd>
+
+                    <dt><%= t('.sirene.activite_principale') %></dt>
+                    <dd>
+                      <%= @sirene_data['data']['activite_principale']['code'] %> -
+                      <%= @sirene_data['data']['activite_principale']['libelle'] %>
+                    </dd>
+
+                    <dt><%= t('.sirene.tranche_effectif') %></dt>
+                    <dd>
+                      <%= @sirene_data['data']['tranche_effectif_salarie']['intitule'] %>
+                      (<%= @sirene_data['data']['tranche_effectif_salarie']['date_reference'] %>)
+                    </dd>
+                  </dl>
+                </div>
+
+                <div class="fr-col-12 fr-col-md-6">
+                  <h4><%= t('.sirene.unite_legale') %></h4>
+                  <dl class="fr-description-list">
+                    <dt><%= t('.sirene.siren') %></dt>
+                    <dd><%= @sirene_data['data']['unite_legale']['siren'] %></dd>
+
+                    <dt><%= t('.sirene.raison_sociale') %></dt>
+                    <dd><%= @sirene_data['data']['unite_legale']['personne_morale_attributs']['raison_sociale'] %></dd>
+
+                    <dt><%= t('.sirene.sigle') %></dt>
+                    <dd><%= @sirene_data['data']['unite_legale']['personne_morale_attributs']['sigle'] %></dd>
+
+                    <dt><%= t('.sirene.forme_juridique') %></dt>
+                    <dd>
+                      <%= @sirene_data['data']['unite_legale']['forme_juridique']['code'] %> -
+                      <%= @sirene_data['data']['unite_legale']['forme_juridique']['libelle'] %>
+                    </dd>
+
+                    <dt><%= t('.sirene.categorie_entreprise') %></dt>
+                    <dd><%= @sirene_data['data']['unite_legale']['categorie_entreprise'] %></dd>
+
+                    <dt><%= t('.sirene.economie_sociale') %></dt>
+                    <dd><%= @sirene_data['data']['unite_legale']['economie_sociale_et_solidaire'] ? 'Oui' : 'Non' %></dd>
+                  </dl>
+                </div>
+
+                <div class="fr-col-12">
+                  <h4><%= t('.sirene.adresse') %></h4>
+                  <dl class="fr-description-list">
+                    <dt><%= t('.sirene.adresse_complete') %></dt>
+                    <dd>
+                      <% if @sirene_data['data']['adresse']['acheminement_postal'] %>
+                        <% @sirene_data['data']['adresse']['acheminement_postal'].each do |key, value| %>
+                          <% next if key == 'l7' || value.blank? %>
+                          <%= value %><br>
+                        <% end %>
+                      <% else %>
+                        <%= @sirene_data['data']['adresse']['numero_voie'] %>
+                        <%= @sirene_data['data']['adresse']['indice_repetition_voie'] %>
+                        <%= @sirene_data['data']['adresse']['type_voie'] %>
+                        <%= @sirene_data['data']['adresse']['libelle_voie'] %><br>
+                        <%= @sirene_data['data']['adresse']['complement_adresse'] %><br>
+                        <%= @sirene_data['data']['adresse']['code_postal'] %>
+                        <%= @sirene_data['data']['adresse']['libelle_commune'] %>
+                      <% end %>
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <p>Aucune information Sirene disponible pour cette entreprise.</p>
+    <% end %>
+
+
 
     <% if @in_progress_trackings.any? %>
       <%= render partial: 'establishments/establishment_trackings_table_light', locals: { trackings: @in_progress_trackings, title: 'Accompagnements en cours' } %>

@@ -8,6 +8,7 @@ class EstablishmentsController < ApplicationController
 
   def show
     load_trackings
+    @sirene_data = SireneApiService.new(@establishment.siret).fetch_establishment
   end
 
   def new
@@ -34,7 +35,6 @@ class EstablishmentsController < ApplicationController
 
   def load_trackings_by_state(state)
     policy_scope(@establishment.establishment_trackings)
-      .includes(:creator)
       .send(state)
       .order(start_date: :asc)
   end
