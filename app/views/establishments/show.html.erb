@@ -1,6 +1,6 @@
 <div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
   <div class="fr-container">
-    <h1>Historique des accompagnements - <%= @establishment&.raison_sociale %></h1>
+    <h1>Infos générales <%= @establishment&.raison_sociale %></h1>
 
     <% if @sirene_data %>
       <div class="fr-card fr-card--no-arrow">
@@ -100,6 +100,7 @@
       <p>Aucune information Sirene disponible pour cette entreprise.</p>
     <% end %>
 
+    <h1 class="fr-mt-2w">Accompagnements <%= @establishment&.raison_sociale %></h1>
 
 
     <% if @in_progress_trackings.any? %>

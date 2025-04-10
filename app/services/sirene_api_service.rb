@@ -4,6 +4,8 @@ require "json"
 require "jwt"
 
 class SireneApiService
+  BASE_URL = Rails.env.production? ? "https://entreprise.api.gouv.fr" : "https://staging.entreprise.api.gouv.fr"
+
   def initialize(siret)
     @siret = siret
     @token = ENV.fetch("API_ENTREPRISES_TOKEN", nil)
@@ -13,6 +15,7 @@ class SireneApiService
   def fetch_establishment
     return nil unless @token && @recipient
 
+    # Vérification du token JWT
     begin
       decoded_token = JWT.decode(@token, nil, false)
       expiration = Time.at(decoded_token[0]["exp"])
@@ -25,38 +28,39 @@ class SireneApiService
       return nil
     end
 
-    base_url = "https://entreprise.api.gouv.fr"
+    # Construction de l'URL avec les paramètres
     endpoint = "/v3/insee/sirene/etablissements/diffusibles/#{@siret}"
     params = {
       recipient: @recipient,
       context: "Signaux Faibles",
       object: "Consultation de données"
     }
-    query_string = params.map { |k, v| "#{k}=#{CGI.escape(v)}" }.join("&")
-    url = "#{base_url}#{endpoint}?#{query_string}"
+    uri = URI("#{BASE_URL}#{endpoint}")
+    uri.query = URI.encode_www_form(params)
 
-    curl_command = "curl -s -X GET '#{url}' " \
-                   "-H 'Authorization: Bearer #{@token}' " \
-                   "-H 'User-Agent: PostmanRuntime/7.43.3' " \
-                   "-H 'Accept: */*' " \
-                   "-H 'Cache-Control: no-cache' " \
-                   "-H 'Postman-Token: aa84b9b7-2227-4d29-bc91-57da21db8e7e' " \
-                   "-H 'Host: entreprise.api.gouv.fr' " \
-                   "-H 'Accept-Encoding: gzip, deflate, br' " \
-                   "-H 'Connection: keep-alive'"
+    # Configuration de la requête HTTP
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-    response = `#{curl_command}`
-    begin
-      data = JSON.parse(response)
-      if data["errors"]
-        Rails.logger.error "Erreur API Sirene: #{data['errors']}"
-        nil
-      else
-        data
-      end
-    rescue JSON::ParserError => e
-      Rails.logger.error "Erreur de parsing JSON: #{e.message}"
+    request = Net::HTTP::Get.new(uri)
+    request["Authorization"] = "Bearer #{@token}"
+    request["User-Agent"] = "SignauxFaibles/#{Rails.env} (Ruby/#{RUBY_VERSION}; Rails/#{Rails.version})"
+    request["Accept"] = "*/*"
+    request["Cache-Control"] = "no-cache"
+    request["Host"] = "entreprise.api.gouv.fr"
+
+    # Exécution de la requête
+    response = http.request(request)
+
+    if response.is_a?(Net::HTTPSuccess)
+      JSON.parse(response.body)
+    else
+      Rails.logger.error "Erreur API Sirene: #{response.code} - #{response.body}"
       nil
     end
+  rescue StandardError => e
+    Rails.logger.error "Erreur lors de la requête API Sirene: #{e.message}"
+    nil
   end
 end
