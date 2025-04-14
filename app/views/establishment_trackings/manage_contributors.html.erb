@@ -1,15 +1,16 @@
 <div class="fr-container">
   <div class="fr-col-12 fr-col-sm-10 fr-col-md-8">
     <h1>Gérer les contributeurs de l'accompagnement</h1>
-    <%= form_with(model: [@establishment, @establishment_tracking], url: update_contributors_establishment_establishment_tracking_path(@establishment, @establishment_tracking), method: :patch, local: true) do |form| %>
+    <%= form_with(model: [@establishment, @establishment_tracking], 
+                  url: update_contributors_establishment_establishment_tracking_path(@establishment, @establishment_tracking), 
+                  method: :patch,
+                  data: { turbo: true }) do |form| %>
+      <div id="error_explanation"></div>
+
       <% if @establishment_tracking.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@establishment_tracking.errors.count, "erreur") %> :</h2>
-          <ul>
-            <% @establishment_tracking.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
+        <div class="fr-alert fr-alert--error fr-mb-4w">
+          <h3 class="fr-alert__title">Erreur</h3>
+          <p><%= @establishment_tracking.errors.full_messages.first %></p>
         </div>
       <% end %>
 
@@ -19,32 +20,36 @@
           <span class="fr-hint-text">Saisissez au moins 3 caractères</span>
         <% end %>
         <%= form.collection_select :referent_ids, User.includes([:entity]).kept, :id, :display_name, {}, { multiple: true, class: 'tom-select', autocomplete: "off", data: { controller: "tom-select", min_search: "3" } } %>
+        <%= turbo_frame_tag "discarded_referents" do %>
+          <% @establishment_tracking.discarded_referents.each do |referent| %>
+            <%= form.hidden_field :discarded_referent_ids, multiple: true, value: referent.id %>
+          <% end %>
+          <% if @establishment_tracking.discarded_referents.any? %>
+            <div class="fr-mb-4w fr-mt-4w">
+              <p><strong>Référents archivés :</strong></p>
+              <ul class="fr-list">
+                <% @establishment_tracking.discarded_referents.each do |referent| %>
+                  <li class="fr-grid-row fr-grid-row--middle fr-mb-2w" id="<%= dom_id(@establishment_tracking.tracking_referents.find_by(user: referent)) %>">
+                    <div class="fr-col">
+                      <%= referent.display_name %>
+                    </div>
+                    <div class="fr-col-auto">
+                      <%= link_to remove_referent_establishment_establishment_tracking_path(@establishment, @establishment_tracking, user_id: referent.id),
+                                  data: { 
+                                    turbo_method: :delete,
+                                    turbo_confirm: "Êtes-vous sûr de vouloir supprimer définitivement ce référent ?" 
+                                  },
+                                  class: 'fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-delete-line' do %>
+                        Supprimer définitivement
+                      <% end %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        <% end %>
       </div>
-
-      <% if @establishment_tracking.discarded_referents.any? %>
-        <div class="fr-mb-4w">
-          <p><strong>Référents archivés :</strong></p>
-          <ul class="fr-list">
-            <% @establishment_tracking.discarded_referents.each do |referent| %>
-              <li class="fr-grid-row fr-grid-row--middle fr-mb-2w">
-                <div class="fr-col">
-                  <%= referent.display_name %>
-                </div>
-                <div class="fr-col-auto">
-                  <%= link_to remove_referent_establishment_establishment_tracking_path(@establishment, @establishment_tracking, user_id: referent.id),
-                              data: { 
-                                turbo_method: :delete,
-                                turbo_confirm: "Êtes-vous sûr de vouloir supprimer définitivement ce référent ?" 
-                              },
-                              class: 'fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-delete-line' do %>
-                    Supprimer définitivement
-                  <% end %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
 
       <div class="fr-input-group">
         <%= form.label :participant_ids do %>
@@ -52,32 +57,36 @@
           <span class="fr-hint-text">Saisissez au moins 3 caractères</span>
         <% end %>
         <%= form.collection_select :participant_ids, User.includes([:entity]).kept, :id, :display_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", min_search: "3" } } %>
+        <%= turbo_frame_tag "discarded_participants" do %>
+          <% @establishment_tracking.discarded_participants.each do |participant| %>
+            <%= form.hidden_field :discarded_participant_ids, multiple: true, value: participant.id %>
+          <% end %>
+          <% if @establishment_tracking.discarded_participants.any? %>
+            <div class="fr-mb-4w fr-mt-4w">
+              <p><strong>Participants archivés :</strong></p>
+              <ul class="fr-list">
+                <% @establishment_tracking.discarded_participants.each do |participant| %>
+                  <li class="fr-grid-row fr-grid-row--middle fr-mb-2w" id="<%= dom_id(@establishment_tracking.tracking_participants.find_by(user: participant)) %>">
+                    <div class="fr-col">
+                      <%= participant.display_name %>
+                    </div>
+                    <div class="fr-col-auto">
+                      <%= link_to remove_participant_establishment_establishment_tracking_path(@establishment, @establishment_tracking, user_id: participant.id),
+                                  data: { 
+                                    turbo_method: :delete,
+                                    turbo_confirm: "Êtes-vous sûr de vouloir supprimer définitivement ce participant ?" 
+                                  },
+                                  class: 'fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-delete-line' do %>
+                        Supprimer définitivement
+                      <% end %>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        <% end %>
       </div>
-
-      <% if @establishment_tracking.discarded_participants.any? %>
-        <div class="fr-mb-4w">
-          <p><strong>Participants archivés :</strong></p>
-          <ul class="fr-list">
-            <% @establishment_tracking.discarded_participants.each do |participant| %>
-              <li class="fr-grid-row fr-grid-row--middle fr-mb-2w">
-                <div class="fr-col">
-                  <%= participant.display_name %>
-                </div>
-                <div class="fr-col-auto">
-                  <%= link_to remove_participant_establishment_establishment_tracking_path(@establishment, @establishment_tracking, user_id: participant.id),
-                              data: { 
-                                turbo_method: :delete,
-                                turbo_confirm: "Êtes-vous sûr de vouloir supprimer définitivement ce participant ?" 
-                              },
-                              class: 'fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-delete-line' do %>
-                    Supprimer définitivement
-                  <% end %>
-                </div>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
 
       <ul class="fr-btns-group fr-btns-group--inline-md">
         <li>

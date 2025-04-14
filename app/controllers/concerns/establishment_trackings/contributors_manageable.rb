@@ -18,7 +18,7 @@ module EstablishmentTrackings::ContributorsManageable
       flash[:success] = t("establishments.tracking.contributors.update.success")
       redirect_to [@establishment, @establishment_tracking]
     else
-      flash[:error] = t("establishments.tracking.contributors.update.error")
+      @establishment_tracking.reload
       render :manage_contributors, status: :unprocessable_entity
     end
   end
@@ -26,32 +26,65 @@ module EstablishmentTrackings::ContributorsManageable
   def remove_referent
     authorize @establishment_tracking, :manage_contributors?
     user = User.find(params[:user_id])
+    @tracking_referent = @establishment_tracking.tracking_referents.find_by(user: user)
 
-    if @establishment_tracking.tracking_referents.find_by(user: user)&.destroy
-      flash[:success] = t("establishments.tracking.contributors.remove_referent.success")
-    else
-      flash[:error] = t("establishments.tracking.contributors.remove_referent.error")
-    end
-
-    redirect_to [@establishment, @establishment_tracking]
+    render_error_turbo_stream(tracking_referent_error_message)
   end
 
   def remove_participant
     authorize @establishment_tracking, :manage_contributors?
     user = User.find(params[:user_id])
+    @tracking_participant = @establishment_tracking.tracking_participants.find_by(user: user)
 
-    if @establishment_tracking.tracking_participants.find_by(user: user)&.destroy
-      flash[:success] = t("establishments.tracking.contributors.remove_participant.success")
+    if @tracking_participant&.destroy
+      respond_to do |format|
+        format.turbo_stream
+      end
     else
-      flash[:error] = t("establishments.tracking.contributors.remove_participant.error")
+      render_error_turbo_stream(tracking_participant_error_message)
     end
-
-    redirect_to [@establishment, @establishment_tracking]
   end
 
   private
 
-  def contributor_params
-    params.require(:establishment_tracking).permit(participant_ids: [], referent_ids: [])
+  def contributor_params # rubocop:disable Metrics/MethodLength
+    establishment_tracking_params = params.require(:establishment_tracking).permit(
+      referent_ids: [],
+      discarded_referent_ids: [],
+      participant_ids: [],
+      discarded_participant_ids: []
+    )
+
+    {
+      referent_ids: combine_ids(establishment_tracking_params[:referent_ids],
+                                establishment_tracking_params[:discarded_referent_ids]),
+      participant_ids: combine_ids(establishment_tracking_params[:participant_ids],
+                                   establishment_tracking_params[:discarded_participant_ids])
+    }
+  end
+
+  def combine_ids(active_ids, discarded_ids)
+    (active_ids || []).compact_blank + (discarded_ids || []).compact_blank
+  end
+
+  def tracking_referent_error_message
+    return t("establishments.tracking.contributors.remove_referent.error") unless @tracking_referent
+
+    @tracking_referent.errors.full_messages.first || t("establishments.tracking.contributors.remove_referent.error")
+  end
+
+  def tracking_participant_error_message
+    return t("establishments.tracking.contributors.remove_participant.error") unless @tracking_participant
+
+    @tracking_participant.errors.full_messages.first || t("establishments.tracking.contributors.remove_participant.error") # rubocop:disable Layout/LineLength
+  end
+
+  def render_error_turbo_stream(message)
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace("error_explanation", partial: "shared/error",
+                                                                       locals: { message: message })
+      end
+    end
   end
 end

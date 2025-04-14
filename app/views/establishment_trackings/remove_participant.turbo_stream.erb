@@ -1,0 +1,30 @@
+<%= turbo_stream.remove dom_id(@tracking_participant) %>
+<%= turbo_stream.replace "discarded_participants" do %>
+  <% @establishment_tracking.discarded_participants.each do |participant| %>
+    <%= hidden_field_tag "establishment_tracking[discarded_participant_ids][]", participant.id %>
+  <% end %>
+  <% if @establishment_tracking.discarded_participants.any? %>
+    <div class="fr-mb-4w fr-mt-4w">
+      <p><strong>Participants archivés :</strong></p>
+      <ul class="fr-list">
+        <% @establishment_tracking.discarded_participants.each do |participant| %>
+          <li class="fr-grid-row fr-grid-row--middle fr-mb-2w" id="<%= dom_id(@establishment_tracking.tracking_participants.find_by(user: participant)) %>">
+            <div class="fr-col">
+              <%= participant.display_name %>
+            </div>
+            <div class="fr-col-auto">
+              <%= link_to remove_participant_establishment_establishment_tracking_path(@establishment, @establishment_tracking, user_id: participant.id),
+                          data: { 
+                            turbo_method: :delete,
+                            turbo_confirm: "Êtes-vous sûr de vouloir supprimer définitivement ce participant ?" 
+                          },
+                          class: 'fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-delete-line' do %>
+                Supprimer définitivement
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %> 

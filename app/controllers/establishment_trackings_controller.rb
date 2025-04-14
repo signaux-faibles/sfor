@@ -1,4 +1,4 @@
-class EstablishmentTrackingsController < ApplicationController # rubocop:disable Metrics/ClassLength
+class EstablishmentTrackingsController < ApplicationController
   include EstablishmentTrackings::Filterable
   include EstablishmentTrackings::Exportable
   include EstablishmentTrackings::Creatable
@@ -9,7 +9,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   before_action :set_paper_trail_whodunnit
 
   before_action :set_establishment, except: %i[new_by_siret index]
-  before_action :set_tracking,
+  before_action :set_tracking, # rubocop:disable Rails/LexicallyScopedActionFilter
                 only: %i[show destroy edit update manage_contributors update_contributors remove_referent
                          remove_participant]
   before_action :set_system_labels, only: %i[new new_by_siret edit update create]
@@ -83,48 +83,6 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     redirect_to @establishment
   end
 
-  def manage_contributors
-    authorize @establishment_tracking
-  end
-
-  def update_contributors
-    authorize @establishment_tracking, :manage_contributors?
-
-    if @establishment_tracking.update(contributor_params)
-      flash[:success] = t("establishments.tracking.contributors.update.success")
-      redirect_to [@establishment, @establishment_tracking]
-    else
-      flash[:error] = t("establishments.tracking.contributors.update.error")
-      render :manage_contributors, status: :unprocessable_entity
-    end
-  end
-
-  def remove_referent
-    authorize @establishment_tracking, :manage_contributors?
-    user = User.find(params[:user_id])
-
-    if @establishment_tracking.tracking_referents.find_by(user: user)&.destroy
-      flash[:success] = t("establishments.tracking.contributors.remove_referent.success")
-    else
-      flash[:error] = t("establishments.tracking.contributors.remove_referent.error")
-    end
-
-    redirect_to [@establishment, @establishment_tracking]
-  end
-
-  def remove_participant
-    authorize @establishment_tracking, :manage_contributors?
-    user = User.find(params[:user_id])
-
-    if @establishment_tracking.tracking_participants.find_by(user: user)&.destroy
-      flash[:success] = t("establishments.tracking.contributors.remove_participant.success")
-    else
-      flash[:error] = t("establishments.tracking.contributors.remove_participant.error")
-    end
-
-    redirect_to [@establishment, @establishment_tracking]
-  end
-
   private
 
   def set_establishment
@@ -147,9 +105,5 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
       participant_ids: [], referent_ids: [], difficulty_ids: [],
       codefi_redirect_ids: [], supporting_service_ids: []
     )
-  end
-
-  def contributor_params
-    params.require(:establishment_tracking).permit(participant_ids: [], referent_ids: [])
   end
 end

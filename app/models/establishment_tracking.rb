@@ -40,7 +40,7 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   attr_accessor :skip_update_modified_at
 
   validates :referents, presence: true
-
+  validate :at_least_one_active_referent, on: :update
   validate :single_active_tracking, if: -> { state.in?(%w[in_progress under_surveillance]) }
 
   scope :in_progress, -> { where(state: "in_progress") }
@@ -122,6 +122,12 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   end
 
   private
+
+  def at_least_one_active_referent
+    return if referents.kept.any?
+
+    errors.add(:referents, :at_least_one_active_required)
+  end
 
   def single_active_tracking
     if establishment.establishment_trackings

@@ -1,0 +1,30 @@
+<%= turbo_stream.remove dom_id(@tracking_referent) %>
+<%= turbo_stream.replace "discarded_referents" do %>
+  <% @establishment_tracking.discarded_referents.each do |referent| %>
+    <%= hidden_field_tag "establishment_tracking[discarded_referent_ids][]", referent.id %>
+  <% end %>
+  <% if @establishment_tracking.discarded_referents.any? %>
+    <div class="fr-mb-4w fr-mt-4w">
+      <p><strong>Référents archivés :</strong></p>
+      <ul class="fr-list">
+        <% @establishment_tracking.discarded_referents.each do |referent| %>
+          <li class="fr-grid-row fr-grid-row--middle fr-mb-2w" id="<%= dom_id(@establishment_tracking.tracking_referents.find_by(user: referent)) %>">
+            <div class="fr-col">
+              <%= referent.display_name %>
+            </div>
+            <div class="fr-col-auto">
+              <%= link_to remove_referent_establishment_establishment_tracking_path(@establishment, @establishment_tracking, user_id: referent.id),
+                          data: { 
+                            turbo_method: :delete,
+                            turbo_confirm: "Êtes-vous sûr de vouloir supprimer définitivement ce référent ?" 
+                          },
+                          class: 'fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-delete-line' do %>
+                Supprimer définitivement
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %> 
