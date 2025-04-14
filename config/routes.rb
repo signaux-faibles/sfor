@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users do
       get "/impersonate" => "users#impersonate"
+      get "/discard" => "users#discard"
+      get "/undiscard" => "users#undiscard"
     end
     resources :entities
     resources :networks

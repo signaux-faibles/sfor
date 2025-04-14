@@ -45,28 +45,22 @@ to display a collection of resources in an HTML table.
           <% end %>
         </th>
       <% end %>
-      <%= render(
-        "collection_header_actions",
-        collection_presenter: collection_presenter,
-        page: page,
-        resources: resources,
-        table_title: "page-title"
-      ) %>
+      <th>Show</th>
+      <th>Edit</th>
+      <% if collection_presenter.resource_name == "users" %>
+        <th>Impersonate</th>
+        <th>Discard/Undiscard</th>
+      <% end %>
     </tr>
   </thead>
 
   <tbody>
     <% resources.each do |resource| %>
-      <tr class="js-table-row"
-          <% if accessible_action?(resource, :show) %>
-            <%= %(tabindex=0 role=link data-url=#{polymorphic_path([namespace, resource])}) %>
-          <% end %>
-          >
+      <tr>
         <% collection_presenter.attributes_for(resource).each do |attribute| %>
           <td class="cell-data cell-data--<%= attribute.html_class %>">
             <% if accessible_action?(resource, :show) -%>
               <a href="<%= polymorphic_path([namespace, resource]) -%>"
-                 tabindex="-1"
                  class="action-show"
                  >
                 <%= render_field attribute %>
@@ -77,21 +71,54 @@ to display a collection of resources in an HTML table.
           </td>
         <% end %>
 
-        <%= render(
-          "collection_item_actions",
-          collection_presenter: collection_presenter,
-          collection_field_name: collection_field_name,
-          page: page,
-          namespace: namespace,
-          resource: resource,
-          table_title: "page-title"
-        ) %>
+        <td>
+          <%= link_to(
+                t("administrate.actions.show"),
+                polymorphic_path([namespace, resource]),
+                class: "action-show"
+              ) if accessible_action?(resource, :show) %>
+        </td>
+
+        <td>
+          <%= link_to(
+                t("administrate.actions.edit"),
+                [:edit, namespace, resource],
+                class: "action-edit"
+              ) if accessible_action?(resource, :edit) %>
+        </td>
+
+        <td>
+          <%= link_to(
+                t("administrate.actions.destroy"),
+                [namespace, resource],
+                class: "text-color-red",
+                method: :delete,
+                data: { confirm: t("administrate.actions.confirm") }
+              ) if accessible_action?(resource, :destroy) %>
+        </td>
+
         <% if resource.instance_of? User %>
-          <td><%= link_to(
-                    "Impersonate",
-                    admin_user_impersonate_path(resource),
-                    class: "text-color-red",
-                    ) %></td>
+          <td>
+            <%= link_to(
+                  "Impersonate",
+                  admin_user_impersonate_path(resource),
+                  class: "text-color-red"
+                  ) %>
+          </td>
+          <td>
+            <%= link_to(
+                  "Discard",
+                  admin_user_discard_path(resource),
+                  class: "text-color-red",
+                  data: { confirm: "Are you sure you want to discard this user?" }
+                  ) unless resource.discarded? %>
+            <%= link_to(
+                  "Undiscard",
+                  admin_user_undiscard_path(resource),
+                  class: "text-color-red",
+                  data: { confirm: "Are you sure you want to undiscard this user?" }
+                  ) if resource.discarded? %>
+          </td>
         <% end %>
       </tr>
     <% end %>

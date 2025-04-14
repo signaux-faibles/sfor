@@ -52,11 +52,8 @@ class UserDashboard < Administrate::BaseDashboard
   # Feel free to add, remove, or rearrange items.
   COLLECTION_ATTRIBUTES = %i[
     id
-    first_name
-    last_name
     email
     segment
-    networks
     geo_access
     discarded_at
   ].freeze

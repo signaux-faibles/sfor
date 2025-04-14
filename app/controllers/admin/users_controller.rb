@@ -7,6 +7,30 @@ module Admin
       redirect_to root_path
     end
 
+    def discard
+      user = User.find(params[:user_id])
+
+      if user.discard
+        flash[:notice] = t(".success")
+      else
+        flash[:alert] = t(".error")
+      end
+
+      redirect_to admin_users_path
+    end
+
+    def undiscard
+      user = User.find(params[:user_id])
+
+      if user.undiscard
+        flash[:notice] = t(".success")
+      else
+        flash[:alert] = t(".error")
+      end
+
+      redirect_to admin_users_path
+    end
+
     # Overwrite any of the RESTful controller actions to implement custom behavior
     # For example, you may want to send an email after a foo is updated.
     #

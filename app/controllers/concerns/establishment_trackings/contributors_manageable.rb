@@ -28,7 +28,13 @@ module EstablishmentTrackings::ContributorsManageable
     user = User.find(params[:user_id])
     @tracking_referent = @establishment_tracking.tracking_referents.find_by(user: user)
 
-    render_error_turbo_stream(tracking_referent_error_message)
+    if @tracking_referent&.destroy
+      respond_to do |format|
+        format.turbo_stream
+      end
+    else
+      render_error_turbo_stream(tracking_referent_error_message)
+    end
   end
 
   def remove_participant
