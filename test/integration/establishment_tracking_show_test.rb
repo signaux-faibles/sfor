@@ -93,12 +93,4 @@ class EstablishmentTrackingShowTest < ActionDispatch::IntegrationTest
 
     assert_select ".fr-alert", text: "Vous n'êtes pas autorisé à effectuer cette action."
   end
-
-  test "CODEFI network tab is hidden when user does not have access to establishment's department" do
-    other_user = users(:user_crp_finistere)
-
-    login_user(other_user)
-    get establishment_establishment_tracking_path(@establishment_tracking.establishment, @establishment_tracking)
-    assert_select "button.fr-tabs__tab", text: "CODEFI", count: 0
-  end
 end

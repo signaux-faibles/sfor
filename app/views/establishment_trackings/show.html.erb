@@ -43,7 +43,7 @@
       </li>
 
       <!-- User Networks Tabs -->
-      <% current_user.networks_for_establishment(@establishment_tracking.establishment).each do |network| %>
+      <% current_user.active_networks.each do |network| %>
         <li role="presentation">
           <button id="tabpanel-<%= network.name.parameterize %>"
                   class="fr-tabs__tab fr-icon-question-answer-line fr-tabs__tab--icon-left"
@@ -59,7 +59,7 @@
     <%= render 'info_panel' %>
 
     <!-- User Networks Panels -->
-    <% current_user.networks_for_establishment(@establishment_tracking.establishment).each do |network| %>
+    <% current_user.active_networks.each do |network| %>
       <div id="tabpanel-<%= network.name.parameterize %>-panel"
            class="fr-tabs__panel"
            role="tabpanel"
