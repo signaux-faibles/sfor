@@ -58,7 +58,6 @@ gem "ransack", "~> 4.2.1"
 
 # Basic admin
 gem "administrate", "1.0.0.beta3"
-gem "administrate-field-belongs_to_search", "~> 0.9.0"
 
 # Authorizations
 gem "pundit", "~> 2.4"
