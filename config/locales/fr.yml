@@ -382,8 +382,6 @@ fr:
         error: "Impossible d'archiver cet utilisateur."
   establishments:
     not_found: "Establishment not found"
-    create:
-      success: "Établissement créé avec succès."
     tracking:
       active_exists: "Il y a déjà un accompagnement en cours pour cet établissement."
       department_not_found: "Département introuvable avec le code %{code}"

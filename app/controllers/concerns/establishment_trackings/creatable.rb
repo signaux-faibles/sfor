@@ -57,9 +57,6 @@ module EstablishmentTrackings::Creatable
                                        department: department,
                                        company: company)
 
-    if @establishment.save
-      redirect_to new_establishment_establishment_tracking_path(@establishment),
-                  notice: t("establishments.create.success")
-    end
+    redirect_to new_establishment_establishment_tracking_path(@establishment) if @establishment.save
   end
 end

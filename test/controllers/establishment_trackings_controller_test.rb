@@ -208,6 +208,5 @@ class EstablishmentTrackingsSiretTest < EstablishmentTrackingsControllerTest
     end
 
     assert_redirected_to new_establishment_establishment_tracking_url(Establishment.last)
-    assert_equal "Établissement créé avec succès.", flash[:notice]
   end
 end
