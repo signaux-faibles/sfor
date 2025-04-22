@@ -1,5 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+financial:
+  name: "Difficultés financières"
 
-one:
+client_supplier:
   name: "Différend avec un client ou fournisseur"
+
+market:
+  name: "Difficultés de marché"
 

@@ -1,0 +1,11 @@
+first_contact:
+  name: "Premier contact"
+  position: 1
+
+meeting:
+  name: "Réunion"
+  position: 2
+
+phone_call:
+  name: "Appel téléphonique"
+  position: 3 
