@@ -34,7 +34,7 @@ class EstablishmentsController < ApplicationController
 
   def load_trackings_by_state(state)
     policy_scope(@establishment.establishment_trackings)
-      .includes(:creator)
+      .includes(:creator, :criticality, :referents)
       .send(state)
       .order(start_date: :asc)
   end

@@ -26,10 +26,12 @@ module EstablishmentTrackings::Loadable
 
   def load_related_trackings
     @other_trackings = @establishment_tracking.establishment.establishment_trackings
+                                              .includes(:criticality, :referents, establishment: :department)
                                               .where
                                               .not(id: @establishment_tracking.id)
     @company_trackings = EstablishmentTracking
                          .joins(:establishment)
+                         .includes(:criticality, :referents, establishment: :department)
                          .where(establishments: { company_id: @establishment_tracking.establishment.company_id })
                          .where.not(id: @establishment_tracking.id)
                          .distinct
