@@ -12,7 +12,11 @@
           <% if policy(@establishment_tracking).manage_state? %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
               <%= form.label :state, 'Statut' %>
-              <%= form.select :state, options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], @establishment_tracking.state), {}, { class: 'fr-select' } %>
+              <%= form.select :state, 
+                            options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], 
+                            @establishment_tracking.state), 
+                            {}, 
+                            { class: 'fr-select' } %>
               <% @establishment_tracking.errors[:state].each do |error| %>
                 <p class="fr-error-text"><%= error %></p>
               <% end %>

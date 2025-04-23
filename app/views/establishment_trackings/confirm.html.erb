@@ -1,0 +1,82 @@
+<div class="fr-container">
+  <h1>Terminer l'accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
+
+  <div class="fr-alert fr-alert--info fr-mb-3w">
+    <p>
+      Avant de terminer l'accompagnement, vous êtes invités à vérifier la bonne complétion des informations qui y sont liées. 
+      <strong>Ces informations serviront à mesurer l'impact et à conserver un historique pour les futurs accompagnements.</strong> 
+      En l'absence de difficultés, d'actions réalisées ou de réorientation hors CODEFI, il convient de ne rien sélectionner.
+    </p>
+  </div>
+
+  <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
+    <div class="fr-col-6">
+      <div class="fr-p-3w">
+        <h2>Informations sur l'accompagnement</h2>
+
+        <div class="fr-mb-2w">
+          <p class="fr-m-0"><strong>Étiquettes</strong></p>
+          <% if @establishment_tracking.tracking_labels.any? %>
+            <p><%= @establishment_tracking.tracking_labels.map(&:name).join(', ') %></p>
+          <% else %>
+            <p>Aucune étiquette sélectionnée</p>
+          <% end %>
+        </div>
+
+        <div class="fr-mb-2w">
+          <p class="fr-m-0"><strong>Suivi par</strong></p>
+          <% if @establishment_tracking.supporting_services.any? %>
+            <p><%= @establishment_tracking.supporting_services.map(&:name).join(', ') %></p>
+          <% else %>
+            <p>Aucun service de suivi sélectionné</p>
+          <% end %>
+        </div>
+
+        <div class="fr-mb-2w">
+          <p class="fr-m-0"><strong>Difficultés</strong></p>
+          <% if @establishment_tracking.difficulties.any? %>
+            <p><%= @establishment_tracking.difficulties.map(&:name).join(', ') %></p>
+          <% else %>
+            <p>Aucune difficulté sélectionnée</p>
+          <% end %>
+        </div>
+
+        <div class="fr-mb-2w">
+          <p class="fr-m-0"><strong>Actions réalisées</strong></p>
+          <% if @establishment_tracking.user_actions.any? %>
+            <p><%= @establishment_tracking.user_actions.ordered.map(&:name).join(', ') %></p>
+          <% else %>
+            <p>Aucune action réalisée sélectionnée</p>
+          <% end %>
+        </div>
+
+        <div class="fr-mb-2w">
+          <p class="fr-m-0"><strong>Réorientation hors CODEFI</strong></p>
+          <% if @establishment_tracking.codefi_redirects.any? %>
+            <p><%= @establishment_tracking.codefi_redirects.ordered.map(&:name).join(', ') %></p>
+          <% else %>
+            <p>Aucune réorientation sélectionnée</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-grid-row fr-grid-row--left fr-mb-3w">
+    <div class="fr-col-6">
+      <div class="">
+        <ul class="fr-btns-group fr-btns-group--inline-md">
+          <li>
+            <%= link_to "Annuler", edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary' %>
+          </li>
+          <li>
+            <%= button_to "Enregistrer et terminer l'accompagnement", 
+                complete_establishment_establishment_tracking_path(@establishment, @establishment_tracking), 
+                method: :patch,
+                class: 'fr-btn' %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div> 

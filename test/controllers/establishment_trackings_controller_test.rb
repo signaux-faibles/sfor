@@ -79,7 +79,7 @@ class EstablishmentTrackingsIndexTest < EstablishmentTrackingsControllerTest
   end
 end
 
-class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest
+class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # rubocop:disable Metrics/ClassLength
   test "should get show" do
     get establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     assert_response :success
@@ -137,7 +137,7 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest
     assert_response :success
   end
 
-  test "should update establishment_tracking" do
+  test "should update establishment_tracking and redirect to confirm if completed" do
     patch establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris), params: {
       establishment_tracking: {
         state: "completed",
@@ -151,8 +151,49 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest
       }
     }
 
+    assert_redirected_to confirm_establishment_establishment_tracking_path(
+      @establishment_paris,
+      @establishment_tracking_paris
+    )
+  end
+
+  test "should update establishment_tracking with all optional fields" do # rubocop:disable Metrics/BlockLength
+    criticality = criticalities(:niveau_orange)
+    size = sizes(:small)
+    sector = sectors(:industry)
+    difficulty = difficulties(:financial)
+    user_action = user_actions(:first_contact)
+    codefi_redirect = codefi_redirects(:cci_cma)
+    supporting_service = supporting_services(:urssaf)
+
+    patch establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris), params: {
+      establishment_tracking: {
+        state: "in_progress",
+        start_date: Time.zone.today,
+        referent_ids: [@user_crp_paris.id],
+        criticality_id: criticality.id,
+        size_id: size.id,
+        tracking_label_ids: [],
+        user_action_ids: [user_action.id],
+        sector_ids: [sector.id],
+        participant_ids: [],
+        difficulty_ids: [difficulty.id],
+        codefi_redirect_ids: [codefi_redirect.id],
+        supporting_service_ids: [supporting_service.id]
+      }
+    }
+
     assert_redirected_to establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
     assert_equal "L'accompagnement a été mis à jour avec succès.", flash[:success]
+
+    @establishment_tracking_paris.reload
+    assert_equal criticality.id, @establishment_tracking_paris.criticality_id
+    assert_equal size.id, @establishment_tracking_paris.size_id
+    assert_includes @establishment_tracking_paris.sector_ids, sector.id
+    assert_includes @establishment_tracking_paris.difficulty_ids, difficulty.id
+    assert_includes @establishment_tracking_paris.user_action_ids, user_action.id
+    assert_includes @establishment_tracking_paris.codefi_redirect_ids, codefi_redirect.id
+    assert_includes @establishment_tracking_paris.supporting_service_ids, supporting_service.id
   end
 
   test "should destroy establishment_tracking" do

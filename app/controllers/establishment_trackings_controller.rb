@@ -1,4 +1,4 @@
-class EstablishmentTrackingsController < ApplicationController
+class EstablishmentTrackingsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include EstablishmentTrackings::Filterable
   include EstablishmentTrackings::Exportable
   include EstablishmentTrackings::Creatable
@@ -11,8 +11,8 @@ class EstablishmentTrackingsController < ApplicationController
   before_action :set_establishment, except: %i[new_by_siret index]
   before_action :set_tracking, # rubocop:disable Rails/LexicallyScopedActionFilter
                 only: %i[show destroy edit update manage_contributors update_contributors remove_referent
-                         remove_participant]
-  before_action :set_system_labels, only: %i[new new_by_siret edit update create]
+                         remove_participant confirm complete]
+  before_action :set_system_labels, only: %i[new new_by_siret edit update create confirm]
 
   def index
     params[:q] = handle_filters(params)
@@ -52,6 +52,8 @@ class EstablishmentTrackingsController < ApplicationController
 
   def edit; end
 
+  def confirm; end
+
   def create
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
@@ -67,11 +69,10 @@ class EstablishmentTrackingsController < ApplicationController
 
   def update
     ActiveRecord::Base.transaction do
-      if update_state && @establishment_tracking.update(prepare_label_params(tracking_params))
-        flash[:success] = t("establishments.tracking.update.success")
-        redirect_to [@establishment, @establishment_tracking]
+      if tracking_params[:state] == "completed"
+        handle_completed_state_update
       else
-        render :edit, status: :unprocessable_entity
+        handle_regular_update
       end
     end
   end
@@ -81,6 +82,15 @@ class EstablishmentTrackingsController < ApplicationController
     @establishment_tracking.destroy
     flash[:success] = t("establishments.tracking.destroy.success")
     redirect_to @establishment
+  end
+
+  def complete
+    if @establishment_tracking.update(state: "completed", end_date: Time.zone.today)
+      flash[:success] = t("establishments.tracking.complete.success", raison_sociale: @establishment.raison_sociale)
+      redirect_to [@establishment, @establishment_tracking]
+    else
+      render :confirm, status: :unprocessable_entity
+    end
   end
 
   private
@@ -105,5 +115,29 @@ class EstablishmentTrackingsController < ApplicationController
       participant_ids: [], referent_ids: [], difficulty_ids: [],
       codefi_redirect_ids: [], supporting_service_ids: []
     )
+  end
+
+  def handle_completed_state_update # rubocop:disable Metrics/MethodLength
+    if @establishment_tracking.completed? && @establishment_tracking.update(prepare_label_params(tracking_params))
+      redirect_to(
+        [@establishment, @establishment_tracking],
+        success: t("establishments.tracking.update.success")
+      )
+    elsif @establishment_tracking.update(prepare_label_params(tracking_params.except(:state)))
+      redirect_to(
+        confirm_establishment_establishment_tracking_path(@establishment, @establishment_tracking)
+      )
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def handle_regular_update
+    if @establishment_tracking.update(prepare_label_params(tracking_params))
+      flash[:success] = t("establishments.tracking.update.success")
+      redirect_to [@establishment, @establishment_tracking]
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 end

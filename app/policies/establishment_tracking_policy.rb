@@ -40,7 +40,15 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
   end
 
   def manage_state?
-    user_is_referent? # Only referents can manage the state
+    user_is_referent?
+  end
+
+  def confirm?
+    user_is_referent?
+  end
+
+  def complete?
+    user_is_referent?
   end
 
   private

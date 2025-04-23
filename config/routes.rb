@@ -48,9 +48,10 @@ Rails.application.routes.draw do
   end
 
   resources :establishments, only: [:show], path: "etablissements" do
-    resources :establishment_trackings, only: %i[new create show destroy edit update],
-                                        path: "accompagnements" do
+    resources :establishment_trackings, only: %i[new create show destroy edit update], path: "accompagnements" do
       member do
+        get :confirm
+        patch :complete
         get :manage_contributors
         patch :update_contributors
         delete :remove_referent

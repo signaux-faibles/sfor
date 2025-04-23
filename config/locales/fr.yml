@@ -392,6 +392,8 @@ fr:
         success: "L'accompagnement a été mis à jour avec succès."
       destroy:
         success: "L'accompagnement a été supprimé avec succès."
+      complete:
+        success: "L'accompagnement a bien été marqué comme terminé."
       contributors:
         update:
           success: "Contributeurs de l'accompagnement mis à jour avec succès."
