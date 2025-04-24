@@ -42,7 +42,7 @@
             <%= form.select :tracking_label_ids,
                             @system_labels,
                             {},
-                            { multiple: true, class: 'tom-select', data: { controller: "tom-select" } } %>
+                            { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:tracking_label_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>

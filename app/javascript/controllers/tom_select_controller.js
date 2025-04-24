@@ -22,6 +22,7 @@ export default class extends Controller {
             create: false,
             dropdownParent: 'body',
             openOnFocus: !minSearchAttr,
+            hidePlaceholder: true,
             render: {
                 option: function(data, escape) {
                     return `<div class="option" style="margin-left: 10px;">${escape(data.text)}</div>`;
@@ -34,7 +35,7 @@ export default class extends Controller {
                 },
                 no_results: function(data, escape) {
                     return '<div class="no-results">' + 'Aucun résultat' + '</div>';
-                },
+                }
             },
 
             onItemAdd: function(value, item) {
