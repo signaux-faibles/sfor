@@ -1,6 +1,10 @@
-<%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
+<%= form_with(model: [@establishment, @establishment_tracking], local: true, data: { controller: "tracking-status" }) do |form| %>
 
   <div class="fr-container">
+    <div class="fr-alert fr-alert--warning fr-mb-3w fr-hidden" data-tracking-status-target="warningBanner">
+      <p>Attention, vous allez rouvrir un accompagnement terminé. Il convient de créer un nouvel accompagnement pour préserver l'historique des accompagnements.</p>
+    </div>
+
     <h1>Modifier les informations - <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
 
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
@@ -16,7 +20,7 @@
                             options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], 
                             @establishment_tracking.state), 
                             {}, 
-                            { class: 'fr-select' } %>
+                            { class: 'fr-select', data: { tracking_status_target: "stateSelect", action: "change->tracking-status#toggleWarningBanner" } } %>
               <% @establishment_tracking.errors[:state].each do |error| %>
                 <p class="fr-error-text"><%= error %></p>
               <% end %>
