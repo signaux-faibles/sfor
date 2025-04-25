@@ -174,12 +174,26 @@ jobs:
         run: |
           SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bundle exec rails assets:precompile
 
-      - name: Minify JavaScript with Terser and Generate Sourcemaps
+      - name: Generate sourcemaps with Terser
         run: |
           npm install -g terser
-          find ./public/assets -name '*.js' -exec terser {} --compress --mangle --source-map "content=inline,url='{}.map'" -o {} \;
+          for js in public/assets/*.js; do
+            terser "$js" --source-map "url=$js.map" --output "$js" --compress false --mangle false
+          done
 
-      - name: Upload Sourcemaps to Sentry
+      - name: Debug Sentry Release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_URL: https://sentry.incubateur.net/
+        run: |
+          echo "Installing Sentry CLI..."
+          curl -sL https://sentry.io/get-cli/ | bash
+          echo "Checking Sentry release existence..."
+          sentry-cli releases list --log-level=debug
+
+      - name: Upload Sourcemaps to Production
         uses: getsentry/action-release@v1
         with:
           environment: production
@@ -187,6 +201,24 @@ jobs:
           projects: sfor
           sourcemaps: ./public/assets
           ignore_missing: true
+          finalize: true
+          set_commits: auto
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_URL: https://sentry.incubateur.net/
+
+      - name: Upload Sourcemaps to Preproduction
+        uses: getsentry/action-release@v1
+        with:
+          environment: preprod
+          version: ${{ github.sha }}
+          projects: sfor
+          sourcemaps: ./public/assets
+          ignore_missing: true
+          finalize: true
+          set_commits: auto
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
