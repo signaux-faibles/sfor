@@ -4,7 +4,7 @@
 
 require "mongo"
 
-class ImportEstablishmentTrackingsService # rubocop:disable Metrics/ClassLength
+class ImportCrpEstablishmentTrackingsService # rubocop:disable Metrics/ClassLength
   def initialize
     mongo_host = ENV["WEKAN_MONGO_DB_HOST"] || "10.2.0.231"
     mongo_port = ENV["WEKAN_MONGO_DB_PORT"] || "27017"
@@ -359,6 +359,6 @@ end
 namespace :import_from_wekan do
   desc "Import data from Wekan"
   task crp_cards: :environment do
-    ImportEstablishmentTrackingsService.new.perform
+    ImportCrpEstablishmentTrackingsService.new.perform
   end
 end
