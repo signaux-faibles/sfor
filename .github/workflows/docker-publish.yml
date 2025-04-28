@@ -174,13 +174,6 @@ jobs:
         run: |
           SECRET_KEY_BASE_DUMMY=1 RAILS_ENV=production bundle exec rails assets:precompile
 
-      - name: Generate sourcemaps with Terser
-        run: |
-          npm install -g terser
-          for js in public/assets/*.js; do
-            terser "$js" --source-map "url=$js.map" --output "$js" --compress false --mangle false
-          done
-
       - name: Debug Sentry Release
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

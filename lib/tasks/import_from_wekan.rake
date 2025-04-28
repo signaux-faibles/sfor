@@ -300,10 +300,13 @@ class ImportEstablishmentTrackingsService # rubocop:disable Metrics/ClassLength
     end
   end
 
-  def create_summary(card, establishment_tracking, siret)
-    summary = Summary.find_or_initialize_by(establishment_tracking: establishment_tracking)
+  def create_summary(card, establishment_tracking, siret) # rubocop:disable Metrics/MethodLength
+    codefi_network = Network.find_by(name: "CODEFI")
+    summary = Summary.find_or_initialize_by(
+      establishment_tracking: establishment_tracking,
+      network: codefi_network
+    )
     summary.content = card[:description]
-    summary.network = Network.find_by(name: "CODEFI")
 
     if summary.save
       summary.update_column(:updated_at, card[:modifiedAt])
