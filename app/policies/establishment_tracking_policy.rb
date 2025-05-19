@@ -10,6 +10,10 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
     user.department_ids.include?(record.establishment.department.id) || user_is_referent_or_participant?
   end
 
+  def create?
+    user.department_ids.include?(record.establishment.department.id)
+  end
+
   # Users must be able to view the record AND be a referent or participant to edit it
   def update?
     show? && user_is_referent_or_participant?

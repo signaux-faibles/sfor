@@ -59,9 +59,11 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     @establishment_tracking.creator = current_user
     @establishment_tracking.start_date ||= Time.zone.today
 
+    authorize @establishment_tracking
+
     if @establishment_tracking.save
       flash[:success] = t("establishments.tracking.create.success")
-      redirect_to @establishment
+      redirect_to [@establishment, @establishment_tracking]
     else
       render :new, status: :unprocessable_entity
     end
