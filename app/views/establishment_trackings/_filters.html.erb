@@ -43,7 +43,7 @@
               <div class="fr-input-group">
                 <%= f.label :tracking_labels_id_in, "Étiquettes" %>
                 <%= f.select :tracking_labels_id_in,
-                             TrackingLabel.pluck(:name, :id),
+                             @system_labels,
                              {},
                              { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
               </div>
