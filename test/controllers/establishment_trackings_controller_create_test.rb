@@ -27,7 +27,10 @@ class EstablishmentTrackingsControllerCreateTest < ActionDispatch::IntegrationTe
       }
     end
 
-    assert_redirected_to @establishment
+    tracking = EstablishmentTracking.last
+
+    assert_redirected_to [@establishment, tracking]
+
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
   end
 
@@ -107,10 +110,11 @@ class EstablishmentTrackingsControllerCreateTest < ActionDispatch::IntegrationTe
       }
     end
 
-    assert_redirected_to @establishment
+    tracking = EstablishmentTracking.last
+
+    assert_redirected_to [@establishment, tracking]
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
 
-    tracking = EstablishmentTracking.last
     assert_equal criticality.id, tracking.criticality_id
     assert_equal size.id, tracking.size_id
     assert_includes tracking.sector_ids, sector.id

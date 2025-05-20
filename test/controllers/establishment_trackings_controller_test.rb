@@ -108,7 +108,9 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
       }
     end
 
-    assert_redirected_to @establishment_paris2
+    tracking = EstablishmentTracking.last
+
+    assert_redirected_to [@establishment_paris2, tracking]
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
   end
 
