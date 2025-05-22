@@ -31,7 +31,12 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:criticality_id].any? %>">
             <%= form.label :criticality_id, 'Criticité' %>
-            <%= form.collection_select :criticality_id, Criticality.all, :id, :name, {include_blank: "Non renseigné"}, { class: 'fr-select' } %>
+            <%= form.collection_select :criticality_id, 
+                Criticality.all, 
+                :id, 
+                :name, 
+                { selected: @establishment_tracking.criticality_id || Criticality.find_by(name: "Pas de criticité")&.id }, 
+                { class: 'fr-select' } %>
             <% @establishment_tracking.errors[:criticality_id].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>
