@@ -48,9 +48,23 @@
           <button id="tabpanel-<%= network.name.parameterize %>"
                   class="fr-tabs__tab fr-icon-question-answer-line fr-tabs__tab--icon-left"
                   tabindex="-1" role="tab"
+                  aria-describedby="<%= ['CODEFI', 'CRP', 'DGFiP'].include?(network.name) ? "tooltip-#{network.name.parameterize}" : '' %>"
                   aria-selected="false"
                   aria-controls="tabpanel-<%= network.name.parameterize %>-panel">
             <%= network.name %>
+            <% if network.name == 'CODEFI' %>
+              <span class="fr-tooltip fr-placement" id="tooltip-codefi" role="tooltip" aria-hidden="true">
+                L'onglet CODEFI est accessible à tous les agents Signaux Faibles de la zone géographique concernée. Des agents d'autres départements peuvent être ajoutés dans le cas d'un accompagnement à portée nationale.
+              </span>
+            <% elsif network.name == 'CRP' %>
+              <span class="fr-tooltip fr-placement" id="tooltip-crp" role="tooltip" aria-hidden="true">
+                L'onglet CRP est accessible à tous les agents CRP, leurs appuis, certains chargés de mission sectoriels de la région concernée. Des agents d'autres régions peuvent être ajoutés dans le cas d'un accompagnement à portée nationale. Les agents MRE et DIRE ont un accès national.
+              </span>
+            <% elsif network.name == 'DGFiP' %>
+              <span class="fr-tooltip fr-placement" id="tooltip-dgfip" role="tooltip" aria-hidden="true">
+                L'onglet DGFiP est accessible à tous les agents SP CODEFI et CDED du département concerné. Des agents d'autres départements peuvent être ajoutés dans le cas d'un accompagnement à portée nationale.Les agents MCCE ont un accès national.
+              </span>
+            <% end %>
           </button>
         </li>
       <% end %>
@@ -78,7 +92,17 @@
                     <%= render "summaries/form", summary: Summary.new(network: network), network: network %>
                   <% else %>
                     <div class="fr-ml-3w">
-                      <h4>Synthèse</h4>
+                      <h4>Synthèse
+                        <button class="fr-btn--tooltip fr-btn" type="button" id="button-summary" aria-describedby="button-summary-<%= network.name.parameterize %>">
+                          <span class="fr-icon-information-line" aria-hidden="true"></span>
+                          <span class="fr-sr-only">Information sur la synthèse</span>
+                        </button>
+                        <span class="fr-tooltip fr-placement" id="button-summary-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
+                          La "synthèse" permet de comprendre rapidement et simplement les grands enjeux du dossier.<br/><br/>
+                          Pour une meilleure homogénéisation, elle s'articule en trois paragraphes : présentation de l’entreprise, description des difficultés ou problématiques, actions engagées et calendrier de suivi. La mise en forme de ce champ s’effectue en Markdown (cf guide utilisateur).
+                        </span>
+                      </h4>
+
                       <p>Aucune synthèse pour ce réseau.</p>
                     </div>
                   <% end %>
@@ -87,7 +111,15 @@
             </div>
 
             <div class="fr-pl-3w">
-              <h4>Commentaires</h4>
+              <h4>Commentaires
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-comments" aria-describedby="button-comments-<%= network.name.parameterize %>">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les commentaires</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="button-comments-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
+                  Les "commentaires" informent sur les récentes actualités du dossier et la situation de l’entreprise.
+                </span>
+              </h4>
 
               <% if policy(@establishment_tracking).edit? %>
                 <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>

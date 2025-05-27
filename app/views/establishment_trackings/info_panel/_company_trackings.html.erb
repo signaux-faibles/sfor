@@ -1,12 +1,21 @@
 <div class="fr-grid-row fr-mt-4w">
   <div class="fr-col-12">
-    <h3>Tous les accompagnements de l'entreprise <%= @establishment&.company&.siren %></h3>
-    <div class="fr-table" id="table-md-component">
-      <div class="fr-table__wrapper">
-        <div class="fr-table__container">
-          <div class="fr-table__content">
-            <table id="table-md">
-              <% if @company_trackings.any? %>
+    <h3>Tous les accompagnements de l'entreprise <%= @establishment&.company&.siren %>
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-company-trackings" aria-describedby="button-company-trackings">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les accompagnements de l'entreprise</span>
+      </button>
+      </h3>
+    <span class="fr-tooltip fr-placement" id="button-company-trackings" role="tooltip" aria-hidden="true">
+      Tous les accompagnements menés sur l'ensemble des établissements de l'entreprise. La centralisation des informations sur l'établissement siège est à privilégiée dans le cadre de dossiers à portée nationale. Il sera alors possible d'ajouter en "contributeur" des agents d'autres départements.
+    </span>
+    <% if @company_trackings.any? %>
+
+      <div class="fr-table" id="table-md-component">
+        <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+            <div class="fr-table__content">
+              <table id="table-md">
                 <thead>
                 <tr>
                   <th>Raison sociale</th>
@@ -59,11 +68,13 @@
                   </tr>
                 <% end %>
                 </tbody>
-              <% end %>
-            </table>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    <% else %>
+      <p>Aucun accompagnement trouvé pour cette entreprise.</p>
+    <% end %>
   </div>
 </div> 

@@ -1,4 +1,4 @@
-<div class="fr-card">
+<div class="fr-card establishment_trackings">
   <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
     <%= f.hidden_field :view, value: @current_view || "table", data: { view_toggle_target: "hiddenInput" } %>
     <div class="fr-container--fluid fr-m-2w">
@@ -25,6 +25,18 @@
         <div class="fr-col-3">
           <div class="fr-input-group">
             <%= f.label :state_in, "Statuts" %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-statuts" aria-describedby="tooltip-statuts">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les statuts</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="tooltip-statuts" role="tooltip" aria-hidden="true">
+              Le "statut" indique l'état d'avancement de l'accompagnement :
+              <ul>
+                <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
+                <li>Il est "terminé" lorsque l'agent a proposé une solution ou une orientation, sans besoin d'actions complémentaires de sa part, ou que les solutions proposées ont été épuisées (pas de solution possible pour aider la société, ou société fermée).</li>
+                <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
+              </ul>
+            </span>
             <%= f.collection_select :state_in, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, :last, :first, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
@@ -42,6 +54,13 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :tracking_labels_id_in, "Étiquettes" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-labels" aria-describedby="tooltip-labels">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les statuts</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-labels" role="tooltip" aria-hidden="true">
+                  Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
+                </span>
                 <%= f.select :tracking_labels_id_in,
                              @system_labels,
                              {},
@@ -51,6 +70,13 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :supporting_services_id_in, "Suivi par" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-supporting-services" aria-describedby="tooltip-supporting-services">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur le suivi par</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-supporting-services" role="tooltip" aria-hidden="true">
+                  Le champ "suivi par" indique les acteurs en charge du suivi de l'entreprise.
+                </span>
                 <%= f.select :supporting_services_id_in,
                              SupportingService.pluck(:name, :id),
                              {},
@@ -60,6 +86,13 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :sectors_id_in, "Filières" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-sectors" aria-describedby="tooltip-sectors">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les filières</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-sectors" role="tooltip" aria-hidden="true">
+                  La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national. 
+                </span>
                 <%= f.select :sectors_id_in,
                              Sector.pluck(:name, :id),
                              {},
@@ -69,6 +102,13 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :size_id_eq, "Taille" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-size" aria-describedby="tooltip-size">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur la taille</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-size" role="tooltip" aria-hidden="true">
+                  La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
+                </span>
                 <%= f.select :size_id_eq,
                              Size.pluck(:name, :id),
                              { include_blank: "Tous" },
@@ -78,6 +118,19 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :criticality_id_eq, "Criticité" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-criticality" aria-describedby="tooltip-criticality">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur la criticité</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-criticality" role="tooltip" aria-hidden="true">
+                  La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier : 
+                  <ul>
+                    <li>La criticité "élevée" indique que l’entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
+                    <li>La criticité "modérée" indique que l'entreprise rencontre une difficulté avérée qui n’entraîne pas un péril à court terme. Les difficultés sont néanmoins sérieuses et requièrent une attention particulière des membres du CODEFI.</li>
+                    <li>Par défaut, les dossiers n'ont "pas de criticité". Cela indique une difficulté avérée de l'entreprise obligeant à son suivi régulier au sein du CODEFI, mais ne remettant pas en cause la pérennité de l’entreprise et des emplois.</li>
+                  </ul>
+                  L’agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l’entreprise pour le CODEFI.
+                </span>
                 <%= f.select :criticality_id_eq,
                              Criticality.pluck(:name, :id),
                              { include_blank: "Tous" },
@@ -90,6 +143,13 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :modified_at_gteq, "Modifié après le : jj/mm/aaaa" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-modified-at-gteq" aria-describedby="tooltip-modified-at-gteq">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur la date de modification</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-modified-at-gteq" role="tooltip" aria-hidden="true">
+                  Retrouvez les accompagnements modifiés entre deux dates : pour lesquels au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité. 
+                </span>
                 <%= f.date_field :modified_at_gteq, class: "fr-input" %>
               </div>
             </div>
@@ -97,6 +157,13 @@
             <div class="fr-col-3">
               <div class="fr-input-group">
                 <%= f.label :modified_at_lteq, "Modifié avant le : jj/mm/aaaa" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-modified-at-lteq" aria-describedby="tooltip-modified-at-lteq">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur la date de modification</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-modified-at-lteq" role="tooltip" aria-hidden="true">
+                  Retrouvez les accompagnements modifiés entre deux dates : pour lesquels au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité. 
+                </span>
                 <%= f.date_field :modified_at_lteq, class: "fr-input" %>
               </div>
             </div>
@@ -111,8 +178,11 @@
                   <div class="fr-radio-group fr-mb-2w">
                     <input type="radio" id="radio-inline-1" name="q[my_tracking]" value="1"
                            class="fr-radio" <%= params.dig(:q, :my_tracking) == "1" ? "checked" : "" %>>
-                    <label class="fr-label" for="radio-inline-1">
+                    <label class="fr-label" for="radio-inline-1" aria-describedby="tooltip-my-tracking">
                       Mes accompagnements
+                      <span class="fr-tooltip fr-placement" id="tooltip-my-tracking" role="tooltip" aria-hidden="true">
+                        Tous les accompagnements pour lesquels vous êtes "référent" ou "participant".
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -120,8 +190,11 @@
                   <div class="fr-radio-group fr-mb-2w">
                     <input type="radio" id="radio-inline-2" name="q[my_tracking]" value="0"
                            class="fr-radio" <%= params.dig(:q, :my_tracking) != "1" ? "checked" : "" %>>
-                    <label class="fr-label" for="radio-inline-2">
+                    <label class="fr-label" for="radio-inline-2" aria-describedby="tooltip-all-trackings">
                       Tous les accompagnements
+                      <span class="fr-tooltip fr-placement" id="tooltip-all-trackings" role="tooltip" aria-hidden="true">
+                        Tous les accompagnements de votre zone géographique.
+                      </span>
                     </label>
                   </div>
                 </div>
@@ -129,8 +202,11 @@
                   <div class="fr-radio-group fr-mb-2w">
                     <input type="radio" id="radio-inline-3" name="q[my_tracking]" value="network"
                            class="fr-radio" <%= params.dig(:q, :my_tracking) == "network" ? "checked" : "" %>>
-                    <label class="fr-label" for="radio-inline-3">
+                    <label class="fr-label" for="radio-inline-3" aria-describedby="tooltip-my-network">
                       Les accompagnements de mon administration
+                      <span class="fr-tooltip fr-placement" id="tooltip-my-network" role="tooltip" aria-hidden="true">
+                        Tous les accompagnements pour lesquels au moins une personne de votre administration est référente ou participante, dans votre zone géographique.
+                      </span>
                     </label>
                   </div>
                 </div>

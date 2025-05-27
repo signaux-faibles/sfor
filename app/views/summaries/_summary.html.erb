@@ -1,6 +1,15 @@
 <div class="fr-p-3w" style="border: #6A6AF4 1px solid">
   <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h4>Synthèse</h4>
+    <h4>Synthèse
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-summary" aria-describedby="button-summary-<%= summary.network.name.parameterize %>">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur la synthèse</span>
+      </button>
+      <span class="fr-tooltip fr-placement" id="button-summary-<%= summary.network.name.parameterize %>" role="tooltip" aria-hidden="true">
+        La "synthèse" permet de comprendre rapidement et simplement les grands enjeux du dossier.<br/><br/>
+        Pour une meilleure homogénéisation, elle s'articule en trois paragraphes : présentation de l’entreprise, description des difficultés ou problématiques, actions engagées et calendrier de suivi. La mise en forme de ce champ s’effectue en Markdown (cf guide utilisateur).
+      </span>
+    </h4>
     <% if policy(@establishment_tracking).edit? %>
       <% if summary.locked? && summary.locked_by != current_user.id %>
         <%= button_tag "En cours d'édition par #{User.find(summary.locked_by).email}", class: "fr-btn", disabled: true %>

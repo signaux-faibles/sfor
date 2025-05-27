@@ -94,3 +94,50 @@
     -webkit-mask-image: url("../../../icons/business/shake-hands-line.svg");
     mask-image: url("../../../icons/business/shake-hands-line.svg");
 }
+
+/* Filter form alignment */
+.establishment_trackings .fr-input-group {
+    line-height: 2.5rem;
+}
+
+.establishment_trackings .fr-input-group .fr-btn--tooltip {
+    vertical-align: middle;
+    margin-left: 0.1rem;
+    position: relative;
+    top: -1px;
+}
+
+/* Table header alignment */
+.establishment_trackings_table th {
+    line-height: 2.5rem;
+}
+
+.establishment_trackings_table th .fr-btn--tooltip {
+    vertical-align: middle;
+    margin-left: 0.1rem;
+    position: relative;
+    top: -1px;
+}
+
+/* Info panel tooltip alignment */
+.tracking-info .fr-btn--tooltip {
+    position: relative;
+    top: 3px;
+}
+
+.contributors-info .fr-btn--tooltip {
+    position: relative;
+    top: 3px;
+}
+
+/* Edit form alignment */
+.edit_tracking .fr-input-group {
+    line-height: 2.5rem;
+}
+
+.edit_tracking .fr-input-group .fr-btn--tooltip {
+    vertical-align: middle;
+    margin-left: 0.1rem;
+    position: relative;
+    top: -1px;
+}

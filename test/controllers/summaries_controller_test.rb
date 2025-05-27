@@ -13,16 +13,27 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "user A sees tabs CRP and CODEFI networks" do
+    # Ensure networks are active
+    networks(:network_crp).update!(active: true)
+    networks(:network_codefi).update!(active: true)
+
     sign_in @user_a
 
     get establishment_establishment_tracking_path(@establishment, @establishment_tracking)
 
-    assert_select "button", text: "Informations", count: 1
-    assert_select "button", text: "CRP", count: 1
-    assert_select "button", text: "CODEFI", count: 1
-
-    # The user should only see three tabs (one for establishment details, his/her network and one for the CODEFI)
+    # Check that we have exactly 3 tabs
     assert_select "button.fr-tabs__tab", count: 3
+
+    # Check that we have the Informations tab
+    assert_select "button.fr-tabs__tab", text: "Informations", count: 1
+
+    # Check that we have both network tabs with their specific names
+    assert_select "button.fr-tabs__tab[id='tabpanel-crp']" do |element|
+      assert_match(/^CRP\s*$/, element.text.strip)
+    end
+    assert_select "button.fr-tabs__tab[id='tabpanel-codefi']" do |element|
+      assert_match(/^CODEFI\s*$/, element.text.strip)
+    end
   end
 
   test "user A can lock and edit the summary" do
