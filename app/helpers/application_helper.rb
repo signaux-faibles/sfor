@@ -61,6 +61,8 @@ module ApplicationHelper
       "background-color: var(--brown-opera-950-100); color: var(--warning-425-625);"
     when "Niveau vert"
       "background-color: var(--success-950-100); color: var(--success-425-625);"
+    when "Pas de criticité" # rubocop:disable Lint/DuplicateBranch
+      "background-color: var(--success-950-100); color: var(--success-425-625);"
     else
       "background-color: grey; color: black;"
     end
