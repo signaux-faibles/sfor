@@ -1,4 +1,4 @@
-<%= form_with(model: [@establishment, @establishment_tracking], local: true) do |form| %>
+<%= form_with(model: [@establishment, @establishment_tracking], local: true, class: "edit_tracking") do |form| %>
 
   <div class="fr-container">
     <h1>Nouvel accompagnement pour <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
@@ -11,6 +11,24 @@
 
           <div class="fr-input-group">
             <%= form.label 'Référents' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-referents" aria-describedby="button-new-tracking-referents">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les référents</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-referents" role="tooltip" aria-hidden="true">
+              Le "référent" est la principale personne en charge l'accompagnement de l'entreprise. 
+              Conformément à la circulaire du 6 mars 2024, il s'agit de l'interlocuteur le plus à même d'accompagner l'entreprise :
+              <ul>
+                <li>Le CRP pour les entreprises industrielles, stratégiques ou ayant un impact substantiel sur leur bassin d'emploi, employant plus de 50 salariés ;</li>
+                <li>Les services de l'URSSAF pour les entreprises présentant un passif social ;</li>
+                <li>Les services de la DGFiP pour les entreprises ayant un passif fiscal ;</li>
+                <li>Les services de la DDETS pour les entreprises rencontrant un enjeu d'emploi et de mutation des compétences, conjointement au CRP si nécessaire ;</li>
+                <li>Les services de la Banque de France pour les entreprises – hors établissements secondaires et filiales de groupes consolidés - rencontrant des difficultés de financement et notamment un besoin de médiation du crédit.</li>
+              </ul>
+
+              Plusieurs agents de différentes administrations peuvent être "référents" selon les problématiques et l'évolution du dossier. 
+              Les "référents" sont responsables de la mise à jour de la synthèse et sont les seuls à pouvoir modifier le statut. Le SP CODEFI dispose d'un droit de regard sur la synthèse dans le cadre de la rédaction du CR du CODEFI.
+            </span>
             <%= form.collection_select :referent_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", min_search: "3" } } %>
             <% @establishment_tracking.errors[:referents].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -19,6 +37,15 @@
 
           <div class="fr-input-group">
             <%= form.label :Participants %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-participants" aria-describedby="button-new-tracking-participants">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les participants</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-participants" role="tooltip" aria-hidden="true">
+              Le "participant" a besoin de suivre l'accompagnement sans intervenir directement auprès de l'entreprise. Cela lui permet de partager des informations via l'ajout de commentaire et/ ou de suivre facilement le dossier via le filtre "mes accompagnements" en page d'accueil. 
+              Le SP CODEFI est "participant" dans chaque accompagnement issu de la liste de détection, ce qui ne l'empêchera pas d'être "référent" sur un certain nombre de dossiers.
+              Il est possible d'ajouter en "participant" tout agent en dehors de votre zone géographique, après information du CODEFI. 
+            </span>
             <%= form.collection_select :participant_ids, User.all, :id, :full_name, {}, { multiple: true, class: 'tom-select', data: { controller: "tom-select", min_search: "3" } } %>
             <% @establishment_tracking.errors[:participants].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -37,6 +64,19 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:criticality_id].any? %>">
             <%= form.label :criticality_id, 'Criticité' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-criticality" aria-describedby="button-new-tracking-criticality">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur la criticité</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-criticality" role="tooltip" aria-hidden="true">
+              La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier : 
+              <ul>
+                <li>La criticité "élevée" indique que l’entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
+                <li>La criticité "modérée" indique que l'entreprise rencontre une difficulté avérée qui n’entraîne pas un péril à court terme. Les difficultés sont néanmoins sérieuses et requièrent une attention particulière des membres du CODEFI.</li>
+                <li>Par défaut, les dossiers n'ont "pas de criticité". Cela indique une difficulté avérée de l'entreprise obligeant à son suivi régulier au sein du CODEFI, mais ne remettant pas en cause la pérennité de l’entreprise et des emplois.</li>
+              </ul>
+              L’agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l’entreprise pour le CODEFI.
+            </span>
             <%= form.collection_select :criticality_id, 
                 Criticality.all, 
                 :id, 
@@ -50,6 +90,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>">
             <%= form.label :tracking_label_ids, 'Étiquettes' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-labels" aria-describedby="button-new-tracking-labels">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les étiquettes</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-labels" role="tooltip" aria-hidden="true">
+              Le champ "étiquettes" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
+            </span>
             <%= form.select :tracking_label_ids,
                             @system_labels,
                             {},
@@ -61,6 +108,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>">
             <%= form.label :supporting_service_ids, 'Suivi par' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-supporting-service" aria-describedby="button-new-tracking-supporting-service">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur le suivi par</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-supporting-service" role="tooltip" aria-hidden="true">
+              Le champ "suivi par" indique les parties prenantes concernées par le dossier.
+            </span>
             <%= form.collection_select :supporting_service_ids, SupportingService.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:supporting_service_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -69,6 +123,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>">
             <%= form.label :Difficultés %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-difficulty" aria-describedby="button-new-tracking-difficulty">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les difficultés</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-difficulty" role="tooltip" aria-hidden="true">
+              Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
+            </span>
             <%= form.collection_select :difficulty_ids, Difficulty.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:difficulty_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -77,6 +138,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>">
             <%= form.label :user_action_ids, 'Actions réalisées' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-user-action" aria-describedby="button-new-tracking-user-action">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les actions réalisées</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-user-action" role="tooltip" aria-hidden="true">
+              Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
+            </span>
             <%= form.collection_select :user_action_ids, UserAction.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select", tom_select_options: { sortField: { field: "position", direction: "asc" } } } } %>
             <% @establishment_tracking.errors[:user_action_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -85,6 +153,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>">
             <%= form.label :codefi_redirect_ids, 'Réorientation hors CODEFI' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-codefi-redirect" aria-describedby="button-new-tracking-codefi-redirect">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur la réorientation hors CODEFI</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-codefi-redirect" role="tooltip" aria-hidden="true">
+              Ce champ précise les acteurs ne relevant pas du CODEFI, internes ou externes à l'administration, vers lesquels l'entreprise a été redirigée.
+            </span>
             <%= form.collection_select :codefi_redirect_ids, CodefiRedirect.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:codefi_redirect_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -105,6 +180,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:size_id].any? %>">
             <%= form.label :size_id, 'Taille de l\'entreprise' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-size" aria-describedby="button-new-tracking-size">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur la taille de l'entreprise</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-size" role="tooltip" aria-hidden="true">
+              La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
+            </span>
             <%= form.collection_select :size_id, Size.all, :id, :name, { include_blank: "Sélectionner une taille" }, { class: 'fr-select' } %>
             <% @establishment_tracking.errors[:size_id].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -113,6 +195,13 @@
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>">
             <%= form.label :sector_ids, 'Filières' %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-sector" aria-describedby="button-new-tracking-sector">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur les filières</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="button-new-tracking-sector" role="tooltip" aria-hidden="true">
+              La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
+            </span>
             <%= form.collection_select :sector_ids, Sector.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:sector_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
