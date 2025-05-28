@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.2.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.3", ">= 7.1.3.2"
+gem "rails", "~> 7.2.2.1"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails", "~> 3.5.2"
@@ -12,10 +12,10 @@ gem "sprockets-rails", "~> 3.5.2"
 gem "pg", "~> 1.5.9"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
+gem "puma", "~> 6.4.2"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails", "~> 2.0.3"
+gem "importmap-rails", "~> 2.1.0"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
 gem "turbo-rails", "~> 2.0.11"
@@ -27,7 +27,7 @@ gem "stimulus-rails", "~> 1.3.4"
 gem "jbuilder", "~> 2.13.0"
 
 # Use Redis adapter to run Action Cable in production
-gem "redis", ">= 4.0.1"
+gem "redis", "~> 5.0.8"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -57,42 +57,41 @@ gem 'rack-cors', "~> 2.0.2"
 gem 'ransack', "~> 4.2.1"
 
 # Basic admin
-gem 'administrate', '1.0.0.beta1'
-gem 'administrate-field-belongs_to_search', '~> 0.9.0'
+gem 'administrate', '1.0.0.beta3'
 
 # Authorizations
-gem 'pundit', '~> 2.4'
+gem 'pundit', '~> 2.4.0'
 
 # Pagination
-gem 'kaminari', '~> 1.2', '>= 1.2.2'
+gem 'kaminari', '~> 1.2.2'
 
 # TODO put the gem back in development group (only using it here for demo purposes)
-gem 'faker', '~> 3.5', '>= 3.5.1'
+gem 'faker', '~> 3.5.1'
 
 # Import users from the habilitations file
-gem 'rubyXL', '~> 3.4', '>= 3.4.27'
+gem 'rubyXL', '~> 3.4.27'
 
 # State machine for establishment trackings
-gem 'aasm', '~> 5.5'
+gem 'aasm', '~> 5.5.0'
 
 # Links in summaries and comments made clickable
-gem 'rails_autolink', '~> 1.1', '>= 1.1.8'
+gem 'rails_autolink', '~> 1.1.8'
 
 # Handle soft delete
-gem 'discard', '~> 1.2'
+gem 'discard', '~> 1.2.0'
 
 # Track changes to models
-gem 'paper_trail', '~> 16.0'
+gem 'paper_trail', '~> 16.0.0'
 
 # Impersonate users
 gem 'pretender', '~> 0.5.0'
 
 # Generate excel files for establishment trackings
-gem 'caxlsx', '~> 4.1'
+gem 'caxlsx', '~> 4.1.0'
 
 # Send issues to Sentry
-gem 'sentry-ruby', '~> 5.22'
-gem 'sentry-rails', '~> 5.22'
+gem 'sentry-ruby', '~> 5.22.0'
+gem 'sentry-rails', '~> 5.22.0'
 
 # Interpret the markdown used in the summaries
 gem "redcarpet", '~> 3.6.0'
@@ -126,4 +125,4 @@ group :test do
 end
 
 # Authentication
-gem 'devise', '~> 4.9', '>= 4.9.4'
+gem 'devise', '~> 4.9.4'
