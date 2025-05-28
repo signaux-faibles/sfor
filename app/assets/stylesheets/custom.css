@@ -141,3 +141,14 @@
     position: relative;
     top: -1px;
 }
+
+/* Label wrapper alignment */
+.fr-label-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.fr-label-wrapper .fr-btn--tooltip {
+    position: relative;
+    top: 1px;
+}
