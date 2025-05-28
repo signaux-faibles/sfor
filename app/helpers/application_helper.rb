@@ -53,18 +53,25 @@ module ApplicationHelper
     end
   end
 
-  def paragraph_style_for(level)
+  def criticality_style_for(level)
     case level
     when "Niveau rouge"
       "background-color: var(--warning-950-100); color: var(--error-425-625);"
     when "Niveau orange"
       "background-color: var(--brown-opera-950-100); color: var(--warning-425-625);"
-    when "Niveau vert"
-      "background-color: var(--success-950-100); color: var(--success-425-625);"
-    when "Pas de criticité" # rubocop:disable Lint/DuplicateBranch
+    when "Niveau vert", "Pas de criticité"
       "background-color: var(--success-950-100); color: var(--success-425-625);"
     else
       "background-color: grey; color: black;"
+    end
+  end
+
+  def state_style_for(state)
+    case state
+    when "Terminé"
+      "background-color: var(--background-default-grey-active); color: var(--text-mention-grey);"
+    when "Sous surveillance"
+      "background-color: var(--beige-gris-galet-950-100); color: var(--brown-opera-sun-395);"
     end
   end
 end

@@ -20,11 +20,11 @@
     <h1 style="margin: 0;">Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
     <ul class="fr-badges-group fr-pt-1w">
       <li>
-        <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state) %>
+        <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state), style: state_style_for(@establishment_tracking.aasm.human_state) %>
       </li>
       <li>
         <% if @establishment_tracking.criticality.present? %>
-          <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: paragraph_style_for(@establishment_tracking.criticality.name) } %>
+          <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: criticality_style_for(@establishment_tracking.criticality.name) } %>
         <% end %>
       </li>
     </ul>

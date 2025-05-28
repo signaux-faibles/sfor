@@ -114,10 +114,10 @@
                     </span>
                     </td>
                     <td><%= tracking.establishment.siret %></td>
-                    <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %></td>
+                    <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state), style: state_style_for(tracking.aasm.human_state) %></td>
                     <td>
                       <% if tracking.criticality.present? %>
-                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
+                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: criticality_style_for(tracking.criticality.name) } %>
                       <% end %>
                     </td>
                     <td>
@@ -174,7 +174,7 @@
                     </li>
                     <li>
                       <% if tracking.criticality.present? %>
-                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: paragraph_style_for(tracking.criticality.name) } %>
+                        <%= content_tag :p, tracking.criticality.name, { class: badge_class_for(tracking.criticality.name), style: criticality_style_for(tracking.criticality.name) } %>
                       <% end %>
                     </li>
                   </ul>
