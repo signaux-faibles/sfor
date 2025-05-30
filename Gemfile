@@ -48,7 +48,7 @@ gem "bootsnap", "~> 1.18.4", require: false
 gem "mongo", "~> 2.21.0"
 
 # Decode keycloak tokens
-gem 'jwt', "~> 2.9.3"
+gem 'jwt', "~> 2.10.1"
 
 # Allow requests from legacy vue app
 gem 'rack-cors', "~> 2.0.2"
