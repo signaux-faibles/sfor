@@ -33,7 +33,7 @@
   </span>
   <p>
     <strong>Criticité
-      :</strong> <%= @establishment_tracking.criticality&.name || 'Pas de criticité renseignée' %>
+      :</strong> <%= @establishment_tracking.criticality&.name || 'Non renseigné' %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-criticality" aria-describedby="button-tracking-info-criticality">
       <span class="fr-icon-information-line" aria-hidden="true"></span>
       <span class="fr-sr-only">Information sur la criticité</span>
@@ -55,7 +55,7 @@
         <span class="fr-tag fr-tag--sm"><%= label.name %></span>
       <% end %>
     <% else %>
-      <span>Pas d'étiquette</span>
+      <span>Non renseigné</span>
     <% end %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-labels" aria-describedby="button-tracking-info-labels">
       <span class="fr-icon-information-line" aria-hidden="true"></span>
@@ -72,7 +72,7 @@
         <span class="fr-tag fr-tag--sm"><%= service.name %></span>
       <% end %>
     <% else %>
-      <span>Pas de suivis</span>
+      <span>Non renseigné</span>
     <% end %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-supporting-services" aria-describedby="button-tracking-info-supporting-services">
       <span class="fr-icon-information-line" aria-hidden="true"></span>
@@ -89,7 +89,7 @@
         <span class="fr-tag fr-tag--sm"><%= difficulty.name %></span>
       <% end %>
     <% else %>
-      <span>Pas de difficulté renseignée</span>
+      <span>Non renseigné</span>
     <% end %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-difficulties" aria-describedby="button-tracking-info-difficulties">
       <span class="fr-icon-information-line" aria-hidden="true"></span>
@@ -106,7 +106,7 @@
         <span class="fr-tag fr-tag--sm"><%= action.name %></span>
       <% end %>
     <% else %>
-      <span>Pas d'action renseignée</span>
+      <span>Non renseigné</span>
     <% end %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-user-actions" aria-describedby="button-tracking-info-user-actions">
       <span class="fr-icon-information-line" aria-hidden="true"></span>
@@ -122,7 +122,7 @@
         <span class="fr-tag fr-tag--sm"><%= redirect.name %></span>
       <% end %>
     <% else %>
-      <span>Pas de réorientation hors CODEFI renseignée</span>
+      <span>Non renseigné</span>
     <% end %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-codefi-redirects" aria-describedby="button-tracking-info-codefi-redirects">
       <span class="fr-icon-information-line" aria-hidden="true"></span>

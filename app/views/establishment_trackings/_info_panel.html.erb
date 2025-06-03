@@ -19,7 +19,7 @@
           </div>
           <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
           <p><strong>Taille de l'entreprise
-            :</strong> <%= @establishment_tracking.size&.name || 'Pas de taille renseignée' %>
+            :</strong> <%= @establishment_tracking.size&.name || 'Non renseigné' %>
             <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-size" aria-describedby="button-tracking-info-size">
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur la taille de l'entreprise</span>
@@ -32,7 +32,7 @@
             <% if @establishment_tracking.sectors.any? %>
               <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
             <% else %>
-              Pas de filière renseignée
+              Non renseigné
             <% end %>
             <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-sectors" aria-describedby="button-tracking-info-sectors">
               <span class="fr-icon-information-line" aria-hidden="true"></span>
@@ -87,10 +87,14 @@
           </p>
           <span class="fr-tooltip fr-placement" id="button-tracking-info-participants" role="tooltip" aria-hidden="true">
             Le "participant" a besoin de suivre l'accompagnement sans intervenir directement auprès de l'entreprise. Cela lui permet de partager des informations via l'ajout de commentaire et/ ou de suivre facilement le dossier via le filtre "mes accompagnements" en page d'accueil. 
-            Le SP CODEFI est « participant » dans chaque accompagnement issu de la liste de détection, ce qui ne l’empêchera pas d’être « référent » sur un certain nombre de dossiers.
+            Le SP CODEFI est "participant" dans chaque accompagnement issu de la liste de détection, ce qui ne l'empêchera pas d'être "référent" sur un certain nombre de dossiers.
             Il est possible d'ajouter en "participant" tout agent en dehors de votre zone géographique, après information du CODEFI. 
           </span>
-          <p><%= @establishment_tracking.participants.map { |participant| participant.display_name }.join(', ') %></p>
+          <% if @establishment_tracking.participants.any? %>
+            <p><%= @establishment_tracking.participants.map { |participant| participant.display_name }.join(', ') %></p>
+          <% else %>
+            <p>Non renseigné</p>
+          <% end %>
         </div>
       </div>
     </div>
