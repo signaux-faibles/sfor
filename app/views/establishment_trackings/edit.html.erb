@@ -86,13 +86,13 @@
           </div>
 
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>">
-            <%= form.label :supporting_service_ids, 'Suivi par' %>
+            <%= form.label :supporting_service_ids, 'Instances concernées' %>
             <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-supporting-service" aria-describedby="button-edit-tracking-supporting-service">
               <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur le suivi par</span>
+              <span class="fr-sr-only">Information sur les instances concernées</span>
             </button>
             <span class="fr-tooltip fr-placement" id="button-edit-tracking-supporting-service" role="tooltip" aria-hidden="true">
-              Le champ "suivi par" indique les parties prenantes concernées par le dossier.
+              Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
             </span>
             <%= form.collection_select :supporting_service_ids, SupportingService.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:supporting_service_ids].each do |error| %>

@@ -66,7 +66,7 @@
     Le champ "étiquettes" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
   </span>
   <p>
-    <strong>Suivi par :</strong>
+    <strong>Instances concernées :</strong>
     <% if @establishment_tracking.supporting_services.any? %>
       <% @establishment_tracking.supporting_services.each do |service| %>
         <span class="fr-tag fr-tag--sm"><%= service.name %></span>
@@ -80,7 +80,7 @@
     </button>
   </p>
   <span class="fr-tooltip fr-placement" id="button-tracking-info-supporting-services" role="tooltip" aria-hidden="true">
-    Le champ "suivi par" indique les parties prenantes concernées par le dossier.
+    Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
   </span>
   <p><strong>Difficultés
     :</strong>

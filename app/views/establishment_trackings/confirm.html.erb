@@ -24,7 +24,7 @@
         </div>
 
         <div class="fr-mb-2w">
-          <p class="fr-m-0"><strong>Suivi par</strong></p>
+          <p class="fr-m-0"><strong>Instances concernées</strong></p>
           <% if @establishment_tracking.supporting_services.any? %>
             <p><%= @establishment_tracking.supporting_services.map(&:name).join(', ') %></p>
           <% else %>
