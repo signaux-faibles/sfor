@@ -1,7 +1,7 @@
 <%= turbo_stream.remove dom_id(@comment) %>
 
 <%= turbo_stream.replace "flash" do %>
-  <div id="flash" class="fr-alert fr-alert--success">
+  <div id="flash" class="fr-alert fr-alert--success" aria-live="polite">
     <%= notice %>
   </div>
 <% end %>

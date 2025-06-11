@@ -6,6 +6,7 @@
         <%= form.label :content, "Contenu de la synthèse" %>
         <%= form.text_area :content,
                            class: "fr-input",
+                           autofocus: true,
                            data: { controller: "auto-resize", action: "input->auto-resize#adjust" },
                            value: form.object.content.presence || "**Contexte :**\n\n**Difficultés :**\n\n**Actions :**"
         %>

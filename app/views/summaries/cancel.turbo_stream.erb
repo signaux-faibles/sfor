@@ -3,7 +3,7 @@
 <% end %>
 
 <%= turbo_stream.replace "flash" do %>
-  <div id="flash" class="fr-alert fr-alert--info">
+  <div id="flash" class="fr-alert fr-alert--info" aria-live="polite">
     <%= notice %>
   </div>
 <% end %>
