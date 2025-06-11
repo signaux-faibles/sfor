@@ -12,52 +12,14 @@
   <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
     <div class="fr-col-6">
       <div class="fr-p-3w">
-        <h2>Informations sur l'accompagnement</h2>
-
-        <div class="fr-mb-2w">
-          <p class="fr-m-0"><strong>Étiquettes</strong></p>
-          <% if @establishment_tracking.tracking_labels.any? %>
-            <p><%= @establishment_tracking.tracking_labels.map(&:name).join(', ') %></p>
-          <% else %>
-            <p>Aucune étiquette sélectionnée</p>
-          <% end %>
-        </div>
-
-        <div class="fr-mb-2w">
-          <p class="fr-m-0"><strong>Instances concernées</strong></p>
-          <% if @establishment_tracking.supporting_services.any? %>
-            <p><%= @establishment_tracking.supporting_services.map(&:name).join(', ') %></p>
-          <% else %>
-            <p>Aucun service de suivi sélectionné</p>
-          <% end %>
-        </div>
-
-        <div class="fr-mb-2w">
-          <p class="fr-m-0"><strong>Difficultés</strong></p>
-          <% if @establishment_tracking.difficulties.any? %>
-            <p><%= @establishment_tracking.difficulties.map(&:name).join(', ') %></p>
-          <% else %>
-            <p>Aucune difficulté sélectionnée</p>
-          <% end %>
-        </div>
-
-        <div class="fr-mb-2w">
-          <p class="fr-m-0"><strong>Actions réalisées</strong></p>
-          <% if @establishment_tracking.user_actions.any? %>
-            <p><%= @establishment_tracking.user_actions.ordered.map(&:name).join(', ') %></p>
-          <% else %>
-            <p>Aucune action réalisée sélectionnée</p>
-          <% end %>
-        </div>
-
-        <div class="fr-mb-2w">
-          <p class="fr-m-0"><strong>Réorientation hors CODEFI</strong></p>
-          <% if @establishment_tracking.codefi_redirects.any? %>
-            <p><%= @establishment_tracking.codefi_redirects.ordered.map(&:name).join(', ') %></p>
-          <% else %>
-            <p>Aucune réorientation sélectionnée</p>
-          <% end %>
-        </div>
+        <%= render(TrackingInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment_tracking.establishment, current_user: current_user, show_edit_button: false)) %>
+      </div>
+    </div>
+  </div>
+  <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
+    <div class="fr-col-6">
+      <div class="fr-p-3w">
+        <%= render ContributorsInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment, current_user: current_user, show_manage_button: false) %>
       </div>
     </div>
   </div>

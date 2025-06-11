@@ -1,0 +1,42 @@
+<div class="contributors-info">
+  <div class="accompagnement__tab-title">
+    <h3>Contributeurs de l'accompagnement
+      <% if show_manage_button? %>
+        <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-add-line fr-mb-2w' %>
+      <% end %>
+    </h3>
+  </div>
+  <p><strong>Référents :</strong>
+    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-referents" aria-describedby="button-tracking-info-referents">
+      <span class="fr-icon-information-line" aria-hidden="true"></span>
+      <span class="fr-sr-only">Information sur les référents</span>
+    </button>
+  </p>
+  <span class="fr-tooltip fr-placement" id="button-tracking-info-referents" role="tooltip" aria-hidden="true">
+    Le "référent" est la principale personne en charge l'accompagnement de l'entreprise.
+    Conformément à la circulaire du 6 mars 2024, il s'agit de l'interlocuteur le plus à même d'accompagner l'entreprise :<br/><br/>
+    <ul>
+      <li>Le CRP pour les entreprises industrielles, stratégiques ou ayant un impact substantiel sur leur bassin d'emploi, employant plus de 50 salariés ;</li>
+      <li>Les services de l'URSSAF pour les entreprises présentant un passif social ;</li>
+      <li>Les services de la DGFiP pour les entreprises ayant un passif fiscal ;</li>
+      <li>Les services de la DDETS pour les entreprises rencontrant un enjeu d'emploi et de mutation des compétences, conjointement au CRP si nécessaire ;</li>
+      <li>Les services de la Banque de France pour les entreprises – hors établissements secondaires et filiales de groupes consolidés - rencontrant des difficultés de financement et notamment un besoin de médiation du crédit.</li>
+    </ul>
+    <br/><br>
+    Plusieurs agents de différentes administrations peuvent être "référents" selon les problématiques et l'évolution du dossier. 
+    Les "référents" sont responsables de la mise à jour de la synthèse et sont les seuls à pouvoir modifier le statut. Le SP CODEFI dispose d'un droit de regard sur la synthèse dans le cadre de la rédaction du CR du CODEFI. 
+  </span>
+  <p><%= referents %></p>
+  <p><strong>Participants :</strong>
+    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-participants" aria-describedby="button-tracking-info-participants">
+      <span class="fr-icon-information-line" aria-hidden="true"></span>
+      <span class="fr-sr-only">Information sur les participants</span>
+    </button>
+  </p>
+  <span class="fr-tooltip fr-placement" id="button-tracking-info-participants" role="tooltip" aria-hidden="true">
+    Le "participant" a besoin de suivre l'accompagnement sans intervenir directement auprès de l'entreprise. Cela lui permet de partager des informations via l'ajout de commentaire et/ ou de suivre facilement le dossier via le filtre "mes accompagnements" en page d'accueil. 
+    Le SP CODEFI est "participant" dans chaque accompagnement issu de la liste de détection, ce qui ne l'empêchera pas d'être "référent" sur un certain nombre de dossiers.
+    Il est possible d'ajouter en "participant" tout agent en dehors de votre zone géographique, après information du CODEFI. 
+  </span>
+  <p><%= participants %></p>
+</div> 
