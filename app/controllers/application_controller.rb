@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
   def user_not_authorized # rubocop:disable Metrics/MethodLength
     respond_to do |format|
       format.turbo_stream do
-        flash_html = "<div class='fr-alert fr-alert--error' aria-live='polite'>#{t('unauthorized.access_denied')}</div>".html_safe
+        flash_html = "<div class='fr-alert fr-alert--error' aria-live='polite'>#{t('unauthorized.access_denied')}</div>".html_safe # rubocop:disable Layout/LineLength
         render turbo_stream: turbo_stream.replace("flash", html: flash_html),
                status: :forbidden
       end
