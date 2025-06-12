@@ -6,30 +6,38 @@
       <% end %>
     </h3>
   </div>
-  <p>
-    <strong>Statut :</strong> <%= establishment_tracking.aasm.human_state %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-statuts" aria-describedby="button-tracking-info-statuts">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur les statuts</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-statuts" role="tooltip" aria-hidden="true">
-    Le "statut" indique l'état d'avancement de l'accompagnement :
-    <ul>
-      <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
-      <li>Il est "terminé" lorsque l'agent a proposé une solution ou une orientation, sans besoin d'actions complémentaires de sa part, ou que les solutions proposées ont été épuisées (pas de solution possible pour aider la société, ou société fermée).</li>
-      <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
-    </ul>
-  </span>
-  <p><strong>Date :</strong> <%= format_date(establishment_tracking.start_date) %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-start-date" aria-describedby="button-tracking-info-start-date">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur la date de début de l'accompagnement</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-start-date" role="tooltip" aria-hidden="true">
-    Date à laquelle l'accompagnement a été ouvert. 
-  </span>
+
+  <% unless confirmation_mode? %>
+    <p>
+      <strong>Statut :</strong> <%= establishment_tracking.aasm.human_state %>
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-statuts" aria-describedby="button-tracking-info-statuts">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les statuts</span>
+      </button>
+    </p>
+
+    <span class="fr-tooltip fr-placement" id="button-tracking-info-statuts" role="tooltip" aria-hidden="true">
+      Le "statut" indique l'état d'avancement de l'accompagnement :
+      <ul>
+        <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
+        <li>Il est "terminé" lorsque l'agent a proposé une solution ou une orientation, sans besoin d'actions complémentaires de sa part, ou que les solutions proposées ont été épuisées (pas de solution possible pour aider la société, ou société fermée).</li>
+        <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
+      </ul>
+    </span>
+
+    <p>
+      <strong>Date de début :</strong> <%= format_date(establishment_tracking.start_date) %>
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-start-date" aria-describedby="button-tracking-info-start-date">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur la date de début de l'accompagnement</span>
+      </button>
+    </p>
+    <span class="fr-tooltip fr-placement" id="button-tracking-info-start-date" role="tooltip" aria-hidden="true">
+      Date à laquelle l'accompagnement a été ouvert. 
+    </span>
+  <% end %>
+
+
   <p>
     <strong>Criticité :</strong> <%= establishment_tracking.criticality&.name || 'Non renseigné' %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-criticality" aria-describedby="button-tracking-info-criticality">
@@ -78,7 +86,8 @@
   <span class="fr-tooltip fr-placement" id="button-tracking-info-difficulties" role="tooltip" aria-hidden="true">
     Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
   </span>
-  <p><strong>Actions réalisées :</strong>
+  <p>
+    <strong>Actions réalisées :</strong>
     <%= format_tags(establishment_tracking.user_actions.ordered) %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-user-actions" aria-describedby="button-tracking-info-user-actions">
       <span class="fr-icon-information-line" aria-hidden="true"></span>
