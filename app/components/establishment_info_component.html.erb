@@ -1,0 +1,34 @@
+<div>
+    <div class="accompagnement__tab-title">
+    <h3>Informations sur l'établissement
+        <% if show_edit_button? %>
+        <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
+        <% end %>
+    </h3>
+    </div>
+    <p><strong>SIRET :</strong> <%= @establishment_tracking.establishment.siret %></p>
+    <p><strong>Taille de l'entreprise
+    :</strong> <%= @establishment_tracking.size&.name || 'Non renseigné' %>
+    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-size" aria-describedby="button-tracking-info-size">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur la taille de l'entreprise</span>
+    </button>
+    </p>
+    <span class="fr-tooltip fr-placement" id="button-tracking-info-size" role="tooltip" aria-hidden="true">
+    La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
+    </span>
+    <p><strong>Filières :</strong>
+    <% if @establishment_tracking.sectors.any? %>
+        <%= @establishment_tracking.sectors.map(&:name).join(', ') %>
+    <% else %>
+        Non renseigné
+    <% end %>
+    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-sectors" aria-describedby="button-tracking-info-sectors">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les filières</span>
+    </button>
+    </p>
+    <span class="fr-tooltip fr-placement" id="button-tracking-info-sectors" role="tooltip" aria-hidden="true">
+    La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
+    </span>
+</div>
