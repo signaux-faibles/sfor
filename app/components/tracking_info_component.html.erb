@@ -35,7 +35,22 @@
     <span class="fr-tooltip fr-placement" id="button-tracking-info-start-date" role="tooltip" aria-hidden="true">
       Date à laquelle l'accompagnement a été ouvert. 
     </span>
+
+    <% if establishment_tracking.state == 'completed' %>
+      <p>
+        <strong>Date de fin :</strong> <%= format_date(establishment_tracking.end_date) %>
+        <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-end-date" aria-describedby="button-tracking-info-end-date">
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-sr-only">Information sur la date de fin de l'accompagnement</span>
+        </button>
+      </p>
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-end-date" role="tooltip" aria-hidden="true">
+        Date à laquelle l'accompagnement a été clôturé.
+      </span>
+    <% end %>
   <% end %>
+
+
 
 
   <p>
