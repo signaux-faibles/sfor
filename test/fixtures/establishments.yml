@@ -33,6 +33,13 @@ establishment_paris5:
   department: department_paris
   company: company_paris
 
+establishment_paris6:
+  siren: '123456789'
+  siret: '12345678900015'
+  raison_sociale: 'Etablissement Paris 6'
+  department: department_paris
+  company: company_paris
+
 establishment_paris_no_trackings:
   siren: '123456789'
   siret: '12345678900011'

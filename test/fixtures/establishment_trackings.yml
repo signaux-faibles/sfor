@@ -23,7 +23,7 @@ establishment_tracking_paris3:
   participants: [ user_crp_paris3 ]
 
 establishment_tracking_paris_no_content:
-  state: 'completed'
+  state: 'in_progress'
   establishment: establishment_paris2
   start_date: 2023-02-02
   creator: user_crp_paris
