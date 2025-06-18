@@ -1,8 +1,7 @@
 namespace :migrate do # rubocop:disable Metrics/BlockLength
   desc "Migrate specific tracking labels to supporting services"
-  task labels_to_services: :environment do # rubocop:disable Metrics/BlockLength
+  task labels_to_services: :environment do
     label_to_service_mapping = {
-      "CODEFI" => "CODEFI",
       "CIRI" => "CIRI",
       "MRE" => "MRE",
       "DIRE" => "DIRE"
