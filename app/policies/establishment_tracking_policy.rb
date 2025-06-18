@@ -16,11 +16,11 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
 
   # Users must be able to view the record AND be a referent or participant to edit it
   def update?
-    show? && user_is_referent_or_participant?
+    show? && user_is_referent_or_participant? && !record.completed?
   end
 
   def edit?
-    show? && user_is_referent_or_participant?
+    show? && user_is_referent_or_participant? && !record.completed?
   end
 
   def destroy?
@@ -28,7 +28,7 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
   end
 
   def manage_contributors?
-    show?
+    show? && !record.completed?
   end
 
   def update_contributors?
