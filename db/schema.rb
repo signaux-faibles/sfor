@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_06_17_130331) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_18_141705) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -381,6 +381,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_17_130331) do
     t.boolean "system", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_tracking_labels_on_discarded_at"
   end
 
   create_table "tracking_participants", force: :cascade do |t|
