@@ -124,7 +124,7 @@
             <span class="fr-tooltip fr-placement" id="button-edit-tracking-user-action" role="tooltip" aria-hidden="true">
               Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
             </span>
-            <%= form.collection_select :user_action_ids, UserAction.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select", tom_select_options: { sortField: { field: "position", direction: "asc" } } } } %>
+            <%= form.collection_select :user_action_ids, UserAction.kept.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select", tom_select_options: { sortField: { field: "position", direction: "asc" } } } } %>
             <% @establishment_tracking.errors[:user_action_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>
