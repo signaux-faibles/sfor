@@ -110,7 +110,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   end
 
   def set_system_labels
-    @system_labels = TrackingLabel.where(system: true).pluck(:name, :id)
+    @system_labels = TrackingLabel.kept.where(system: true).pluck(:name, :id)
   end
 
   def tracking_params
