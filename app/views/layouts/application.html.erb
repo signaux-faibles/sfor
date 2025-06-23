@@ -38,17 +38,6 @@
 <%= render 'layouts/header' %>
 <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
 <div id="flash" aria-live="polite">
-  <div class="fr-notice fr-notice--warning">
-    <div class="fr-container">
-        <div class="fr-notice__body">
-            <p>
-                <span class="fr-notice__title"> Interruption du service - Espace "Accompagnements"</span>
-                <span class="fr-notice__desc">L'espace "Accompagnements" sera temporairement indisponible ce vendredi 20 juin entre 6h00 et 00h00 en raison d’une mise à jour. Merci de votre compréhension.</span>
-            </p>
-            <button title="Masquer le message" onclick="const notice = this.parentNode.parentNode.parentNode; notice.parentNode.removeChild(notice)" id="button-1305" class="fr-btn--close fr-btn">Masquer le message</button>
-        </div>
-    </div>
-  </div>
   <% flash.delete(:timedout).each do |type, msg| %>
     <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm">
       <p><%= msg %></p>
