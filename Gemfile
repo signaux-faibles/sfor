@@ -91,7 +91,7 @@ gem "sentry-rails", "~> 5.22"
 gem "sentry-ruby", "~> 5.22"
 
 # Interpret the markdown used in the summaries
-gem "redcarpet", "~> 3.6.0"
+gem "redcarpet", "~> 3.6.1"
 
 # Authentication
 gem "devise", "~> 4.9", ">= 4.9.4"
