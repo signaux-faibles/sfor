@@ -75,7 +75,7 @@ gem "aasm", "~> 5.5"
 gem "rails_autolink", "~> 1.1", ">= 1.1.8"
 
 # Handle soft delete
-gem "discard", "~> 1.2"
+gem "discard", "~> 1.4"
 
 # Track changes to models
 gem "paper_trail", "~> 16.0"
