@@ -1,11 +1,9 @@
-require "prometheus/middleware/collector"
-require "prometheus/middleware/exporter"
+require "prometheus_exporter/middleware"
 
-# Enable gzip compression for the metrics endpoint
-Rails.application.config.middleware.use Rack::Deflater
+# Config for PrometheusExporter to connect to the exporter service
+PrometheusExporter::Client.default = PrometheusExporter::Client.new(
+  host: ENV.fetch("PROMETHEUS_EXPORTER_HOST", "localhost"),
+  port: ENV.fetch("PROMETHEUS_EXPORTER_PORT", 9394)
+)
 
-# Add Prometheus collector middleware to trace HTTP requests
-Rails.application.config.middleware.use Prometheus::Middleware::Collector
-
-# Add Prometheus exporter middleware to expose metrics endpoint
-Rails.application.config.middleware.use Prometheus::Middleware::Exporter
+Rails.application.middleware.unshift PrometheusExporter::Middleware

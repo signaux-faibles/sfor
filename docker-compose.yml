@@ -13,13 +13,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    command: bash -c "rm -f tmp/pids/server.pid && rails s -b '0.0.0.0'"
+    command: bash -c "rm -f tmp/pids/server.pid && foreman start -f Procfile.dev"
     volumes:
       - .:/app
     ports:
       - "3001:3000"
+      - "9394:9394"
     environment:
       RAILS_ENV: development
+      PORT: 3000
     depends_on:
       - db
       - redis

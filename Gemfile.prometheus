@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+ruby "3.2.2"
+
+# Only include the prometheus_exporter gem
+gem "prometheus_exporter", "~> 2.2.0"
