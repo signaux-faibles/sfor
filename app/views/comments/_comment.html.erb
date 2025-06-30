@@ -18,7 +18,7 @@
 
     <div class="comment-footer">
       <span>le <%= l(comment.created_at, format: :custom) %> (il y a <%= time_ago_in_words(comment.created_at) %>)</span>
-      <% if comment.user == current_user %>
+      <% if comment.user == current_user && policy(@establishment_tracking).edit? %>
         <%= link_to "Modifier", edit_establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), data: { turbo_frame: dom_id(comment), turbo_stream: true, action: "auto-resize#focus" }, class: "edit-link", title: "Modifier ce commentaire" %>
         <%= link_to "Supprimer", establishment_establishment_tracking_comment_path(@establishment, @establishment_tracking, comment), method: :delete, data: { turbo_confirm: "Êtes-vous sûr ?", turbo_method: :delete, turbo_stream: true }, class: "delete-link", title: "Supprimer ce commentaire" %>
       <% end %>
