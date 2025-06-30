@@ -5,9 +5,9 @@ RUN apt-get update -qq && apt-get install -y build-essential
 
 WORKDIR /app
 
-# Copy the minimal Gemfile
-COPY Gemfile.prometheus Gemfile.lock ./
-RUN bundle install --without development test
+# Copy the prometheus Gemfile and rename it to Gemfile for bundler
+COPY Gemfile.prometheus ./Gemfile
+RUN bundle config set --local without 'development test' && bundle install
 
 EXPOSE 9394
 
