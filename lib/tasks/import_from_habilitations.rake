@@ -5,7 +5,9 @@
 module UserImporter
   def create_or_update_user(row)
     email = row["ADRESSE MAIL"]&.strip&.downcase
-    return if %w[admin keycloakadmin].include?(email)
+    segment_name = row["SEGMENT"]
+
+    return if %w[admin keycloakadmin].include?(email) || segment_name == "dreets"
 
     user = User.find_or_initialize_by(email: email)
     update_user_attributes(user, row)
