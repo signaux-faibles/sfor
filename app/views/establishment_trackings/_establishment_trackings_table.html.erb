@@ -162,7 +162,7 @@
                 <div class="fr-card__start">
                   <ul class="fr-badges-group">
                     <li>
-                      <%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state) %>
+                      <%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state), style: state_style_for(tracking.aasm.human_state) %>
                     </li>
                     <li>
                       <% if tracking.criticality.present? %>
