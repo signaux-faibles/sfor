@@ -14,6 +14,9 @@
         <span class="fr-icon-information-line" aria-hidden="true"></span>
         <span class="fr-sr-only">Information sur les statuts</span>
       </button>
+      <% unless @establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).exists? %>
+        <%= link_to 'Ajouter un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment), class: 'fr-btn fr-btn--secondary' %>
+      <% end %>
     </p>
 
     <span class="fr-tooltip fr-placement" id="button-tracking-info-statuts" role="tooltip" aria-hidden="true">
@@ -50,9 +53,6 @@
     <% end %>
   <% end %>
 
-
-
-
   <p>
     <strong>Criticité :</strong> <%= establishment_tracking.criticality&.name || 'Non renseigné' %>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-criticality" aria-describedby="button-tracking-info-criticality">
@@ -78,7 +78,7 @@
     </button>
   </p>
   <span class="fr-tooltip fr-placement" id="button-tracking-info-labels" role="tooltip" aria-hidden="true">
-    Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier. Certaines étiquettes non sélectionnables peuvent s’afficher : elles correspondent à d’anciens dispositifs aujourd’hui inactifs.
+    Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier. Certaines étiquettes non sélectionnables peuvent s'afficher : elles correspondent à d'anciens dispositifs aujourd'hui inactifs.
   </span>
   <p>
     <strong>Instances concernées :</strong>
