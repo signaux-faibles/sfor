@@ -5,6 +5,11 @@ class Users::SessionsController < Devise::SessionsController
     if user_signed_in?
       redirect_to root_path
     else
+      # Store the current visit token in session so it persists across redirects
+      if cookies[:ahoy_visit].present?
+        session[:pending_ahoy_visit] = cookies[:ahoy_visit]
+      end
+      
       redirect_to ENV.fetch("VUE_APP_FRONTEND_URL", nil).to_s, allow_other_host: true
     end
   end
@@ -17,6 +22,10 @@ class Users::SessionsController < Devise::SessionsController
       user = find_or_create_user(decoded_token)
       if user.active_for_authentication?
         sign_in(resource_name, user)
+        
+        # Update the current Ahoy visit with the user ID
+        update_current_visit_user(user)
+        
         render json: { success: true }
       else
         render json: { error: "Votre compte est inactif" }, status: :unauthorized
@@ -61,5 +70,21 @@ class Users::SessionsController < Devise::SessionsController
     roles = decoded_token.dig("resource_access", "signauxfaibles", "roles") || []
     roles_from_db = Role.where(name: roles)
     user.roles = roles_from_db
+  end
+
+  def update_current_visit_user(user)
+    # Get the current visit token from cookies or session
+    visit_token = cookies[:ahoy_visit] || session[:pending_ahoy_visit]
+    
+    if visit_token.present?
+      # Find and update the current visit with the user ID
+      current_visit = Ahoy::Visit.find_by(visit_token: visit_token)
+      if current_visit && current_visit.user_id.nil?
+        current_visit.update(user: user)
+      end
+      
+      # Clean up the session after using it
+      session.delete(:pending_ahoy_visit)
+    end
   end
 end

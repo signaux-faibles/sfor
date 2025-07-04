@@ -2,3 +2,6 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "dsfr"
+import "ahoy"
+import "track_tabs"
+

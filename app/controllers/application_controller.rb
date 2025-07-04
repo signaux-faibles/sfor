@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :check_user_segment
   before_action :set_sentry_user
+  after_action :track_action
 
   include Pundit::Authorization
 
@@ -45,5 +46,10 @@ class ApplicationController < ActionController::Base
     else
       Sentry.set_user({})
     end
+  end
+
+  def track_action
+    name = "#{controller_name}##{action_name}"
+    ahoy.track name, request.path_parameters
   end
 end
