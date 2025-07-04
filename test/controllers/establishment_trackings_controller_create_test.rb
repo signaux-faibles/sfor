@@ -79,7 +79,7 @@ class EstablishmentTrackingsControllerCreateTest < ActionDispatch::IntegrationTe
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :redirect
   end
 
   test "should create establishment_tracking with all optional fields" do # rubocop:disable Metrics/BlockLength

@@ -10,7 +10,7 @@
   <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
     <div class="fr-col-12">
       <div class="fr-p-3w">
-        <%= render(TrackingInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment_tracking.establishment, current_user: current_user, show_edit_button: false, confirmation_mode: true)) %>
+        <%= render(TrackingInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment_tracking.establishment, current_user: current_user, options: { show_edit_button: false, show_create_button: false, confirmation_mode: true })) %>
       </div>
     </div>
   </div>

@@ -3,22 +3,27 @@
 class TrackingInfoComponent < ViewComponent::Base
   include Pundit::Authorization
 
-  def initialize(establishment_tracking:, establishment:, current_user:, show_edit_button: true,
-                 confirmation_mode: false)
+  def initialize(establishment_tracking:, establishment:, current_user:, options: {})
     super
     @establishment_tracking = establishment_tracking
     @establishment = establishment
     @current_user = current_user
-    @show_edit_button = show_edit_button
-    @confirmation_mode = confirmation_mode
+    @show_edit_button = options.fetch(:show_edit_button, true)
+    @show_create_button = options.fetch(:show_create_button, true)
+    @confirmation_mode = options.fetch(:confirmation_mode, false)
   end
 
   private
 
-  attr_reader :establishment_tracking, :establishment, :current_user, :show_edit_button, :confirmation_mode
+  attr_reader :establishment_tracking, :establishment, :current_user, :show_edit_button, :show_create_button,
+              :confirmation_mode
 
   def can_edit?
     policy(establishment_tracking).edit?
+  end
+
+  def show_create_button?
+    show_create_button && policy(establishment_tracking).create?
   end
 
   def show_edit_button?

@@ -4,7 +4,7 @@
       <% if show_edit_button? %>
         <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
       <% end %>
-        <% unless @establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).exists? %>
+      <% if show_create_button? %>
         <%= link_to 'Créer un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line' %>
       <% end %>
     </h3>

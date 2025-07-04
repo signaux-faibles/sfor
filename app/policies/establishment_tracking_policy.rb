@@ -11,7 +11,7 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
   end
 
   def create?
-    user.department_ids.include?(record.establishment.department.id)
+    user.department_ids.include?(record.establishment.department.id) && establishment_has_no_active_tracking?
   end
 
   # Users must be able to view the record AND be a referent or participant to edit it
@@ -67,5 +67,9 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
 
   def user_is_participant?
     record.participants.include?(user)
+  end
+
+  def establishment_has_no_active_tracking?
+    record.establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).none?
   end
 end

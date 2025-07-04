@@ -132,7 +132,7 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
       }
     end
 
-    assert_response :unprocessable_entity
+    assert_response :redirect
   end
 
   test "should get edit" do

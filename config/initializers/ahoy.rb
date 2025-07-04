@@ -14,4 +14,3 @@ Ahoy.user_method = :true_user
 
 # Enable API tracking for JavaScript tracking
 Ahoy.api = true
-
