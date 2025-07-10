@@ -8,6 +8,12 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   belongs_to :creator, class_name: "User"
   belongs_to :establishment
 
+  has_many :establishment_tracking_labels, dependent: :destroy
+  has_many :tracking_labels, through: :establishment_tracking_labels
+
+  has_many :establishment_tracking_actions, dependent: :destroy
+  has_many :user_actions, through: :establishment_tracking_actions
+
   has_many :tracking_referents, dependent: :destroy
   has_many :referents, through: :tracking_referents, source: :user
   has_many :discarded_referents, -> { discarded }, through: :tracking_referents, source: :user
@@ -16,14 +22,12 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   has_many :participants, through: :tracking_participants, source: :user
   has_many :discarded_participants, -> { discarded }, through: :tracking_participants, source: :user
 
-  has_many :establishment_tracking_labels, dependent: :destroy
-  has_many :tracking_labels, through: :establishment_tracking_labels
-
-  has_many :establishment_tracking_actions, dependent: :destroy
-  has_many :user_actions, through: :establishment_tracking_actions
-
   has_many :summaries, dependent: :destroy
   has_many :comments, dependent: :destroy
+
+  # New tracking events and snapshots relationships
+  has_many :tracking_events, dependent: :destroy
+  has_many :establishment_tracking_snapshots, foreign_key: :original_tracking_id, dependent: :destroy
 
   belongs_to :size, optional: true
   belongs_to :criticality, optional: true
@@ -36,7 +40,11 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   before_save :update_modified_at_if_criticality_changed
   before_create :set_modified_at
 
-  attr_accessor :skip_update_modified_at
+  # Snapshot callbacks
+  after_create :create_creation_snapshot
+  after_update :create_update_snapshot_if_changed
+
+  attr_accessor :skip_update_modified_at, :skip_snapshot_creation, :modifier
 
   validates :referents, presence: true
   validate :at_least_one_active_referent, on: :update
@@ -100,24 +108,44 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
     end
   end
 
-  # Add a method to get summary-related versions
-  def summary_versions
-    versions.where(event: %w[summary_created summary_updated])
+  def create_snapshot!(event) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    EstablishmentTrackingSnapshot.create!(
+      original_tracking: self,
+      tracking_event: event,
+
+      creator_email: creator.email,
+      state: state,
+      start_date: start_date,
+      end_date: end_date,
+      criticality_name: criticality&.name,
+      label_names: tracking_labels.pluck(:name),
+      supporting_service_names: supporting_services.pluck(:name),
+      difficulty_names: difficulties.pluck(:name),
+      user_action_names: user_actions.pluck(:name),
+      codefi_redirect_names: codefi_redirects.pluck(:name),
+
+      referent_emails: referents.kept.pluck(:email),
+      participant_emails: participants.kept.pluck(:email),
+
+      sector_names: sectors.pluck(:name),
+
+      establishment_siret: establishment.siret,
+      establishment_department_code: establishment.department.code,
+      establishment_department_name: establishment.department.name,
+      establishment_region_code: establishment.department.region&.code,
+      establishment_region_name: establishment.department.region&.libelle,
+      size_name: size&.name
+    )
   end
 
-  # Add a method to get the last summary change
-  def last_summary_change
-    summary_versions.last
-  end
-
-  # Add a method to get comment-related versions
-  def comment_versions
-    versions.where(event: %w[comment_created comment_modified comment_deleted])
-  end
-
-  # Add a method to get the last comment change
-  def last_comment_change
-    comment_versions.last
+  def create_event_and_snapshot!(event_type:, triggered_by_user:, description: nil, changes_summary: {})
+    TrackingEvent.create_event!(
+      establishment_tracking: self,
+      event_type: event_type,
+      triggered_by_user: triggered_by_user,
+      description: description,
+      changes_summary: changes_summary
+    )
   end
 
   private
@@ -147,5 +175,38 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
     return if @skip_modified_at_update
 
     self.modified_at = Date.current if criticality_id_changed?
+  end
+
+  # Snapshot creation callbacks
+  def create_creation_snapshot
+    return if @skip_snapshot_creation
+
+    create_event_and_snapshot!(
+      event_type: "creation",
+      triggered_by_user: creator,
+      description: "Tracking created for #{establishment.raison_sociale}",
+      changes_summary: { action: "created", tracking_id: id }
+    )
+  rescue StandardError => e
+    Rails.logger.error "Failed to create creation snapshot for tracking #{id}: #{e.message}"
+  end
+
+  def create_update_snapshot_if_changed
+    return if @skip_snapshot_creation
+    return if saved_changes.blank?
+
+    create_event_and_snapshot!(
+      event_type: "update",
+      triggered_by_user: determine_user_from_context,
+      description: "Update for #{establishment.raison_sociale}",
+      changes_summary: saved_changes.except("updated_at", "created_at")
+    )
+  rescue StandardError => e
+    Rails.logger.error "Failed to create update snapshot for tracking #{id}: #{e.message}"
+  end
+
+  def determine_user_from_context
+    # Use explicitly set modifier, fallback to creator
+    modifier || creator
   end
 end

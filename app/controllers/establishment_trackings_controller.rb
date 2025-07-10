@@ -54,9 +54,10 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def confirm; end
 
-  def create
+  def create # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
+    @establishment_tracking.modifier = current_user
     @establishment_tracking.start_date ||= Time.zone.today
 
     authorize @establishment_tracking
@@ -70,6 +71,8 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   end
 
   def update
+    @establishment_tracking.modifier = current_user
+
     ActiveRecord::Base.transaction do
       if tracking_params[:state] == "completed"
         handle_completed_state_update
@@ -87,6 +90,8 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   end
 
   def complete
+    @establishment_tracking.modifier = current_user
+
     if @establishment_tracking.update(state: "completed", end_date: Time.zone.today)
       flash[:success] = t("establishments.tracking.complete.success", raison_sociale: @establishment.raison_sociale)
       redirect_to [@establishment, @establishment_tracking]

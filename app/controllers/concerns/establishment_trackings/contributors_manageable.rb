@@ -13,6 +13,7 @@ module EstablishmentTrackings::ContributorsManageable
 
   def update_contributors
     authorize @establishment_tracking, :manage_contributors?
+    @establishment_tracking.modifier = current_user
 
     if @establishment_tracking.update(contributor_params)
       flash[:success] = t("establishments.tracking.contributors.update.success")
@@ -23,8 +24,10 @@ module EstablishmentTrackings::ContributorsManageable
     end
   end
 
-  def remove_referent
+  def remove_referent # rubocop:disable Metrics/MethodLength
     authorize @establishment_tracking, :manage_contributors?
+    @establishment_tracking.modifier = current_user
+
     user = User.find(params[:user_id])
     @tracking_referent = @establishment_tracking.tracking_referents.find_by(user: user)
 
@@ -37,8 +40,10 @@ module EstablishmentTrackings::ContributorsManageable
     end
   end
 
-  def remove_participant
+  def remove_participant # rubocop:disable Metrics/MethodLength
     authorize @establishment_tracking, :manage_contributors?
+    @establishment_tracking.modifier = current_user
+
     user = User.find(params[:user_id])
     @tracking_participant = @establishment_tracking.tracking_participants.find_by(user: user)
 

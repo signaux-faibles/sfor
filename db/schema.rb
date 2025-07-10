@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_03_131455) do
+ActiveRecord::Schema[7.2].define(version: 2025_07_08_131243) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -226,6 +226,42 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_131455) do
     t.index ["sector_id"], name: "index_establishment_tracking_sectors_on_sector_id"
   end
 
+  create_table "establishment_tracking_snapshots", force: :cascade do |t|
+    t.bigint "original_tracking_id", null: false
+    t.bigint "tracking_event_id", null: false
+    t.string "creator_email"
+    t.string "state", null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.string "criticality_name"
+    t.text "label_names", default: [], array: true
+    t.text "supporting_service_names", default: [], array: true
+    t.text "difficulty_names", default: [], array: true
+    t.text "user_action_names", default: [], array: true
+    t.text "codefi_redirect_names", default: [], array: true
+    t.string "size_name"
+    t.text "sector_names", default: [], array: true
+    t.text "referent_emails", default: [], array: true
+    t.text "participant_emails", default: [], array: true
+    t.text "referent_segment_names", default: [], array: true
+    t.text "participant_segment_names", default: [], array: true
+    t.text "referent_entity_names", default: [], array: true
+    t.text "participant_entity_names", default: [], array: true
+    t.string "establishment_siret"
+    t.string "establishment_department_code"
+    t.string "establishment_department_name"
+    t.string "establishment_region_code"
+    t.string "establishment_region_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["label_names"], name: "index_establishment_tracking_snapshots_on_label_names", using: :gin
+    t.index ["original_tracking_id"], name: "index_establishment_tracking_snapshots_on_original_tracking_id"
+    t.index ["participant_emails"], name: "index_establishment_tracking_snapshots_on_participant_emails", using: :gin
+    t.index ["referent_emails"], name: "index_establishment_tracking_snapshots_on_referent_emails", using: :gin
+    t.index ["state"], name: "index_establishment_tracking_snapshots_on_state"
+    t.index ["tracking_event_id"], name: "index_establishment_tracking_snapshots_on_tracking_event_id"
+  end
+
   create_table "establishment_tracking_supporting_services", force: :cascade do |t|
     t.bigint "establishment_tracking_id", null: false
     t.bigint "supporting_service_id", null: false
@@ -419,6 +455,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_131455) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tracking_events", force: :cascade do |t|
+    t.bigint "establishment_tracking_id", null: false
+    t.bigint "triggered_by_user_id", null: false
+    t.string "event_type", null: false
+    t.text "description"
+    t.json "changes_summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_tracking_events_on_created_at"
+    t.index ["establishment_tracking_id", "created_at"], name: "idx_on_establishment_tracking_id_created_at_45a748e8c5"
+    t.index ["establishment_tracking_id"], name: "index_tracking_events_on_establishment_tracking_id"
+    t.index ["event_type"], name: "index_tracking_events_on_event_type"
+    t.index ["triggered_by_user_id"], name: "index_tracking_events_on_triggered_by_user_id"
+  end
+
   create_table "tracking_labels", force: :cascade do |t|
     t.string "name", null: false
     t.boolean "system", default: true, null: false
@@ -530,6 +581,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_131455) do
   add_foreign_key "establishment_tracking_labels", "tracking_labels"
   add_foreign_key "establishment_tracking_sectors", "establishment_trackings"
   add_foreign_key "establishment_tracking_sectors", "sectors"
+  add_foreign_key "establishment_tracking_snapshots", "establishment_trackings", column: "original_tracking_id"
+  add_foreign_key "establishment_tracking_snapshots", "tracking_events"
   add_foreign_key "establishment_tracking_supporting_services", "establishment_trackings"
   add_foreign_key "establishment_tracking_supporting_services", "supporting_services"
   add_foreign_key "establishment_trackings", "criticalities"
@@ -546,6 +599,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_03_131455) do
   add_foreign_key "segments", "networks"
   add_foreign_key "summaries", "establishment_trackings"
   add_foreign_key "summaries", "networks"
+  add_foreign_key "tracking_events", "establishment_trackings"
+  add_foreign_key "tracking_events", "users", column: "triggered_by_user_id"
   add_foreign_key "tracking_participants", "establishment_trackings"
   add_foreign_key "tracking_participants", "users"
   add_foreign_key "tracking_referents", "establishment_trackings"
