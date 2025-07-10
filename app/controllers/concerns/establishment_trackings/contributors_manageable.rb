@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module EstablishmentTrackings::ContributorsManageable
+module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
 
   included do
@@ -15,12 +15,12 @@ module EstablishmentTrackings::ContributorsManageable
     authorize @establishment_tracking, :manage_contributors?
     @establishment_tracking.modifier = current_user
 
+    old_contributors = capture_current_contributors
+
     if @establishment_tracking.update(contributor_params)
-      flash[:success] = t("establishments.tracking.contributors.update.success")
-      redirect_to [@establishment, @establishment_tracking]
+      handle_successful_update(old_contributors)
     else
-      @establishment_tracking.reload
-      render :manage_contributors, status: :unprocessable_entity
+      handle_failed_update
     end
   end
 
@@ -32,6 +32,9 @@ module EstablishmentTrackings::ContributorsManageable
     @tracking_referent = @establishment_tracking.tracking_referents.find_by(user: user)
 
     if @tracking_referent&.destroy
+      # Create snapshot for referent removal
+      create_referents_snapshot_if_changed([user], [])
+
       respond_to do |format|
         format.turbo_stream
       end
@@ -48,6 +51,9 @@ module EstablishmentTrackings::ContributorsManageable
     @tracking_participant = @establishment_tracking.tracking_participants.find_by(user: user)
 
     if @tracking_participant&.destroy
+      # Create snapshot for participant removal
+      create_participants_snapshot_if_changed([user], [])
+
       respond_to do |format|
         format.turbo_stream
       end
@@ -57,6 +63,29 @@ module EstablishmentTrackings::ContributorsManageable
   end
 
   private
+
+  def capture_current_contributors
+    {
+      referents: @establishment_tracking.referents.to_a,
+      participants: @establishment_tracking.participants.to_a
+    }
+  end
+
+  def handle_successful_update(old_contributors)
+    new_referents = @establishment_tracking.referents.reload.to_a
+    new_participants = @establishment_tracking.participants.reload.to_a
+
+    create_referents_snapshot_if_changed(old_contributors[:referents], new_referents)
+    create_participants_snapshot_if_changed(old_contributors[:participants], new_participants)
+
+    flash[:success] = t("establishments.tracking.contributors.update.success")
+    redirect_to [@establishment, @establishment_tracking]
+  end
+
+  def handle_failed_update
+    @establishment_tracking.reload
+    render :manage_contributors, status: :unprocessable_entity
+  end
 
   def contributor_params # rubocop:disable Metrics/MethodLength
     establishment_tracking_params = params.require(:establishment_tracking).permit(
@@ -97,5 +126,51 @@ module EstablishmentTrackings::ContributorsManageable
                                                                        locals: { message: message })
       end
     end
+  end
+
+  def create_referents_snapshot_if_changed(old_referents, new_referents)
+    create_contributors_snapshot_if_changed(old_referents, new_referents, "referents_change", "referent")
+  end
+
+  def create_participants_snapshot_if_changed(old_participants, new_participants)
+    create_contributors_snapshot_if_changed(old_participants, new_participants, "participants_change", "participant")
+  end
+
+  def create_contributors_snapshot_if_changed(old_users, new_users, event_type, role_name) # rubocop:disable Metrics/MethodLength
+    return if old_users.map(&:id).sort == new_users.map(&:id).sort
+
+    added = new_users - old_users
+    removed = old_users - new_users
+    return if added.empty? && removed.empty?
+
+    description, changes_summary = build_change_data(added, removed, role_name)
+
+    @establishment_tracking.snapshot_service.create_event_and_snapshot!(
+      event_type: event_type,
+      triggered_by_user: current_user,
+      description: "#{description} for #{@establishment_tracking.establishment.raison_sociale}",
+      changes_summary: changes_summary
+    )
+  end
+
+  def build_change_data(added, removed, role_name) # rubocop:disable Metrics/MethodLength
+    description_parts = []
+    changes_summary = {}
+
+    if added.any?
+      description_parts << "Added #{role_name}(s): #{added.map(&:email).join(', ')}"
+      changes_summary[:added] = user_summary(added)
+    end
+
+    if removed.any?
+      description_parts << "Removed #{role_name}(s): #{removed.map(&:email).join(', ')}"
+      changes_summary[:removed] = user_summary(removed)
+    end
+
+    [description_parts.join("; "), changes_summary]
+  end
+
+  def user_summary(users)
+    users.map { |user| { id: user.id, email: user.email, name: user.full_name } }
   end
 end

@@ -5,7 +5,7 @@ class TrackingEvent < ApplicationRecord
 
   validates :event_type, presence: true
   validates :event_type, inclusion: {
-    in: %w[creation update state_change]
+    in: %w[creation update state_change referents_change participants_change]
   }
 
   scope :of_type, ->(type) { where(event_type: type) }
@@ -22,7 +22,7 @@ class TrackingEvent < ApplicationRecord
     )
 
     # Create snapshot after event is created
-    establishment_tracking.create_snapshot!(event)
+    establishment_tracking.snapshot_service.create_snapshot!(event)
 
     event
   end

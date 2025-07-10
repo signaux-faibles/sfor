@@ -108,44 +108,17 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
     end
   end
 
-  def create_snapshot!(event) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-    EstablishmentTrackingSnapshot.create!(
-      original_tracking: self,
-      tracking_event: event,
-
-      creator_email: creator.email,
-      state: state,
-      start_date: start_date,
-      end_date: end_date,
-      criticality_name: criticality&.name,
-      label_names: tracking_labels.pluck(:name),
-      supporting_service_names: supporting_services.pluck(:name),
-      difficulty_names: difficulties.pluck(:name),
-      user_action_names: user_actions.pluck(:name),
-      codefi_redirect_names: codefi_redirects.pluck(:name),
-
-      referent_emails: referents.kept.pluck(:email),
-      participant_emails: participants.kept.pluck(:email),
-
-      sector_names: sectors.pluck(:name),
-
-      establishment_siret: establishment.siret,
-      establishment_department_code: establishment.department.code,
-      establishment_department_name: establishment.department.name,
-      establishment_region_code: establishment.department.region&.code,
-      establishment_region_name: establishment.department.region&.libelle,
-      size_name: size&.name
-    )
-  end
-
   def create_event_and_snapshot!(event_type:, triggered_by_user:, description: nil, changes_summary: {})
-    TrackingEvent.create_event!(
-      establishment_tracking: self,
+    snapshot_service.create_event_and_snapshot!(
       event_type: event_type,
       triggered_by_user: triggered_by_user,
       description: description,
       changes_summary: changes_summary
     )
+  end
+
+  def snapshot_service
+    @snapshot_service ||= EstablishmentTrackingSnapshotService.new(self)
   end
 
   private
