@@ -47,8 +47,8 @@ gem "bootsnap", "~> 1.18.4", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-# JWT token handling for API services and statistics
-gem "jwt", "~> 2.9.3"
+# Decode keycloak tokens
+gem "jwt", "~> 3.1.2"
 
 # Allow requests from legacy vue app
 gem "rack-cors", "~> 2.0.2"
