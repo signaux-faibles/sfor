@@ -5,7 +5,7 @@ class TrackingEvent < ApplicationRecord
 
   validates :event_type, presence: true
   validates :event_type, inclusion: {
-    in: %w[creation update state_change referents_change participants_change]
+    in: %w[creation update state_change referents_change participants_change supporting_services_change]
   }
 
   scope :of_type, ->(type) { where(event_type: type) }

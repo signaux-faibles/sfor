@@ -5,6 +5,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   include EstablishmentTrackings::StateManageable
   include EstablishmentTrackings::Loadable
   include EstablishmentTrackings::ContributorsManageable
+  include EstablishmentTrackings::SupportingServicesTrackable
 
   before_action :set_paper_trail_whodunnit
 
@@ -73,11 +74,14 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   def update
     @establishment_tracking.modifier = current_user
 
+    # Capture old supporting services before update
+    old_supporting_services = @establishment_tracking.supporting_services.to_a
+
     ActiveRecord::Base.transaction do
       if tracking_params[:state] == "completed"
-        handle_completed_state_update
+        handle_completed_state_update(old_supporting_services)
       else
-        handle_regular_update
+        handle_regular_update(old_supporting_services)
       end
     end
   end
@@ -127,13 +131,15 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     )
   end
 
-  def handle_completed_state_update # rubocop:disable Metrics/MethodLength
+  def handle_completed_state_update(old_supporting_services) # rubocop:disable Metrics/MethodLength
     if @establishment_tracking.completed? && @establishment_tracking.update(prepare_label_params(tracking_params))
+      track_supporting_services_changes_if_any(old_supporting_services)
       redirect_to(
         [@establishment, @establishment_tracking],
         success: t("establishments.tracking.update.success")
       )
     elsif @establishment_tracking.update(prepare_label_params(tracking_params.except(:state)))
+      track_supporting_services_changes_if_any(old_supporting_services)
       redirect_to(
         confirm_establishment_establishment_tracking_path(@establishment, @establishment_tracking)
       )
@@ -142,8 +148,9 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     end
   end
 
-  def handle_regular_update
+  def handle_regular_update(old_supporting_services)
     if @establishment_tracking.update(prepare_label_params(tracking_params))
+      track_supporting_services_changes_if_any(old_supporting_services)
       flash[:success] = t("establishments.tracking.update.success")
       redirect_to [@establishment, @establishment_tracking]
     else
