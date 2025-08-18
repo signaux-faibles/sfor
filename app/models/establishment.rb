@@ -9,6 +9,8 @@ class Establishment < ApplicationRecord
 
   has_many :establishment_trackings, dependent: :destroy
   has_many :contacts, dependent: :destroy
+  has_many :osf_apdemandes, foreign_key: :siret, primary_key: :siret, dependent: :destroy
+  has_many :osf_apconsos, foreign_key: :siret, primary_key: :siret, dependent: :destroy
 
   validates :siren, presence: true, length: { is: 9 }
   validates :siret, presence: true, length: { is: 14 }, uniqueness: { scope: :siren }

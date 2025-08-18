@@ -62,6 +62,64 @@ config.web_console.permissions = '192.168.65.1'
 This is because rails sees the ip trying to access the rails web console as some Docker internal IP (might vary depending on your OS)
 and rails does not authorize ips other than localhost to access the rails web console for security reasons.
 
+# OSF Data Synchronization
+
+The application can synchronize data from the database where `opensignauxfaibles` writes data. This includes `stg_apconso` and `stg_apdemande` tables.
+
+## Environment Configuration
+
+Before running synchronization commands, you need to configure the `opensignauxfaibles` database connection by setting these environment variables:
+
+```bash
+OSF_DATABASE_HOST=osf_database_host
+OSF_DATABASE_PORT=5432
+OSF_DATABASE_NAME=osf_database_name
+OSF_DATABASE_USERNAME=osf_database_user
+OSF_DATABASE_PASSWORD=osf_database_password
+OSF_DATABASE_POOL=5
+```
+
+## Synchronization Commands
+
+### Sync Individual Data Types
+
+To synchronize specific data types independently:
+
+```bash
+# Sync apdemande data only
+docker compose exec web rails osf:sync_apdemande
+
+# Sync apconso data only
+docker compose exec web rails osf:sync_apconso
+```
+
+### Sync All OSF Data
+
+To synchronize all OSF data types at once:
+
+```bash
+docker compose exec web rails osf:sync_all
+```
+
+## What Gets Synchronized
+
+- **OSF Apdemande**: Data from `stg_apdemande` table → `osf_apdemandes` table
+- **OSF Apconso**: Data from `stg_apconso` table → `osf_apconsos` table
+
+## Features
+
+- **Smart Updates**: Creates new records or updates existing ones based on primary keys
+- **Establishment Validation**: Only syncs data for establishments that exist in the Rails application
+- **Comprehensive Logging**: Each sync type logs to separate files in the `log/` directory
+- **Error Handling**: Continues processing even if individual records fail
+- **Statistics**: Reports how many records were created, updated, or failed
+
+## Log Files
+
+Synchronization logs are saved to:
+- `log/osf_apdemande_sync.log` - Apdemande sync logs
+- `log/osf_apconso_sync.log` - Apconso sync logs
+
 # Asset Pipeline
 
 This Rails application uses a hybrid approach for managing assets, combining **Sprockets** for CSS processing and **Import Maps** for JavaScript modules.
