@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_07_08_131243) do
+ActiveRecord::Schema[7.2].define(version: 2025_08_07_092718) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -394,6 +394,39 @@ ActiveRecord::Schema[7.2].define(version: 2025_07_08_131243) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "active", default: false, null: false
+  end
+
+  create_table "osf_apconsos", force: :cascade do |t|
+    t.string "siret", limit: 14
+    t.string "id_demande", limit: 11
+    t.float "heures_consommees"
+    t.float "montant"
+    t.integer "effectif"
+    t.date "periode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id_demande"], name: "index_osf_apconsos_on_id_demande"
+    t.index ["siret"], name: "index_osf_apconsos_on_siret"
+  end
+
+  create_table "osf_apdemandes", primary_key: "id_demande", id: { type: :string, limit: 11 }, force: :cascade do |t|
+    t.string "siret", limit: 14
+    t.integer "effectif_entreprise"
+    t.integer "effectif"
+    t.date "date_statut"
+    t.date "periode_debut"
+    t.date "periode_fin"
+    t.float "hta"
+    t.float "mta"
+    t.integer "effectif_autorise"
+    t.integer "motif_recours_se"
+    t.float "heures_consommees"
+    t.float "montant_consomme"
+    t.integer "effectif_consomme"
+    t.integer "perimetre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["siret"], name: "index_osf_apdemandes_on_siret"
   end
 
   create_table "regions", force: :cascade do |t|
