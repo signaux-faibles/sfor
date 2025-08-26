@@ -1,0 +1,24 @@
+<div id="tabpanel-financier-panel"
+     class="fr-tabs__panel"
+     role="tabpanel"
+     aria-labelledby="tabpanel-financier"
+     tabindex="0">
+  
+  <!-- Financial Widget with Turbo Frame -->
+  <%= turbo_frame_tag "financial_widget", 
+      src: financial_widget_company_path(@company), 
+      loading: :lazy do %>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+      <div class="fr-col-12">
+        <h4>
+          Données financières Banque de France
+          <span class="fr-badge fr-badge--info fr-badge--sm">Chargement...</span>
+        </h4>
+        <div class="fr-text--center fr-py-4w">
+          <div class="fr-spinner" aria-hidden="true"></div>
+          <p class="fr-text--sm fr-mt-2w">Récupération des données financières...</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

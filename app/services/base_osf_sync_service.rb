@@ -11,7 +11,7 @@ class BaseOsfSyncService
   end
 
   def perform # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-    OsfDatabaseConnectionService.with_connection do |db_service|
+    Osf::DatabaseConnectionService.with_connection do |db_service|
       @db_service = db_service
       sync_data
     end

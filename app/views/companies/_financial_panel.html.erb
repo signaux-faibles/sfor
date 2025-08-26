@@ -1,0 +1,120 @@
+<div id="tabpanel-financier-panel"
+     class="fr-tabs__panel"
+     role="tabpanel"
+     aria-labelledby="tabpanel-financier"
+     tabindex="0">
+  
+  <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+    <div class="fr-col-12">
+      <h4>
+        Données financières Banque de France
+        <% if @financial_data&.dig("data")&.any? %>
+          <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
+        <% else %>
+          <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
+        <% end %>
+      </h4>
+      
+      <% if @financial_data&.dig("data")&.any? %>
+        <% latest_data = @financial_data["data"].first["data"] %>
+        <p class="fr-text--sm fr-mb-0">
+          <strong>Dernières données disponibles:</strong> Année <%= latest_data["annee"] %>
+          <% if latest_data["date_arrete_exercice"] %>
+            - Arrêté le <%= Date.parse("#{latest_data["date_arrete_exercice"][0..3]}-#{latest_data["date_arrete_exercice"][4..5]}-01").strftime("%m/%Y") rescue latest_data["date_arrete_exercice"] %>
+          <% end %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @financial_data&.dig("data")&.any? %>
+    <% 
+      # Sort financial data by year (oldest to newest)
+      sorted_data = @financial_data["data"].sort_by { |year_data| year_data["data"]["annee"].to_i }
+    %>
+    <div class="fr-table">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table class="fr-table fr-mt-0 fr-mb-0">
+              <thead>
+                <tr>
+                  <th>Indicateur</th>
+                  <% sorted_data.each do |year_data| %>
+                    <th class="fr-text--center">
+                      <%= year_data["data"]["annee"] %>
+                      <% if year_data["data"]["date_arrete_exercice"] %>
+                        <br><small class="fr-text--xs">
+                          <%= Date.parse("#{year_data["data"]["date_arrete_exercice"][0..3]}-#{year_data["data"]["date_arrete_exercice"][4..5]}-01").strftime("%m/%Y") rescue year_data["data"]["date_arrete_exercice"] %>
+                        </small>
+                      <% end %>
+                    </th>
+                  <% end %>
+                </tr>
+              </thead>
+              <tbody>
+                <% 
+                  indicators = [
+                    {key: "excedent_brut_exploitation", label: "Excédent brut d'exploitation", format: :currency},
+                    {key: "valeur_ajoutee_bdf", label: "Valeur ajoutée", format: :currency},
+                    {key: "capacite_autofinancement", label: "Capacité d'autofinancement", format: :currency},
+                    {key: "fonds_roulement_net_global", label: "Fonds de roulement net", format: :currency},
+                    {key: "besoin_en_fonds_de_roulement", label: "Besoin en fonds de roulement", format: :currency},
+                    {key: "disponibilites", label: "Disponibilités", format: :currency},
+                    {key: "total_dettes_stables", label: "Total dettes stables", format: :currency},
+                    {key: "ratio_fonds_roulement_net_global_sur_besoin_en_fonds_de_roulement", label: "Ratio FDR/BFR", format: :ratio}
+                  ]
+                %>
+                
+                <% indicators.each do |indicator| %>
+                  <tr>
+                    <th><%= indicator[:label] %></th>
+                    <% sorted_data.each do |year_data| %>
+                      <% valeurs = year_data["data"]["valeurs_calculees"]&.first %>
+                      <td class="fr-text--center">
+                        <% if valeurs&.dig(indicator[:key]) %>
+                          <% value_data = valeurs[indicator[:key]] %>
+                          <% if indicator[:format] == :currency %>
+                            <%= number_with_delimiter(value_data["valeur"]) %> €
+                          <% elsif indicator[:format] == :ratio %>
+                            <%= value_data["valeur"].round(2) %>
+                          <% end %>
+                          
+                          <% if value_data["evolution"] %>
+                            <br>
+                            <% evolution = value_data["evolution"] %>
+                            <% 
+                              # Special logic for debts - negative evolution is good
+                              is_debt = indicator[:key] == "total_dettes_stables"
+                              badge_class = if is_debt
+                                evolution >= 0 ? 'fr-badge--error' : 'fr-badge--success'
+                              else
+                                evolution >= 0 ? 'fr-badge--success' : 'fr-badge--error'
+                              end
+                            %>
+                            <span class="fr-badge fr-badge--sm <%= badge_class %>">
+                              <%= evolution >= 0 ? '+' : '' %><%= evolution.round(1) %>%
+                            </span>
+                          <% end %>
+                        <% else %>
+                          <span class="fr-text--disabled">-</span>
+                        <% end %>
+                      </td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="fr-alert fr-alert--info">
+      <p>
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        Aucune donnée financière disponible pour cette entreprise.
+      </p>
+    </div>
+  <% end %>
+</div>
