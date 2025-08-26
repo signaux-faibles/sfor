@@ -5,6 +5,6 @@
 namespace :osf do
   desc "Sync OSF apdemande data from OSF database to local Rails tables"
   task sync_apdemande: :environment do
-    OsfApdemandeSyncService.new.perform
+    Osf::ApdemandeSyncService.new.perform
   end
 end

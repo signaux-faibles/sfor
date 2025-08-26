@@ -1,0 +1,73 @@
+<div id="tabpanel-informations-panel"
+     class="fr-tabs__panel fr-tabs__panel--selected"
+     role="tabpanel"
+     aria-labelledby="tabpanel-informations"
+     tabindex="0">
+  
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <!-- Informations de base -->
+    <div class="fr-col-12 fr-col-md-6">
+      <div class="fr-card fr-card--bordered">
+        <div class="fr-card__body">
+          <div class="fr-card__content">
+            <h3 class="fr-card__title">Informations de base</h3>
+            <div class="fr-grid-row fr-grid-row--gutters">
+              <div class="fr-col-12">
+                <dl class="fr-grid-row">
+                  <dt class="fr-col-4"><strong>SIREN:</strong></dt>
+                  <dd class="fr-col-8"><%= @company.siren %></dd>
+                  
+                  <dt class="fr-col-4"><strong>Raison sociale:</strong></dt>
+                  <dd class="fr-col-8"><%= @company.raison_sociale %></dd>
+                  
+                  <dt class="fr-col-4"><strong>Effectif:</strong></dt>
+                  <dd class="fr-col-8"><%= @company.effectif %></dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSEE Widget with Turbo Frame -->
+    <div class="fr-col-12 fr-col-md-6">
+      <%= turbo_frame_tag "insee_widget", 
+          src: insee_widget_company_path(@company), 
+          loading: :lazy do %>
+        <div class="fr-card fr-card--bordered">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <h3 class="fr-card__title">
+                Données INSEE 
+                <span class="fr-badge fr-badge--info fr-badge--sm">Chargement...</span>
+              </h3>
+              <div class="fr-text--center fr-py-4w">
+                <div class="fr-spinner" aria-hidden="true"></div>
+                <p class="fr-text--sm fr-mt-2w">Récupération des données INSEE...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Establishments Widget with Turbo Frame -->
+  <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+    <div class="fr-col-12">
+      <%= turbo_frame_tag "establishments_widget", 
+          src: establishments_widget_company_path(@company), 
+          loading: :lazy do %>
+        <h4>
+          Établissements de l'entreprise
+          <span class="fr-badge fr-badge--info fr-badge--sm">Chargement...</span>
+        </h4>
+        <div class="fr-text--center fr-py-4w">
+          <div class="fr-spinner" aria-hidden="true"></div>
+          <p class="fr-text--sm fr-mt-2w">Récupération des établissements...</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

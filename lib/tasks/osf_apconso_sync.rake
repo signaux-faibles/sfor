@@ -5,6 +5,6 @@
 namespace :osf do
   desc "Sync OSF apconso data from OSF database to local Rails tables"
   task sync_apconso: :environment do
-    OsfApconsoSyncService.new.perform
+    Osf::ApconsoSyncService.new.perform
   end
 end
