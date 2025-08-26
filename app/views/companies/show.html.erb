@@ -1,38 +1,47 @@
-<div class="fr-container">
-  <h1><%= @company.raison_sociale %></h1>
-  <p>SIREN: <%= @company.siren %></p>
-  <p>SIRET: <%= @company.siret %></p>
-  <div class="fr-table--lg fr-table fr-table" id="table-lg-component">
-    <div class="fr-table__wrapper">
-      <div class="fr-table__container">
-        <div class="fr-table__content">
-          <table>
-            <caption>
-              Etablissements de cette entreprise
-            </caption>
-            <thead>
-            <tr>
-              <th>Raison sociale</th>
-              <th>SIRET</th>
-              <th>Département</th>
-              <th>Siège</th>
-              <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% @establishments.each do |establishment| %>
-              <tr>
-                <td><%= establishment.raison_sociale %></td>
-                <td><%= establishment.siret %></td>
-                <td><%= "#{establishment.department.name} (#{establishment.department.code})" %></td>
-                <td><%= establishment.is_siege ? 'Oui' : 'Non' %></td>
-                <td><%= link_to 'Voir', establishment %></td>
-              </tr>
-            <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
+<div class="fr-container--fluid">
+  <nav role="navigation" class="fr-ml-4w fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">
+      Voir le fil d'Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb-1">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <%= link_to 'Accompagnements', establishment_trackings_path, class: 'fr-breadcrumb__link' %>
+        </li>
+      </ol>
     </div>
+  </nav>
+  <div class="fr-pl-4w fr-pb-4w fr-pt-4w custom-background" style="display: flex; align-items: center; gap: 8px;">
+    <h1 style="margin: 0;"><%= @company.raison_sociale %></h1>
+  </div>
+  <div class="fr-tabs">
+    <ul class="fr-tabs__list custom-background fr-pb-0" role="tablist" aria-label="Gestion des onglets">
+      <!-- Company Information Tab -->
+      <li role="presentation">
+        <button id="tabpanel-informations"
+                class="fr-tabs__tab"
+                tabindex="0" role="tab"
+                aria-selected="true"
+                aria-controls="tabpanel-informations-panel">
+          Informations générales
+        </button>
+      </li>
+
+      <!-- Financial Data Tab -->
+      <li role="presentation">
+        <button id="tabpanel-financier"
+                class="fr-tabs__tab"
+                tabindex="-1" role="tab"
+                aria-selected="false"
+                aria-controls="tabpanel-financier-panel">
+          Données financières
+        </button>
+      </li>
+    </ul>
+
+    <%= render 'info_panel_with_widgets' %>
+    <%= render 'financial_panel_with_widgets' %>
+
+
   </div>
 </div>

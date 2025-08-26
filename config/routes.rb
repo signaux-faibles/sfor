@@ -63,6 +63,14 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :companies, path: "entreprises", only: %i[show] do
+    member do
+      get :insee_widget
+      get :financial_widget
+      get :establishments_widget
+    end
+  end
+
   resources :establishment_trackings, only: [:index], defaults: { format: :html }, path: "accompagnements"
 
   # Build a new 'accompagnement' from the Vue JS legacy app (using siret as query param)

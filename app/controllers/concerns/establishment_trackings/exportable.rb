@@ -7,7 +7,7 @@ module EstablishmentTrackings::Exportable
   private
 
   def generate_excel(establishment_trackings, filters)
-    EstablishmentTrackingExcelGenerator.new(establishment_trackings, filters, current_user).generate
+    Excel::EstablishmentTrackingGenerator.new(establishment_trackings, filters, current_user).generate
   end
 
   def export_establishment_trackings(establishment_trackings, query)

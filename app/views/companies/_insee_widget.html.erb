@@ -1,0 +1,88 @@
+<%= turbo_frame_tag "insee_widget" do %>
+  <div class="fr-card fr-card--bordered">
+    <div class="fr-card__body">
+      <div class="fr-card__content">
+        <h3 class="fr-card__title">Données INSEE 
+          <% if @insee_data %>
+            <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
+          <% else %>
+            <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
+          <% end %>
+        </h3>
+        
+        <% if @insee_data&.dig("data") %>
+          <% data = @insee_data["data"] %>
+          <dl class="fr-grid-row">
+            <% if data["type"] %>
+              <dt class="fr-col-4"><strong>Type:</strong></dt>
+              <dd class="fr-col-8">
+                <%= data["type"] == "personne_morale" ? "Personne morale" : "Personne physique" %>
+              </dd>
+            <% end %>
+            
+            <% if data["categorie_entreprise"] %>
+              <dt class="fr-col-4"><strong>Catégorie:</strong></dt>
+              <dd class="fr-col-8"><%= data["categorie_entreprise"] %></dd>
+            <% end %>
+            
+            <% if data["forme_juridique"] %>
+              <dt class="fr-col-4"><strong>Forme juridique:</strong></dt>
+              <dd class="fr-col-8">
+                <%= data["forme_juridique"]["libelle"] %>
+                <small class="fr-text--xs">(<%= data["forme_juridique"]["code"] %>)</small>
+              </dd>
+            <% end %>
+            
+            <% if data["activite_principale"] %>
+              <dt class="fr-col-4"><strong>Activité principale:</strong></dt>
+              <dd class="fr-col-8">
+                <%= data["activite_principale"]["libelle"] %>
+                <small class="fr-text--xs">(<%= data["activite_principale"]["code"] %>)</small>
+              </dd>
+            <% end %>
+            
+            <% if data["tranche_effectif_salarie"] %>
+              <dt class="fr-col-4"><strong>Tranche effectif:</strong></dt>
+              <dd class="fr-col-8">
+                <%= data["tranche_effectif_salarie"]["intitule"] %>
+                <% if data["tranche_effectif_salarie"]["date_reference"] %>
+                  <small class="fr-text--xs">(Réf: <%= data["tranche_effectif_salarie"]["date_reference"] %>)</small>
+                <% end %>
+              </dd>
+            <% end %>
+            
+            <% if data["etat_administratif"] %>
+              <dt class="fr-col-4"><strong>État:</strong></dt>
+              <dd class="fr-col-8">
+                <% if data["etat_administratif"] == "A" %>
+                  <span class="fr-badge fr-badge--success fr-badge--sm">Actif</span>
+                <% else %>
+                  <span class="fr-badge fr-badge--error fr-badge--sm">Cessé</span>
+                <% end %>
+              </dd>
+            <% end %>
+            
+            <% if data["date_creation"] %>
+              <dt class="fr-col-4"><strong>Date création:</strong></dt>
+              <dd class="fr-col-8">
+                <%= Time.at(data["date_creation"]).strftime("%d/%m/%Y") rescue "Date invalide" %>
+              </dd>
+            <% end %>
+            
+            <% if data["economie_sociale_et_solidaire"] %>
+              <dt class="fr-col-4"><strong>ESS:</strong></dt>
+              <dd class="fr-col-8">
+                <span class="fr-badge fr-badge--info fr-badge--sm">Oui</span>
+              </dd>
+            <% end %>
+          </dl>
+        <% else %>
+          <p class="fr-text--sm">
+            <span class="fr-icon-information-line" aria-hidden="true"></span>
+            Les données INSEE ne sont pas disponibles pour cette entreprise.
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
