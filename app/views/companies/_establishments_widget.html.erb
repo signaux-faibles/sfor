@@ -1,0 +1,143 @@
+<%= turbo_frame_tag "establishments_widget" do %>
+  <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+    <div class="fr-col-12">
+      <h4>
+        Établissements de l'entreprise (INSEE enrichi)
+        <% if @enriched_establishments&.any? %>
+          <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
+          <small class="fr-text--sm"> - <%= @enriched_establishments.size %> établissements</small>
+          <% enriched_count = @enriched_establishments.count { |e| e[:has_api_data] } %>
+          <small class="fr-text--sm"> (<%= enriched_count %> enrichis par l'API)</small>
+        <% else %>
+          <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
+        <% end %>
+      </h4>
+    </div>
+  </div>
+
+  <% if @enriched_establishments&.any? %>
+    <% 
+      # Utiliser les établissements enrichis (Rails + INSEE)
+      all_establishments = @enriched_establishments
+    %>
+    
+    <div class="fr-table">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table class="fr-table fr-mt-0 fr-mb-0">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>SIRET</th>
+                  <th>Commune</th>
+                  <th>Adresse</th>
+                  <th>Activité</th>
+                  <th>Effectif</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% all_establishments.each do |enriched_establishment| %>
+                  <% rails_data = enriched_establishment[:rails_data] %>
+                  <% insee_data = enriched_establishment[:insee_data] %>
+                  <% has_api_data = enriched_establishment[:has_api_data] %>
+                  
+                  <tr>
+                    <td>
+                      <% if rails_data.is_siege %>
+                        <span class="fr-badge fr-badge--info fr-badge--sm">SIÈGE</span>
+                      <% else %>
+                        <span class="fr-text--disabled">Établissement</span>
+                      <% end %>
+                      <% if has_api_data %>
+                        <br><span class="fr-badge fr-badge--success fr-badge--sm fr-badge--xs">API</span>
+                      <% end %>
+                    </td>
+                    
+                    <td>
+                      <strong><%= rails_data.siret %></strong>
+                    </td>
+                    
+                    <td>
+                      <% if insee_data&.dig("adresse", "libelle_commune") %>
+                        <%= insee_data.dig("adresse", "libelle_commune") %>
+                        <% if insee_data.dig("adresse", "code_postal") %>
+                          <br><small class="fr-text--xs">(<%= insee_data.dig("adresse", "code_postal") %>)</small>
+                        <% end %>
+                      <% else %>
+                        <%= rails_data.department&.name %>
+                      <% end %>
+                    </td>
+                    
+                    <td>
+                      <% if insee_data&.dig("adresse") %>
+                        <%= [
+                          insee_data.dig("adresse", "numero_voie"),
+                          insee_data.dig("adresse", "indice_repetition_voie"),
+                          insee_data.dig("adresse", "type_voie"),
+                          insee_data.dig("adresse", "libelle_voie"),
+                          insee_data.dig("adresse", "complement_adresse"),
+                          insee_data.dig("adresse", "code_postal"),
+                          insee_data.dig("adresse", "libelle_commune")
+                        ].compact.reject(&:blank?).join(" ") %>
+                      <% else %>
+                        <span class="fr-text--disabled">Adresse non disponible</span>
+                      <% end %>
+                    </td>
+                    
+                    <td>
+                      <% if insee_data&.dig("activite_principale", "libelle") %>
+                        <%= insee_data.dig("activite_principale", "libelle") %>
+                        <br><small class="fr-text--xs">(<%= insee_data.dig("activite_principale", "code") %>)</small>
+                      <% else %>
+                        <span class="fr-text--disabled">-</span>
+                      <% end %>
+                    </td>
+                    
+                    <td>
+                      <% if insee_data&.dig("tranche_effectif_salarie", "intitule") %>
+                        <%= insee_data.dig("tranche_effectif_salarie", "intitule") %>
+                        <% if insee_data.dig("tranche_effectif_salarie", "date_reference") %>
+                          <br><small class="fr-text--xs">(Réf: <%= insee_data.dig("tranche_effectif_salarie", "date_reference") %>)</small>
+                        <% end %>
+                      <% else %>
+                        <span class="fr-text--disabled">-</span>
+                      <% end %>
+                    </td>
+                    
+                    <td>
+                      <% if insee_data&.dig("etat_administratif") == "A" %>
+                        <span class="fr-badge fr-badge--success fr-badge--sm">Actif</span>
+                      <% elsif insee_data&.dig("etat_administratif") %>
+                        <span class="fr-badge fr-badge--error fr-badge--sm">Fermé</span>
+                      <% else %>
+                        <span class="fr-text--disabled">-</span>
+                      <% end %>
+                      <% if insee_data&.dig("siege_social") %>
+                        <br><span class="fr-badge fr-badge--info fr-badge--sm">Siège social</span>
+                      <% end %>
+                    </td>
+                    
+                    <td>
+                      <%= link_to 'Consulter', establishment_path(rails_data.siret), 
+                          class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="fr-alert fr-alert--info">
+      <p>
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        Aucune donnée d'établissement disponible pour cette entreprise.
+      </p>
+    </div>
+  <% end %>
+<% end %>

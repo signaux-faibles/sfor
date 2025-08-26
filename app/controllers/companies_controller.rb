@@ -1,5 +1,5 @@
 class CompaniesController < ApplicationController
-  before_action :set_company, only: %i[show]
+  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget]
 
   def index
     initialize_search_params
@@ -9,6 +9,22 @@ class CompaniesController < ApplicationController
 
   def show
     @establishments = @company.establishments_ordered
+    # No longer fetch data here - will be loaded by Turbo Frames
+  end
+
+  def insee_widget
+    fetch_insee_data
+    render partial: "insee_widget"
+  end
+
+  def financial_widget
+    fetch_financial_data
+    render partial: "financial_widget"
+  end
+
+  def establishments_widget
+    fetch_establishments_data
+    render partial: "establishments_widget"
   end
 
   private
@@ -37,5 +53,61 @@ class CompaniesController < ApplicationController
 
   def set_company
     @company = Company.find_by!(siren: params[:siren])
+  end
+
+  def fetch_insee_data
+    return unless @company.siren.present?
+
+    service = Api::InseeApiService.new(siren: @company.siren)
+    @insee_data = service.fetch_unite_legale
+  rescue StandardError => e
+    Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
+    @insee_data = nil
+  end
+
+  def fetch_financial_data
+    return unless @company.siren.present?
+
+    service = Api::BanqueDeFranceApiService.new(siren: @company.siren)
+    @financial_data = service.fetch_bilans
+  rescue StandardError => e
+    Rails.logger.error "Erreur lors de la récupération des données financières: #{e.message}"
+    @financial_data = nil
+  end
+
+  def fetch_establishments_data
+    return unless @company.siren.present?
+
+    # Récupérer les établissements de la base de données
+    establishments = @company.establishments_ordered
+
+    # Enrichir chaque établissement avec les données INSEE
+    @enriched_establishments = []
+
+    establishments.each do |establishment|
+      service = Api::InseeApiService.new(siret: establishment.siret, siren: nil)
+      api_data = service.fetch_establishment_by_siret(establishment.siret)
+
+      # Combiner les données Rails avec les données API
+      enriched_establishment = {
+        rails_data: establishment,
+        insee_data: api_data&.dig("data"),
+        has_api_data: api_data&.dig("data").present?
+      }
+
+      @enriched_establishments << enriched_establishment
+    rescue StandardError => e
+      Rails.logger.error "Erreur lors de la récupération des données INSEE pour #{establishment.siret}: #{e.message}"
+
+      # Ajouter l'établissement même sans données API
+      @enriched_establishments << {
+        rails_data: establishment,
+        insee_data: nil,
+        has_api_data: false
+      }
+    end
+  rescue StandardError => e
+    Rails.logger.error "Erreur lors de la récupération des établissements: #{e.message}"
+    @enriched_establishments = []
   end
 end
