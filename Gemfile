@@ -8,6 +8,9 @@ gem "rails", "~> 7.2.2.1"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails", "~> 3.5.2"
 
+# Use dartsass-rails to compile sass
+gem "dartsass-rails", "~> 0.5.0"
+
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.5.9"
 
@@ -55,9 +58,6 @@ gem "rack-cors", "~> 2.0.2"
 
 # Search the data
 gem "ransack", "~> 4.2.1"
-
-# Basic admin
-gem "administrate", "1.0.0.beta3"
 
 # Authorizations
 gem "pundit", "~> 2.4"

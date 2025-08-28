@@ -71,6 +71,10 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = false
 
+  # Enable asset compilation on-the-fly in development (required for Docker)
+  config.assets.compile = true
+  config.assets.check_precompiled_asset = false
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
@@ -85,6 +89,10 @@ Rails.application.configure do
 
   # Allow the web console to work in a docker env
   config.web_console.permissions = "172.0.0.0/8"
+
+  # Enable static file serving in Docker development environment
+  # This is needed because Docker containers sometimes have issues with direct file serving
+  config.public_file_server.enabled = true
 
   # Devise conf (required by the devise installer) :
   config.action_mailer.default_url_options = { host: "localhost", port: 3000 }

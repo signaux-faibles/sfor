@@ -4,4 +4,5 @@ import "controllers"
 import "dsfr"
 import "ahoy"
 import "track_tabs"
+import "dsfr-chart"
 

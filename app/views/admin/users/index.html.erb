@@ -1,46 +1,86 @@
-<%#
-# Index
+<div class="fr-mb-3w">
+  <h1 class="fr-h1 fr-mb-2w">Gestion des utilisateurs</h1>
+  
+  <!-- Search Form -->
+  <%= form_with url: admin_users_path, method: :get, local: true, class: "fr-mb-2w" do |form| %>
+    <div style="max-width: 400px;">
+      <div class="fr-search-bar" role="search">
+        <label class="fr-label" for="search-input">
+          Rechercher
+        </label>
+        <%= form.search_field :search, 
+            value: params[:search], 
+            placeholder: "Rechercher par email...", 
+            class: "fr-input",
+            id: "search-input",
+            "aria-describedby": "search-input-messages" %>
+        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+        </div>
+        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+      </div>
+      <% if params[:search].present? %>
+        <div class="fr-mt-1w">
+          <%= link_to "Effacer la recherche", admin_users_path, class: "fr-btn fr-btn--secondary fr-btn--sm" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
 
-This view is the template for the index page.
-It is responsible for rendering the search bar, header and pagination.
-It renders the `_table` partial to display details about the resources.
+<% if params[:search].present? %>
+  <div class="fr-alert fr-alert--info fr-mb-2w">
+    <p>
+      <%= pluralize(@users_count, "utilisateur trouvé", "utilisateurs trouvés") %> 
+      pour "<strong><%= params[:search] %></strong>"
+    </p>
+  </div>
+<% end %>
 
-## Local variables:
+<div class="fr-table">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Email</th>
+        <th scope="col">Nom</th>
+        <th scope="col">Segment</th>
+        <th scope="col">Dernière connexion</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.email %></td>
+          <td><%= user.display_name %></td>
+          <td>
+            <% if user.segment&.name %>
+              <span class="fr-badge fr-badge--sm <%= 'fr-badge--success' if user.segment.name == 'sf' %>">
+                <%= user.segment.name %>
+              </span>
+            <% else %>
+              <span class="fr-badge fr-badge--sm">Aucun</span>
+            <% end %>
+          </td>
+          <td>
+            <%= user.last_sign_in_at ? l(user.last_sign_in_at, format: :short) : "Jamais" %>
+          </td>
+          <td>
+            <%= link_to "Imiter", 
+                [:impersonate, :admin, user], 
+                method: :get,
+                class: "fr-btn fr-btn--sm",
+                data: { 
+                  confirm: "Êtes-vous sûr de vouloir vous connecter en tant que #{user.email} ?" 
+                } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
-- `page`:
-  An instance of [Administrate::Page::Collection][1].
-  Contains helper methods to help display a table,
-  and knows which attributes should be displayed in the resource's table.
-- `resources`:
-  An instance of `ActiveRecord::Relation` containing the resources
-  that match the user's search criteria.
-  By default, these resources are passed to the table partial to be displayed.
-- `search_term`:
-  A string containing the term the user has searched for, if any.
-- `show_search_bar`:
-  A boolean that determines if the search bar should be shown.
-
-[1]: http://www.rubydoc.info/gems/administrate/Administrate/Page/Collection
-%>
-
-<%=
-  render("index_header",
-    resources: resources,
-    search_term: search_term,
-    page: page,
-    show_search_bar: show_search_bar,
-  )
-%>
-
-<section class="main-content__body main-content__body--flush">
-  <%= render(
-    "collection",
-    collection_presenter: page,
-    collection_field_name: resource_name,
-    page: page,
-    resources: resources,
-    table_title: "page-title"
-  ) %>
-
-  <%= render("pagination", resources: resources) %>
-</section>
+<% if @users.respond_to?(:current_page) %>
+  <div class="fr-mt-2w">
+    <%= paginate @users %>
+  </div>
+<% end %>

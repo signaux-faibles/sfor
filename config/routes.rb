@@ -14,24 +14,10 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :users do
-      get "/impersonate" => "users#impersonate"
-      get "/discard" => "users#discard"
-      get "/undiscard" => "users#undiscard"
+      member do
+        get :impersonate
+      end
     end
-    resources :entities
-    resources :networks
-    resources :segments
-    resources :departments
-    resources :regions
-    resources :geo_accesses
-    resources :companies
-    resources :establishments
-    resources :establishment_trackings
-    resources :tracking_labels
-    resources :difficulties
-    resources :user_actions
-    resources :codefi_redirects
-    resources :supporting_services
 
     root to: "users#index"
   end

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin - Signaux Faibles</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="fr-grid-row">
+      <!-- Sidebar Navigation -->
+      <nav class="fr-col-3 fr-background-alt--grey fr-p-2w" style="min-height: 100vh; border-right: 1px solid var(--border-default-grey);">
+        <div class="fr-mb-2w">
+          <h3 class="fr-h5 fr-mb-1w">Administration</h3>
+          <div class="fr-text--sm fr-mb-1w">
+            <%= current_user.email %>
+          </div>
+          <%= link_to "Retour au site", root_path, class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+        </div>
+        
+        <nav class="fr-mb-2w">
+          <%= link_to admin_users_path, class: "fr-link #{'fr-link--active' if controller_name == 'users'}" do %>
+            👥 Utilisateurs
+          <% end %>
+          <!-- Add more menu items here as needed -->
+        </nav>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="fr-col-9">
+        <div class="fr-container-fluid fr-p-2w">
+          <% if notice %>
+            <div class="fr-alert fr-alert--success fr-mb-2w">
+              <p><%= notice %></p>
+            </div>
+          <% end %>
+          
+          <% if alert %>
+            <div class="fr-alert fr-alert--error fr-mb-2w">
+              <p><%= alert %></p>
+            </div>
+          <% end %>
+
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

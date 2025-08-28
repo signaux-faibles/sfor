@@ -6,6 +6,7 @@ pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 pin "dsfr", to: "dsfr.module.min.js"
 pin "tom-select", to: "tom-select.js"
-pin "set_time_zone", to: "controllers/set_time_zone.js"
-pin "ahoy", to: "ahoy.js"
+pin "ahoy" # @1.0.1
 pin "track_tabs", to: "track_tabs.js"
+pin "os" # @2.1.0
+pin "dsfr-chart", to: "dsfr-chart.js"
