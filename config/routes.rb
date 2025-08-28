@@ -12,6 +12,14 @@ Rails.application.routes.draw do
   get "unauthorized", to: "pages#unauthorized"
   get "statistiques", to: "statistics#index"
 
+  # Routes pour les graphiques de test
+  resources :charts, only: [:index] do
+    collection do
+      get :line_data
+      get :bar_data
+    end
+  end
+
   namespace :admin do
     resources :users do
       member do

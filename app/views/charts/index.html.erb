@@ -1,0 +1,40 @@
+<div class="fr-container">
+  <div class="fr-mb-3w">
+    <h1 class="fr-h1">Test des graphiques DSFR Chart</h1>
+    <p class="fr-text--lg">Page de test pour vérifier l'intégration de la bibliothèque DSFR Chart</p>
+  </div>
+
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <!-- Line Chart -->
+    <div class="fr-col-12 fr-col-md-6">
+      <div class="fr-card fr-p-2w">
+        <h3 class="fr-h4 fr-mb-2w">Graphique linéaire</h3>
+        <div 
+          data-controller="chart-widget" 
+          data-chart-widget-url-value="<%= line_data_charts_path %>"
+          data-chart-widget-chart-type-value="line"
+          class="chart-container">
+          <div class="fr-skeleton fr-skeleton--multiline fr-mb-2w" style="height: 300px;">
+            <p class="fr-text--sm">Chargement du graphique...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bar Chart -->
+    <div class="fr-col-12 fr-col-md-6">
+      <div class="fr-card fr-p-2w">
+        <h3 class="fr-h4 fr-mb-2w">Graphique en barres</h3>
+        <div 
+          data-controller="chart-widget" 
+          data-chart-widget-url-value="<%= bar_data_charts_path %>"
+          data-chart-widget-chart-type-value="bar"
+          class="chart-container">
+          <div class="fr-skeleton fr-skeleton--multiline fr-mb-2w" style="height: 300px;">
+            <p class="fr-text--sm">Chargement du graphique...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
