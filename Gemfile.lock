@@ -76,11 +76,6 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
     addressable (2.8.6)
       public_suffix (>= 2.0.2, < 6.0)
-    administrate (1.0.0.beta3)
-      actionpack (>= 6.0, < 9.0)
-      actionview (>= 6.0, < 9.0)
-      activerecord (>= 6.0, < 9.0)
-      kaminari (~> 1.2.2)
     ahoy_matey (5.4.0)
       activesupport (>= 7.1)
       device_detector (>= 1)
@@ -149,6 +144,12 @@ GEM
     globalid (1.2.1)
       activesupport (>= 6.1)
     google-protobuf (4.32.0-aarch64-linux-gnu)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.0-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.32.0-x86_64-linux-gnu)
       bigdecimal
       rake (>= 13)
     htmlentities (4.3.4)
@@ -348,6 +349,10 @@ GEM
     safely_block (0.5.0)
     sass-embedded (1.91.0-aarch64-linux-gnu)
       google-protobuf (~> 4.31)
+    sass-embedded (1.91.0-arm64-darwin)
+      google-protobuf (~> 4.31)
+    sass-embedded (1.91.0-x86_64-linux-gnu)
+      google-protobuf (~> 4.31)
     securerandom (0.4.1)
     selenium-webdriver (4.21.1)
       base64 (~> 0.2)
@@ -418,7 +423,6 @@ PLATFORMS
 
 DEPENDENCIES
   aasm (~> 5.5)
-  administrate (= 1.0.0.beta3)
   ahoy_matey (~> 5.4)
   annotate
   bootsnap (~> 1.18.4)
