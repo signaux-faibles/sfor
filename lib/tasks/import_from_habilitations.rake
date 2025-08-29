@@ -152,8 +152,10 @@ module NetworkManager
     user.geo_access = geo_access
   end
 
-  def assign_networks(user, segment_name)
-    excluded_segments = %w[dreets_reseaucrp centrale-dge]
+  def assign_networks(user, segment_name) # rubocop:disable Metrics/MethodLength
+    user.networks.clear
+
+    excluded_segments = %w[dreets_reseaucrp centrale-dge dreets]
     unless excluded_segments.include?(segment_name.downcase) || user.networks.include?(@codefi_network)
       user.networks << @codefi_network
     end
