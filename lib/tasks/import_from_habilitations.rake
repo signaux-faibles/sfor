@@ -153,7 +153,8 @@ module NetworkManager
   end
 
   def assign_networks(user, segment_name)
-    if segment_name.downcase != "dreets_reseaucrp" && user.networks.exclude?(@codefi_network)
+    excluded_segments = %w[dreets_reseaucrp centrale-dge]
+    unless excluded_segments.include?(segment_name.downcase) || user.networks.include?(@codefi_network)
       user.networks << @codefi_network
     end
 
@@ -171,16 +172,30 @@ module NetworkManager
 
   def network_mapping # rubocop:disable Metrics/MethodLength
     {
-      "crp" => @crp_network,
-      "dreets_reseaucrp" => @crp_network,
-      "finances" => @crp_network,
-      "urssaf" => @urssaf_network,
-      "bdf" => @banque_de_france_network,
+      # Signaux Faibles segments
+      "sf" => @signaux_faibles_network,
+
+      # DGFIP segments
       "dgfip" => @dgfip_network,
+
+      # CRP segments
+      "mire" => @crp_network,
+      "centrale-dge" => @crp_network,
+      "dreets-reseaucrp" => @crp_network,
+      "crp" => @crp_network,
+
+      # Banque de France segments
+      "bdf" => @banque_de_france_network,
+
+      # DGEFP segments
       "darp" => @dgefp_network,
       "ddets" => @dgefp_network,
+      "muteco" => @dgefp_network,
       "dgefp" => @dgefp_network,
-      "dreets" => @dgefp_network
+      "dreets" => @dgefp_network,
+
+      # URSSAF segments
+      "urssaf" => @urssaf_network
     }
   end
 end
@@ -253,6 +268,7 @@ class ImportHelper
     @banque_de_france_network = Network.find_or_create_by(name: "Banque de France")
     @dgfip_network = Network.find_or_create_by(name: "DGFiP")
     @dgefp_network = Network.find_or_create_by(name: "DGEFP")
+    @signaux_faibles_network = Network.find_or_create_by(name: "Signaux Faibles")
   end
 
   def parse_workbook

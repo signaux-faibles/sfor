@@ -5,7 +5,7 @@ module EstablishmentTrackings::SupportingServicesTrackable
 
   private
 
-  def track_supporting_services_changes_if_any(old_supporting_services)
+  def track_supporting_services_changes_if_any(old_supporting_services) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     new_supporting_services = @establishment_tracking.supporting_services.reload.to_a
     return if old_supporting_services.map(&:id).sort == new_supporting_services.map(&:id).sort
 
