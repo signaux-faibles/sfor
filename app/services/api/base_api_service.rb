@@ -18,7 +18,7 @@ module Api
       @token && @recipient
     end
 
-    def valid_token?
+    def valid_token? # rubocop:disable Metrics/MethodLength
       return false unless @token
 
       begin
@@ -35,7 +35,7 @@ module Api
       end
     end
 
-    def make_api_request(endpoint, params = {})
+    def make_api_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       return nil unless valid_configuration? && valid_token?
 
       # Construction de l'URL avec les paramètres
@@ -62,7 +62,7 @@ module Api
       # Exécution de la requête
       response = http.request(request)
 
-      puts response.body
+      Rails.logger.debug response.body
 
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)

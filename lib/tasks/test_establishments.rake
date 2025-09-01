@@ -1,8 +1,8 @@
 # Test establishments rake tasks for OSF sync testing
 
-namespace :test do
+namespace :test do # rubocop:disable Metrics/BlockLength
   desc "Create test establishments for OSF sync testing (DEVELOPMENT ONLY)"
-  task :create_establishments, [:count] => :environment do |t, args|
+  task :create_establishments, [:count] => :environment do |_t, args|
     unless Rails.env.development?
       puts "❌ This task can only be run in development environment"
       exit 1
