@@ -11,14 +11,14 @@ module Osf
       "osf_apdemande_sync.log"
     end
 
-    def sync_data
+    def sync_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       @logger.info "Starting optimized apdemande data synchronization"
 
       # Get total count first
       total_count = @db_service.execute_query("SELECT COUNT(*) FROM stg_apdemande").first["count"].to_i
       @logger.info "Processing #{total_count} records in batches of #{BATCH_SIZE}"
 
-      if total_count == 0
+      if total_count.zero?
         @logger.info "No records to process"
         return
       end
@@ -38,33 +38,33 @@ module Osf
 
         # Progress reporting
         progress = ((offset.to_f / total_count) * 100).round(2)
-        @logger.info "Progress: #{progress}% - Stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+        @logger.info "Progress: #{progress}% - Stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}" # rubocop:disable Layout/LineLength
 
         # Memory monitoring
         memory_mb = `ps -o rss= -p #{Process.pid}`.to_i / 1024
         @logger.info "Current memory usage: #{memory_mb}MB"
       end
 
-      @logger.info "Apdemande sync completed. Final stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+      @logger.info "Apdemande sync completed. Final stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}" # rubocop:disable Layout/LineLength
     end
 
     private
 
-    def process_batch(offset)
+    def process_batch(offset) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
       # Fetch only one batch at a time
       distant_records = @db_service.execute_query(
         "SELECT * FROM stg_apdemande ORDER BY id_demande LIMIT #{BATCH_SIZE} OFFSET #{offset}"
       )
 
-      return if distant_records.ntuples == 0
+      return if distant_records.ntuples.zero?
 
       begin
         # Preload establishments to avoid N+1 queries
-        sirets = distant_records.map { |r| r["siret"] }.compact.uniq
+        sirets = distant_records.pluck("siret").compact.uniq
         establishments_by_siret = Establishment.where(siret: sirets).index_by(&:siret)
 
         # Preload existing records to avoid N+1 queries
-        id_demandes = distant_records.map { |r| r["id_demande"] }.compact
+        id_demandes = distant_records.pluck("id_demande").compact
         existing_records = OsfApdemande.where(id_demande: id_demandes).index_by(&:id_demande)
 
         # Prepare bulk operations
@@ -117,7 +117,7 @@ module Osf
       @stats[key] += count
     end
 
-    def build_apdemande_attributes(distant_record)
+    def build_apdemande_attributes(distant_record) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       {
         id_demande: distant_record["id_demande"],
         siret: distant_record["siret"],

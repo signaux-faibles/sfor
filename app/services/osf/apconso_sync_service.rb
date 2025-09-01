@@ -2,7 +2,7 @@
 # Service to synchronize apconso data from osf database
 
 module Osf
-  class ApconsoSyncService < BaseOsfSyncService
+  class ApconsoSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
     BATCH_SIZE = 1000 # Process in chunks of 1000 records
 
     protected
@@ -11,7 +11,7 @@ module Osf
       "osf_apconso_sync.log"
     end
 
-    def sync_data
+    def sync_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       @logger.info "Starting optimized apconso data synchronization"
 
       # Get total count first
@@ -38,29 +38,29 @@ module Osf
 
         # Progress reporting
         progress = ((offset.to_f / total_count) * 100).round(2)
-        @logger.info "Progress: #{progress}% - Stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+        @logger.info "Progress: #{progress}% - Stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}" # rubocop:disable Layout/LineLength
 
         # Memory monitoring
         memory_mb = `ps -o rss= -p #{Process.pid}`.to_i / 1024
         @logger.info "Current memory usage: #{memory_mb}MB"
       end
 
-      @logger.info "Apconso sync completed. Final stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+      @logger.info "Apconso sync completed. Final stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}" # rubocop:disable Layout/LineLength
     end
 
     private
 
-    def process_batch(offset)
+    def process_batch(offset) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
       # Fetch only one batch at a time
       distant_records = @db_service.execute_query(
         "SELECT * FROM stg_apconso ORDER BY siret, id_demande, periode LIMIT #{BATCH_SIZE} OFFSET #{offset}"
       )
 
-      return if distant_records.ntuples == 0
+      return if distant_records.ntuples.zero?
 
       begin
         # Preload establishments to avoid N+1 queries
-        sirets = distant_records.map { |r| r["siret"] }.compact.uniq
+        sirets = distant_records.pluck("siret").compact.uniq
         establishments_by_siret = Establishment.where(siret: sirets).index_by(&:siret)
 
         # Preload existing records to avoid N+1 queries
@@ -69,11 +69,9 @@ module Osf
         distant_records.each do |record|
           periode = parse_date(record["periode"])
           key = "#{record['siret']}_#{record['id_demande']}_#{periode}"
-          existing_records[key] = nil # Initialize for batch lookup
-        end
+          existing_records[key] = nil
 
-        # Batch lookup for existing records
-        distant_records.each do |record|
+          # Batch lookup for existing records
           periode = parse_date(record["periode"])
           key = "#{record['siret']}_#{record['id_demande']}_#{periode}"
           existing_record = OsfApconso.find_by(

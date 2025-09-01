@@ -16,7 +16,7 @@ namespace :osf do
     end_time = Time.current
     duration = (end_time - start_time).round(2)
 
-    puts "\n" + ("=" * 50)
+    puts "\n#{'=' * 50}"
     puts "Complete OSF synchronization finished in #{duration} seconds"
     puts "=" * 50
   end
