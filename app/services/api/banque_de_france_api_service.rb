@@ -15,7 +15,7 @@ module Api
     private
 
     def valid_siren?
-      return false unless @siren.present?
+      return false if @siren.blank?
 
       # SIREN must be exactly 9 digits
       siren_cleaned = @siren.to_s.gsub(/\D/, "") # Remove non-digits
