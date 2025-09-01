@@ -56,7 +56,7 @@ class CompaniesController < ApplicationController
   end
 
   def fetch_insee_data
-    return unless @company.siren.present?
+    return if @company.siren.blank?
 
     service = Api::InseeApiService.new(siren: @company.siren)
     @insee_data = service.fetch_unite_legale
@@ -66,7 +66,7 @@ class CompaniesController < ApplicationController
   end
 
   def fetch_financial_data
-    return unless @company.siren.present?
+    return if @company.siren.blank?
 
     service = Api::BanqueDeFranceApiService.new(siren: @company.siren)
     @financial_data = service.fetch_bilans
@@ -75,8 +75,8 @@ class CompaniesController < ApplicationController
     @financial_data = nil
   end
 
-  def fetch_establishments_data
-    return unless @company.siren.present?
+  def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    return if @company.siren.blank?
 
     # Récupérer les établissements de la base de données
     establishments = @company.establishments_ordered

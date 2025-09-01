@@ -4,7 +4,7 @@ require "json"
 
 module Api
   class RechercheEntreprisesApiService
-    BASE_URL = "https://recherche-entreprises.api.gouv.fr"
+    BASE_URL = "https://recherche-entreprises.api.gouv.fr".freeze
 
     attr_reader :siren, :errors
 
@@ -36,13 +36,13 @@ module Api
     private
 
     def valid_siren?
-      return false unless @siren.present?
+      return false if @siren.blank?
 
       # SIREN must be exactly 9 digits
       siren_cleaned = @siren.to_s.gsub(/\D/, "") # Remove non-digits
 
       if siren_cleaned.length != 9
-        add_error("SIREN invalide pour Recherche Entreprises: '#{@siren}' (longueur: #{siren_cleaned.length}, attendu: 9)")
+        add_error("SIREN invalide pour Recherche Entreprises: '#{@siren}' (longueur: #{siren_cleaned.length}, attendu: 9)") # rubocop:disable Layout/LineLength
         return false
       end
 
@@ -51,7 +51,7 @@ module Api
       true
     end
 
-    def make_request(endpoint, params = {})
+    def make_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       uri = URI("#{BASE_URL}#{endpoint}")
       uri.query = URI.encode_www_form(params) if params.any?
 
@@ -76,7 +76,7 @@ module Api
       nil
     end
 
-    def handle_response(response)
+    def handle_response(response) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       case response.code.to_i
       when 200..299
         JSON.parse(response.body)
