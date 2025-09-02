@@ -15,7 +15,13 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       processed: 0,
       updated_trackings: 0,
       api_errors: 0,
-      missing_data: []
+      missing_data: [],
+      changes_analysis: {
+        "TPE" => { "PME" => 0, "ETI" => 0, "GE" => 0, "unchanged" => 0 },
+        "PME" => { "TPE" => 0, "ETI" => 0, "GE" => 0, "unchanged" => 0 },
+        "ETI" => { "TPE" => 0, "PME" => 0, "GE" => 0, "unchanged" => 0 },
+        "GE" => { "TPE" => 0, "PME" => 0, "ETI" => 0, "unchanged" => 0 }
+      }
     }
 
     # Récupérer les sizes
@@ -37,15 +43,63 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       end
     end
 
+    # Fonction pour analyser les changements (version test)
+    def analyze_changes_test(company, new_size, stats)
+      return unless new_size
+
+      company.establishments.includes(:establishment_trackings).each do |establishment|
+        establishment.establishment_trackings.each do |tracking|
+          current_size_name = tracking.size&.name || "nil"
+          new_size_name = new_size.name
+
+          if current_size_name != "nil"
+            if current_size_name == new_size_name
+              stats[:changes_analysis][current_size_name]["unchanged"] += 1
+            else
+              stats[:changes_analysis][current_size_name][new_size_name] += 1
+            end
+          end
+        end
+      end
+    end
+
+    # Fonction pour afficher le rapport des changements (version test)
+    def display_changes_report_test(stats)
+      puts "\n📊 ANALYSE DES CHANGEMENTS PRÉVUS (TEST)"
+      puts "=" * 50
+
+      stats[:changes_analysis].each do |current_size, changes|
+        total_current = changes.values.sum
+        next if total_current == 0
+
+        puts "\n📈 Among #{total_current} establishment_trackings with size \"#{current_size}\":"
+        changes.each do |new_size, count|
+          next if count == 0
+
+          if new_size == "unchanged"
+            puts "  • #{count} will remain #{current_size}"
+          else
+            puts "  • #{count} will become #{new_size}"
+          end
+        end
+      end
+      puts
+    end
+
     # Traitement d'un échantillon
     companies = Company.includes(establishments: :establishment_trackings).limit(limit)
+
+    # Créer le service API une seule fois pour optimiser les performances
+    puts "🔧 Initialisation du service API INSEE..."
+    service = Api::InseeApiService.new
+    puts "✅ Service API initialisé"
+    puts
 
     companies.each_with_index do |company, index| # rubocop:disable Metrics/BlockLength
       puts "🔍 [#{index + 1}/#{limit}] Test pour #{company.siren} - #{company.raison_sociale}"
 
       begin
-        service = Api::InseeApiService.new(siren: company.siren)
-        api_response = service.fetch_unite_legale
+        api_response = service.fetch_unite_legale_by_siren(company.siren)
 
         if api_response&.dig("data", "tranche_effectif_salarie")
           effectif_data = api_response.dig("data", "tranche_effectif_salarie")
@@ -55,6 +109,9 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
           size = determine_size_test(effectif_min, effectif_max, sizes)
 
           if size
+            # Analyser les changements prévus
+            analyze_changes_test(company, size, stats)
+
             # Compter les establishment_trackings via les establishments
             tracking_count = company.establishments.map(&:establishment_trackings).flatten.count
             puts "  ✅ Recommandation: #{size.name} (#{effectif_min}-#{effectif_max} salariés)"
@@ -79,9 +136,12 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       end
 
       # Pause pour éviter le blocage de l'API
-      sleep(3)
+      sleep(1)
       puts
     end
+
+    # Afficher le rapport des changements prévus
+    display_changes_report_test(stats)
 
     # Résumé du test
     puts "=" * 60
