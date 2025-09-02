@@ -155,7 +155,7 @@ module NetworkManager
   def assign_networks(user, segment_name) # rubocop:disable Metrics/MethodLength
     user.networks.clear
 
-    excluded_segments = %w[dreets_reseaucrp centrale-dge dreets]
+    excluded_segments = %w[dreets_reseaucrp centrale-dge dreets finances]
     unless excluded_segments.include?(segment_name.downcase) || user.networks.include?(@codefi_network)
       user.networks << @codefi_network
     end
@@ -183,7 +183,7 @@ module NetworkManager
       # CRP segments
       "mire" => @crp_network,
       "centrale-dge" => @crp_network,
-      "dreets-reseaucrp" => @crp_network,
+      "dreets_reseaucrp" => @crp_network,
       "crp" => @crp_network,
 
       # Banque de France segments
@@ -202,7 +202,7 @@ module NetworkManager
   end
 end
 
-class ImportHelper
+class ImportHelper # rubocop:disable Metrics/ClassLength
   include UserImporter
   include UserDiscarder
   include RoleManager
@@ -295,11 +295,38 @@ class ImportHelper
     worksheet.sheet_data[0].cells.map { |cell| cell&.value }
   end
 
-  def import_users(worksheet, header)
-    worksheet.sheet_data.rows[1..].each do |row|
-      break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
+  def import_users(worksheet, header) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    issue_rows = []
 
-      process_row(row, header)
+    worksheet.sheet_data.rows[1..].each_with_index do |row, index|
+      row_number = index + 2
+
+      if row.nil?
+        puts "Issue at row #{row_number}: row is nil"
+        issue_rows << { row: row_number, issue: "row is nil", data: row }
+      elsif row.cells[0].nil?
+        puts "Issue at row #{row_number}: first cell is nil"
+        puts "  Row data: #{row}"
+        puts "  Row cells count: #{row.cells&.length || 'nil'}"
+        puts "  Row cells: #{row.cells&.map { |cell| cell&.value } || 'nil'}"
+        issue_rows << { row: row_number, issue: "first cell is nil", data: row }
+      elsif row.cells[0].value.nil?
+        puts "Issue at row #{row_number}: first cell value is nil"
+        issue_rows << { row: row_number, issue: "first cell value is nil", data: row }
+      else
+        process_row(row, header)
+      end
+    end
+
+    if issue_rows.any?
+      puts "\n=== ALL ISSUES FOUND ==="
+      issue_rows.each do |issue|
+        puts "Row #{issue[:row]}: #{issue[:issue]}"
+      end
+      puts "Total issues: #{issue_rows.length}"
+      puts "========================"
+    else
+      puts "\n✓ No issues found - all rows processed successfully"
     end
   end
 

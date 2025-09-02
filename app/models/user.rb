@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-  include User::NetworkValidatable
   include User::Omniauthable
 
   # Include default devise modules. Others available are:
