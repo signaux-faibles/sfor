@@ -11,10 +11,10 @@ module Api
       make_api_request(endpoint)
     end
 
-    def fetch_unite_legale
-      return nil unless valid_siren?
+    def fetch_unite_legale_by_siren(siren)
+      return nil unless valid_siren_param?(siren)
 
-      endpoint = "/v3/insee/sirene/unites_legales/#{@siren}"
+      endpoint = "/v3/insee/sirene/unites_legales/#{siren}"
       make_api_request(endpoint)
     end
 
