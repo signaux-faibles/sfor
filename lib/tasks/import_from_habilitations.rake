@@ -84,10 +84,8 @@ module UserDiscarder
   end
 
   def handle_discard_error(user, email, error)
-    track_error
-    if user.discarded?
-      puts "✗ User is already discarded: #{email}"
-    else
+    unless user.discarded?
+      track_error
       puts "✗ Failed to discard user: #{email}. Error: #{error.message}"
     end
   end
@@ -254,7 +252,6 @@ class ImportHelper # rubocop:disable Metrics/ClassLength
       puts "✓ Created new user: #{user.email}"
     else
       increment_stat(:updated)
-      puts "↻ Updated existing user: #{user.email}"
     end
   end
 
