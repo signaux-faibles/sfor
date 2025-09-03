@@ -1,6 +1,7 @@
 # lib/tasks/update_establishment_tracking_sizes.rake
 # Rake task to update establishment_tracking sizes based on INSEE API data
 # Usage: rake companies:update_sizes
+# rubocop:disable all
 
 namespace :companies do # rubocop:disable Metrics/BlockLength
   desc "Update establishment_tracking sizes based on INSEE API effectif data"
@@ -62,7 +63,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
     def analyze_changes(company, new_size, stats)
       return unless new_size
 
-      company.establishments.includes(:establishment_trackings).each do |establishment|
+      company.establishments.includes(:establishment_trackings).find_each do |establishment|
         establishment.establishment_trackings.each do |tracking|
           current_size_name = tracking.size&.name || "nil"
           new_size_name = new_size.name
@@ -85,11 +86,11 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
 
       stats[:changes_analysis].each do |current_size, changes|
         total_current = changes.values.sum
-        next if total_current == 0
+        next if total_current.zero?
 
         puts "\n📈 Among #{total_current} establishment_trackings with size \"#{current_size}\":"
         changes.each do |new_size, count|
-          next if count == 0
+          next if count.zero?
 
           if new_size == "unchanged"
             puts "  • #{count} will remain #{current_size}"
@@ -183,7 +184,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
 
     # Demander confirmation avant de procéder
     puts "🤔 Voulez-vous procéder à la mise à jour ? (tapez 'yes' pour confirmer)"
-    confirmation = STDIN.gets.chomp.downcase
+    confirmation = $stdin.gets.chomp.downcase
 
     unless confirmation == "yes"
       puts "❌ Mise à jour annulée par l'utilisateur"
