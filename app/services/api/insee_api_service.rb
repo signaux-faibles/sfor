@@ -43,6 +43,21 @@ module Api
       true
     end
 
+    def valid_siren_param?(siren)
+      return false if siren.blank?
+
+      # SIREN must be exactly 9 digits
+      siren_cleaned = siren.to_s.gsub(/\D/, "") # Remove non-digits
+
+      if siren_cleaned.length != 9
+        Rails.logger.error "SIREN invalide pour INSEE: '#{siren}' (longueur: #{siren_cleaned.length}, attendu: 9)"
+        return false
+      end
+
+      Rails.logger.debug { "SIREN valide pour INSEE: #{siren_cleaned}" }
+      true
+    end
+
     def valid_siret_param?(siret)
       return false if siret.blank?
 
