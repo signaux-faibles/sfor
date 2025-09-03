@@ -137,7 +137,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       end
 
       # Pause pour éviter le blocage de l'API
-      sleep(1)
+      sleep(0.1)
       puts
     end
 
