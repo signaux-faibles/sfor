@@ -1,6 +1,7 @@
 # lib/tasks/test_establishment_tracking_sizes.rake
 # Test version of the size update task - processes only a small sample
 # Usage: rake companies:test_update_sizes[10]
+# rubocop:disable all
 
 namespace :companies do # rubocop:disable Metrics/BlockLength
   desc "Test update of establishment_tracking sizes (limited sample)"
@@ -47,7 +48,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
     def analyze_changes_test(company, new_size, stats)
       return unless new_size
 
-      company.establishments.includes(:establishment_trackings).each do |establishment|
+      company.establishments.includes(:establishment_trackings).find_each do |establishment|
         establishment.establishment_trackings.each do |tracking|
           current_size_name = tracking.size&.name || "nil"
           new_size_name = new_size.name
@@ -70,11 +71,11 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
 
       stats[:changes_analysis].each do |current_size, changes|
         total_current = changes.values.sum
-        next if total_current == 0
+        next if total_current.zero?
 
         puts "\n📈 Among #{total_current} establishment_trackings with size \"#{current_size}\":"
         changes.each do |new_size, count|
-          next if count == 0
+          next if count.zero?
 
           if new_size == "unchanged"
             puts "  • #{count} will remain #{current_size}"
