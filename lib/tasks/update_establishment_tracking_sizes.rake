@@ -17,6 +17,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       missing_data: [],
       size_distribution: { "TPE" => 0, "PME" => 0, "ETI" => 0, "GE" => 0 },
       changes_analysis: {
+        "nil" => { "TPE" => 0, "PME" => 0, "ETI" => 0, "GE" => 0 },
         "TPE" => { "PME" => 0, "ETI" => 0, "GE" => 0, "unchanged" => 0 },
         "PME" => { "TPE" => 0, "ETI" => 0, "GE" => 0, "unchanged" => 0 },
         "ETI" => { "TPE" => 0, "PME" => 0, "GE" => 0, "unchanged" => 0 },
@@ -68,7 +69,11 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
           current_size_name = tracking.size&.name || "nil"
           new_size_name = new_size.name
 
-          if current_size_name != "nil"
+          if current_size_name == "nil"
+            # Tracking sans taille actuelle
+            stats[:changes_analysis]["nil"][new_size_name] += 1
+          else
+            # Tracking avec taille existante
             if current_size_name == new_size_name
               stats[:changes_analysis][current_size_name]["unchanged"] += 1
             else
@@ -88,7 +93,8 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
         total_current = changes.values.sum
         next if total_current.zero?
 
-        puts "\n📈 Among #{total_current} establishment_trackings with size \"#{current_size}\":"
+        size_label = current_size == "nil" ? "no size" : "\"#{current_size}\""
+        puts "\n📈 Among #{total_current} establishment_trackings with #{size_label}:"
         changes.each do |new_size, count|
           next if count.zero?
 
