@@ -61,7 +61,6 @@ end
 
 module UserDiscarder
   def discard_users(row)
-    create_or_update_user(row)
     email = row["ADRESSE MAIL"]&.downcase
     user = User.find_by(email: email)
     handle_user_discard(user, email)
