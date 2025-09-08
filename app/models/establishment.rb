@@ -37,4 +37,8 @@ class Establishment < ApplicationRecord
     %w[activity_sector campaign_memberships campaigns department establishment_trackings
        level_one_activity_sector parent_company sub_establishments]
   end
+
+  def to_param
+    siret
+  end
 end

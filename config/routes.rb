@@ -47,7 +47,7 @@ Rails.application.routes.draw do
     post "authenticate", to: "users/sessions#create"
   end
 
-  resources :establishments, only: [:show], path: "etablissements" do
+  resources :establishments, only: [:show], path: "etablissements", param: :siret do
     resources :establishment_trackings, only: %i[new create show destroy edit update], path: "accompagnements" do
       member do
         get :confirm

@@ -46,7 +46,7 @@ class ContactsController < ApplicationController
   private
 
   def set_establishment
-    @establishment = Establishment.find(params[:establishment_id])
+    @establishment = Establishment.find_by!(siret: params[:establishment_siret])
   end
 
   def set_establishment_tracking

@@ -36,6 +36,6 @@ class CompaniesController < ApplicationController
   end
 
   def set_company
-    @company = Company.find(params[:id])
+    @company = Company.find_by!(siren: params[:siren])
   end
 end

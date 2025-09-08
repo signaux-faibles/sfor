@@ -23,4 +23,8 @@ class Company < ApplicationRecord
   def establishments_ordered
     establishments.order(is_siege: :desc)
   end
+
+  def to_param
+    siren
+  end
 end

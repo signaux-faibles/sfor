@@ -45,7 +45,7 @@ class SummariesController < ApplicationController
   private
 
   def set_establishment_and_tracking
-    @establishment = Establishment.find(params[:establishment_id])
+    @establishment = Establishment.find_by!(siret: params[:establishment_siret])
     @establishment_tracking = @establishment.establishment_trackings.find(params[:establishment_tracking_id])
   end
 

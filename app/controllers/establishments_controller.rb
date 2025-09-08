@@ -23,7 +23,7 @@ class EstablishmentsController < ApplicationController
   private
 
   def set_establishment
-    @establishment = Establishment.find(params[:id])
+    @establishment = Establishment.find_by!(siret: params[:siret])
   end
 
   def load_trackings
