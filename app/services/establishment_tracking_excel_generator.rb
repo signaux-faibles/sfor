@@ -150,31 +150,46 @@ class EstablishmentTrackingExcelGenerator # rubocop:disable Metrics/ClassLength
       "Référents",
       "Date de début",
       "Date de fin",
+      "Date de dernière modification",
       "Statut",
+      "Criticité",
+      "Actions réalisées",
+      "Filières",
+      "Région",
+      "Administrations",
+      "Taille",
       "Synthèse de mon administration",
       "Synthèse CODEFI"
     ]
-    sheet.add_row headers, style: Array.new(10) { header_style(sheet) }
+    sheet.add_row headers, style: Array.new(17) { header_style(sheet) }
   end
 
   def add_tracking_rows(sheet)
     @establishment_trackings.each do |tracking|
       sheet.add_row prepare_tracking_row(tracking, sheet),
-                    style: Array.new(9, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
-                    types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, :string, :string]
+                    style: Array.new(15, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
+                    types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, :string,
+                            :string]
     end
   end
 
-  def prepare_tracking_row(tracking, _sheet) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+  def prepare_tracking_row(tracking, _sheet) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     [
       tracking.establishment.raison_sociale,
       tracking.establishment.siret.to_s,
       tracking.establishment&.department&.name,
-      tracking.participants.map(&:full_name).join(", "),
-      tracking.referents.map(&:full_name).join(", "),
+      tracking.participants.map(&:full_name).uniq.join(", "),
+      tracking.referents.map(&:full_name).uniq.join(", "),
       format_date(tracking.start_date),
       format_date(tracking.end_date),
+      format_date(tracking.modified_at),
       tracking.aasm.human_state,
+      tracking.criticality&.name,
+      tracking.user_actions.map(&:name).uniq.join(", "),
+      tracking.sectors.map(&:name).uniq.join(", "),
+      tracking.establishment&.department&.region&.libelle, # rubocop:disable Style/SafeNavigationChainLength
+      tracking.referents.filter_map { |referent| referent&.entity&.name }.uniq.join(", "),
+      tracking.size&.name,
       fetch_summary_content(tracking, @user.non_codefi_network),
       fetch_summary_content(tracking, Network.find_by(name: "CODEFI"))
     ]
