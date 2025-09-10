@@ -43,8 +43,16 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
     # Date de filtrage
     filter_date = Date.new(2025, 1, 1)
 
-    # Initialiser la répartition par taille d'accompagnements
-    tracking_size_distribution = { "TPE" => 0, "PME" => 0, "ETI" => 0, "GE" => 0, "Unknown" => 0 }
+    # Initialiser la répartition par taille d'accompagnements (distribution globale après mise à jour)
+    tracking_size_distribution = { "TPE" => 0, "PME" => 0, "ETI" => 0, "GE" => 0 }
+    
+    # Compter d'abord tous les trackings existants (pour la répartition de base)
+    all_trackings_count = EstablishmentTracking.where(discarded_at: nil).count
+    existing_distribution = EstablishmentTracking
+      .joins(:size)
+      .where(discarded_at: nil)
+      .group('sizes.name')
+      .count
 
     # Vérifier que tous les sizes existent
     missing_sizes = sizes.select { |_, size| size.nil? }.keys
@@ -74,14 +82,16 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
     end
 
     # Fonction pour analyser les changements
-    def analyze_changes(company, new_size, stats, crp_segment, filter_date, tracking_size_distribution)
+    def analyze_changes(company, new_size, stats, crp_segment, filter_date, tracking_size_distribution, existing_distribution)
       return unless new_size
 
-      # Récupérer les trackings filtrés
+      # Récupérer les trackings filtrés (TPE uniquement)
       filtered_trackings = company.establishments
         .joins(:establishment_trackings)
+        .joins(establishment_trackings: :size)
         .where(establishment_trackings: { discarded_at: nil })
         .where("establishment_trackings.modified_at >= ?", filter_date)
+        .where(sizes: { name: "TPE" })
         .where(
           "establishment_trackings.id IN (
             SELECT et.id FROM establishment_trackings et
@@ -94,8 +104,8 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
         .distinct
         .pluck("establishment_trackings.id")
 
-      # Mettre à jour la répartition des accompagnements
-      tracking_size_distribution[new_size.name] += filtered_trackings.count
+      # Mettre à jour le compteur total des trackings traités
+      stats[:updated_trackings] += filtered_trackings.count
 
       # Analyser chaque tracking filtré
       filtered_trackings.each do |tracking_id|
@@ -117,20 +127,57 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       end
     end
 
+    # Fonction pour calculer la nouvelle répartition globale
+    def calculate_new_distribution(existing_distribution, stats)
+      new_distribution = existing_distribution.dup
+      
+      # Appliquer les changements
+      stats[:changes_analysis].each do |current_size, changes|
+        changes.each do |new_size, count|
+          next if count.zero? || new_size == "unchanged"
+          
+          # Retirer de l'ancienne taille
+          if current_size != "nil"
+            new_distribution[current_size] = (new_distribution[current_size] || 0) - count
+          end
+          
+          # Ajouter à la nouvelle taille
+          new_distribution[new_size] = (new_distribution[new_size] || 0) + count
+        end
+      end
+      
+      # S'assurer que toutes les tailles sont présentes
+      { "TPE" => 0, "PME" => 0, "ETI" => 0, "GE" => 0 }.each do |size_name, _|
+        new_distribution[size_name] ||= 0
+      end
+      
+      new_distribution
+    end
+
     # Fonction pour afficher le rapport des changements
-    def display_changes_report(stats, tracking_size_distribution)
+    def display_changes_report(stats, new_distribution, existing_distribution)
       puts "📊 ANALYSE DES CHANGEMENTS PRÉVUS"
       puts "=" * 50
 
-      # Afficher la répartition par taille d'accompagnements
-      puts "\n📋 RÉPARTITION DES ACCOMPAGNEMENTS PAR TAILLE"
-      puts "-" * 50
-      total_trackings = tracking_size_distribution.values.sum
-      tracking_size_distribution.each do |size_name, count|
-        percentage = total_trackings > 0 ? (count.to_f / total_trackings * 100).round(1) : 0
+      # Afficher la répartition actuelle
+      puts "\n📊 RÉPARTITION ACTUELLE"
+      puts "-" * 30
+      total_current = existing_distribution.values.sum
+      existing_distribution.each do |size_name, count|
+        percentage = total_current > 0 ? (count.to_f / total_current * 100).round(1) : 0
         puts "  • #{size_name}: #{count} accompagnements (#{percentage}%)"
       end
-      puts "  • Total: #{total_trackings} accompagnements"
+      puts "  • Total: #{total_current} accompagnements"
+
+      # Afficher la nouvelle répartition après mise à jour
+      puts "\n📋 NOUVELLE RÉPARTITION APRÈS MISE À JOUR DES TRACKINGS TPE"
+      puts "-" * 60
+      total_new = new_distribution.values.sum
+      new_distribution.each do |size_name, count|
+        percentage = total_new > 0 ? (count.to_f / total_new * 100).round(1) : 0
+        puts "  • #{size_name}: #{count} accompagnements (#{percentage}%)"
+      end
+      puts "  • Total: #{total_new} accompagnements"
 
       # Afficher les changements par taille actuelle
       puts "\n📈 CHANGEMENTS PAR TAILLE ACTUELLE"
@@ -189,18 +236,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
 
           if size
             # Analyser les changements prévus
-            analyze_changes(company, size, stats, crp_segment, filter_date, tracking_size_distribution)
-
-            # Récupérer tous les establishment_trackings via les establishments
-            establishment_trackings = company.establishments.includes(:establishment_trackings).map(&:establishment_trackings).flatten # rubocop:disable Layout/LineLength
-
-            if establishment_trackings.any?
-              stats[:updated_trackings] += establishment_trackings.count
-              stats[:size_distribution][size.name] += establishment_trackings.count
-              puts "  ✅ #{establishment_trackings.count} tracking(s) → #{size.name} (#{effectif_min}-#{effectif_max} salariés)"
-            else
-              puts "  ℹ️  Aucun establishment_tracking trouvé"
-            end
+            analyze_changes(company, size, stats, crp_segment, filter_date, tracking_size_distribution, existing_distribution)
           else
             puts "  ⚠️  Impossible de déterminer la taille (effectif: #{effectif_min}-#{effectif_max})"
             stats[:missing_data] << {
@@ -231,8 +267,11 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       sleep(0.1)
     end
 
+    # Calculer la nouvelle répartition globale
+    new_distribution = calculate_new_distribution(existing_distribution, stats)
+    
     # Afficher le rapport des changements prévus
-    display_changes_report(stats, tracking_size_distribution)
+    display_changes_report(stats, new_distribution, existing_distribution)
 
     # Demander confirmation avant de procéder
     puts "🤔 Voulez-vous procéder à la mise à jour ? (tapez 'yes' pour confirmer)"
@@ -265,11 +304,13 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
 
           if size
             puts "  🎯 Nouvelle taille déterminée: #{size.name}"
-            # Récupérer les trackings filtrés
+            # Récupérer les trackings filtrés (TPE uniquement)
             filtered_trackings = company.establishments
               .joins(:establishment_trackings)
+              .joins(establishment_trackings: :size)
               .where(establishment_trackings: { discarded_at: nil })
               .where("establishment_trackings.modified_at >= ?", filter_date)
+              .where(sizes: { name: "TPE" })
               .where(
                 "establishment_trackings.id IN (
                   SELECT et.id FROM establishment_trackings et
