@@ -98,6 +98,158 @@ and
 On the CSS side, the minified dsfr css files are in the `app/assets` directory and referenced in `app/assets/config/manifest.js`.
 This means rails assets pipeline `Sprockets` will handle concatenation, compression, and cache-busting of the CSS files, which will improve the application's performance and maintainability.
 
+# Asset Pipeline
+
+This Rails application uses a hybrid approach for managing assets, combining **Sprockets** for CSS processing and **Import Maps** for JavaScript modules.
+
+## CSS Processing with Dart Sass
+
+The application uses **Dart Sass** (`dartsass-rails` gem) for SCSS compilation, which is the Rails team's recommended approach for Sass support.
+
+### How Dart Sass and Sprockets Work Together
+
+**Dart Sass** and **Sprockets** work together in a two-step process:
+
+1. **Dart Sass** compiles SCSS to CSS - converts `.scss` files into `.css`
+2. **Sprockets** manages the asset pipeline - concatenates, fingerprints, and serves the final CSS
+
+```
+SCSS files → Dart Sass → CSS files → Sprockets → Final served assets
+```
+
+- **Dart Sass** handles SCSS compilation (variables, mixins, `@use`, etc.)
+- **Sprockets** handles asset pipeline management (concatenation, cache busting, serving)
+
+### SCSS Structure
+- **Main stylesheet**: `app/assets/stylesheets/application.scss`
+- **SCSS files**: All stylesheets are converted to `.scss` and use the modern `@use` syntax
+- **Dart Sass compilation**: Handles SCSS compilation to CSS during asset precompilation
+
+### SCSS Usage
+```scss
+// app/assets/stylesheets/application.scss
+@use "dsfr";
+@use "custom";
+@use "admin";
+@use "utility";
+@use "tom-select.min";
+```
+
+## JavaScript with Import Maps
+
+The application uses **Import Maps** (`importmap-rails` gem) for JavaScript module management without a build step.
+
+### Import Map Configuration
+```ruby
+# config/importmap.rb
+pin "application"
+pin "dsfr", to: "dsfr.module.min.js"
+pin "dsfr-chart", to: "dsfr-chart.js"
+pin "tom-select", to: "tom-select.js"
+# ... other pins
+```
+
+### JavaScript Structure
+- **Main entry point**: `app/javascript/application.js`
+- **Stimulus controllers**: `app/javascript/controllers/`
+- **External libraries**: `vendor/javascript/` (downloaded via `bin/importmap pin`)
+
+### Adding External JavaScript Libraries
+```bash
+# Pin a library from CDN
+bin/importmap pin library-name
+
+# Pin a specific version
+bin/importmap pin library-name@1.2.3
+
+# Pin from a local file
+bin/importmap pin library-name --download
+```
+
+## Development vs Production Asset Handling
+
+### Development Environment
+In development, Rails compiles assets **on-demand** (lazy compilation):
+- **CSS**: SCSS files are compiled to CSS when first requested
+- **JavaScript**: Import Maps serve ES modules directly from the browser
+- **No precompilation**: Assets are generated as needed
+- **Faster startup**: No need to compile all assets at startup
+- **Real-time changes**: SCSS changes are reflected immediately
+
+```ruby
+# config/environments/development.rb
+config.public_file_server.enabled = true
+config.assets.compile = true
+config.assets.check_precompiled_asset = false
+```
+
+### Production Environment
+In production, assets are **precompiled** for performance:
+- **Precompilation**: All assets are compiled and optimized before deployment
+- **Concatenation**: Multiple CSS/JS files are combined into single files
+- **Minification**: CSS/JS is compressed to reduce file size
+- **Fingerprinting**: Assets get unique names for cache busting (e.g., `application-abc123.css`)
+- **CDN ready**: Precompiled assets can be served from a CDN
+
+```ruby
+# config/environments/production.rb
+config.assets.compile = false
+config.assets.source_maps = true
+config.assets.debug = false
+```
+
+### Docker Development Considerations
+This project runs in Docker, which can sometimes behave like production regarding asset precompilation. The development configuration includes additional settings to ensure proper asset serving in the containerized environment.
+
+## Asset Pipeline Configuration
+
+### Asset Manifest
+```javascript
+// app/assets/config/manifest.js
+//= link_tree ../images
+//= link_tree ../../javascript .js
+//= link_tree ../../../vendor/javascript .js
+//= link_tree ../builds
+//= link application.css
+```
+
+## External Libraries Integration
+
+### DSFR Chart Library
+The DSFR Chart library is integrated as a web component:
+```javascript
+// app/javascript/application.js
+import "dsfr-chart"
+```
+
+Usage in views:
+```erb
+<line-chart x="[[1, 2, 3, 4]]" y="[[10, 20, 30, 40]]"></line-chart>
+<bar-chart x='[["A", "B", "C"]]' y="[[50, 70, 30]]" name='["Ventes"]'></bar-chart>
+```
+
+### Stimulus Controllers
+Stimulus controllers are automatically loaded and can be used with data attributes:
+```erb
+<div data-controller="chart-widget" 
+     data-chart-widget-url-value="/charts/data"
+     data-chart-widget-chart-type-value="line">
+</div>
+```
+
+## Troubleshooting
+
+### Asset Not Precompiled Errors
+If you encounter "Asset not declared to be precompiled" errors in Docker:
+1. Ensure `config.assets.compile = true` in development
+2. Check that all required assets are in `manifest.js`
+3. Verify importmap pins are correctly configured
+
+### SCSS Compilation Issues
+- Use `@use` instead of `@import` for modern Sass
+- Ensure all SCSS files are properly referenced in `application.scss`
+- Check that `dartsass-rails` gem is properly installed
+
 # Import Wekan data
 
 You can import data from signaux faibles wekan into the rails app.
