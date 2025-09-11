@@ -11,12 +11,11 @@ class Admin::UsersController < Admin::ApplicationController
     @users = @users.page(params[:page])
   end
 
-  def show
-  end
+  def show; end
 
   def impersonate
     if @user == current_user
-      redirect_to admin_users_path, alert: "Vous ne pouvez pas vous imiter vous-même"
+      redirect_to admin_users_path, alert: "Vous ne pouvez pas vous imiter vous-même" # rubocop:disable Rails/I18nLocaleTexts
     else
       impersonate_user(@user)
       redirect_to root_path, notice: "Vous êtes maintenant connecté en tant que #{@user.email}"
