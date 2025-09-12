@@ -62,42 +62,6 @@ config.web_console.permissions = '192.168.65.1'
 This is because rails sees the ip trying to access the rails web console as some Docker internal IP (might vary depending on your OS)
 and rails does not authorize ips other than localhost to access the rails web console for security reasons.
 
-
-# DSFR (js + css)
-The design and layout uses the [dsfr](https://www.systeme-de-design.gouv.fr/). 
-Since the dsfr is not available through a CDN and we want to use importmaps (which means no usage of node and npm) then we directly use the dsfr static files.
-
-On the javascript side we use importmap to import the dsfr as a javascript module file :
-
-The module file is here :
-`app/javascript/dsfr.module.min.js`
-
-```ruby
-# config/importmap.rb
-pin "dsfr", to: "dsfr.module.min.js"
-```
-and then
-
-```ruby
-# app/javascript/application.js
-import "dsfr"
-```
-
-But for browsers not supporting ES6 modules we also serve the file using sprockets :
-
-The non-module file is here :
-`vendor/javascript/dsfr.nomodule.min.js`
-
-and
-
-```html
-<!-- app/views/layouts/application.html.erb -->
-<script src="<%= asset_path 'dsfr.nomodule.min.js' %>" nomodule></script>
-```
-
-On the CSS side, the minified dsfr css files are in the `app/assets` directory and referenced in `app/assets/config/manifest.js`.
-This means rails assets pipeline `Sprockets` will handle concatenation, compression, and cache-busting of the CSS files, which will improve the application's performance and maintainability.
-
 # Asset Pipeline
 
 This Rails application uses a hybrid approach for managing assets, combining **Sprockets** for CSS processing and **Import Maps** for JavaScript modules.
@@ -249,6 +213,21 @@ If you encounter "Asset not declared to be precompiled" errors in Docker:
 - Use `@use` instead of `@import` for modern Sass
 - Ensure all SCSS files are properly referenced in `application.scss`
 - Check that `dartsass-rails` gem is properly installed
+
+### Legacy Browser Support Issue
+**⚠️ Identified Issue**: The current setup only provides fallback support for DSFR (`dsfr.nomodule.min.js`) but not for other JavaScript modules loaded via Import Maps. This means:
+
+- **Modern browsers**: All JavaScript works (Import Maps + DSFR fallback)
+- **Legacy browsers**: Only DSFR works, all other JS (application.js, Stimulus controllers, etc.) fails to load
+
+**Impact**: Users with older browsers will have a broken JavaScript experience.
+
+**Recommended Solutions**:
+1. **Accept modern-only**: Remove DSFR fallback and require modern browser support
+2. **Full fallback strategy**: Create non-module versions of all JS files and add them to the manifest
+3. **Hybrid approach**: Keep DSFR fallback for critical UI, accept limited JS functionality in old browsers
+
+**Action Required**: This issue should be addressed based on the target browser support requirements.
 
 # Import Wekan data
 
