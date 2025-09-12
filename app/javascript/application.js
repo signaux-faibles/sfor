@@ -6,3 +6,5 @@ import "ahoy"
 import "track_tabs"
 import "dsfr-chart"
 
+console.log("Application.js loaded successfully!");
+
