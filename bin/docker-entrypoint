@@ -5,10 +5,4 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
-pwd
-ls -l /
-ls -l /rails
-ls -l /rails/config
-cat /rails/config/database.yml
-
 exec "${@}"
