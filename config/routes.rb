@@ -63,7 +63,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :companies, path: "entreprises", only: %i[show] do
+  resources :companies, path: "entreprises", only: %i[show], param: :siren do
     member do
       get :insee_widget
       get :financial_widget
