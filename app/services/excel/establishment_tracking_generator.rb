@@ -1,4 +1,4 @@
-# app/services/establishment_tracking_excel_generator.rb
+# app/services/excel/establishment_tracking_generator.rb
 module Excel
   module Styles
     def header_style(sheet)
@@ -112,8 +112,8 @@ module Excel
     end
   end
 
-  class EstablishmentTrackingExcelGenerator # rubocop:disable Metrics/ClassLength
-    include ExcelStyles
+  class EstablishmentTrackingGenerator # rubocop:disable Metrics/ClassLength
+    include Excel::Styles
     include FilterHelpers
 
     def initialize(establishment_trackings, filters, user)
@@ -169,8 +169,8 @@ module Excel
       @establishment_trackings.each do |tracking|
         sheet.add_row prepare_tracking_row(tracking, sheet),
                       style: Array.new(15, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
-                      types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, :string,
-                              :string]
+                      types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+                              :string, :string]
       end
     end
 
