@@ -335,11 +335,38 @@ class ImportHelper # rubocop:disable Metrics/ClassLength
     header.zip(row.cells.map { |cell| cell && cell.value }).to_h
   end
 
-  def discard_users_from_worksheet(worksheet, header)
-    worksheet.sheet_data.rows[1..].each do |row|
-      break if row.nil? || row.cells[0].nil? || row.cells[0].value.nil?
+  def discard_users_from_worksheet(worksheet, header) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    issue_rows = []
 
-      process_discard_row(row, header)
+    worksheet.sheet_data.rows[1..].each_with_index do |row, index|
+      row_number = index + 2
+
+      if row.nil?
+        puts "Issue at discard row #{row_number}: row is nil"
+        issue_rows << { row: row_number, issue: "row is nil", data: row }
+      elsif row.cells[0].nil?
+        puts "Issue at discard row #{row_number}: first cell is nil"
+        puts "  Row data: #{row}"
+        puts "  Row cells count: #{row.cells&.length || 'nil'}"
+        puts "  Row cells: #{row.cells&.map { |cell| cell&.value } || 'nil'}"
+        issue_rows << { row: row_number, issue: "first cell is nil", data: row }
+      elsif row.cells[0].value.nil?
+        puts "Issue at discard row #{row_number}: first cell value is nil"
+        issue_rows << { row: row_number, issue: "first cell value is nil", data: row }
+      else
+        process_discard_row(row, header)
+      end
+    end
+
+    if issue_rows.any?
+      puts "\n=== ALL DISCARD ISSUES FOUND ==="
+      issue_rows.each do |issue|
+        puts "Discard Row #{issue[:row]}: #{issue[:issue]}"
+      end
+      puts "Total discard issues: #{issue_rows.length}"
+      puts "================================"
+    else
+      puts "\n✓ No discard issues found - all rows processed successfully"
     end
   end
 
