@@ -162,7 +162,6 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
 
   test "should update establishment_tracking with all optional fields" do # rubocop:disable Metrics/BlockLength
     criticality = criticalities(:niveau_orange)
-    size = sizes(:small)
     sector = sectors(:industry)
     difficulty = difficulties(:financial)
     user_action = user_actions(:first_contact)
@@ -175,7 +174,6 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
         start_date: Time.zone.today,
         referent_ids: [@user_crp_paris.id],
         criticality_id: criticality.id,
-        size_id: size.id,
         tracking_label_ids: [],
         user_action_ids: [user_action.id],
         sector_ids: [sector.id],
@@ -191,7 +189,6 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
 
     @establishment_tracking_paris.reload
     assert_equal criticality.id, @establishment_tracking_paris.criticality_id
-    assert_equal size.id, @establishment_tracking_paris.size_id
     assert_includes @establishment_tracking_paris.sector_ids, sector.id
     assert_includes @establishment_tracking_paris.difficulty_ids, difficulty.id
     assert_includes @establishment_tracking_paris.user_action_ids, user_action.id

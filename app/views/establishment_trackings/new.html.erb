@@ -172,21 +172,6 @@
 
           <p><%= @establishment_tracking.establishment.siret %></p>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:size_id].any? %>">
-            <%= form.label :size_id, 'Taille de l\'entreprise' %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-size" aria-describedby="button-new-tracking-size">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur la taille de l'entreprise</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-new-tracking-size" role="tooltip" aria-hidden="true">
-              La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
-            </span>
-            <%= form.collection_select :size_id, Size.all, :id, :name, { include_blank: "Sélectionner une taille" }, { class: 'fr-select' } %>
-            <% @establishment_tracking.errors[:size_id].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
-          </div>
-
           <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>">
             <%= form.label :sector_ids, 'Filières' %>
             <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-sector" aria-describedby="button-new-tracking-sector">

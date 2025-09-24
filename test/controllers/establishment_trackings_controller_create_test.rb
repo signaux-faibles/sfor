@@ -84,7 +84,6 @@ class EstablishmentTrackingsControllerCreateTest < ActionDispatch::IntegrationTe
 
   test "should create establishment_tracking with all optional fields" do # rubocop:disable Metrics/BlockLength
     criticality = criticalities(:niveau_orange)
-    size = sizes(:small)
     sector = sectors(:industry)
     difficulty = difficulties(:financial)
     user_action = user_actions(:first_contact)
@@ -98,7 +97,6 @@ class EstablishmentTrackingsControllerCreateTest < ActionDispatch::IntegrationTe
           start_date: Time.zone.today,
           referent_ids: [@user.id],
           criticality_id: criticality.id,
-          size_id: size.id,
           tracking_label_ids: [],
           user_action_ids: [user_action.id],
           sector_ids: [sector.id],
@@ -116,7 +114,6 @@ class EstablishmentTrackingsControllerCreateTest < ActionDispatch::IntegrationTe
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
 
     assert_equal criticality.id, tracking.criticality_id
-    assert_equal size.id, tracking.size_id
     assert_includes tracking.sector_ids, sector.id
     assert_includes tracking.difficulty_ids, difficulty.id
     assert_includes tracking.user_action_ids, user_action.id
