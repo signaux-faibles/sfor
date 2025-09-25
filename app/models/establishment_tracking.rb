@@ -47,7 +47,6 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   attr_accessor :skip_update_modified_at, :skip_snapshot_creation, :modifier
 
   validates :referents, presence: true
-  validate :at_least_one_active_referent, on: :update
   validate :single_active_tracking, if: -> { state.in?(%w[in_progress under_surveillance]) }
 
   scope :in_progress, -> { where(state: "in_progress") }
