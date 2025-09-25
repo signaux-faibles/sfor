@@ -91,7 +91,6 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
         .joins(establishment_trackings: :size)
         .where(establishment_trackings: { discarded_at: nil })
         .where("establishment_trackings.modified_at >= ?", filter_date)
-        .where(sizes: { name: "TPE" })
         .where(
           "establishment_trackings.id IN (
             SELECT et.id FROM establishment_trackings et
@@ -170,7 +169,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
       puts "  • Total: #{total_current} accompagnements"
 
       # Afficher la nouvelle répartition après mise à jour
-      puts "\n📋 NOUVELLE RÉPARTITION APRÈS MISE À JOUR DES TRACKINGS TPE"
+      puts "\n📋 NOUVELLE RÉPARTITION APRÈS MISE À JOUR DES TRACKINGS"
       puts "-" * 60
       total_new = new_distribution.values.sum
       new_distribution.each do |size_name, count|
@@ -310,7 +309,6 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
               .joins(establishment_trackings: :size)
               .where(establishment_trackings: { discarded_at: nil })
               .where("establishment_trackings.modified_at >= ?", filter_date)
-              .where(sizes: { name: "TPE" })
               .where(
                 "establishment_trackings.id IN (
                   SELECT et.id FROM establishment_trackings et
