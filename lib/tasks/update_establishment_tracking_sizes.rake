@@ -49,9 +49,9 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
     # Compter d'abord tous les trackings existants (pour la répartition de base)
     all_trackings_count = EstablishmentTracking.where(discarded_at: nil).count
     existing_distribution = EstablishmentTracking
-      .joins(:size)
+      .left_joins(:size)
       .where(discarded_at: nil)
-      .group('sizes.name')
+      .group('COALESCE(sizes.name, \'nil\')')
       .count
 
     # Vérifier que tous les sizes existent
@@ -123,7 +123,7 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
             # Récupérer les trackings filtrés (TPE uniquement)
             filtered_trackings = company.establishments
               .joins(:establishment_trackings)
-              .joins(establishment_trackings: :size)
+              .left_joins(establishment_trackings: :size)
               .where(establishment_trackings: { discarded_at: nil })
               .distinct
               .pluck("establishment_trackings.id")
@@ -137,6 +137,8 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
                 old_size_name = tracking.size&.name || "nil"
                 tracking.update!(size_id: size.id)
                 updated_count += 1
+                stats[:updated_trackings] += 1
+                stats[:size_distribution][size.name] += 1
 
                 if old_size_name == size.name
                   puts "    📝 Tracking #{tracking_index + 1}: #{old_size_name} (inchangé)"
@@ -150,12 +152,28 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
             end
           else
             puts "  ⚠️  Impossible de déterminer la taille (effectif: #{effectif_min}-#{effectif_max})"
+            stats[:missing_data] << {
+              siren: company.siren,
+              raison_sociale: company.raison_sociale,
+              reason: "Effectif hors plage: #{effectif_min}-#{effectif_max}"
+            }
           end
         else
           puts "  ❌ Pas de données d'effectif dans la réponse API"
+          stats[:missing_data] << {
+            siren: company.siren,
+            raison_sociale: company.raison_sociale,
+            reason: "Pas de tranche_effectif_salarie dans l'API"
+          }
         end
       rescue StandardError => e
         puts "  💥 Erreur API: #{e.message}"
+        stats[:api_errors] += 1
+        stats[:missing_data] << {
+          siren: company.siren,
+          raison_sociale: company.raison_sociale,
+          reason: "Erreur API: #{e.message}"
+        }
       end
 
       puts "  ⏱️  Pause de 3 secondes..."
