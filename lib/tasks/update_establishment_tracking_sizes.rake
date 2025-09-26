@@ -176,8 +176,8 @@ namespace :companies do # rubocop:disable Metrics/BlockLength
         }
       end
 
-      puts "  ⏱️  Pause de 3 secondes..."
-      sleep(3)
+      puts "  ⏱️  Pause de 0.1 seconde..."
+      sleep(0.1)
       puts
     end
 
