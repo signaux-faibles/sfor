@@ -166,7 +166,7 @@
             <span class="fr-tooltip fr-placement" id="button-edit-tracking-sector" role="tooltip" aria-hidden="true">
               La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
             </span>
-            <%= form.collection_select :sector_ids, Sector.order(:name), :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
+            <%= form.collection_select :sector_ids, Sector.ordered_by_name, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
             <% @establishment_tracking.errors[:sector_ids].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>
