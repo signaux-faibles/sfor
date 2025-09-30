@@ -18,14 +18,14 @@
               <table id="table-md">
                 <thead>
                 <tr>
-                  <th>Raison sociale</th>
-                  <th>SIRET</th>
-                  <th>Statut</th>
-                  <th>Criticité</th>
-                  <th>Référents</th>
-                  <th>Dernière modification</th>
-                  <th>Dépt.</th>
-                  <th>Actions</th>
+                  <th scope="col">Raison sociale</th>
+                  <th scope="col">SIRET</th>
+                  <th scope="col">Statut</th>
+                  <th scope="col">Criticité</th>
+                  <th scope="col">Référents</th>
+                  <th scope="col">Dernière modification</th>
+                  <th scope="col">Dépt.</th>
+                  <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -60,7 +60,9 @@
                     <td><%= tracking.establishment.department.code %></td>
                     <td>
                       <% if policy(tracking).show? %>
-                        <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                        <%= link_to [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' do %>
+                          Consulter <span class="fr-sr-only"><%= tracking.establishment.raison_sociale %></span>
+                        <% end %>
                       <% else %>
                         <span>-</span>
                       <% end %>
