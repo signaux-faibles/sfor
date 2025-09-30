@@ -7,11 +7,10 @@
 
     <h1>Modifier les informations - <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
 
-    <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
+    <fieldset class="fr-grid-row fr-grid-row--left fr-mb-3w">
       <div class="fr-col-6">
-
         <div class="fr-p-3w">
-          <h2>Informations sur l'accompagnement</h2>
+          <legend class="fr-h2">Informations sur l'accompagnement</legend>
 
           <% if policy(@establishment_tracking).manage_state? %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
@@ -28,10 +27,10 @@
                   <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
                 </ul>
               </span>
-              <%= form.select :state, 
-                            options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']], 
-                            @establishment_tracking.state), 
-                            {}, 
+              <%= form.select :state,
+                            options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']],
+                            @establishment_tracking.state),
+                            {},
                             { class: 'fr-select', data: { tracking_status_target: "stateSelect", action: "change->tracking-status#toggleWarningBanner" } } %>
               <% @establishment_tracking.errors[:state].each do |error| %>
                 <p class="fr-error-text"><%= error %></p>
@@ -48,7 +47,7 @@
               <span class="fr-sr-only">Information sur la criticité</span>
             </button>
             <span class="fr-tooltip fr-placement" id="button-edit-tracking-criticality" role="tooltip" aria-hidden="true">
-              La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier : 
+              La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier :
               <ul>
                 <li>La criticité "élevée" indique que l’entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
                 <li>La criticité "modérée" indique que l'entreprise rencontre une difficulté avérée qui n’entraîne pas un péril à court terme. Les difficultés sont néanmoins sérieuses et requièrent une attention particulière des membres du CODEFI.</li>
@@ -56,11 +55,11 @@
               </ul>
               L’agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l’entreprise pour le CODEFI.
             </span>
-            <%= form.collection_select :criticality_id, 
-                Criticality.all, 
-                :id, 
-                :name, 
-                { selected: @establishment_tracking.criticality_id || Criticality.find_by(name: "Pas de criticité")&.id }, 
+            <%= form.collection_select :criticality_id,
+                Criticality.all,
+                :id,
+                :name,
+                { selected: @establishment_tracking.criticality_id || Criticality.find_by(name: "Pas de criticité")&.id },
                 { class: 'fr-select' } %>
             <% @establishment_tracking.errors[:criticality_id].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
@@ -146,13 +145,13 @@
           </div>
         </div>
       </div>
-    </div>
+    </fieldset>
 
-    <div class="fr-grid-row fr-grid-row--left fr-mb-3w" style="border: grey 1px solid">
+    <fieldset class="fr-grid-row fr-grid-row--left fr-mb-3w">
       <div class="fr-col-6">
         <div class="fr-p-3w">
 
-          <h2>Informations sur l'établissement</h2>
+          <legend class="fr-h2">Informations sur l'établissement</legend>
           <p class="fr-m-0"><strong>SIRET</strong></p>
 
           <p><%= @establishment_tracking.establishment.siret %></p>
@@ -173,7 +172,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </fieldset>
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w">
       <div class="fr-col-6">
         <div class="">

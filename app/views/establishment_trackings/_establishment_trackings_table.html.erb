@@ -41,9 +41,9 @@
               <% if @paginated_establishment_trackings.any? %>
                 <thead>
                 <tr>
-                  <th>Raison sociale</th>
-                  <th>SIRET</th>
-                  <th>Statut
+                  <th scope="col">Raison sociale</th>
+                  <th scope="col">SIRET</th>
+                  <th scope="col">Statut
                     <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-statuts" aria-describedby="tooltip-table-statuts">
                       <span class="fr-icon-information-line" aria-hidden="true"></span>
                       <span class="fr-sr-only">Information sur les statuts</span>
@@ -57,7 +57,7 @@
                       </ul>
                     </span>
                   </th>
-                  <th>Criticité
+                  <th scope="col">Criticité
                     <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-criticality" aria-describedby="tooltip-table-criticality">
                       <span class="fr-icon-information-line" aria-hidden="true"></span>
                       <span class="fr-sr-only">Information sur la criticité</span>
@@ -72,7 +72,7 @@
                       L’agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l’entreprise pour le CODEFI.
                     </span>
                   </th>
-                  <th>Référents
+                  <th scope="col">Référents
                     <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-referents" aria-describedby="tooltip-table-referents">
                       <span class="fr-icon-information-line" aria-hidden="true"></span>
                       <span class="fr-sr-only">Information sur les référents</span>
@@ -84,7 +84,7 @@
                       Les "référents" sont responsables de la mise à jour de la synthèse et sont les seuls à pouvoir modifier le statut. Le SP CODEFI dispose d'un droit de regard sur la synthèse dans le cadre de la rédaction du CR du CODEFI.
                     </span>
                   </th>
-                  <th><%= sort_link @q, :modified_at, "Dernière modif." %>
+                  <th scope="col"><%= sort_link @q, :modified_at, "Dernière modif." %>
                     <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-modified-at" aria-describedby="tooltip-table-modified-at">
                       <span class="fr-icon-information-line" aria-hidden="true"></span>
                       <span class="fr-sr-only">Information sur la date de modification</span>
@@ -93,18 +93,18 @@
                       Date à laquelle au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité.
                     </span>
                   </th>
-                  <th>Dépt.</th>
-                  <th>Actions</th>
+                  <th scope="col">Dépt.</th>
+                  <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 <% @paginated_establishment_trackings.each do |tracking| %>
                   <tr>
-                    <td>
-                    <span title="<%= tracking.establishment.raison_sociale %>">
-                      <%= tracking.establishment.raison_sociale.truncate(20) %>
+                    <th>
+                    <span title="<%= tracking.establishment.raison_sociale %>" class="sf-truncate">
+                      <%= tracking.establishment.raison_sociale %>
                     </span>
-                    </td>
+                    </th>
                     <td><%= tracking.establishment.siret %></td>
                     <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state), style: state_style_for(tracking.aasm.human_state) %></td>
                     <td>
@@ -128,7 +128,9 @@
                     <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
                     <td><%= tracking.establishment.department.code %></td>
                     <td>
-                      <%= link_to 'Consulter', [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                      <%= link_to [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' do %>
+                        Consulter <span class="fr-sr-only"><%= tracking.establishment.raison_sociale %></span>
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>

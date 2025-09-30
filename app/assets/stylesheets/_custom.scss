@@ -1,7 +1,16 @@
 .accompagnement__tab-title h3 {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 1rem;
+
+    @media (min-width: 992px) {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.accompagnement__tab-subtitle {
+    font-size: 1rem;
 }
 
 .accompagnement__tab-title .fr-btn {
@@ -151,6 +160,13 @@
 .fr-label-wrapper .fr-btn--tooltip {
     position: relative;
     top: 1px;
+}
+
+.sf-truncate {
+    text-overflow: ellipsis;
+    max-width: 12em; /* à adapter */
+    display: inline-block;
+    overflow: hidden;
 }
 
 /* Tom select */
