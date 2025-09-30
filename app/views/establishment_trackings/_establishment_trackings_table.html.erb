@@ -100,11 +100,11 @@
                 <tbody>
                 <% @paginated_establishment_trackings.each do |tracking| %>
                   <tr>
-                    <th>
+                    <td>
                     <span title="<%= tracking.establishment.raison_sociale %>" class="sf-truncate">
                       <%= tracking.establishment.raison_sociale %>
                     </span>
-                    </th>
+                    </td>
                     <td><%= tracking.establishment.siret %></td>
                     <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state), style: state_style_for(tracking.aasm.human_state) %></td>
                     <td>
