@@ -4,14 +4,18 @@
 
 namespace :osf do
   desc "Sync all OSF data from OSF database to local Rails tables"
-  task sync_all: :environment do
-    puts "Starting complete OSF data synchronization..."
+  task :sync_all, [:months_back] => :environment do |_task, args|
+    months_back = args[:months_back]&.to_i
+    if months_back
+      puts "Starting complete OSF data synchronization for the last #{months_back} months..."
+    else
+      puts "Starting complete OSF data synchronization..."
+    end
 
     start_time = Time.current
 
-    # Run all sync tasks
-    Rake::Task["osf:sync_apdemande"].invoke
-    Rake::Task["osf:sync_apconso"].invoke
+    # Run the new unified ap sync task
+    Rake::Task["osf:sync_ap"].invoke(months_back)
 
     end_time = Time.current
     duration = (end_time - start_time).round(2)
