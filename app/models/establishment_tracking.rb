@@ -39,6 +39,7 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
 
   before_save :update_modified_at_if_criticality_changed
   before_create :set_modified_at
+  after_update :add_codefi_redirect_user_action
 
   # Snapshot callbacks
   after_create :create_creation_snapshot
@@ -181,5 +182,15 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   def determine_user_from_context
     # Use explicitly set modifier, fallback to creator
     modifier || creator
+  end
+
+  def add_codefi_redirect_user_action
+    redirect_action = UserAction.find_or_create_by(name: "Réorientation externe au codéfi")
+
+    if codefi_redirects.any?
+      user_actions << redirect_action unless user_actions.include?(redirect_action)
+    else
+      user_actions.delete(redirect_action) if user_actions.include?(redirect_action)
+    end
   end
 end
