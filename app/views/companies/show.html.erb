@@ -15,10 +15,11 @@
     <h1 style="margin: 0;"><%= @company.raison_sociale %></h1>
   </div>
   <div class="fr-tabs">
-    <ul class="fr-tabs__list custom-background fr-pb-0" role="tablist" aria-label="Gestion des onglets">
+    <ul class="fr-tabs__list custom-background fr-pb-0" role="tablist" aria-label="Informations sur l'entreprise">
       <!-- Company Information Tab -->
       <li role="presentation">
         <button id="tabpanel-informations"
+                type="button"
                 class="fr-tabs__tab"
                 tabindex="0" role="tab"
                 aria-selected="true"
@@ -30,6 +31,7 @@
       <!-- Financial Data Tab -->
       <li role="presentation">
         <button id="tabpanel-financier"
+                type="button"
                 class="fr-tabs__tab"
                 tabindex="-1" role="tab"
                 aria-selected="false"
