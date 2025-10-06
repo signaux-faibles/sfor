@@ -8,6 +8,8 @@ module Osf
     def initialize(months_back: nil)
       super()
       @months_back = months_back
+      @schema = ENV.fetch("OSF_DATABASE_SCHEMA", "public")
+      @source_relation = "#{@schema}.clean_ap"
     end
 
     protected
@@ -19,7 +21,6 @@ module Osf
     def sync_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       @logger.info "Starting optimized ap data synchronization from clean_ap"
 
-      # Clear existing data before importing
       @logger.info "Clearing existing osf_aps table"
       OsfAp.delete_all
 
@@ -31,8 +32,8 @@ module Osf
         @logger.info "Filtering data from #{cutoff_date.strftime('%Y-%m-%d')} onwards (#{@months_back} months back)"
       end
 
-      # Get total count first
-      count_query = "SELECT COUNT(*) FROM clean_ap #{date_filter}"
+      # Get total count first for batch processing
+      count_query = "SELECT COUNT(*) FROM #{@source_relation} #{date_filter}"
       total_count = @db_service.execute_query(count_query).first["count"].to_i
       @logger.info "Processing #{total_count} records in batches of #{BATCH_SIZE}"
 
@@ -78,7 +79,7 @@ module Osf
 
       # Fetch only one batch at a time
       distant_records = @db_service.execute_query(
-        "SELECT * FROM clean_ap #{date_filter} ORDER BY siret, periode LIMIT #{BATCH_SIZE} OFFSET #{offset}"
+        "SELECT * FROM #{@source_relation} #{date_filter} ORDER BY siret, periode LIMIT #{BATCH_SIZE} OFFSET #{offset}"
       )
 
       return if distant_records.ntuples.zero?
