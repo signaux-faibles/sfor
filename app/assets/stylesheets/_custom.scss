@@ -169,6 +169,21 @@
     overflow: hidden;
 }
 
+.sf-keyvalue-list__key {
+  float: left;
+  clear: left;
+  margin: 0;
+  padding: 0 .5em 0 0;
+  line-height: 2;
+  font-weight: 700;
+}
+
+.sf-keyvalue-list__value {
+  margin: 0;
+  padding: 0;
+  line-height: 2;
+}
+
 /* Tom select */
 /* Higher contrast for Tom Select active dropdown option */
 .ts-dropdown .active {
