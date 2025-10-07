@@ -16,6 +16,8 @@ namespace :osf do
 
     # Run the new unified ap sync task
     Rake::Task["osf:sync_ap"].invoke(months_back)
+    # Then effectif
+    Rake::Task["osf:sync_effectif"].invoke(months_back)
 
     end_time = Time.current
     duration = (end_time - start_time).round(2)
