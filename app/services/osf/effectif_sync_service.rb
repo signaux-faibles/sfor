@@ -1,5 +1,5 @@
 # app/services/osf/effectif_sync_service.rb
-# Service to synchronize effectif data from stg_effectif materialized view
+# Service to synchronize effectif data using PostgreSQL cursors for optimal performance
 
 module Osf
   class EffectifSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
@@ -18,10 +18,9 @@ module Osf
       "osf_effectif_sync.log"
     end
 
-    def sync_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-      @logger.info "Starting effectif data synchronization from #{@source_relation}"
+    def sync_data # rubocop:disable Metrics/MethodLength
+      @logger.info "Starting effectif data synchronization from #{@source_relation} using PostgreSQL cursor"
 
-      # Clear existing data before importing
       @logger.info "Clearing existing osf_effectifs table"
       OsfEffectif.delete_all
 
@@ -29,73 +28,82 @@ module Osf
       base_date_filter = ""
       if @months_back
         cutoff_date = @months_back.months.ago.beginning_of_month
-        base_date_filter = "periode >= '#{cutoff_date.strftime('%Y-%m-%d')}'"
+        base_date_filter = "WHERE periode >= '#{cutoff_date.strftime('%Y-%m-%d')}'"
         @logger.info "Filtering data from #{cutoff_date.strftime('%Y-%m-%d')} onwards (#{@months_back} months back)"
       end
 
-      # Cursor-based pagination
-      last_siret = nil
-      last_periode = nil
-      batch_number = 1
-      total_processed = 0
+      # Use PostgreSQL cursor for efficient processing
+      process_with_cursor(base_date_filter)
 
-      loop do
-        @logger.info "Processing batch #{batch_number} (cursor: siret=#{last_siret}, periode=#{last_periode})"
-
-        batch_result = process_batch_cursor(last_siret, last_periode, base_date_filter)
-
-        if (batch_result[:processed]).zero?
-          if (batch_result[:total_fetched]).positive?
-            @logger.warn "Batch returned #{batch_result[:total_fetched]} records but all were skipped. Continuing..."
-            # Update cursor even if all records were skipped
-            last_siret = batch_result[:last_siret]
-            last_periode = batch_result[:last_periode]
-            batch_number += 1
-            next
-          else
-            @logger.info "No more records to process"
-            break
-          end
-        end
-
-        last_siret = batch_result[:last_siret]
-        last_periode = batch_result[:last_periode]
-        total_processed += batch_result[:processed]
-        batch_number += 1
-
-        @logger.info "Batch #{batch_number - 1} completed: #{batch_result[:processed]} records processed.
-        Total: #{total_processed} -
-        Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
-      end
-
-      @logger.info "Effectif sync completed. Final stats:
-      Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+      @logger.info "Effectif sync completed.
+      Final stats: Created: #{@stats[:created]},
+      Errors: #{@stats[:errors]},
+      Skipped: #{@stats[:skipped]}"
     end
 
     private
 
-    def process_batch_cursor(last_siret, last_periode, base_date_filter) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
-      # Build cursor condition
-      cursor_condition = ""
-      if last_siret && last_periode
-        cursor_condition = "(siret > '#{last_siret}' OR (siret = '#{last_siret}' AND periode > '#{last_periode}'))"
+    def process_with_cursor(base_date_filter) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      cursor_name = "effectif_cursor_#{Process.pid}_#{Time.current.to_i}"
+
+      begin
+        # Start transaction and declare cursor
+        @db_service.execute_query("BEGIN")
+        @logger.debug "Started transaction and declaring cursor: #{cursor_name}"
+
+        # Declare cursor with the query
+        declare_sql =
+          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_date_filter} ORDER BY siret, periode" # rubocop:disable Layout/LineLength
+        @db_service.execute_query(declare_sql)
+        @logger.debug "Declared cursor with query: #{declare_sql}"
+
+        batch_number = 1
+        total_processed = 0
+
+        loop do
+          @logger.info "Processing batch #{batch_number}"
+
+          # Fetch batch from cursor
+          fetch_sql = "FETCH FORWARD #{BATCH_SIZE} FROM #{cursor_name}"
+          distant_records = @db_service.execute_query(fetch_sql)
+
+          @logger.debug "Fetched #{distant_records.ntuples} records from cursor"
+
+          # Break if no more records
+          break if distant_records.ntuples.zero?
+
+          # Process the batch
+          batch_result = process_cursor_batch(distant_records)
+          total_processed += batch_result[:processed]
+          batch_number += 1
+
+          @logger.info "Batch #{batch_number - 1} completed: #{batch_result[:processed]} records processed.
+          Total: #{total_processed} -
+          Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+        end
+
+        # Close cursor and commit
+        @db_service.execute_query("CLOSE #{cursor_name}")
+        @db_service.execute_query("COMMIT")
+        @logger.debug "Closed cursor and committed transaction"
+      rescue StandardError => e
+        @logger.error "Error in cursor processing: #{e.message}"
+        @logger.error e.backtrace.join("\n")
+
+        # Clean up cursor and rollback on error
+        begin
+          @db_service.execute_query("CLOSE #{cursor_name}") if cursor_name
+          @db_service.execute_query("ROLLBACK")
+        rescue StandardError => cleanup_error
+          @logger.error "Error during cleanup: #{cleanup_error.message}"
+        end
+
+        increment_stat(:errors)
+        raise
       end
+    end
 
-      # Build complete WHERE clause
-      where_clause = ""
-      if base_date_filter.present? || cursor_condition.present?
-        conditions = [base_date_filter, cursor_condition].compact.compact_blank
-        where_clause = "WHERE #{conditions.join(' AND ')}" if conditions.any?
-      end
-
-      query = "SELECT * FROM #{@source_relation} #{where_clause} ORDER BY siret, periode LIMIT #{BATCH_SIZE}"
-      @logger.debug "Executing query: #{query}"
-
-      distant_records = @db_service.execute_query(query)
-
-      return { processed: 0, total_fetched: 0, last_siret: last_siret,
-               last_periode: last_periode } if distant_records.ntuples.zero?
-
+    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       sirets = distant_records.pluck("siret").compact.uniq
       establishments_by_siret = Establishment.where(siret: sirets).index_by(&:siret)
 
@@ -126,20 +134,12 @@ module Osf
         end
       end
 
-      # Get the last record for cursor
-      last_record = distant_records.to_a.last
-      @logger.debug "Cursor update: last_siret=#{last_record['siret']}, last_periode=#{last_record['periode']}"
-      {
-        processed: processed_count,
-        total_fetched: distant_records.ntuples,
-        last_siret: last_record["siret"],
-        last_periode: last_record["periode"]
-      }
+      { processed: processed_count }
     rescue StandardError => e
-      @logger.error "Error processing batch: #{e.message}"
+      @logger.error "Error processing cursor batch: #{e.message}"
       @logger.error e.backtrace.join("\n")
       increment_stat(:errors)
-      { processed: 0, total_fetched: 0, last_siret: last_siret, last_periode: last_periode }
+      { processed: 0 }
     end
 
     def increment_stat(key, count = 1)
