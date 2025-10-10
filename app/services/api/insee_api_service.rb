@@ -18,6 +18,13 @@ module Api
       make_api_request(endpoint)
     end
 
+    def fetch_unite_legale_by_siren_siege(siren)
+      return nil unless valid_siren_param?(siren)
+
+      endpoint = "/v3/insee/sirene/unites_legales/#{siren}/siege_social"
+      make_api_request(endpoint)
+    end
+
     def fetch_establishment_by_siret(siret)
       return nil unless valid_siret_param?(siret)
 

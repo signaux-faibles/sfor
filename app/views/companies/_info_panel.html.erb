@@ -16,15 +16,15 @@
                 <dl class="fr-grid-row">
                   <dt class="fr-col-4"><strong>SIREN:</strong></dt>
                   <dd class="fr-col-8"><%= @company.siren %></dd>
-                  
+
                   <dt class="fr-col-4"><strong>Raison sociale:</strong></dt>
                   <dd class="fr-col-8"><%= @company.raison_sociale %></dd>
-                  
+
                   <% if @insee_data&.dig("data", "sigle") %>
                     <dt class="fr-col-4"><strong>Sigle:</strong></dt>
                     <dd class="fr-col-8"><%= @insee_data.dig("data", "personne_morale_attributs", "sigle") %></dd>
                   <% end %>
-                  
+
                   <dt class="fr-col-4"><strong>Effectif:</strong></dt>
                   <dd class="fr-col-8"><%= @company.effectif %></dd>
                 </dl>
@@ -40,7 +40,7 @@
       <div class="fr-card fr-card--bordered">
         <div class="fr-card__body">
           <div class="fr-card__content">
-            <h3 class="fr-card__title">Données INSEE 
+            <h3 class="fr-card__title">Données INSEE
               <% if @insee_data %>
                 <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
               <% else %>
