@@ -59,7 +59,7 @@ class CompaniesController < ApplicationController
     return if @company.siren.blank?
 
     service = Api::InseeApiService.new
-    @insee_data = service.fetch_unite_legale_by_siren(@company.siren)
+    @insee_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
     @insee_data = nil

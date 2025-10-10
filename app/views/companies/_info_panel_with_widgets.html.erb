@@ -3,34 +3,13 @@
      role="tabpanel"
      aria-labelledby="tabpanel-informations"
      tabindex="0">
-  <!-- Informations de base -->
-  <h2>
-    Informations générales
-    <span class="fr-badge fr-badge--error fr-badge--sm">23 juin 2025</span>
-    <span class="fr-badge fr-badge--warning fr-badge--sm">Nom de la procédure</span>
-  </h2>
-  <dl class="sf-keyvalue-list">
-    <dt class="sf-keyvalue-list__key">Secteur d'activité : </dt>
-    <dd class="sf-keyvalue-list__value">Construction</dd>
-    <dt class="sf-keyvalue-list__key">Activité : </dt>
-    <dd class="sf-keyvalue-list__value">Travaux de menuiserie bois et PVC (4332A)</dd>
-    <dt class="sf-keyvalue-list__key">Statut juridique : </dt>
-    <dd class="sf-keyvalue-list__value">Société par actions simplifiée</dd>
-    <dt class="sf-keyvalue-list__key">Date d'ouverture de l'établissement : </dt>
-    <dd class="sf-keyvalue-list__value">01/02/2024 (moins d'l an)</dd>
-    <dt class="sf-keyvalue-list__key">Date de création de l'entreprise : </dt>
-    <dd class="sf-keyvalue-list__value">28/01/2020 (4 ans)</dd>
-    <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
-    <dd class="sf-keyvalue-list__value">PARC D'ARIANE - BATIMENT E1 - 11 BOULEVARD DE LA GRANDE THUMINE - 13100 Aix en provence</dd>
-  </dl>
-
-  <%# <div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-grid-row fr-grid-row--gutters">
     <!-- INSEE Widget with Turbo Frame -->
     <div class="fr-col-12 fr-col-md-6">
       <%= turbo_frame_tag "insee_widget", 
           src: insee_widget_company_path(@company), 
           loading: :lazy do %>
-        <%#<div class="fr-card fr-card--bordered">
+        <div class="fr-card fr-card--bordered">
           <div class="fr-card__body">
             <div class="fr-card__content">
               <h3 class="fr-card__title">
@@ -45,8 +24,8 @@
           </div>
         </div>
       <% end %>
-    <%#</div>
-  </div> %>
+    </div>
+  </div>
 
   <!-- Establishments Widget with Turbo Frame -->
   <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
