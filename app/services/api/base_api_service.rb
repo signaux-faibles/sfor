@@ -5,7 +5,9 @@ require "jwt"
 
 module Api
   class BaseApiService
-    BASE_URL = Rails.env.production? ? "https://entreprise.api.gouv.fr" : "https://staging.entreprise.api.gouv.fr"
+    HOST = Rails.env.production? ? "entreprise.api.gouv.fr" : "staging.entreprise.api.gouv.fr"
+    BASE_URL = "https://" + HOST
+
 
     def initialize
       @token = ENV.fetch("API_ENTREPRISES_TOKEN", nil)
@@ -57,11 +59,10 @@ module Api
       request["User-Agent"] = "SignauxFaibles/#{Rails.env} (Ruby/#{RUBY_VERSION}; Rails/#{Rails.version})"
       request["Accept"] = "*/*"
       request["Cache-Control"] = "no-cache"
-      request["Host"] = "entreprise.api.gouv.fr"
+      request["Host"] = HOST
 
       # Exécution de la requête
       response = http.request(request)
-
       Rails.logger.debug response.body
 
       if response.is_a?(Net::HTTPSuccess)
