@@ -1,12 +1,12 @@
   <%= turbo_frame_tag "insee_widget" do %>
     <h2>
       Informations générales
-      <span class="fr-badge fr-badge--error fr-badge--sm">
-        <% date_fermeture = @insee_data["data"]["date_fermeture"] %>
-        <% if date_fermeture.present? %>
-          <%= Time.at(date_fermeture).to_date.strftime('%d/%m/%Y') %>
-        <% end %>
-      </span>
+      <% date_fermeture = @insee_data["data"]["date_fermeture"] %>
+      <% if date_fermeture.present? %>
+        <span class="fr-badge fr-badge--error fr-badge--sm">
+            <%= Time.at(date_fermeture).to_date.strftime('%d/%m/%Y') %>
+        </span>
+      <% end %>
     </h2>
     <dl class="sf-keyvalue-list">
       <dt class="sf-keyvalue-list__key">SIREN : </dt>
