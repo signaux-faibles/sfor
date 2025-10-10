@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "establishments_widget" do %>
-  <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+  <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
-      <h4>
+      <h2>
         Établissements de l'entreprise (INSEE enrichi)
         <% if @enriched_establishments&.any? %>
           <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
@@ -11,7 +11,7 @@
         <% else %>
           <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
         <% end %>
-      </h4>
+      </h2>
     </div>
   </div>
 
@@ -25,17 +25,17 @@
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
-            <table class="fr-table fr-mt-0 fr-mb-0">
+            <table>
               <thead>
                 <tr>
-                  <th>Type</th>
-                  <th>SIRET</th>
-                  <th>Commune</th>
-                  <th>Adresse</th>
-                  <th>Activité</th>
-                  <th>Effectif</th>
-                  <th>Statut</th>
-                  <th>Actions</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">SIRET</th>
+                  <th scope="col">Commune</th>
+                  <th scope="col">Adresse</th>
+                  <th scope="col">Activité</th>
+                  <th scope="col">Effectif</th>
+                  <th scope="col">Statut</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,8 +121,9 @@
                     </td>
                     
                     <td>
-                      <%= link_to 'Consulter', establishment_path(rails_data.siret), 
-                          class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' %>
+                      <%= link_to establishment_path(rails_data.siret), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' do %>
+                        Consulter
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>

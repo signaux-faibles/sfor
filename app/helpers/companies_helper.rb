@@ -62,4 +62,14 @@ module CompaniesHelper
 
     tags << content_tag(:p, "Liste: #{list.label}", class: "fr-tag")
   end
+
+  def format_date_with_age(timestamp)
+    return "" if timestamp.blank?
+
+    date = Time.at(timestamp).to_date
+    age = Date.today.year - date.year
+    age -= 1 if Date.today < date.change(year: Date.today.year)
+
+    "#{date.strftime('%d/%m/%Y')} (#{age} ans)"
+  end
 end

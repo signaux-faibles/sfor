@@ -169,19 +169,38 @@
     overflow: hidden;
 }
 
+.sf-keyvalue-list {
+  padding-inline-start: 0;
+}
+
 .sf-keyvalue-list__key {
   float: left;
   clear: left;
   margin: 0;
-  padding: 0 .5em 0 0;
+  padding: 1rem .5em 0 0;
   line-height: 2;
   font-weight: 700;
 }
 
 .sf-keyvalue-list__value {
   margin: 0;
-  padding: 0;
+  padding: 1rem 0 0 0;
   line-height: 2;
+}
+.sf-keyvalue-list__key:first-child {
+  padding-top: 0;
+}
+
+.sf-keyvalue-list__value:first-of-type {
+  padding-top: 0;
+}
+
+.sf-keyvalue-list__value:last-child {
+  padding-bottom: 1rem;
+}
+
+.sf-keyvalue-list__value .fr-btn--tooltip {
+  vertical-align: middle;
 }
 
 /* Tom select */
