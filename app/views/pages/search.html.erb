@@ -1,0 +1,31 @@
+<div class="fr-container">
+  <h1>Résultats de recherche</h1>
+  
+  <div class="fr-card">
+    <h3>Paramètres de recherche</h3>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-6">
+        <p><strong>Recherche :</strong> <%= @search_params[:q].present? ? @search_params[:q] : "Non spécifié" %></p>
+        <p><strong>Effectif :</strong> <%= @search_params[:tranche_effectifs_unite_legale].present? ? @search_params[:tranche_effectifs_unite_legale] : "Non spécifié" %></p>
+        <p><strong>Secteur d'activité :</strong> <%= @search_params[:section_activite_principale].present? ? @search_params[:section_activite_principale] : "Non spécifié" %></p>
+      </div>
+      <div class="fr-col-6">
+        <p><strong>Départements :</strong></p>
+        <% if @search_params[:departments].present? %>
+          <ul>
+            <% @search_params[:departments].each do |dept_id| %>
+              <% dept = current_user.geo_access.departments.find_by(id: dept_id) %>
+              <li><%= dept ? "#{dept.code} - #{dept.name}" : "ID: #{dept_id}" %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p>Non spécifié</p>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="fr-mt-3w">
+      <%= link_to "Nouvelle recherche", home_path, class: "fr-btn fr-btn--secondary" %>
+    </div>
+  </div>
+</div>

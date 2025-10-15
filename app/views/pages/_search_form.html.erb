@@ -1,0 +1,94 @@
+<div class="fr-card establishment_search">
+  <%= form_with url: search_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
+    <div class="fr-container--fluid fr-m-2w">
+      <h4>Rechercher un établissement ou une entreprise</h4>
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div class="fr-col-4">
+          <div class="fr-input-group">
+            <%= f.label :q, "Recherche par SIRET, SIREN ou raison sociale" %>
+            <%= f.text_field :q, class: "fr-input", placeholder: "SIRET, SIREN ou raison sociale", value: params[:q] %>
+          </div>
+        </div>
+        <div class="fr-col-4">
+          <div class="fr-input-group">
+            <%= f.label :tranche_effectifs_unite_legale, "Effectif" %>
+            <%= f.select :tranche_effectifs_unite_legale, 
+                         [
+                           ["Tous", ""],
+                           ["NN - Unité non-employeuse ou présumée non-employeuse", "NN"],
+                           ["00 - 0 salarié", "00"],
+                           ["01 - 1 ou 2 salariés", "01"],
+                           ["02 - 3 à 5 salariés", "02"],
+                           ["03 - 6 à 9 salariés", "03"],
+                           ["11 - 10 à 19 salariés", "11"],
+                           ["12 - 20 à 49 salariés", "12"],
+                           ["21 - 50 à 99 salariés", "21"],
+                           ["22 - 100 à 199 salariés", "22"],
+                           ["31 - 200 à 249 salariés", "31"],
+                           ["32 - 250 à 499 salariés", "32"],
+                           ["41 - 500 à 999 salariés", "41"],
+                           ["42 - 1 000 à 1 999 salariés", "42"],
+                           ["51 - 2 000 à 4 999 salariés", "51"],
+                           ["52 - 5 000 à 9 999 salariés", "52"],
+                           ["53 - 10 000 salariés et plus", "53"],
+                           ["null - donnée manquante ou sans objet", "null"]
+                         ],
+                         { selected: params[:tranche_effectifs_unite_legale] },
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+        <div class="fr-col-4">
+          <div class="fr-input-group">
+            <%= f.label :departments, "Départements" %>
+            <%= f.collection_select :departments, 
+                                   current_user.geo_access.departments.order(:code), 
+                                   :id, 
+                                   ->(d) { "#{d.code} - #{d.name}" }, 
+                                   { selected: params[:departments] },
+                                   { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+          </div>
+        </div>
+      </div>
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div class="fr-col-6">
+          <div class="fr-input-group">
+            <%= f.label :section_activite_principale, "Secteur d'activité" %>
+            <%= f.select :section_activite_principale,
+                         [
+                           ["Tous", ""],
+                           ["A - Agriculture, sylviculture et pêche", "A"],
+                           ["B - Industries extractives", "B"],
+                           ["C - Industrie manufacturière", "C"],
+                           ["D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné", "D"],
+                           ["E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution", "E"],
+                           ["F - Construction", "F"],
+                           ["G - Commerce ; réparation d'automobiles et de motocycles", "G"],
+                           ["H - Transports et entreposage", "H"],
+                           ["I - Hébergement et restauration", "I"],
+                           ["J - Information et communication", "J"],
+                           ["K - Activités financières et d'assurance", "K"],
+                           ["L - Activités immobilières", "L"],
+                           ["M - Activités spécialisées, scientifiques et techniques", "M"],
+                           ["N - Activités de services administratifs et de soutien", "N"],
+                           ["O - Administration publique", "O"],
+                           ["P - Enseignement", "P"],
+                           ["Q - Santé humaine et action sociale", "Q"],
+                           ["R - Arts, spectacles et activités récréatives", "R"],
+                           ["S - Autres activités de services", "S"],
+                           ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"],
+                           ["U - Activités extra-territoriales", "U"]
+                         ],
+                         { selected: params[:section_activite_principale] },
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+      </div>
+      <div class="fr-grid-row fr-grid-row--right">
+        <div class="fr-input-group">
+          <%= link_to "Réinitialiser les filtres", home_path, class: "fr-btn", data: { turbo: false} %>
+          <%= f.submit "Rechercher", class: "fr-btn" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
