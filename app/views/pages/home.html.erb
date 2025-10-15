@@ -1,5 +1,6 @@
-<div class="fr-container">
+<% content_for :title, "Accueil" %>
+
+<div class="fr-container--fluid fr-m-5w">
   <h1>Accueil</h1>
-  <p>Accueil de l'application, rappel des campagnes en cours, du nombre d'entreprises accompagnées / à contacter ... etc...</p>
-  <p>Ce qu'on affiche ici pourrait varier suivant le profil de l'utilisateur / niveau de droits</p>
+  <%= render 'search_form' %>
 </div>

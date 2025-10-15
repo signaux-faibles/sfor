@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   }
 
   get "unauthorized", to: "pages#unauthorized"
+  get "accueil", to: "pages#home", as: :home
+  get "recherche", to: "pages#search", as: :search
   get "statistiques", to: "statistics#index"
 
   # Routes pour les graphiques de test
