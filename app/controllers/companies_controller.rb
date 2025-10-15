@@ -60,6 +60,11 @@ class CompaniesController < ApplicationController
 
     service = Api::InseeApiService.new
     @insee_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
+
+    date_fermeture = @insee_data&.dig("data", "date_fermeture")
+    if date_fermeture.present?
+      @date_fermeture_formatted = Time.at(date_fermeture).to_date.strftime('%d/%m/%Y')
+    end
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
     @insee_data = nil
