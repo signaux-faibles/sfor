@@ -1,36 +1,49 @@
   <%= turbo_frame_tag "insee_widget" do %>
     <h2>
       Informations générales
-      <% date_fermeture = @insee_data["data"]["date_fermeture"] %>
-      <% if date_fermeture.present? %>
-        <span class="fr-badge fr-badge--error fr-badge--sm">
+      <% if @insee_data.present? %>
+        <% date_fermeture = @insee_data["data"]["date_fermeture"] %>
+        <% if date_fermeture.present? %>
+          <span class="fr-badge fr-badge--error fr-badge--sm">
             <%= Time.at(date_fermeture).to_date.strftime('%d/%m/%Y') %>
-        </span>
+          </span>
+        <% end %>
       <% end %>
     </h2>
     <dl class="sf-keyvalue-list">
       <dt class="sf-keyvalue-list__key">SIREN : </dt>
       <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
-      <dt class="sf-keyvalue-list__key">Secteur d'activité : </dt>
-      <dd class="sf-keyvalue-list__value"><%= @insee_data["data"]["activite_principale"]["libelle"]%> - <%= @insee_data["data"]["activite_principale"]["code"]%></dd>
-      <dt class="sf-keyvalue-list__key">Forme juridique : </dt>
-      <dd class="sf-keyvalue-list__value"><%= @insee_data["data"]["unite_legale"]["forme_juridique"]["libelle"] %></dd>
-      <dt class="sf-keyvalue-list__key">Date de création de l'entreprise : </dt>
-      <dd class="sf-keyvalue-list__value">
-        <%= format_date_with_age(@insee_data["data"]["unite_legale"]["date_creation"]) %>
-      </dd>
+      <% if @insee_data.present? %>
+        <% if @insee_data["data"].present? and @insee_data["data"]["activite_principale"].present? %>
+          <dt class="sf-keyvalue-list__key">Secteur d'activité : </dt>
+          <dd class="sf-keyvalue-list__value">
+            <%= @insee_data["data"]["activite_principale"]["libelle"]%> - <%= @insee_data["data"]["activite_principale"]["code"]%>
+          </dd>
+        <% end %>
 
-      <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
-      <dd class="sf-keyvalue-list__value">
-        <%= [
-              @insee_data["data"]["adresse"]["numero_voie"],
-              @insee_data["data"]["adresse"]["indice_repetition_voie"],
-              @insee_data["data"]["adresse"]["type_voie"],
-              @insee_data["data"]["adresse"]["libelle_voie"],
-              @insee_data["data"]["adresse"]["complement_adresse"],
-              @insee_data["data"]["adresse"]["code_postal"],
-              @insee_data["data"]["adresse"]["libelle_commune"]
-            ].select(&:present?).join(" ") %>
-      </dd>
+        <% if @insee_data["data"].present? and @insee_data["data"]["unite_legale"].present? %>
+          <dt class="sf-keyvalue-list__key">Forme juridique : </dt>
+          <dd class="sf-keyvalue-list__value"><%= @insee_data["data"]["unite_legale"]["forme_juridique"]["libelle"] %></dd>
+          <dt class="sf-keyvalue-list__key">Date de création de l'entreprise : </dt>
+          <dd class="sf-keyvalue-list__value">
+            <%= format_date_with_age(@insee_data["data"]["unite_legale"]["date_creation"]) %>
+          </dd>
+        <% end %>
+
+        <% if @insee_data["data"].present? and @insee_data["data"]["adresse"].present? %>
+          <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
+          <dd class="sf-keyvalue-list__value">
+            <%= [
+                  @insee_data["data"]["adresse"]["numero_voie"],
+                  @insee_data["data"]["adresse"]["indice_repetition_voie"],
+                  @insee_data["data"]["adresse"]["type_voie"],
+                  @insee_data["data"]["adresse"]["libelle_voie"],
+                  @insee_data["data"]["adresse"]["complement_adresse"],
+                  @insee_data["data"]["adresse"]["code_postal"],
+                  @insee_data["data"]["adresse"]["libelle_commune"]
+                ].select(&:present?).join(" ") %>
+          </dd>
+        <% end %>
+      <% end %>
     </dl>
   <% end %>
