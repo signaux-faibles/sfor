@@ -1,15 +1,14 @@
   <%= turbo_frame_tag "insee_widget" do %>
-    <h2>
-      Informations générales
-      <% if @insee_data.present? %>
-        <% date_fermeture = @insee_data["data"]["date_fermeture"] %>
-        <% if date_fermeture.present? %>
-          <span class="fr-badge fr-badge--error fr-badge--sm">
-            <%= Time.at(date_fermeture).to_date.strftime('%d/%m/%Y') %>
-          </span>
-        <% end %>
+    <div class="sf-entreprise-subtitle">
+      <h2>
+        Informations générales
+      </h2>
+      <% if @date_fermeture_formatted.present? %>
+      <p class="fr-badge fr-badge--error fr-badge--sm">
+        <%= @date_fermeture_formatted %>
+      </p>
       <% end %>
-    </h2>
+    </div>
     <dl class="sf-keyvalue-list">
       <dt class="sf-keyvalue-list__key">SIREN : </dt>
       <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
@@ -44,6 +43,16 @@
                 ].select(&:present?).join(" ") %>
           </dd>
         <% end %>
-      <% end %>
     </dl>
+      <% else %>
+        <div role="notice" class="fr-notice fr-notice--alert fr-mt-3w">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p>
+                <span class="fr-notice__title">Erreur lors de la récupération des données</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
   <% end %>

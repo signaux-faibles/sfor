@@ -9,20 +9,8 @@
       <%= turbo_frame_tag "insee_widget", 
           src: insee_widget_company_path(@company), 
           loading: :lazy do %>
-        <div class="fr-card fr-card--bordered">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <h3 class="fr-card__title">
-                Données INSEE 
-                <span class="fr-badge fr-badge--info fr-badge--sm">Chargement...</span>
-              </h3>
-              <div class="fr-text--center fr-py-4w">
-                <div class="fr-spinner" aria-hidden="true"></div>
-                <p class="fr-text--sm fr-mt-2w">Récupération des données INSEE...</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <h2>Informations générales</h2>
+        <p class="fr-mt-2w">Récupération des données INSEE...</p>
       <% end %>
     </div>
   </div>

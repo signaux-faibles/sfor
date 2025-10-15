@@ -203,6 +203,17 @@
   vertical-align: middle;
 }
 
+.sf-entreprise-subtitle {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+
+  & p {
+    margin-bottom: 1.5rem;
+  }
+}
+
 /* Tom select */
 /* Higher contrast for Tom Select active dropdown option */
 .ts-dropdown .active {
