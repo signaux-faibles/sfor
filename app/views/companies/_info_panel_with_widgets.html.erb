@@ -21,14 +21,8 @@
       <%= turbo_frame_tag "establishments_widget", 
           src: establishments_widget_company_path(@company), 
           loading: :lazy do %>
-        <h2>
-          Établissements de l'entreprise
-          <span class="fr-badge fr-badge--info fr-badge--sm">Chargement...</span>
-        </h2>
-        <div>
-          <div class="fr-spinner" aria-hidden="true"></div>
-          <p class="fr-text--sm">Récupération des établissements...</p>
-        </div>
+        <h2>Liste des établissements</h2>
+        <p class="fr-mt-2w">Récupération des établissements</p>
       <% end %>
     </div>
   </div>

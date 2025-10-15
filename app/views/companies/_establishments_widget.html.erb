@@ -2,16 +2,23 @@
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
       <h2>
-        Établissements de l'entreprise (INSEE enrichi)
-        <% if @enriched_establishments&.any? %>
-          <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
-          <small class="fr-text--sm"> - <%= @enriched_establishments.size %> établissements</small>
-          <% enriched_count = @enriched_establishments.count { |e| e[:has_api_data] } %>
-          <small class="fr-text--sm"> (<%= enriched_count %> enrichis par l'API)</small>
-        <% else %>
-          <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
-        <% end %>
+        Liste des établissements
       </h2>
+
+      <% if @enriched_establishments&.any? %>
+        <div class="fr-col-12 fr-col-xl-8">
+          <div class="fr-notice fr-notice--info">
+            <div class="fr-container">
+              <div class="fr-notice__body">
+                <p>
+                  <%# @TODO : Modifier les valeurs. %>
+                  <span class="fr-notice__title">Cette structure possède 7 établissements dont 5 sont en activité.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 
@@ -20,7 +27,6 @@
       # Utiliser les établissements enrichis (Rails + INSEE)
       all_establishments = @enriched_establishments
     %>
-    
     <div class="fr-table">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
@@ -28,102 +34,64 @@
             <table>
               <thead>
                 <tr>
-                  <th scope="col">Type</th>
                   <th scope="col">SIRET</th>
-                  <th scope="col">Commune</th>
-                  <th scope="col">Adresse</th>
-                  <th scope="col">Activité</th>
+                  <th scope="col">Commune et code postal</th>
                   <th scope="col">Effectif</th>
-                  <th scope="col">Statut</th>
-                  <th scope="col">Actions</th>
+                  <th scope="col">Dette URSSAF</th>
+                  <th scope="col">Activité partielle</th>
+                  <th scope="col">Accompagnements</th>
                 </tr>
               </thead>
               <tbody>
                 <% all_establishments.each do |enriched_establishment| %>
                   <% rails_data = enriched_establishment[:rails_data] %>
                   <% insee_data = enriched_establishment[:insee_data] %>
-                  <% has_api_data = enriched_establishment[:has_api_data] %>
-                  
+
                   <tr>
                     <td>
-                      <% if rails_data.is_siege %>
-                        <span class="fr-badge fr-badge--info fr-badge--sm">SIÈGE</span>
-                      <% else %>
-                        <span class="fr-text--disabled">Établissement</span>
+                      <% if rails_data.present? %>
+                        <strong><%= rails_data.siret %></strong>
+
+                        <%# @TODO : vérifier si l'établissement est fermé. %>
+                        <p class="fr-badge fr-badge--error fr-badge--sm">23/10/2025</p>
+
+                        <%# @TODO : vérifier s'il y a une procédure en cours. %>
+                        <p class="fr-badge fr-badge--sm fr-badge--warning">Nom de la procédure en cours</p>
                       <% end %>
-                      <% if has_api_data %>
-                        <br><span class="fr-badge fr-badge--success fr-badge--sm fr-badge--xs">API</span>
-                      <% end %>
-                    </td>
-                    
-                    <td>
-                      <strong><%= rails_data.siret %></strong>
+
                     </td>
                     
                     <td>
                       <% if insee_data&.dig("adresse", "libelle_commune") %>
                         <%= insee_data.dig("adresse", "libelle_commune") %>
                         <% if insee_data.dig("adresse", "code_postal") %>
-                          <br><small class="fr-text--xs">(<%= insee_data.dig("adresse", "code_postal") %>)</small>
+                          (<%= insee_data.dig("adresse", "code_postal") %>)
                         <% end %>
                       <% else %>
-                        <%= rails_data.department&.name %>
-                      <% end %>
-                    </td>
-                    
-                    <td>
-                      <% if insee_data&.dig("adresse") %>
-                        <%= [
-                          insee_data.dig("adresse", "numero_voie"),
-                          insee_data.dig("adresse", "indice_repetition_voie"),
-                          insee_data.dig("adresse", "type_voie"),
-                          insee_data.dig("adresse", "libelle_voie"),
-                          insee_data.dig("adresse", "complement_adresse"),
-                          insee_data.dig("adresse", "code_postal"),
-                          insee_data.dig("adresse", "libelle_commune")
-                        ].compact.reject(&:blank?).join(" ") %>
-                      <% else %>
-                        <span class="fr-text--disabled">Adresse non disponible</span>
-                      <% end %>
-                    </td>
-                    
-                    <td>
-                      <% if insee_data&.dig("activite_principale", "libelle") %>
-                        <%= insee_data.dig("activite_principale", "libelle") %>
-                        <br><small class="fr-text--xs">(<%= insee_data.dig("activite_principale", "code") %>)</small>
-                      <% else %>
-                        <span class="fr-text--disabled">-</span>
-                      <% end %>
-                    </td>
-                    
-                    <td>
-                      <% if insee_data&.dig("tranche_effectif_salarie", "intitule") %>
-                        <%= insee_data.dig("tranche_effectif_salarie", "intitule") %>
-                        <% if insee_data.dig("tranche_effectif_salarie", "date_reference") %>
-                          <br><small class="fr-text--xs">(Réf: <%= insee_data.dig("tranche_effectif_salarie", "date_reference") %>)</small>
+                        <% if rails_data.present? %>
+                          <%= rails_data.department&.name %>
                         <% end %>
-                      <% else %>
-                        <span class="fr-text--disabled">-</span>
                       <% end %>
                     </td>
                     
                     <td>
-                      <% if insee_data&.dig("etat_administratif") == "A" %>
-                        <span class="fr-badge fr-badge--success fr-badge--sm">Actif</span>
-                      <% elsif insee_data&.dig("etat_administratif") %>
-                        <span class="fr-badge fr-badge--error fr-badge--sm">Fermé</span>
-                      <% else %>
-                        <span class="fr-text--disabled">-</span>
-                      <% end %>
-                      <% if insee_data&.dig("siege_social") %>
-                        <br><span class="fr-badge fr-badge--info fr-badge--sm">Siège social</span>
-                      <% end %>
+                      <%# @TODO : ajouter les données. %>
+                      18
                     </td>
                     
                     <td>
-                      <%= link_to establishment_path(rails_data.siret), class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' do %>
-                        Consulter
-                      <% end %>
+                      <%# @TODO : ajouter les données. %>
+                      <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">Non</p>
+                    </td>
+                    
+                    <td>
+                      <%# @TODO : ajouter les données. %>
+                      <p class="fr-badge fr-badge--sm fr-badge--error fr-badge--no-icon">Oui</p>
+                    </td>
+
+                    <td>
+                      <%# @TODO : ajouter le nombre d'accompagnements. %>
+                      9
                     </td>
                   </tr>
                 <% end %>
@@ -134,11 +102,16 @@
       </div>
     </div>
   <% else %>
-    <div class="fr-alert fr-alert--info">
-      <p>
-        <span class="fr-icon-information-line" aria-hidden="true"></span>
-        Aucune donnée d'établissement disponible pour cette entreprise.
-      </p>
+    <div class="fr-col-12 fr-col-xl-8">
+      <div role="notice" class="fr-notice fr-notice--alert">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p>
+              <span class="fr-notice__title">Erreur lors de la récupération des établissements</span>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   <% end %>
 <% end %>
