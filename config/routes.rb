@@ -66,6 +66,7 @@ Rails.application.routes.draw do
   resources :companies, path: "entreprises", only: %i[show], param: :siren do
     member do
       get :insee_widget
+      get :data_urssaf_widget
       get :financial_widget
       get :establishments_widget
     end
