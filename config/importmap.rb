@@ -8,5 +8,6 @@ pin "tom-select", to: "tom-select.js"
 pin "ahoy" # @1.0.1
 pin "track_tabs", to: "track_tabs.js"
 pin "os" # @2.1.0
+pin "chart.js", to: "chart.umd.js"
 pin "dsfr-chart", to: "dsfr-chart.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
