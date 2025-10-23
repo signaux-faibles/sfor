@@ -1,0 +1,131 @@
+<%= turbo_frame_tag "data_urssaf_widget" do %>
+  <div class="fr-col-12">
+    <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
+    <p>Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
+
+    <div
+      data-controller="segmented-control-widget"
+    >
+      <div>
+        <div class="fr-mb-3w fr-mt-5w">
+          <fieldset class="fr-segmented fr-segmented--no-legend">
+            <legend class="fr-segmented__legend">Format d'affichage</legend>
+            <div class="fr-segmented__elements">
+              <div class="fr-segmented__element">
+                <input
+                  value="chart"
+                  checked
+                  type="radio"
+                  id="segmented-urssaf-chart"
+                  name="segmented-urssaf"
+                  data-action="input->segmented-control-widget#switch"
+                >
+                <label class="fr-label" for="segmented-urssaf-chart">Graphique</label>
+              </div>
+              <div class="fr-segmented__element">
+                <input
+                  value="table"
+                  type="radio"
+                  id="segmented-urssaf-table"
+                  name="segmented-urssaf"
+                  data-action="input->segmented-control-widget#switch"
+                >
+                <label class="fr-label" for="segmented-urssaf-table">Tableau</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <div
+        data-segmented-control-widget-target="panel"
+        data-panel="chart"
+        class="sf-segmented fr-col-12 fr-col-lg-8"
+      >
+        <div
+          data-controller="orthogonal-chart-widget"
+          data-orthogonal-chart-widget-title-value="Cotisations, impayés et délais de paiement URSSAF"
+          data-orthogonal-chart-widget-labels-value='<%= @formatted_periodes %>'
+          data-orthogonal-chart-widget-dataset-names-value='<%= @dataset_names %>'
+          data-orthogonal-chart-widget-datasets-value='<%= [@cotisations, @parts_salariales, @parts_patronales, @montant_echeancier].to_json %>'
+          data-orthogonal-chart-widget-colors-light-theme-value='<%= ['#CE70CC', '#006A6F', '#8bf8e7', '#FF732C'] %>'
+          data-orthogonal-chart-widget-colors-dark-theme-value='<%= ['#5C68E5', '#51C1C8', '#BC8AF2', '#AF8800'] %>'
+          data-orthogonal-chart-widget-types-value='<%= ['line', 'bar', 'bar', 'line'] %>'
+          data-orthogonal-chart-widget-border-dash-value='<%= [[], [], [], [5,5]].to_json %>'
+          data-orthogonal-chart-widget-order-value='<%= [1, 3, 4, 1].to_json %>'
+          data-orthogonal-chart-widget-bar-mode-value="stacked"
+          class="chart-container"
+        >
+          <canvas data-orthogonal-chart-widget-target="chart" class="sf-chart"></canvas>
+        </div>
+      </div>
+
+
+      <div
+        id=sf-urssaf-table"
+        class="sf-segmented sf-segmented--hidden"
+        data-segmented-control-widget-target="panel"
+        data-panel="table"
+      >
+
+        <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--no-scroll fr-table--multiline" id="table-urssaf-component">
+          <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+              <div class="fr-table__content">
+                <table id="table-urssaf">
+                  <caption>Cotisations, impayés et délais de paiement URSSAF</caption>
+                  <thead>
+                  <tr>
+                    <th scope="col">Période</th>
+                    <% @dataset_names.each do |name| %>
+                      <th scope="col"><%= name %></th>
+                    <% end %>
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  <% @formatted_periodes.each_with_index do |periode, index| %>
+                    <tr id="table-urssaf-row-key-1" data-row-key="<%= index %>">
+                      <td scope="row"><%= periode %></td>
+                      <td>
+                        <% if @cotisations[index].present? %>
+                          <%= @cotisations[index].ceil(2) %> €
+                        <% else %>
+                          /
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if @parts_salariales[index].present? %>
+                          <%= @parts_salariales[index].ceil(2) %> €
+                        <% else %>
+                          /
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if @parts_patronales[index].present? %>
+                          <%= @parts_patronales[index].ceil(2) %> €
+                        <% else %>
+                          /
+                        <% end %>
+                      </td>
+                      <td>
+                        <% if @montant_echeancier[index].present? %>
+                          <%= @montant_echeancier[index].ceil(2) %> €
+                        <% else %>
+                          /
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+<% end %>

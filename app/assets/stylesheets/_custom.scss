@@ -214,6 +214,25 @@
   }
 }
 
+.sf-chart {
+  height: 300px;
+  width: 100%;
+
+  @media (min-width: 992px) {
+    height: 400px;
+  }
+
+  @media (min-width: 1200px) {
+    height: 600px;
+  }
+}
+
+.sf-segmented {
+  &--hidden {
+    display: none;
+  }
+}
+
 /* Tom select */
 /* Higher contrast for Tom Select active dropdown option */
 .ts-dropdown .active {
