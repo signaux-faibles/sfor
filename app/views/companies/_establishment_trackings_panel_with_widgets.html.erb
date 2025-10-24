@@ -1,0 +1,17 @@
+<div id="tabpanel-helps-panel"
+     class="fr-tabs__panel"
+     role="tabpanel"
+     aria-labelledby="tabpanel-informations"
+     tabindex="0">
+  <div>
+    <!-- Current helps Widget with Turbo Frame -->
+    <div class="fr-col-12">
+      <%= turbo_frame_tag "establishment_trackings_widget",
+          src: establishment_trackings_widget_company_path(@company),
+          loading: :lazy do %>
+        <h2>Accompagnements</h2>
+        <p class="fr-mt-2w">Récupération des données...</p>
+      <% end %>
+    </div>
+  </div>
+</div>
