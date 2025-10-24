@@ -68,6 +68,7 @@ Rails.application.routes.draw do
       get :insee_widget
       get :financial_widget
       get :establishments_widget
+      get :establishment_trackings_widget
     end
   end
 
