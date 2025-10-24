@@ -39,6 +39,17 @@
         </button>
       </li>
 
+      <li role="presentation">
+        <button id="tabpanel-helps"
+                type="button"
+                class="fr-tabs__tab"
+                tabindex="-1" role="tab"
+                aria-selected="false"
+                aria-controls="tabpanel-helps-panel">
+          Accompagnements
+        </button>
+      </li>
+
       <!-- Financial Data Tab -->
       <!--<li role="presentation">
         <button id="tabpanel-financier"
@@ -54,6 +65,7 @@
 
     <%= render 'info_panel_with_widgets' %>
     <%= render 'data_panel_with_widgets' %>
+    <%= render 'establishment_trackings_panel_with_widgets' %>
     <%# render 'financial_panel_with_widgets' %>
 
 

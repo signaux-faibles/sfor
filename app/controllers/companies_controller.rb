@@ -179,6 +179,18 @@ class CompaniesController < ApplicationController
     render partial: "establishments_widget"
   end
 
+  def establishment_trackings_widget
+    @company = Company.find_by!(siren: params[:siren])
+    @establishments = @company.establishments
+    @establishment_trackings = EstablishmentTracking.where(establishment: @establishments)
+
+    @in_progress_trackings = @establishment_trackings.in_progress
+    @completed_trackings = @establishment_trackings.completed
+
+    render partial: "establishment_trackings_widget"
+  end
+
+
   private
 
   def initialize_search_params
