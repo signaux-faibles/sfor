@@ -217,6 +217,9 @@ class CompaniesController < ApplicationController
 
   def set_company
     @company = Company.find_by!(siren: params[:siren])
+  rescue ActiveRecord::RecordNotFound
+    flash[:alert] = "Cette fiche entreprise n'existe pas dans SignauxFaibles"
+    redirect_back(fallback_location: home_path)
   end
 
   def fetch_insee_data
@@ -226,9 +229,7 @@ class CompaniesController < ApplicationController
     @insee_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
 
     date_fermeture = @insee_data&.dig("data", "date_fermeture")
-    if date_fermeture.present?
-      @date_fermeture_formatted = Time.at(date_fermeture).to_date.strftime('%d/%m/%Y')
-    end
+    @date_fermeture_formatted = Time.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
     @insee_data = nil

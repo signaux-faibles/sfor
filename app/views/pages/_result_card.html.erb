@@ -1,0 +1,22 @@
+<div class="fr-col-12 fr-mb-2w">
+  <%= link_to company_path(company["siren"]), class: "fr-tile fr-tile--horizontal", target: "_self" do %>
+    <div class="fr-tile__body">
+      <div class="fr-tile__content">
+        <h3 class="fr-tile__title">
+          <%= company["nom_complet"] %>
+        </h3>
+        <div class="fr-tile__detail">
+          <p class="fr-text--sm fr-mb-0">
+            <strong>SIREN:</strong> <%= company["siren"] %>
+            <% if company["nombre_etablissements_ouverts"] %>
+              • <%= pluralize(company["nombre_etablissements_ouverts"], "établissement") %> ouvert<%= "s" unless company["nombre_etablissements_ouverts"] == 1 %>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="fr-tile__img">
+      <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+    </div>
+  <% end %>
+</div>

@@ -6,54 +6,38 @@ module Api
   class RechercheEntreprisesApiService
     BASE_URL = "https://recherche-entreprises.api.gouv.fr".freeze
 
-    attr_reader :siren, :errors
+    attr_reader :errors
 
-    def initialize(siren:)
-      @siren = siren
+    def initialize(params = {})
+      @params = params
       @errors = []
     end
 
     def search_company
-      return nil unless valid_siren?
-
       endpoint = "/search"
-      params = { q: @siren }
+      response = make_request(endpoint, @params)
 
-      response = make_request(endpoint, params)
-
-      # Return the first result since we're searching by SIREN (should be unique)
-      response&.dig("results")&.first
-    end
-
-    def success?
-      @errors.empty?
-    end
-
-    def failure?
-      !success?
+      # Check if response contains an error
+      if response.is_a?(Hash) && response["erreur"]
+        add_error(response["erreur"])
+        nil
+      else
+        response
+      end
     end
 
     private
 
-    def valid_siren?
-      return false if @siren.blank?
-
-      # SIREN must be exactly 9 digits
-      siren_cleaned = @siren.to_s.gsub(/\D/, "") # Remove non-digits
-
-      if siren_cleaned.length != 9
-        add_error("SIREN invalide pour Recherche Entreprises: '#{@siren}' (longueur: #{siren_cleaned.length}, attendu: 9)") # rubocop:disable Layout/LineLength
-        return false
-      end
-
-      @siren = siren_cleaned # Use cleaned version
-      Rails.logger.debug { "SIREN valide pour Recherche Entreprises: #{@siren}" }
-      true
-    end
-
     def make_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      params = params.to_h if params.respond_to?(:to_h)
+      # Remove blank values
+      params = params.reject { |_k, v| v.blank? || (v.is_a?(Array) && v.reject(&:blank?).empty?) }
+
       uri = URI("#{BASE_URL}#{endpoint}")
       uri.query = URI.encode_www_form(params) if params.any?
+
+      Rails.logger.debug { "URI: #{uri}" }
+      Rails.logger.debug { "Params: #{params}" }
 
       # Configuration de la requête HTTP
       http = Net::HTTP.new(uri.host, uri.port)
@@ -69,6 +53,8 @@ module Api
       # Exécution de la requête
       response = http.request(request)
 
+      Rails.logger.debug { "Response: #{response.body}" }
+
       handle_response(response)
     rescue StandardError => e
       add_error("Erreur de connexion à l'API Recherche Entreprises: #{e.message}")
@@ -82,7 +68,7 @@ module Api
         JSON.parse(response.body)
       when 404
         add_error("Entreprise non trouvée")
-        Rails.logger.error "Entreprise non trouvée pour le SIREN #{@siren}"
+        Rails.logger.error "Entreprise non trouvée"
         nil
       when 429
         add_error("Limite de taux d'appels dépassée")
