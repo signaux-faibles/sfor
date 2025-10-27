@@ -1,31 +1,91 @@
-<div class="fr-container">
-  <h1>Résultats de recherche</h1>
+<div class="fr-container--fluid fr-m-5w">
+  <h1>Rechercher un établissement ou une entreprise</h1>
   
-  <div class="fr-card">
-    <h3>Paramètres de recherche</h3>
-    <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-6">
-        <p><strong>Recherche :</strong> <%= @search_params[:q].present? ? @search_params[:q] : "Non spécifié" %></p>
-        <p><strong>Effectif :</strong> <%= @search_params[:tranche_effectifs_unite_legale].present? ? @search_params[:tranche_effectifs_unite_legale] : "Non spécifié" %></p>
-        <p><strong>Secteur d'activité :</strong> <%= @search_params[:section_activite_principale].present? ? @search_params[:section_activite_principale] : "Non spécifié" %></p>
-      </div>
-      <div class="fr-col-6">
-        <p><strong>Départements :</strong></p>
-        <% if @search_params[:departments].present? %>
-          <ul>
-            <% @search_params[:departments].each do |dept_id| %>
-              <% dept = current_user.geo_access.departments.find_by(id: dept_id) %>
-              <li><%= dept ? "#{dept.code} - #{dept.name}" : "ID: #{dept_id}" %></li>
+  <%= render 'search_form', search_params: @search_params || {} %>
+  
+  <h2 class="fr-mt-5w">Résultats de recherche</h2>
+  
+  <% if @results && @results.any? %>
+    <p class="fr-text--sm fr-mt-2w">
+      <%= @pagination[:total_results] %> résultat(s) trouvé(s)
+      <% if @pagination[:total_pages] > 1 %>
+        - Page <%= @pagination[:page] %> sur <%= @pagination[:total_pages] %>
+      <% end %>
+    </p>
+    
+    <div class="fr-mt-3w">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <% @results.each do |company| %>
+          <div class="fr-col-12 fr-mb-2w">
+            <%= link_to company_path(company["siren"]), class: "fr-tile fr-tile--horizontal", target: "_self" do %>
+              <div class="fr-tile__body">
+                <div class="fr-tile__content">
+                  <h3 class="fr-tile__title">
+                    <%= company["nom_complet"] %>
+                  </h3>
+                  <div class="fr-tile__detail">
+                    <p class="fr-text--sm fr-mb-0">
+                      <strong>SIREN:</strong> <%= company["siren"] %>
+                      <% if company["nombre_etablissements_ouverts"] %>
+                        • <%= pluralize(company["nombre_etablissements_ouverts"], "établissement") %> ouvert<%= "s" unless company["nombre_etablissements_ouverts"] == 1 %>
+                      <% end %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="fr-tile__img">
+                <span class="fr-icon-arrow-right-line fr-icon--lg" aria-hidden="true"></span>
+              </div>
             <% end %>
-          </ul>
-        <% else %>
-          <p>Non spécifié</p>
+          </div>
         <% end %>
       </div>
     </div>
     
-    <div class="fr-mt-3w">
-      <%= link_to "Nouvelle recherche", home_path, class: "fr-btn fr-btn--secondary" %>
+    <% if @pagination[:total_pages] > 1 %>
+      <nav class="fr-pagination fr-mt-4w" role="navigation" aria-label="Pagination">
+        <ul class="fr-pagination__list">
+          <% if @pagination[:page] > 1 %>
+            <li>
+              <%= link_to search_path(search: @search_params.merge(page: @pagination[:page] - 1)),
+                            class: "fr-pagination__link fr-pagination__link--prev",
+                            "aria-disabled": "false",
+                            rel: "prev" do %>
+                Page précédente
+              <% end %>
+            </li>
+          <% end %>
+          
+          <% max_pages_to_show = 5 %>
+          <% start_page = [@pagination[:page] - 2, 1].max %>
+          <% end_page = [start_page + max_pages_to_show - 1, @pagination[:total_pages]].min %>
+          
+          <% (start_page..end_page).each do |page_num| %>
+            <li>
+              <%= link_to page_num,
+                          search_path(search: @search_params.merge(page: page_num)),
+                          class: "fr-pagination__link #{'fr-pagination__link--current' if page_num == @pagination[:page]}",
+                          "aria-current": (page_num == @pagination[:page] ? "page" : nil),
+                          title: "Page #{page_num}" %>
+            </li>
+          <% end %>
+          
+          <% if @pagination[:page] < @pagination[:total_pages] %>
+            <li>
+              <%= link_to search_path(search: @search_params.merge(page: @pagination[:page] + 1)),
+                            class: "fr-pagination__link fr-pagination__link--next",
+                            "aria-disabled": "false",
+                            rel: "next" do %>
+                Page suivante
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+    <% end %>
+  <% else %>
+    <div class="fr-alert fr-alert--info fr-mt-3w">
+      <p>Aucun résultat trouvé.</p>
     </div>
-  </div>
+  <% end %>
 </div>

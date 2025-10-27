@@ -1,18 +1,18 @@
 <div class="fr-card establishment_search">
-  <%= form_with url: search_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
+  <%= form_with url: search_path, method: :get, scope: :search, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
     <div class="fr-container--fluid fr-m-2w">
       <h4>Rechercher un établissement ou une entreprise</h4>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-4">
           <div class="fr-input-group">
             <%= f.label :q, "Recherche par SIRET, SIREN ou raison sociale" %>
-            <%= f.text_field :q, class: "fr-input", placeholder: "SIRET, SIREN ou raison sociale", value: params[:q] %>
+            <%= f.text_field :q, value: search_params[:q], class: "fr-input", placeholder: "SIRET, SIREN ou raison sociale" %>
           </div>
         </div>
         <div class="fr-col-4">
           <div class="fr-input-group">
-            <%= f.label :tranche_effectifs_unite_legale, "Effectif" %>
-            <%= f.select :tranche_effectifs_unite_legale, 
+            <%= f.label :tranche_effectif_salarie, "Effectif" %>
+            <%= f.select :tranche_effectif_salarie, 
                          [
                            ["Tous", ""],
                            ["NN - Unité non-employeuse ou présumée non-employeuse", "NN"],
@@ -33,7 +33,7 @@
                            ["53 - 10 000 salariés et plus", "53"],
                            ["null - donnée manquante ou sans objet", "null"]
                          ],
-                         { selected: params[:tranche_effectifs_unite_legale] },
+                         { selected: search_params[:tranche_effectif_salarie] },
                          { class: "fr-select" } %>
           </div>
         </div>
@@ -44,7 +44,7 @@
                                    current_user.geo_access.departments.order(:code), 
                                    :id, 
                                    ->(d) { "#{d.code} - #{d.name}" }, 
-                                   { selected: params[:departments] },
+                                   { selected: search_params[:departments] },
                                    { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
@@ -78,7 +78,7 @@
                            ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"],
                            ["U - Activités extra-territoriales", "U"]
                          ],
-                         { selected: params[:section_activite_principale] },
+                         { selected: search_params[:section_activite_principale] },
                          { class: "fr-select" } %>
           </div>
         </div>
