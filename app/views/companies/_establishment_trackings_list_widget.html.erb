@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "establishment_trackings_widget" do %>
+<%= turbo_frame_tag "establishment_trackings_list_widget" do %>
   <% if @in_progress_trackings.empty? and @completed_trackings.empty? %>
     <div class="fr-notice fr-notice--info">
       <div class="fr-container">
@@ -21,7 +21,7 @@
         <div class="fr-card__body">
           <div class="fr-card__content">
             <h2>Accompagnement en cours de l'entreprise</h2>
-            <%= render partial: 'establishment_trackings_table', locals: { trackings: @in_progress_trackings, title: 'Accompagnement en cours de l\'entreprise', id: 'in-progress-trackings' } %>
+            <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @in_progress_trackings, title: 'Accompagnement en cours de l\'entreprise', id: 'in-progress-trackings' } %>
           </div>
         </div>
       </div>
@@ -32,7 +32,7 @@
         <div class="fr-card__body">
           <div class="fr-card__content">
             <h2>Historique des accompagnements de l’entreprise</h2>
-            <%= render partial: 'establishment_trackings_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
+            <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
           </div>
         </div>
       </div>
