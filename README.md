@@ -166,7 +166,6 @@ The application uses **Import Maps** (`importmap-rails` gem) for JavaScript modu
 # config/importmap.rb
 pin "application"
 pin "dsfr", to: "dsfr.module.min.js"
-pin "dsfr-chart", to: "dsfr-chart.js"
 pin "tom-select", to: "tom-select.js"
 # ... other pins
 ```
@@ -237,27 +236,23 @@ This project runs in Docker, which can sometimes behave like production regardin
 
 ## External Libraries Integration
 
-### DSFR Chart Library
-The DSFR Chart library is integrated as a web component:
+### Chart.js Library
+The Chart.js library is integrated as a web component:
 ```javascript
 // app/javascript/application.js
-import "dsfr-chart"
+import "chart.js"
 ```
 
-Usage in views:
-```erb
-<line-chart x="[[1, 2, 3, 4]]" y="[[10, 20, 30, 40]]"></line-chart>
-<bar-chart x='[["A", "B", "C"]]' y="[[50, 70, 30]]" name='["Ventes"]'></bar-chart>
-```
+#### Why did we choose Chart.js instead of DSFR-chart ?
+Signaux Faibles product displays a large amount of data in the form of charts.
+Charts are complex: multiple datasets, multiple formats (lines, bars, areas, etc.) on the same chart.
 
-### Stimulus Controllers
-Stimulus controllers are automatically loaded and can be used with data attributes:
-```erb
-<div data-controller="chart-widget" 
-     data-chart-widget-url-value="/charts/data"
-     data-chart-widget-chart-type-value="line">
-</div>
-```
+After discussions with the DSFR team, we found that the DSFR-chart library does not meet the needs of Signaux Faibles.
+
+> *Dans le cas d’un besoin non couvert, vous pouvez vous appuyer directement sur la bibliothèque Chart.js qui est la base de développement de nos DSFR Charts.*
+> — DSFR team
+
+That's why we decided to use Chart.js.
 
 ## Troubleshooting
 
