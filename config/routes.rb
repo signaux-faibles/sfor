@@ -69,7 +69,7 @@ Rails.application.routes.draw do
       get :data_urssaf_widget
       get :financial_widget
       get :establishments_widget
-      get :establishment_trackings_widget
+      get :establishment_trackings_list_widget
     end
   end
 
