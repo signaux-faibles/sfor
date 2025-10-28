@@ -179,7 +179,7 @@ class CompaniesController < ApplicationController
     render partial: "establishments_widget"
   end
 
-  def establishment_trackings_widget
+  def establishment_trackings_list_widget
     @company = Company.find_by!(siren: params[:siren])
     @establishments = @company.establishments
     @establishment_trackings = EstablishmentTracking.where(establishment: @establishments)
@@ -187,7 +187,7 @@ class CompaniesController < ApplicationController
     @in_progress_trackings = @establishment_trackings.in_progress
     @completed_trackings = @establishment_trackings.completed
 
-    render partial: "establishment_trackings_widget"
+    render partial: "establishment_trackings_list_widget"
   end
 
 

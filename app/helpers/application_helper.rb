@@ -53,6 +53,20 @@ module ApplicationHelper
     end
   end
 
+  def criticality_class_for(level)
+    case level
+    when "Criticité élevée"
+      "fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon"
+    when "Criticité modérée"
+      "fr-badge fr-badge--warning fr-badge--sm fr-badge--no-icon"
+    when "Niveau vert", "Pas de criticité"
+      "fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon"
+    else
+      "fr-badge fr-badge--sm fr-badge--no-icon"
+    end
+  end
+
+  # @TODO : use criticality_class_for instead.
   def criticality_style_for(level)
     case level
     when "Criticité élevée"
