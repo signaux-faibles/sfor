@@ -80,24 +80,6 @@
     text-decoration: underline;
 }
 
-/* Markdown tables in network tabs */
-.fr-tabs__panel table {
-    border-collapse: collapse; /* Ensure borders are collapsed for a cleaner look */
-    width: 100%;
-}
-
-.fr-tabs__panel table th,
-.fr-tabs__panel table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: left;
-}
-
-.fr-tabs__panel table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
 .fr-icon-shake-hands-line::before,
 .fr-icon-shake-hands-line::after {
     -webkit-mask-image: url("../../../icons/business/shake-hands-line.svg");
