@@ -31,7 +31,7 @@ module Api
     def make_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       params = params.to_h if params.respond_to?(:to_h)
       # Remove blank values
-      params = params.reject { |_k, v| v.blank? || (v.is_a?(Array) && v.reject(&:blank?).empty?) }
+      params = params.reject { |_k, v| v.blank? || (v.is_a?(Array) && v.compact_blank.empty?) }
 
       uri = URI("#{BASE_URL}#{endpoint}")
       uri.query = URI.encode_www_form(params) if params.any?
