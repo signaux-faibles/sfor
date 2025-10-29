@@ -69,6 +69,7 @@ Rails.application.routes.draw do
     member do
       get :insee_widget
       get :data_urssaf_widget
+      get :data_effectif_ap_widget
       get :financial_widget
       get :establishments_widget
       get :establishment_trackings_list_widget

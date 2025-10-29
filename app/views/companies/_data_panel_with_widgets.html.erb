@@ -4,14 +4,36 @@
      aria-labelledby="tabpanel-data"
      tabindex="0">
   <div class="fr-grid-row fr-grid-row--gutters">
+
+    <div class="fr-col-12">
+      <div class="fr-card">
+        <div class="fr-card__body">
+          <div class="fr-card__content">
+            <%= turbo_frame_tag "data_effectif_ap_widget",
+                                src: data_effectif_ap_widget_company_path(@company),
+                                loading: :lazy do %>
+              <h2>Effectifs / Activité partielle</h2>
+              <p class="fr-mt-2w">Récupération des données...</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- URSSAF Widget with Turbo Frame -->
     <div class="fr-col-12">
-      <%= turbo_frame_tag "data_urssaf_widget",
-          src: data_urssaf_widget_company_path(@company),
-          loading: :lazy do %>
-        <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
-        <p class="fr-mt-2w">Récupération des données...</p>
-      <% end %>
+      <div class="fr-card">
+        <div class="fr-card__body">
+          <div class="fr-card__content">
+            <%= turbo_frame_tag "data_urssaf_widget",
+                                src: data_urssaf_widget_company_path(@company),
+                                loading: :lazy do %>
+              <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
+              <p class="fr-mt-2w">Récupération des données...</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
