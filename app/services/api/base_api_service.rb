@@ -6,8 +6,7 @@ require "jwt"
 module Api
   class BaseApiService
     HOST = Rails.env.production? ? "entreprise.api.gouv.fr" : "staging.entreprise.api.gouv.fr"
-    BASE_URL = "https://" + HOST
-
+    BASE_URL = "https://#{HOST}".freeze
 
     def initialize
       @token = ENV.fetch("API_ENTREPRISES_TOKEN", nil)

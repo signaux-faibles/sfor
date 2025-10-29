@@ -3,7 +3,7 @@ class PagesController < ApplicationController
 
   def home; end
 
-  def search
+  def search # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
     @search_params = params.require(:search).permit(:q, :tranche_effectif_salarie, :section_activite_principale,
                                                     :page, :per_page, departments: [])
     @page = @search_params[:page].to_i
@@ -14,7 +14,7 @@ class PagesController < ApplicationController
     @results = nil
     @pagination = {}
 
-    return unless @search_params[:q].present?
+    return if @search_params[:q].blank?
 
     service_params = @search_params.merge(page: @page, per_page: @per_page)
     service = Api::RechercheEntreprisesApiService.new(service_params)

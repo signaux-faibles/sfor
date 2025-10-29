@@ -1,4 +1,4 @@
-class CompaniesController < ApplicationController
+class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
   before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget]
 
   def index
@@ -17,7 +17,7 @@ class CompaniesController < ApplicationController
     render partial: "insee_widget"
   end
 
-  def data_urssaf_widget
+  def data_urssaf_widget # rubocop:disable Metrics/MethodLength
     @company = Company.find_by!(siren: params[:siren])
 
     periodes = [
@@ -49,7 +49,7 @@ class CompaniesController < ApplicationController
 
     @formatted_periodes = periodes.map do |date|
       d = Date.parse(date)
-      I18n.l(d, format: '%B %Y', locale: :fr).capitalize
+      I18n.l(d, format: "%B %Y", locale: :fr).capitalize
     end
 
     @cotisations = [
@@ -79,57 +79,57 @@ class CompaniesController < ApplicationController
     ]
 
     @parts_patronales = [
-      54478,
-      56548,
-      58645,
-      60639,
-      62570,
-      64281,
-      67293,
-      67293,
-      68576,
-      68576,
-      69708,
-      69708,
-      69708,
-      69708,
-      68868.765625,
-      67736.765625,
-      67736.765625,
-      69438.765625,
-      69438.765625,
-      69438.765625,
-      68526.765625,
-      68526.765625,
-      66823.765625,
-      64823.76171875
+      54_478,
+      56_548,
+      58_645,
+      60_639,
+      62_570,
+      64_281,
+      67_293,
+      67_293,
+      68_576,
+      68_576,
+      69_708,
+      69_708,
+      69_708,
+      69_708,
+      68_868.765625,
+      67_736.765625,
+      67_736.765625,
+      69_438.765625,
+      69_438.765625,
+      69_438.765625,
+      68_526.765625,
+      68_526.765625,
+      66_823.765625,
+      64_823.76171875
     ]
 
     @parts_salariales = [
-      36898,
-      38358,
-      39930,
-      40987,
-      41872,
-      43670,
-      45168,
-      45168,
-      45703,
-      45703,
-      46830,
-      46830,
-      46830,
-      46830,
-      46830,
-      45703,
-      45703,
-      46365,
-      46365,
-      46365,
-      47252,
-      47252,
-      46590,
-      46590
+      36_898,
+      38_358,
+      39_930,
+      40_987,
+      41_872,
+      43_670,
+      45_168,
+      45_168,
+      45_703,
+      45_703,
+      46_830,
+      46_830,
+      46_830,
+      46_830,
+      46_830,
+      45_703,
+      45_703,
+      46_365,
+      46_365,
+      46_365,
+      47_252,
+      47_252,
+      46_590,
+      46_590
     ]
 
     @montant_echeancier = [
@@ -169,7 +169,7 @@ class CompaniesController < ApplicationController
     render partial: "data_urssaf_widget"
   end
 
-  def data_effectif_ap_widget
+  def data_effectif_ap_widget # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
     @company = Company.find_by!(siren: params[:siren])
 
     periodes = [
@@ -200,191 +200,191 @@ class CompaniesController < ApplicationController
 
     @formatted_periodes = periodes.map do |date|
       d = Date.parse(date)
-      I18n.l(d, format: '%B %Y', locale: :fr).capitalize
+      I18n.l(d, format: "%B %Y", locale: :fr).capitalize
     end
 
     data_consommation_ap = [
       {
-        "idConso": "59L78530100",
-        "heureConsomme": 10407.1796875,
-        "montant": 122462.7265625,
-        "effectif": 221,
-        "date": "2020-03-01T00:00:00Z"
+        idConso: "59L78530100",
+        heureConsomme: 10_407.1796875,
+        montant: 122_462.7265625,
+        effectif: 221,
+        date: "2020-03-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530100",
-        "heureConsomme": 40456.640625,
-        "montant": 477885.4375,
-        "effectif": 279,
-        "date": "2020-04-01T00:00:00Z"
+        idConso: "59L78530100",
+        heureConsomme: 40_456.640625,
+        montant: 477_885.4375,
+        effectif: 279,
+        date: "2020-04-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530100",
-        "heureConsomme": 12401.0595703125,
-        "montant": 156530.09375,
-        "effectif": 247,
-        "date": "2020-05-01T00:00:00Z"
+        idConso: "59L78530100",
+        heureConsomme: 12_401.0595703125,
+        montant: 156_530.09375,
+        effectif: 247,
+        date: "2020-05-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530100",
-        "heureConsomme": 615.6500244140625,
-        "montant": 5700.52001953125,
-        "effectif": 10,
-        "date": "2020-06-01T00:00:00Z"
+        idConso: "59L78530100",
+        heureConsomme: 615.6500244140625,
+        montant: 5700.52001953125,
+        effectif: 10,
+        date: "2020-06-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530100",
-        "heureConsomme": 438.3299865722656,
-        "montant": 3468.10009765625,
-        "effectif": 4,
-        "date": "2020-07-01T00:00:00Z"
+        idConso: "59L78530100",
+        heureConsomme: 438.3299865722656,
+        montant: 3468.10009765625,
+        effectif: 4,
+        date: "2020-07-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530100",
-        "heureConsomme": 158.3300018310547,
-        "montant": 1251.4599609375,
-        "effectif": 2,
-        "date": "2020-08-01T00:00:00Z"
+        idConso: "59L78530100",
+        heureConsomme: 158.3300018310547,
+        montant: 1251.4599609375,
+        effectif: 2,
+        date: "2020-08-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530200",
-        "heureConsomme": 266,
-        "montant": 2708.22998046875,
-        "effectif": 6,
-        "date": "2021-04-01T00:00:00Z"
+        idConso: "59L78530200",
+        heureConsomme: 266,
+        montant: 2708.22998046875,
+        effectif: 6,
+        date: "2021-04-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530401",
-        "heureConsomme": 35,
-        "montant": 263.54998779296875,
-        "effectif": 1,
-        "date": "2022-03-01T00:00:00Z"
+        idConso: "59L78530401",
+        heureConsomme: 35,
+        montant: 263.54998779296875,
+        effectif: 1,
+        date: "2022-03-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530702",
-        "heureConsomme": 728.489990234375,
-        "montant": 8199.6904296875,
-        "effectif": 124,
-        "date": "2023-06-01T00:00:00Z"
+        idConso: "59L78530702",
+        heureConsomme: 728.489990234375,
+        montant: 8199.6904296875,
+        effectif: 124,
+        date: "2023-06-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530702",
-        "heureConsomme": 5.670000076293945,
-        "montant": 52.619998931884766,
-        "effectif": 1,
-        "date": "2023-07-01T00:00:00Z"
+        idConso: "59L78530702",
+        heureConsomme: 5.670000076293945,
+        montant: 52.619998931884766,
+        effectif: 1,
+        date: "2023-07-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530702",
-        "heureConsomme": 13.010000228881836,
-        "montant": 118.6500015258789,
-        "effectif": 1,
-        "date": "2023-08-01T00:00:00Z"
+        idConso: "59L78530702",
+        heureConsomme: 13.010000228881836,
+        montant: 118.6500015258789,
+        effectif: 1,
+        date: "2023-08-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530702",
-        "heureConsomme": 264.5899963378906,
-        "montant": 2598.2900390625,
-        "effectif": 26,
-        "date": "2023-09-01T00:00:00Z"
+        idConso: "59L78530702",
+        heureConsomme: 264.5899963378906,
+        montant: 2598.2900390625,
+        effectif: 26,
+        date: "2023-09-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530702",
-        "heureConsomme": 17.010000228881836,
-        "montant": 157.9600067138672,
-        "effectif": 3,
-        "date": "2023-10-01T00:00:00Z"
+        idConso: "59L78530702",
+        heureConsomme: 17.010000228881836,
+        montant: 157.9600067138672,
+        effectif: 3,
+        date: "2023-10-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 145.02999877929688,
-        "montant": 1420.9100341796875,
-        "effectif": 14,
-        "date": "2023-11-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 145.02999877929688,
+        montant: 1420.9100341796875,
+        effectif: 14,
+        date: "2023-11-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 968.2000122070312,
-        "montant": 10508.8896484375,
-        "effectif": 88,
-        "date": "2023-12-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 968.2000122070312,
+        montant: 10_508.8896484375,
+        effectif: 88,
+        date: "2023-12-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 167.3000030517578,
-        "montant": 1567.010009765625,
-        "effectif": 46,
-        "date": "2024-01-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 167.3000030517578,
+        montant: 1567.010009765625,
+        effectif: 46,
+        date: "2024-01-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 5.670000076293945,
-        "montant": 52.279998779296875,
-        "effectif": 1,
-        "date": "2024-02-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 5.670000076293945,
+        montant: 52.279998779296875,
+        effectif: 1,
+        date: "2024-02-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 378.0799865722656,
-        "montant": 3562.199951171875,
-        "effectif": 9,
-        "date": "2024-03-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 378.0799865722656,
+        montant: 3562.199951171875,
+        effectif: 9,
+        date: "2024-03-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 165.02000427246094,
-        "montant": 1542.22998046875,
-        "effectif": 8,
-        "date": "2024-04-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 165.02000427246094,
+        montant: 1542.22998046875,
+        effectif: 8,
+        date: "2024-04-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530703",
-        "heureConsomme": 295.5199890136719,
-        "montant": 3095.159912109375,
-        "effectif": 38,
-        "date": "2024-05-01T00:00:00Z"
+        idConso: "59L78530703",
+        heureConsomme: 295.5199890136719,
+        montant: 3095.159912109375,
+        effectif: 38,
+        date: "2024-05-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530704",
-        "heureConsomme": 108,
-        "montant": 999.27001953125,
-        "effectif": 4,
-        "date": "2024-06-01T00:00:00Z"
+        idConso: "59L78530704",
+        heureConsomme: 108,
+        montant: 999.27001953125,
+        effectif: 4,
+        date: "2024-06-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530704",
-        "heureConsomme": 30.889999389648438,
-        "montant": 288.05999755859375,
-        "effectif": 4,
-        "date": "2024-07-01T00:00:00Z"
+        idConso: "59L78530704",
+        heureConsomme: 30.889999389648438,
+        montant: 288.05999755859375,
+        effectif: 4,
+        date: "2024-07-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530705",
-        "heureConsomme": 224.3300018310547,
-        "montant": 3864.199951171875,
-        "effectif": 32,
-        "date": "2024-10-01T00:00:00Z"
+        idConso: "59L78530705",
+        heureConsomme: 224.3300018310547,
+        montant: 3864.199951171875,
+        effectif: 32,
+        date: "2024-10-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530705",
-        "heureConsomme": 173.66000366210938,
-        "montant": 2977.10009765625,
-        "effectif": 25,
-        "date": "2024-11-01T00:00:00Z"
+        idConso: "59L78530705",
+        heureConsomme: 173.66000366210938,
+        montant: 2977.10009765625,
+        effectif: 25,
+        date: "2024-11-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530706",
-        "heureConsomme": 427,
-        "montant": 7289.8701171875,
-        "effectif": 29,
-        "date": "2024-12-01T00:00:00Z"
+        idConso: "59L78530706",
+        heureConsomme: 427,
+        montant: 7289.8701171875,
+        effectif: 29,
+        date: "2024-12-01T00:00:00Z"
       },
       {
-        "idConso": "59L78530706",
-        "heureConsomme": 1119.760009765625,
-        "montant": 13013.9296875,
-        "effectif": 196,
-        "date": "2025-02-01T00:00:00Z"
+        idConso: "59L78530706",
+        heureConsomme: 1119.760009765625,
+        montant: 13_013.9296875,
+        effectif: 196,
+        date: "2025-02-01T00:00:00Z"
       }
     ]
 
@@ -395,169 +395,169 @@ class CompaniesController < ApplicationController
 
     data_autorisation_ap = [
       {
-        "idDemande": "S59L080467",
-        "effectifEntreprise": 676,
-        "effectif": 676,
-        "effectifAutorise": 4,
-        "dateStatut": "2008-12-30T00:00:00Z",
-        "debut": "2008-12-01T00:00:00Z",
-        "fin": "2008-12-31T00:00:00Z",
-        "hta": 420,
-        "mta": 894.5999755859375,
-        "motifRecoursSE": 1,
-        "heureConsomme": 63,
-        "montantConsomme": 134.19000244140625,
-        "effectifConsomme": 4
+        idDemande: "S59L080467",
+        effectifEntreprise: 676,
+        effectif: 676,
+        effectifAutorise: 4,
+        dateStatut: "2008-12-30T00:00:00Z",
+        debut: "2008-12-01T00:00:00Z",
+        fin: "2008-12-31T00:00:00Z",
+        hta: 420,
+        mta: 894.5999755859375,
+        motifRecoursSE: 1,
+        heureConsomme: 63,
+        montantConsomme: 134.19000244140625,
+        effectifConsomme: 4
       },
       {
-        "idDemande": "S59L090262",
-        "effectifEntreprise": 676,
-        "effectif": 676,
-        "effectifAutorise": 316,
-        "dateStatut": "2009-04-03T00:00:00Z",
-        "debut": "2009-01-02T00:00:00Z",
-        "fin": "2009-03-31T00:00:00Z",
-        "hta": 17500,
-        "mta": 58275,
-        "motifRecoursSE": 1,
-        "heureConsomme": 10202,
-        "montantConsomme": 33974.328125,
-        "effectifConsomme": 250
+        idDemande: "S59L090262",
+        effectifEntreprise: 676,
+        effectif: 676,
+        effectifAutorise: 316,
+        dateStatut: "2009-04-03T00:00:00Z",
+        debut: "2009-01-02T00:00:00Z",
+        fin: "2009-03-31T00:00:00Z",
+        hta: 17_500,
+        mta: 58_275,
+        motifRecoursSE: 1,
+        heureConsomme: 10_202,
+        montantConsomme: 33_974.328125,
+        effectifConsomme: 250
       },
       {
-        "idDemande": "S59L120019",
-        "effectifEntreprise": 704,
-        "effectif": 622,
-        "effectifAutorise": 245,
-        "dateStatut": "2012-03-14T00:00:00Z",
-        "debut": "2012-01-28T00:00:00Z",
-        "fin": "2012-04-28T00:00:00Z",
-        "hta": 36015,
-        "mta": 119929.953125,
-        "motifRecoursSE": 1,
-        "heureConsomme": 0,
-        "montantConsomme": 0,
-        "effectifConsomme": 0
+        idDemande: "S59L120019",
+        effectifEntreprise: 704,
+        effectif: 622,
+        effectifAutorise: 245,
+        dateStatut: "2012-03-14T00:00:00Z",
+        debut: "2012-01-28T00:00:00Z",
+        fin: "2012-04-28T00:00:00Z",
+        hta: 36_015,
+        mta: 119_929.953125,
+        motifRecoursSE: 1,
+        heureConsomme: 0,
+        montantConsomme: 0,
+        effectifConsomme: 0
       },
       {
-        "idDemande": "S59L120210",
-        "effectifEntreprise": 692,
-        "effectif": 625,
-        "effectifAutorise": 555,
-        "dateStatut": "2012-04-16T00:00:00Z",
-        "debut": "2012-03-06T00:00:00Z",
-        "fin": "2012-03-08T00:00:00Z",
-        "hta": 11655,
-        "mta": 50466.1484375,
-        "motifRecoursSE": 2,
-        "heureConsomme": 5760,
-        "montantConsomme": 24943.609375,
-        "effectifConsomme": 396
+        idDemande: "S59L120210",
+        effectifEntreprise: 692,
+        effectif: 625,
+        effectifAutorise: 555,
+        dateStatut: "2012-04-16T00:00:00Z",
+        debut: "2012-03-06T00:00:00Z",
+        fin: "2012-03-08T00:00:00Z",
+        hta: 11_655,
+        mta: 50_466.1484375,
+        motifRecoursSE: 2,
+        heureConsomme: 5760,
+        montantConsomme: 24_943.609375,
+        effectifConsomme: 396
       },
       {
-        "idDemande": "S59L120496",
-        "effectifEntreprise": 662,
-        "effectif": 635,
-        "effectifAutorise": 635,
-        "dateStatut": "2012-12-11T00:00:00Z",
-        "debut": "2012-12-10T00:00:00Z",
-        "fin": "2013-02-28T00:00:00Z",
-        "hta": 111125,
-        "mta": 481171.25,
-        "motifRecoursSE": 1,
-        "heureConsomme": 11765,
-        "montantConsomme": 50946.76953125,
-        "effectifConsomme": 285
+        idDemande: "S59L120496",
+        effectifEntreprise: 662,
+        effectif: 635,
+        effectifAutorise: 635,
+        dateStatut: "2012-12-11T00:00:00Z",
+        debut: "2012-12-10T00:00:00Z",
+        fin: "2013-02-28T00:00:00Z",
+        hta: 111_125,
+        mta: 481_171.25,
+        motifRecoursSE: 1,
+        heureConsomme: 11_765,
+        montantConsomme: 50_946.76953125,
+        effectifConsomme: 285
       },
       {
-        "idDemande": "S59L130144",
-        "effectifEntreprise": 656,
-        "effectif": 631,
-        "effectifAutorise": 631,
-        "dateStatut": "2013-02-22T00:00:00Z",
-        "debut": "2013-03-01T00:00:00Z",
-        "fin": "2013-05-31T00:00:00Z",
-        "hta": 22085,
-        "mta": 95628.046875,
-        "motifRecoursSE": 1,
-        "heureConsomme": 3118,
-        "montantConsomme": 13503.099609375,
-        "effectifConsomme": 313
+        idDemande: "S59L130144",
+        effectifEntreprise: 656,
+        effectif: 631,
+        effectifAutorise: 631,
+        dateStatut: "2013-02-22T00:00:00Z",
+        debut: "2013-03-01T00:00:00Z",
+        fin: "2013-05-31T00:00:00Z",
+        hta: 22_085,
+        mta: 95_628.046875,
+        motifRecoursSE: 1,
+        heureConsomme: 3118,
+        montantConsomme: 13_503.099609375,
+        effectifConsomme: 313
       },
       {
-        "idDemande": "59L78530100",
-        "effectifEntreprise": 809,
-        "effectif": 311,
-        "effectifAutorise": 331,
-        "dateStatut": "2020-03-26T00:00:00Z",
-        "debut": "2020-03-17T00:00:00Z",
-        "fin": "2020-09-17T00:00:00Z",
-        "hta": 294259,
-        "mta": nil,
-        "motifRecoursSE": 5,
-        "heureConsomme": 64477.19140625,
-        "montantConsomme": 767298.3125,
-        "effectifConsomme": 825
+        idDemande: "59L78530100",
+        effectifEntreprise: 809,
+        effectif: 311,
+        effectifAutorise: 331,
+        dateStatut: "2020-03-26T00:00:00Z",
+        debut: "2020-03-17T00:00:00Z",
+        fin: "2020-09-17T00:00:00Z",
+        hta: 294_259,
+        mta: nil,
+        motifRecoursSE: 5,
+        heureConsomme: 64_477.19140625,
+        montantConsomme: 767_298.3125,
+        effectifConsomme: 825
       },
       {
-        "idDemande": "59L78530200",
-        "effectifEntreprise": 809,
-        "effectif": 311,
-        "effectifAutorise": 10,
-        "dateStatut": "2021-06-01T00:00:00Z",
-        "debut": "2021-04-06T00:00:00Z",
-        "fin": "2021-05-02T00:00:00Z",
-        "hta": 550,
-        "mta": nil,
-        "motifRecoursSE": 5,
-        "heureConsomme": 266,
-        "montantConsomme": 2708.22998046875,
-        "effectifConsomme": 6
+        idDemande: "59L78530200",
+        effectifEntreprise: 809,
+        effectif: 311,
+        effectifAutorise: 10,
+        dateStatut: "2021-06-01T00:00:00Z",
+        debut: "2021-04-06T00:00:00Z",
+        fin: "2021-05-02T00:00:00Z",
+        hta: 550,
+        mta: nil,
+        motifRecoursSE: 5,
+        heureConsomme: 266,
+        montantConsomme: 2708.22998046875,
+        effectifConsomme: 6
       },
       {
-        "idDemande": "59L78530401",
-        "effectifEntreprise": 809,
-        "effectif": 311,
-        "effectifAutorise": 275,
-        "dateStatut": "2022-04-01T00:00:00Z",
-        "debut": "2021-12-24T00:00:00Z",
-        "fin": "2022-06-23T00:00:00Z",
-        "hta": 5000,
-        "mta": nil,
-        "motifRecoursSE": 5,
-        "heureConsomme": 35,
-        "montantConsomme": 263.54998779296875,
-        "effectifConsomme": 1
+        idDemande: "59L78530401",
+        effectifEntreprise: 809,
+        effectif: 311,
+        effectifAutorise: 275,
+        dateStatut: "2022-04-01T00:00:00Z",
+        debut: "2021-12-24T00:00:00Z",
+        fin: "2022-06-23T00:00:00Z",
+        hta: 5000,
+        mta: nil,
+        motifRecoursSE: 5,
+        heureConsomme: 35,
+        montantConsomme: 263.54998779296875,
+        effectifConsomme: 1
       },
       {
-        "idDemande": "59L78530600",
-        "effectifEntreprise": 809,
-        "effectif": 311,
-        "effectifAutorise": 320,
-        "dateStatut": "2022-06-28T00:00:00Z",
-        "debut": "2022-07-01T00:00:00Z",
-        "fin": "2022-12-31T00:00:00Z",
-        "hta": 66555,
-        "mta": nil,
-        "motifRecoursSE": 7,
-        "heureConsomme": nil,
-        "montantConsomme": nil,
-        "effectifConsomme": nil
+        idDemande: "59L78530600",
+        effectifEntreprise: 809,
+        effectif: 311,
+        effectifAutorise: 320,
+        dateStatut: "2022-06-28T00:00:00Z",
+        debut: "2022-07-01T00:00:00Z",
+        fin: "2022-12-31T00:00:00Z",
+        hta: 66_555,
+        mta: nil,
+        motifRecoursSE: 7,
+        heureConsomme: nil,
+        montantConsomme: nil,
+        effectifConsomme: nil
       },
       {
-        "idDemande": "59L78530707",
-        "effectifEntreprise": 809,
-        "effectif": 311,
-        "effectifAutorise": 273,
-        "dateStatut": "2025-04-25T00:00:00Z",
-        "debut": "2023-01-01T00:00:00Z",
-        "fin": "2025-09-30T00:00:00Z",
-        "hta": 49682,
-        "mta": nil,
-        "motifRecoursSE": 7,
-        "heureConsomme": nil,
-        "montantConsomme": nil,
-        "effectifConsomme": nil
+        idDemande: "59L78530707",
+        effectifEntreprise: 809,
+        effectif: 311,
+        effectifAutorise: 273,
+        dateStatut: "2025-04-25T00:00:00Z",
+        debut: "2023-01-01T00:00:00Z",
+        fin: "2025-09-30T00:00:00Z",
+        hta: 49_682,
+        mta: nil,
+        motifRecoursSE: 7,
+        heureConsomme: nil,
+        montantConsomme: nil,
+        effectifConsomme: nil
       }
     ]
 
@@ -604,7 +604,7 @@ class CompaniesController < ApplicationController
     @dataset_names = [
       "Effectifs (salariés)",
       "Consommation activité partielle (ETP)",
-      "Autorisation activité partielle (salariés)",
+      "Autorisation activité partielle (salariés)"
     ]
 
     render partial: "data_effectif_ap_widget"
@@ -630,7 +630,6 @@ class CompaniesController < ApplicationController
 
     render partial: "establishment_trackings_list_widget"
   end
-
 
   private
 
@@ -659,7 +658,7 @@ class CompaniesController < ApplicationController
   def set_company
     @company = Company.find_by!(siren: params[:siren])
   rescue ActiveRecord::RecordNotFound
-    flash[:alert] = "Cette fiche entreprise n'existe pas dans SignauxFaibles"
+    flash[:alert] = "Cette fiche entreprise n'existe pas dans SignauxFaibles" # rubocop:disable Rails/I18nLocaleTexts
     redirect_back(fallback_location: home_path)
   end
 
