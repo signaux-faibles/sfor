@@ -39,7 +39,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def assert_tracking_not_included(tracking)
-    assert_not_includes response.body, tracking.establishment.raison_sociale
+    assert_not_includes response.body, tracking.establishment.siret
   end
 end
 
