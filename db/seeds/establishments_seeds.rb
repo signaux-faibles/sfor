@@ -7,14 +7,14 @@ departments = Department.all
   raison_sociale = Faker::Company.name
   siren = Faker::Number.unique.number(digits: 9).to_s
   siret = "#{siren}#{Faker::Number.number(digits: 5)}"
-  effectif = Faker::Number.between(from: 1, to: 100)
+  creation = Faker::Date.between(from: 10.years.ago, to: Date.current)
+  statut_juridique = Faker::Number.number(digits: 4).to_s
 
   Company.create!(
     siren: siren,
-    siret: siret,
     raison_sociale: raison_sociale,
-    effectif: effectif,
-    department: department
+    creation: creation,
+    statut_juridique: statut_juridique
   )
 
   Establishment.create!(

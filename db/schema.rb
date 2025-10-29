@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_28_135842) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_29_091900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -116,18 +116,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_28_135842) do
   end
 
   create_table "companies", force: :cascade do |t|
-    t.string "siren", null: false
-    t.string "siret", null: false
-    t.string "raison_sociale"
-    t.integer "effectif"
+    t.string "siren", limit: 9
+    t.text "raison_sociale"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "department_id", null: false
-    t.bigint "activity_sector_id"
-    t.index ["activity_sector_id"], name: "index_companies_on_activity_sector_id"
-    t.index ["department_id"], name: "index_companies_on_department_id"
+    t.string "statut_juridique", limit: 10
+    t.date "creation"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
-    t.index ["siret"], name: "index_companies_on_siret", unique: true
   end
 
   create_table "company_lists", force: :cascade do |t|
@@ -587,8 +582,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_28_135842) do
   add_foreign_key "comments", "establishment_trackings"
   add_foreign_key "comments", "networks"
   add_foreign_key "comments", "users"
-  add_foreign_key "companies", "activity_sectors"
-  add_foreign_key "companies", "departments"
   add_foreign_key "company_lists", "companies"
   add_foreign_key "company_lists", "lists"
   add_foreign_key "contacts", "establishments"
