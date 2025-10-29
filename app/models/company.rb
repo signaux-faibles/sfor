@@ -1,7 +1,7 @@
 class Company < ApplicationRecord
   belongs_to :department
   belongs_to :activity_sector, optional: true
-  has_many :establishments, dependent: :nullify
+  has_many :establishments, foreign_key: :siren, primary_key: :siren, dependent: :nullify
 
   has_many :campaign_companies, dependent: :destroy
   has_many :campaigns, through: :campaign_companies
@@ -21,7 +21,7 @@ class Company < ApplicationRecord
   end
 
   def establishments_ordered
-    establishments.order(is_siege: :desc)
+    establishments.order(siege: :desc)
   end
 
   def to_param

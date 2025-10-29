@@ -18,6 +18,6 @@ class ContactPolicy < ApplicationPolicy
   private
 
   def department_match?
-    record.establishment.department_id.in?(user.department_ids)
+    user.department_ids.include?(record.establishment.department&.id)
   end
 end

@@ -1,17 +1,17 @@
 class EstablishmentTrackingPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
-      scope.joins(establishment: :department)
-           .where(establishments: { department_id: user.department_ids })
+      scope.joins(:establishment)
+           .where(establishments: { departement: user.departments.pluck(:code) })
     end
   end
 
   def show?
-    user.department_ids.include?(record.establishment.department.id) || user_is_referent_or_participant?
+    user.department_ids.include?(record.establishment.department&.id) || user_is_referent_or_participant?
   end
 
   def create?
-    user.department_ids.include?(record.establishment.department.id) && establishment_has_no_active_tracking?
+    user.department_ids.include?(record.establishment.department&.id) && establishment_has_no_active_tracking?
   end
 
   # Users must be able to view the record AND be a referent or participant to edit it

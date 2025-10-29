@@ -36,9 +36,9 @@ module Excel
   module FilterHelpers
     def filter_label(attribute) # rubocop:disable Metrics/MethodLength
       {
-        "establishment_raison_sociale" => "Raison sociale",
         "establishment_siret" => "SIRET",
-        "establishment_department_id" => "Départements",
+        "establishment_departement_eq" => "Départements",
+        "establishment_departement_in" => "Départements",
         "state" => "Statuts",
         "tracking_labels_id" => "Étiquettes",
         "sectors_id" => "Filières",
@@ -69,7 +69,7 @@ module Excel
     def format_value(attribute, value) # rubocop:disable Metrics/CyclomaticComplexity
       case attribute
       when "state" then format_state_value(value)
-      when "establishment_department_id" then format_department_value(value)
+      when "establishment_departement_eq", "establishment_departement_in" then format_department_value(value)
       when "tracking_labels_id" then format_tracking_labels_value(value)
       when "sectors_id" then format_sectors_value(value)
       when "size_id" then format_size_value(value)
@@ -86,7 +86,7 @@ module Excel
     def format_department_value(value)
       Rails.logger.debug "Departements"
       Rails.logger.debug value
-      value.split(",").map { |id| Department.find_by(id: id)&.name || id }.join(", ")
+      value.split(",").map { |code| Department.find_by(code: code)&.name || code }.join(", ")
     end
 
     def format_tracking_labels_value(value)
@@ -144,7 +144,6 @@ module Excel
 
     def add_header_row(sheet) # rubocop:disable Metrics/MethodLength
       headers = [
-        "Raison sociale",
         "Siret",
         "Département",
         "Participants",
@@ -162,21 +161,20 @@ module Excel
         "Synthèse de mon administration",
         "Synthèse CODEFI"
       ]
-      sheet.add_row headers, style: Array.new(17) { header_style(sheet) }
+      sheet.add_row headers, style: Array.new(16) { header_style(sheet) }
     end
 
     def add_tracking_rows(sheet)
       @establishment_trackings.each do |tracking|
         sheet.add_row prepare_tracking_row(tracking, sheet),
-                      style: Array.new(15, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
-                      types: [nil, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+                      style: Array.new(14, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
+                      types: [:string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
                               :string, :string]
       end
     end
 
     def prepare_tracking_row(tracking, _sheet) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       [
-        tracking.establishment.raison_sociale,
         tracking.establishment.siret.to_s,
         tracking.establishment&.department&.name,
         tracking.participants.map(&:full_name).uniq.join(", "),
