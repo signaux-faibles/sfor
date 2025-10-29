@@ -1,8 +1,8 @@
 class SummaryPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      scope.joins(establishment_tracking: { establishment: :department })
-           .where(establishments: { department_id: user.department_ids })
+      scope.joins(establishment_tracking: :establishment)
+           .where(establishments: { departement: user.departments.pluck(:code) })
     end
   end
 
@@ -37,6 +37,6 @@ class SummaryPolicy < ApplicationPolicy
   end
 
   def department_match?
-    record.establishment_tracking.establishment.department_id.in?(user.department_ids)
+    user.department_ids.include?(record.establishment_tracking.establishment.department&.id)
   end
 end

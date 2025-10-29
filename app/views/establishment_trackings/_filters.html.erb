@@ -6,20 +6,14 @@
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-3">
           <div class="fr-input-group">
-            <%= f.label :establishment_raison_sociale_cont, "Raison sociale" %>
-            <%= f.text_field :establishment_raison_sociale_cont, class: "fr-input" %>
-          </div>
-        </div>
-        <div class="fr-col-3">
-          <div class="fr-input-group">
-            <%= f.label :establishment_siret_cont, "SIREN/SIRET" %>
+            <%= f.label :establishment_siret_cont, "SIRET" %>
             <%= f.text_field :establishment_siret_cont, class: "fr-input" %>
           </div>
         </div>
         <div class="fr-col-3">
           <div class="fr-input-group">
-            <%= f.label :establishment_department_id_in, "Départements" %>
-            <%= f.collection_select :establishment_department_id_in, current_user.geo_access.departments.order(:code), :id, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+            <%= f.label :establishment_departement_in, "Départements" %>
+            <%= f.collection_select :establishment_departement_in, current_user.geo_access.departments.order(:code), :code, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
         <div class="fr-col-3">

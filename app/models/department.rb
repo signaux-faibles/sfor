@@ -4,7 +4,7 @@ class Department < ApplicationRecord
   has_many :department_geo_accesses, dependent: :destroy
   has_many :geo_accesses, through: :department_geo_accesses
 
-  has_many :establishments, dependent: :nullify
+  has_many :establishments, foreign_key: :departement, primary_key: :code, dependent: :nullify
   has_many :companies, dependent: :nullify
 
   validates :name, presence: true
