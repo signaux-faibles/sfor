@@ -11,7 +11,8 @@ export default class extends Controller {
     types: Array,
     borderDash: Array,
     order: Array,
-    barMode: String
+    barMode: String,
+    unit: String
   }
   static targets = ["chart"]
 
@@ -115,8 +116,11 @@ export default class extends Controller {
                 size: 14
               },
               color: axisColor,
-              callback: function (value, index, ticks) {
-                return value + ' €';
+              callback: (value, index, ticks) => {
+                if (this.unitValue !== '') {
+                  return value + this.unitValue;
+                }
+                return value;
               }
             },
             grid: {
