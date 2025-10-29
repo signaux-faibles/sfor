@@ -46,16 +46,14 @@ module EstablishmentTrackings::Creatable
   def find_or_create_company(siren, department)
     Company.find_or_create_by!(siren: siren) do |c|
       c.siret = params[:siret]
-      c.department_id = department.id
+      c.department = department
     end
   end
 
   def create_establishment(company, department, siren)
     @establishment = Establishment.new(siret: params[:siret],
-                                       raison_sociale: params[:denomination],
                                        siren: siren,
-                                       department: department,
-                                       company: company)
+                                       departement: department.code)
 
     redirect_to new_establishment_establishment_tracking_path(@establishment) if @establishment.save
   end

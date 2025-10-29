@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_07_132906) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_28_135842) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -175,6 +175,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_07_132906) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "region_id", null: false
+    t.index ["code"], name: "index_departments_on_code", unique: true
     t.index ["name"], name: "index_departments_on_name", unique: true
     t.index ["region_id"], name: "index_departments_on_region_id"
   end
@@ -294,73 +295,33 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_07_132906) do
   end
 
   create_table "establishments", force: :cascade do |t|
-    t.text "roles"
     t.string "siret", limit: 14
     t.string "siren", limit: 9
-    t.text "raison_sociale"
     t.text "commune"
-    t.float "valeur_score"
-    t.jsonb "detail_score"
-    t.boolean "first_alert"
-    t.text "first_list_entreprise"
-    t.text "first_red_list_entreprise"
-    t.text "first_list_etablissement"
-    t.text "first_red_list_etablissement"
-    t.text "last_list"
-    t.text "last_alert"
-    t.text "liste"
-    t.float "chiffre_affaire"
-    t.float "prev_chiffre_affaire"
-    t.date "arrete_bilan"
-    t.integer "exercice_diane"
-    t.float "variation_ca"
-    t.float "resultat_expl"
-    t.float "prev_resultat_expl"
-    t.float "excedent_brut_d_exploitation"
-    t.float "prev_excedent_brut_d_exploitation"
-    t.float "effectif"
-    t.float "effectif_entreprise"
-    t.date "date_entreprise"
-    t.date "date_effectif"
-    t.text "libelle_n5"
-    t.text "libelle_n1"
-    t.text "code_activite"
-    t.text "last_procol"
-    t.date "date_last_procol"
-    t.boolean "activite_partielle"
-    t.integer "apconso_heure_consomme"
-    t.integer "apconso_montant"
-    t.boolean "hausse_urssaf"
-    t.float "dette_urssaf"
-    t.date "periode_urssaf"
-    t.boolean "presence_part_salariale"
-    t.text "alert"
-    t.text "raison_sociale_groupe"
-    t.boolean "territoire_industrie"
-    t.text "code_territoire_industrie"
-    t.text "libelle_territoire_industrie"
-    t.text "statut_juridique_n3"
-    t.text "statut_juridique_n2"
-    t.text "statut_juridique_n1"
-    t.datetime "date_ouverture_etablissement", precision: nil
-    t.datetime "date_creation_entreprise", precision: nil
-    t.text "secteur_covid"
-    t.text "etat_administratif"
-    t.text "etat_administratif_entreprise"
-    t.boolean "has_delai"
+    t.string "code_activite", limit: 5
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "department_id", null: false
-    t.bigint "activity_sector_id"
-    t.bigint "level_one_activity_sector_id"
-    t.bigint "company_id", null: false
-    t.boolean "is_siege"
-    t.integer "parent_establishment_id"
-    t.index ["activity_sector_id"], name: "index_establishments_on_activity_sector_id"
-    t.index ["company_id"], name: "index_establishments_on_company_id"
-    t.index ["department_id"], name: "index_establishments_on_department_id"
-    t.index ["level_one_activity_sector_id"], name: "index_establishments_on_level_one_activity_sector_id"
-    t.index ["parent_establishment_id"], name: "index_establishments_on_parent_establishment_id"
+    t.boolean "siege"
+    t.text "complement_adresse"
+    t.string "numero_voie", limit: 10
+    t.string "indrep", limit: 10
+    t.string "type_voie", limit: 20
+    t.text "voie"
+    t.text "commune_etranger"
+    t.text "distribution_speciale"
+    t.string "code_commune", limit: 5
+    t.string "code_cedex", limit: 5
+    t.string "cedex", limit: 100
+    t.string "code_pays_etranger", limit: 10
+    t.string "pays_etranger", limit: 100
+    t.string "code_postal", limit: 10
+    t.string "departement", limit: 10
+    t.string "ape", limit: 100
+    t.string "nomenclature_activite", limit: 10
+    t.date "date_creation"
+    t.float "longitude"
+    t.float "latitude"
+    t.index ["departement"], name: "index_establishments_on_departement"
     t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siret"], name: "index_establishments_on_siret", unique: true
   end
@@ -394,6 +355,39 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_07_132906) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "active", default: false, null: false
+  end
+
+  create_table "osf_apconsos", force: :cascade do |t|
+    t.string "siret", limit: 14
+    t.string "id_demande", limit: 11
+    t.float "heures_consommees"
+    t.float "montant"
+    t.integer "effectif"
+    t.date "periode"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["id_demande"], name: "index_osf_apconsos_on_id_demande"
+    t.index ["siret"], name: "index_osf_apconsos_on_siret"
+  end
+
+  create_table "osf_apdemandes", primary_key: "id_demande", id: { type: :string, limit: 11 }, force: :cascade do |t|
+    t.string "siret", limit: 14
+    t.integer "effectif_entreprise"
+    t.integer "effectif"
+    t.date "date_statut"
+    t.date "periode_debut"
+    t.date "periode_fin"
+    t.float "hta"
+    t.float "mta"
+    t.integer "effectif_autorise"
+    t.integer "motif_recours_se"
+    t.float "heures_consommees"
+    t.float "montant_consomme"
+    t.integer "effectif_consomme"
+    t.integer "perimetre"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["siret"], name: "index_osf_apdemandes_on_siret"
   end
 
   create_table "osf_aps", force: :cascade do |t|
@@ -615,11 +609,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_07_132906) do
   add_foreign_key "establishment_trackings", "establishments"
   add_foreign_key "establishment_trackings", "sizes"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
-  add_foreign_key "establishments", "activity_sectors"
-  add_foreign_key "establishments", "activity_sectors", column: "level_one_activity_sector_id"
-  add_foreign_key "establishments", "companies"
-  add_foreign_key "establishments", "departments"
-  add_foreign_key "establishments", "establishments", column: "parent_establishment_id"
+  add_foreign_key "establishments", "companies", column: "siren", primary_key: "siren", name: "fk_establishments_companies", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "establishments", "departments", column: "departement", primary_key: "code", name: "fk_establishments_departments", on_update: :cascade, on_delete: :restrict
   add_foreign_key "network_memberships", "networks"
   add_foreign_key "network_memberships", "users"
   add_foreign_key "segments", "networks"
