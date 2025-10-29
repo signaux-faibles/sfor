@@ -1,0 +1,17 @@
+<div id="tabpanel-informations-panel"
+     class="fr-tabs__panel fr-tabs__panel--selected"
+     role="tabpanel"
+     aria-labelledby="tabpanel-informations"
+     tabindex="0">
+  <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--top">
+    <!-- INSEE Widget with Turbo Frame -->
+    <div class="fr-col-12 fr-col-lg-6">
+      <%= turbo_frame_tag "insee_widget",
+                          src: insee_widget_establishment_path(@establishment),
+                          loading: :lazy do %>
+        <h2>Informations générales</h2>
+        <p class="fr-mt-2w">Récupération des données INSEE...</p>
+      <% end %>
+    </div>
+  </div>
+</div>
