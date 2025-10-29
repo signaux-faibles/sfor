@@ -50,7 +50,7 @@ module EstablishmentTrackings::Creatable
     end
   end
 
-  def create_establishment(company, department, siren)
+  def create_establishment(_company, department, siren)
     @establishment = Establishment.new(siret: params[:siret],
                                        siren: siren,
                                        departement: department.code)
