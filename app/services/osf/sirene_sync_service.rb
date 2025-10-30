@@ -151,13 +151,17 @@ module Osf
 
     def build_establishment_attributes(distant_record) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       # Compute departement, handling DOM/COM special case where source gives "97"
-      source_departement = distant_record["departement"]
+      source_departement = distant_record["departement"].to_s.strip.upcase
       computed_departement = source_departement
-      if source_departement.to_s == "97"
+      if source_departement == "97"
         raw_cp = distant_record["code_postal"].to_s
         cp_digits = raw_cp.gsub(/\D/, "")
         computed_departement = cp_digits.start_with?("97") && cp_digits.length >= 3 ? cp_digits[0, 3] : nil
       end
+
+      # Accept only valid department codes; otherwise set to nil (skip invalid/blank/garbage)
+      # Valid: 01-95, 2A, 2B, 971-978, 975, 976
+      computed_departement = nil unless computed_departement.to_s.match?(/^(?:\d{2}|2A|2B|97\d)$/)
 
       {
         siren: distant_record["siren"],
