@@ -150,6 +150,15 @@ module Osf
     end
 
     def build_establishment_attributes(distant_record) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      # Compute departement, handling DOM/COM special case where source gives "97"
+      source_departement = distant_record["departement"]
+      computed_departement = source_departement
+      if source_departement.to_s == "97"
+        raw_cp = distant_record["code_postal"].to_s
+        cp_digits = raw_cp.gsub(/\D/, "")
+        computed_departement = cp_digits.start_with?("97") && cp_digits.length >= 3 ? cp_digits[0, 3] : nil
+      end
+
       {
         siren: distant_record["siren"],
         siret: distant_record["siret"],
@@ -168,7 +177,7 @@ module Osf
         code_pays_etranger: distant_record["code_pays_etranger"],
         pays_etranger: distant_record["pays_etranger"],
         code_postal: distant_record["code_postal"],
-        departement: distant_record["departement"],
+        departement: computed_departement,
         ape: distant_record["ape"],
         code_activite: distant_record["code_activite"],
         nomenclature_activite: distant_record["nomenclature_activite"],
