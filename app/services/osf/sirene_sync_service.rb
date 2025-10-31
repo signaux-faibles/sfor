@@ -20,13 +20,15 @@ module Osf
     def sync_data
       @logger.info "Starting establishments synchronization from #{@source_relation} using PostgreSQL cursor"
 
+      @logger.info "Clearing existing establishments table"
+      Establishment.delete_all
+
       base_filter = ""
 
       process_with_cursor(base_filter)
 
       @logger.info "Sirene sync completed.
       Final stats: Created: #{@stats[:created]},
-      Updated: #{@stats[:updated]},
       Errors: #{@stats[:errors]},
       Skipped: #{@stats[:skipped]}"
     end
@@ -64,8 +66,7 @@ module Osf
 
           @logger.info "Batch #{batch_number - 1} completed: #{batch_result[:processed]} records processed.
           Total: #{total_processed} -
-          Stats: Created: #{@stats[:created]}, Updated: #{@stats[:updated]},
-          Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+          Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
         end
 
         @db_service.execute_query("CLOSE #{cursor_name}")
@@ -87,12 +88,8 @@ module Osf
       end
     end
 
-    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-      sirets = distant_records.pluck("siret").compact.uniq
-      existing_establishments = Establishment.where(siret: sirets).index_by(&:siret)
-
+    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       records_to_create = []
-      records_to_update = []
       processed_count = 0
 
       distant_records.each do |record|
@@ -103,8 +100,6 @@ module Osf
           next
         end
 
-        existing = existing_establishments[siret]
-
         attributes = build_establishment_attributes(record)
 
         # Skip records with invalid/missing department after normalization
@@ -114,34 +109,19 @@ module Osf
           next
         end
 
-        if existing
-          records_to_update << { id: existing.id, **attributes }
-        else
-          records_to_create << attributes
-        end
-
+        records_to_create << attributes
         processed_count += 1
       end
 
       @logger.debug "Batch stats: #{processed_count} processed,
       #{records_to_create.size} to create,
-      #{records_to_update.size} to update,
       #{distant_records.ntuples} total records"
 
-      if records_to_create.any? || records_to_update.any?
+      if records_to_create.any?
         ActiveRecord::Base.transaction do
-          Establishment.insert_all(records_to_create) if records_to_create.any?
-          increment_stat(:created, records_to_create.size) if records_to_create.any?
-
-          if records_to_update.any?
-            records_to_update.each do |attrs|
-              Establishment.where(id: attrs[:id]).update_all(attrs.except(:id))
-            end
-            increment_stat(:updated, records_to_update.size)
-          end
-
-          @logger.debug "Bulk processed #{records_to_create.size} created,
-          #{records_to_update.size} updated establishment records"
+          Establishment.insert_all(records_to_create)
+          increment_stat(:created, records_to_create.size)
+          @logger.debug "Bulk created #{records_to_create.size} establishment records"
         end
       end
 
