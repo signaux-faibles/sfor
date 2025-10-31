@@ -18,6 +18,9 @@
     <h1><%= @establishment.raison_sociale %></h1>
   </div>
 
+  <div class="fr-container">
+
+  </div>
   <div class="fr-tabs">
     <ul class="fr-tabs__list sf-alt-background fr-pb-0" role="tablist" aria-label="Informations sur l'entreprise">
       <!-- Company Information Tab -->
@@ -31,9 +34,21 @@
           Informations générales
         </button>
       </li>
+
+      <li role="presentation">
+        <button id="tabpanel-data"
+                type="button"
+                class="fr-tabs__tab"
+                tabindex="-1" role="tab"
+                aria-selected="false"
+                aria-controls="tabpanel-data-panel">
+          Données de l'établissement
+        </button>
+      </li>
     </ul>
 
     <%= render 'info_panel_with_widgets' %>
+    <%= render 'data_panel_with_widgets' %>
 
 
   </div>
