@@ -6,7 +6,7 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   include Discard::Model
 
   belongs_to :creator, class_name: "User"
-  belongs_to :establishment
+  belongs_to :establishment, foreign_key: :establishment_siret, primary_key: :siret
 
   has_many :establishment_tracking_labels, dependent: :destroy
   has_many :tracking_labels, through: :establishment_tracking_labels

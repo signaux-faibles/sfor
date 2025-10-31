@@ -20,12 +20,20 @@ module Osf
     def sync_data
       @logger.info "Starting establishments synchronization from #{@source_relation} using PostgreSQL cursor"
 
-      @logger.info "Clearing existing establishments table"
-      Establishment.delete_all
-
       base_filter = ""
 
-      process_with_cursor(base_filter)
+      ActiveRecord::Base.transaction do
+        # Set constraints to deferred so we can delete establishments while trackings reference them
+        ActiveRecord::Base.connection.execute("SET CONSTRAINTS ALL DEFERRED")
+
+        @logger.info "Clearing existing establishments table"
+        Establishment.delete_all
+
+        # Process and insert new establishments (in same transaction)
+        process_with_cursor(base_filter)
+
+        # Commit will check deferred constraints - if all new establishments exist, FK passes
+      end
 
       @logger.info "Sirene sync completed.
       Final stats: Created: #{@stats[:created]},
@@ -39,8 +47,9 @@ module Osf
       cursor_name = "sirene_cursor_#{Process.pid}_#{Time.current.to_i}"
 
       begin
+        # Cursor operations are on OSF DB (read-only), separate from Rails transaction
         @db_service.execute_query("BEGIN")
-        @logger.debug "Started transaction and declaring cursor: #{cursor_name}"
+        @logger.debug "Declaring cursor: #{cursor_name}"
 
         declare_sql =
           "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_filter} ORDER BY siret"
@@ -71,7 +80,7 @@ module Osf
 
         @db_service.execute_query("CLOSE #{cursor_name}")
         @db_service.execute_query("COMMIT")
-        @logger.debug "Closed cursor and committed transaction"
+        @logger.debug "Closed cursor"
       rescue StandardError => e
         @logger.error "Error in cursor processing: #{e.message}"
         @logger.error e.backtrace.join("\n")
