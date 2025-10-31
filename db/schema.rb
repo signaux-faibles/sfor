@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_29_091900) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_31_110451) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -270,7 +270,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_29_091900) do
 
   create_table "establishment_trackings", force: :cascade do |t|
     t.bigint "creator_id", null: false
-    t.bigint "establishment_id", null: false
     t.date "start_date"
     t.date "end_date"
     t.string "state"
@@ -281,11 +280,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_29_091900) do
     t.bigint "size_id"
     t.bigint "criticality_id"
     t.date "modified_at"
+    t.string "establishment_siret", null: false
     t.index ["creator_id"], name: "index_establishment_trackings_on_creator_id"
     t.index ["criticality_id"], name: "index_establishment_trackings_on_criticality_id"
     t.index ["discarded_at"], name: "index_establishment_trackings_on_discarded_at"
-    t.index ["establishment_id", "state"], name: "index_single_in_progress_per_establishment", unique: true, where: "((state)::text = 'in_progress'::text)"
-    t.index ["establishment_id"], name: "index_establishment_trackings_on_establishment_id"
+    t.index ["establishment_siret"], name: "index_establishment_trackings_on_establishment_siret"
     t.index ["size_id"], name: "index_establishment_trackings_on_size_id"
   end
 
@@ -599,7 +598,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_29_091900) do
   add_foreign_key "establishment_tracking_supporting_services", "establishment_trackings"
   add_foreign_key "establishment_tracking_supporting_services", "supporting_services"
   add_foreign_key "establishment_trackings", "criticalities"
-  add_foreign_key "establishment_trackings", "establishments"
   add_foreign_key "establishment_trackings", "sizes"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "establishments", "companies", column: "siren", primary_key: "siren", name: "fk_establishments_companies", on_update: :cascade, on_delete: :restrict
