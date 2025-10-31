@@ -46,6 +46,7 @@ Rails.application.routes.draw do
   resources :establishments, only: [:show], path: "etablissements", param: :siret do
     member do
       get :insee_widget
+      get :data_urssaf_widget
     end
     resources :establishment_trackings, only: %i[new create show destroy edit update], path: "accompagnements" do
       member do
