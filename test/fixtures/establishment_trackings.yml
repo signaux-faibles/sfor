@@ -1,6 +1,6 @@
 establishment_tracking_paris:
   state: 'in_progress'
-  establishment: establishment_paris
+  establishment_siret: '12345678900001'
   start_date: 2023-01-01
   creator: user_crp_paris
   tracking_labels: tracking_label1
@@ -8,7 +8,7 @@ establishment_tracking_paris:
 
 establishment_tracking_paris2:
   state: 'in_progress'
-  establishment: establishment_paris4
+  establishment_siret: '12345678900013'
   start_date: 2023-01-01
   creator: user_urssaf_paris
   tracking_labels: tracking_label1
@@ -16,7 +16,7 @@ establishment_tracking_paris2:
 
 establishment_tracking_paris3:
   state: 'in_progress'
-  establishment: establishment_paris5
+  establishment_siret: '12345678900014'
   start_date: 2023-01-01
   creator: user_urssaf_paris
   tracking_labels: tracking_label1
@@ -24,7 +24,7 @@ establishment_tracking_paris3:
 
 establishment_tracking_paris_no_content:
   state: 'in_progress'
-  establishment: establishment_paris2
+  establishment_siret: '12345678900010'
   start_date: 2023-02-02
   creator: user_crp_paris
   tracking_labels: tracking_label1
@@ -32,7 +32,7 @@ establishment_tracking_paris_no_content:
 
 establishment_tracking_paris_with_urssaf_referents:
   state: 'in_progress'
-  establishment: establishment_paris3
+  establishment_siret: '12345678900012'
   start_date: 2023-01-01
   creator: user_urssaf_paris
   tracking_labels: tracking_label1
@@ -40,7 +40,7 @@ establishment_tracking_paris_with_urssaf_referents:
 
 establishment_tracking_finistere:
   state: 'in_progress'
-  establishment: establishment_finistere
+  establishment_siret: '98765432100002'
   start_date: 2022-02-01
   creator: user_crp_finistere
   tracking_labels: tracking_label1

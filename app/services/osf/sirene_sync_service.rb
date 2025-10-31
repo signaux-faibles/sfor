@@ -17,7 +17,7 @@ module Osf
       "sirene_sync.log"
     end
 
-    def sync_data
+    def sync_data # rubocop:disable Metrics/MethodLength
       @logger.info "Starting establishments synchronization from #{@source_relation} using PostgreSQL cursor"
 
       base_filter = ""
