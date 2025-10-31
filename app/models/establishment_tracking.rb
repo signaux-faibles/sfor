@@ -78,7 +78,7 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   }
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at creator_id end_date establishment_id id id_value start_date state
+    %w[created_at creator_id end_date establishment_siret id id_value start_date state
        criticality_id size_id updated_at modified_at]
   end
 

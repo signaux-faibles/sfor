@@ -7,7 +7,7 @@ class Establishment < ApplicationRecord
     company&.raison_sociale || siret
   end
 
-  has_many :establishment_trackings, dependent: :destroy
+  has_many :establishment_trackings, foreign_key: :establishment_siret, primary_key: :siret, dependent: :destroy
   has_many :contacts, dependent: :destroy
   has_many :osf_aps, foreign_key: :siret, primary_key: :siret, dependent: :destroy
 

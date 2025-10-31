@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_31_110451) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_31_135649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -284,6 +284,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_31_110451) do
     t.index ["creator_id"], name: "index_establishment_trackings_on_creator_id"
     t.index ["criticality_id"], name: "index_establishment_trackings_on_criticality_id"
     t.index ["discarded_at"], name: "index_establishment_trackings_on_discarded_at"
+    t.index ["establishment_siret", "state"], name: "index_single_in_progress_per_establishment", unique: true, where: "((state)::text = 'in_progress'::text)"
     t.index ["establishment_siret"], name: "index_establishment_trackings_on_establishment_siret"
     t.index ["size_id"], name: "index_establishment_trackings_on_size_id"
   end
