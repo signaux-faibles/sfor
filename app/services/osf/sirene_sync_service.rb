@@ -105,11 +105,19 @@ module Osf
 
         existing = existing_establishments[siret]
 
+        attributes = build_establishment_attributes(record)
+
+        # Skip records with invalid/missing department after normalization
+        if attributes[:departement].blank?
+          increment_stat(:skipped)
+          @logger.warn "Skipping siret #{siret}: invalid or missing departement"
+          next
+        end
+
         if existing
-          attributes = build_establishment_attributes(record)
           records_to_update << { id: existing.id, **attributes }
         else
-          records_to_create << build_establishment_attributes(record)
+          records_to_create << attributes
         end
 
         processed_count += 1
@@ -160,8 +168,8 @@ module Osf
       end
 
       # Accept only valid department codes; otherwise set to nil (skip invalid/blank/garbage)
-      # Valid: 01-95, 2A, 2B, 971-978, 975, 976
-      computed_departement = nil unless computed_departement.to_s.match?(/^(?:\d{2}|2A|2B|97\d)$/)
+      # Valid: 01-95, 2A, 2B, 971-978
+      computed_departement = nil unless computed_departement.to_s.match?(/^(?:0[1-9]|[1-8][0-9]|9[0-5]|2A|2B|97[1-8])$/)
 
       {
         siren: distant_record["siren"],
