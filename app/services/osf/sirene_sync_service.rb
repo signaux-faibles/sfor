@@ -17,25 +17,33 @@ module Osf
       "sirene_sync.log"
     end
 
-    def sync_data # rubocop:disable Metrics/MethodLength
+    def sync_data # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       @logger.info "Starting establishments synchronization from #{@source_relation} using PostgreSQL cursor"
 
       base_filter = ""
 
-      # 1) Keep referenced establishments; delete only those without any tracking
-      @logger.info "Deleting non-referenced establishments (keeping those linked to trackings)"
+      # 1) Keep referenced establishments; delete only those without any tracking or contacts
+      @logger.info "Deleting non-referenced establishments (keeping those linked to trackings or contacts)"
       ActiveRecord::Base.connection.execute(<<~SQL.squish)
         DELETE FROM establishments e
         WHERE NOT EXISTS (
           SELECT 1 FROM establishment_trackings et
           WHERE et.establishment_siret = e.siret
         )
+        AND NOT EXISTS (
+          SELECT 1 FROM contacts c
+          WHERE c.establishment_siret = e.siret
+        )
       SQL
 
       # 2) Preload referenced sirets once to split batches into upsert vs insert
-      referenced_sirets = EstablishmentTracking.distinct.pluck(:establishment_siret).compact
+      # Get sirets from both establishment_trackings and contacts
+      tracking_sirets = EstablishmentTracking.distinct.pluck(:establishment_siret).compact
+      contact_sirets = Contact.distinct.pluck(:establishment_siret).compact
+      referenced_sirets = (tracking_sirets + contact_sirets).uniq
       @referenced_sirets_set = referenced_sirets.to_set
-      @logger.info "Loaded #{referenced_sirets.size} referenced sirets"
+      @logger.info "Loaded #{referenced_sirets.size} referenced sirets (#{tracking_sirets.size}
+      from trackings, #{contact_sirets.size} from contacts)"
 
       # 3) Stream and write in batches (upsert referenced, insert others)
       process_with_cursor(base_filter)

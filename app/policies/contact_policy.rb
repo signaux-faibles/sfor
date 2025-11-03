@@ -18,6 +18,8 @@ class ContactPolicy < ApplicationPolicy
   private
 
   def department_match?
-    user.department_ids.include?(record.establishment.department&.id)
+    return false unless record.establishment&.departement
+
+    user.departments.pluck(:code).include?(record.establishment.departement)
   end
 end
