@@ -1,5 +1,5 @@
 one:
-  establishment: establishment_paris
+  establishment_siret: '12345678900001'
   first_name: Jean
   last_name: Dupont
   role: Directeur
@@ -8,7 +8,7 @@ one:
   email: jean.dupont@example.com
 
 two:
-  establishment: establishment_paris
+  establishment_siret: '12345678900001'
   first_name: Alice
   last_name: Martin
   role: Manager
