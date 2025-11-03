@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_03_120441) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_03_151934) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -600,8 +600,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_120441) do
   add_foreign_key "establishment_trackings", "criticalities"
   add_foreign_key "establishment_trackings", "sizes"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
-  add_foreign_key "establishments", "companies", column: "siren", primary_key: "siren", name: "fk_establishments_companies", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "establishments", "departments", column: "departement", primary_key: "code", name: "fk_establishments_departments", on_update: :cascade, on_delete: :restrict
   add_foreign_key "network_memberships", "networks"
   add_foreign_key "network_memberships", "users"
   add_foreign_key "segments", "networks"

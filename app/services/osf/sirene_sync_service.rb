@@ -17,35 +17,18 @@ module Osf
       "sirene_sync.log"
     end
 
-    def sync_data # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+    def sync_data
       @logger.info "Starting establishments synchronization from #{@source_relation} using PostgreSQL cursor"
 
       base_filter = ""
 
-      # 1) Keep referenced establishments; delete only those without any tracking or contacts
-      @logger.info "Deleting non-referenced establishments (keeping those linked to trackings or contacts)"
-      ActiveRecord::Base.connection.execute(<<~SQL.squish)
-        DELETE FROM establishments e
-        WHERE NOT EXISTS (
-          SELECT 1 FROM establishment_trackings et
-          WHERE et.establishment_siret = e.siret
-        )
-        AND NOT EXISTS (
-          SELECT 1 FROM contacts c
-          WHERE c.establishment_siret = e.siret
-        )
-      SQL
+      # 1) Delete ALL establishments - no FK constraints, we can delete freely
+      # Trackings will keep their establishment_siret values and establishments will be re-imported
+      @logger.info "Deleting all establishments"
+      Establishment.delete_all
+      @logger.info "Deleted all establishments"
 
-      # 2) Preload referenced sirets once to split batches into upsert vs insert
-      # Get sirets from both establishment_trackings and contacts
-      tracking_sirets = EstablishmentTracking.distinct.pluck(:establishment_siret).compact
-      contact_sirets = Contact.distinct.pluck(:establishment_siret).compact
-      referenced_sirets = (tracking_sirets + contact_sirets).uniq
-      @referenced_sirets_set = referenced_sirets.to_set
-      @logger.info "Loaded #{referenced_sirets.size} referenced sirets (#{tracking_sirets.size}
-      from trackings, #{contact_sirets.size} from contacts)"
-
-      # 3) Stream and write in batches (upsert referenced, insert others)
+      # 2) Stream and write in batches (insert all)
       process_with_cursor(base_filter)
 
       @logger.info "Sirene sync completed.
@@ -110,9 +93,8 @@ module Osf
       end
     end
 
-    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-      records_to_upsert = []
-      records_to_insert = []
+    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      records_to_create = []
       processed_count = 0
 
       distant_records.each do |record|
@@ -132,32 +114,21 @@ module Osf
           next
         end
 
-        if @referenced_sirets_set.include?(siret)
-          records_to_upsert << attributes
-        else
-          records_to_insert << attributes
-        end
+        records_to_create << attributes
         processed_count += 1
       end
 
       @logger.debug "Batch stats: #{processed_count} processed,
-      #{records_to_insert.size} to insert,
-      #{records_to_upsert.size} to upsert,
+      #{records_to_create.size} to create,
       #{distant_records.ntuples} total records"
 
-      ActiveRecord::Base.transaction do
-        if records_to_upsert.any?
-          Establishment.upsert_all(records_to_upsert, unique_by: :index_establishments_on_siret)
-          increment_stat(:created, records_to_upsert.size)
-          @logger.debug "Bulk upserted #{records_to_upsert.size} referenced establishment records"
+      if records_to_create.any?
+        ActiveRecord::Base.transaction do
+          Establishment.insert_all(records_to_create)
+          increment_stat(:created, records_to_create.size)
+          @logger.debug "Bulk inserted #{records_to_create.size} establishment records"
         end
-
-        if records_to_insert.any?
-          Establishment.insert_all(records_to_insert)
-          increment_stat(:created, records_to_insert.size)
-          @logger.debug "Bulk inserted #{records_to_insert.size} establishment records"
-        end
-      end if records_to_upsert.any? || records_to_insert.any?
+      end
 
       { processed: processed_count }
     rescue StandardError => e
