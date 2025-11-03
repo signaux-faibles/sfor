@@ -20,12 +20,16 @@ module Osf
     def sync_data
       @logger.info "Starting companies synchronization from #{@source_relation} using PostgreSQL cursor"
 
-      @logger.info "Clearing existing companies table"
+      # 1) Delete ALL companies - no FK constraints, we can delete freely
+      # Establishments will keep their siren values and companies will be re-imported
+      @logger.info "Deleting all companies"
       Company.delete_all
+      @logger.info "Deleted all companies"
 
-      # Build base filter - no date filter for companies sync
+      # 2) Build base filter - no date filter for companies sync
       base_filter = ""
 
+      # 3) Stream and write in batches (insert all)
       process_with_cursor(base_filter)
 
       @logger.info "Sirene UL sync completed.
@@ -101,7 +105,9 @@ module Osf
           next
         end
 
-        records_to_create << build_company_attributes(record)
+        attributes = build_company_attributes(record)
+
+        records_to_create << attributes
         processed_count += 1
       end
 
@@ -113,7 +119,7 @@ module Osf
         ActiveRecord::Base.transaction do
           Company.insert_all(records_to_create)
           increment_stat(:created, records_to_create.size)
-          @logger.debug "Bulk created #{records_to_create.size} company records"
+          @logger.debug "Bulk inserted #{records_to_create.size} company records"
         end
       end
 
