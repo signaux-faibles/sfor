@@ -297,7 +297,7 @@ GEM
       i18n
     rdoc (6.7.0)
       psych (>= 4.0.0)
-    redcarpet (3.6.0)
+    redcarpet (3.6.1)
     redis (5.0.8)
       redis-client (>= 0.17.0)
     redis-client (0.24.0)
@@ -454,7 +454,7 @@ DEPENDENCIES
   rails-erd
   rails_autolink (~> 1.1, >= 1.1.8)
   ransack (~> 4.2.1)
-  redcarpet (~> 3.6.0)
+  redcarpet (~> 3.6.1)
   redis (~> 5.0.8)
   rubocop
   rubocop-performance
