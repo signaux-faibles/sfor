@@ -1,0 +1,21 @@
+<% if error.present? %>
+  <div class="fr-notice fr-notice--alert">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p>
+          <span class="fr-notice__title">Une erreur s'est produite. Contactez-l'administrateur du site.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="fr-notice fr-notice--info">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p>
+          <span class="fr-notice__title">Aucune donnée disponible pour cette entreprise.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
