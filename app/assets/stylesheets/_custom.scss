@@ -22,6 +22,15 @@
     background-color: var(--background-alt-blue-france);
 }
 
+#sf-trackings-table {
+  .sf-in-progress-tracking {
+    td {
+      background-color: var(--background-alt-blue-france);
+      font-weight: 700;
+    }
+  }
+}
+
 /* Comments */
 
 .comment-container {
