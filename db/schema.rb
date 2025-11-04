@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_03_151934) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_04_101754) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -409,6 +409,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_03_151934) do
     t.index ["periode"], name: "index_osf_effectifs_on_periode"
     t.index ["siret", "periode"], name: "index_osf_effectifs_on_siret_and_periode"
     t.index ["siret"], name: "index_osf_effectifs_on_siret"
+  end
+
+  create_table "osf_ent_effectifs", force: :cascade do |t|
+    t.string "siren", limit: 9, null: false
+    t.date "periode", null: false
+    t.integer "effectif"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["periode"], name: "index_osf_ent_effectifs_on_periode"
+    t.index ["siren", "periode"], name: "index_osf_ent_effectifs_on_siren_and_periode"
+    t.index ["siren"], name: "index_osf_ent_effectifs_on_siren"
   end
 
   create_table "regions", force: :cascade do |t|
