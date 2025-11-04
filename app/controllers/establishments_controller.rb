@@ -1,5 +1,5 @@
 class EstablishmentsController < ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :set_establishment, only: %i[show data_effectif_ap_widget]
+  before_action :set_establishment, only: %i[show data_effectif_ap_widget establishment_trackings_list_widget]
 
   def index
     @q = Establishment.ransack(params[:q])
@@ -187,6 +187,19 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @dataset_names = effectif_ap_dataset_names
 
     render partial: "data_effectif_ap_widget"
+  end
+
+  def establishment_trackings_list_widget
+    @establishment_trackings = EstablishmentTracking.where(establishment: @establishment)
+
+    @in_progress_trackings = @establishment_trackings.in_progress
+    @completed_trackings = @establishment_trackings.completed
+
+
+    #@in_progress_trackings = []
+    #@completed_trackings = []
+
+    render partial: "establishment_trackings_list_widget"
   end
 
   def new

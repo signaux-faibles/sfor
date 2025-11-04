@@ -1,0 +1,30 @@
+<td><%= tracking.start_date.present? ? l(tracking.start_date, format: :default) : '-' %></td>
+<td><%= tracking.end_date.present? ? l(tracking.end_date, format: :default) : '-' %></td>
+<td>
+  <% if tracking.criticality.present? %>
+    <%= content_tag :p, tracking.criticality.name, { class: criticality_class_for(tracking.criticality.name) } %>
+  <% end %>
+</td>
+<td>
+  <% if tracking.referents.any? %>
+    <% first_referent = tracking.referents.first %>
+    <span title="<%= tracking.referents.map(&:full_name).join(', ') %>">
+      <%= truncate(first_referent.full_name, length: 20) %>
+    </span>
+    <% if tracking.referents.size > 1 %>
+      <span>+<%= tracking.referents.size - 1 %></span>
+    <% end %>
+  <% else %>
+    <span>Aucun référent</span>
+  <% end %>
+</td>
+<td>
+  <%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %>
+</td>
+<td>
+</td>
+<td>
+  <%= link_to [tracking.establishment, tracking], class: 'fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right', data: { turbo: false } do %>
+    Consulter <span class="fr-sr-only"><%= tracking.establishment.raison_sociale %></span>
+  <% end %>
+</td>
