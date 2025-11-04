@@ -2,7 +2,7 @@
 # Service to synchronize effectif_ent data using PostgreSQL cursors for optimal performance
 
 module Osf
-  class EffectifEntSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
+  class EffectifEntSyncService < BaseOsfSyncService
     BATCH_SIZE = 1000
 
     def initialize(months_back: nil)
@@ -37,8 +37,7 @@ module Osf
 
       @logger.info "Effectif_ent sync completed.
       Final stats: Created: #{@stats[:created]},
-      Errors: #{@stats[:errors]},
-      Skipped: #{@stats[:skipped]}"
+      Errors: #{@stats[:errors]}"
     end
 
     private
@@ -79,7 +78,7 @@ module Osf
 
           @logger.info "Batch #{batch_number - 1} completed: #{batch_result[:processed]} records processed.
           Total: #{total_processed} -
-          Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}"
+          Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}"
         end
 
         # Close cursor and commit
@@ -104,27 +103,12 @@ module Osf
     end
 
     def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-      sirens = distant_records.pluck("siren").compact.uniq
-      companies_by_siren = Company.where(siren: sirens).index_by(&:siren)
-
-      records_to_create = []
-      processed_count = 0
-
-      distant_records.each do |record|
-        company = companies_by_siren[record["siren"]]
-        unless company
-          increment_stat(:skipped)
-          @logger.warn "No company found for siren: #{record['siren']}"
-          next
-        end
-
-        records_to_create << build_effectif_ent_attributes(record)
-        processed_count += 1
+      records_to_create = distant_records.map do |record|
+        build_effectif_ent_attributes(record)
       end
 
-      @logger.debug "Batch stats: #{processed_count} processed,
-      #{records_to_create.size} to create,
-      #{distant_records.ntuples} total records"
+      @logger.debug "Batch stats: #{records_to_create.size}
+      records to create from #{distant_records.ntuples} total records"
 
       if records_to_create.any?
         ActiveRecord::Base.transaction do
@@ -134,7 +118,7 @@ module Osf
         end
       end
 
-      { processed: processed_count }
+      { processed: records_to_create.size }
     rescue StandardError => e
       @logger.error "Error processing cursor batch: #{e.message}"
       @logger.error e.backtrace.join("\n")
