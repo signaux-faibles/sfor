@@ -50,7 +50,13 @@
                   <tr>
                     <td>
                       <% if rails_data.present? %>
-                        <strong><%= link_to rails_data.siret, "/etablissements/#{rails_data.siret}" %></strong>
+                        <strong>
+                          <%=
+                            link_to rails_data.siret,
+                                    "/etablissements/#{rails_data.siret}",
+                                    data: { turbo_frame: "_top" }
+                          %>
+                        </strong>
 
                         <%# @TODO : vérifier si l'établissement est fermé. %>
                         <p class="fr-badge fr-badge--error fr-badge--sm">23/10/2025</p>
