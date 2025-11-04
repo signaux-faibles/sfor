@@ -160,12 +160,12 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     ]
 
     ## @TODO : remove this -> test data state.
-    #@cotisations = []
-    #@parts_patronales = []
-    #@parts_salariales = []
-    #@montant_echeancier = []
-    #@error = nil;
-    #@error = 301;
+    # @cotisations = []
+    # @parts_patronales = []
+    # @parts_salariales = []
+    # @montant_echeancier = []
+    # @error = nil;
+    # @error = 301;
 
     @dataset_names = [
       "Cotisations appelées",
@@ -610,11 +610,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     ]
 
     ## @TODO : remove this -> test data state.
-    #@effectifs = []
-    #@consommation_ap = []
-    #@autorisation_ap = []
-    #@error = nil;
-    #@error = 301;
+    # @effectifs = []
+    # @consommation_ap = []
+    # @autorisation_ap = []
+    # @error = nil;
+    # @error = 301;
 
     @dataset_names = [
       "Effectifs (salariés)",
