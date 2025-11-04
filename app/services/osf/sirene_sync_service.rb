@@ -147,7 +147,7 @@ module Osf
       source_departement = distant_record["departement"].to_s.strip.upcase
       computed_departement = source_departement
       if source_departement == "97"
-        raw_cp = distant_record["code_postal"].to_s
+        raw_cp = distant_record["code_commune"].to_s
         cp_digits = raw_cp.gsub(/\D/, "")
         computed_departement = cp_digits.start_with?("97") && cp_digits.length >= 3 ? cp_digits[0, 3] : nil
       end
