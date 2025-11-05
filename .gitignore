@@ -43,3 +43,6 @@ coverage
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Ignore Apple files
+.DS_STORE*
