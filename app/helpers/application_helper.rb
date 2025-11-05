@@ -42,14 +42,27 @@ module ApplicationHelper
 
   def badge_class_for(state)
     case state
-    when "En cours"
+    when "En cours", "in_progress"
       "fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon"
-    when "Sous surveillance"
+    when "Sous surveillance", "under_surveillance"
       "fr-badge fr-badge--warning fr-badge--sm fr-badge--no-icon"
-    when "Terminé"
+    when "Terminé", "completed"
       "fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon"
     else
       "fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon"
+    end
+  end
+
+  def state_wording_for(state)
+    case state
+    when "in_progress"
+      "En cours"
+    when "completed"
+      "Terminé"
+    when "under_surveillance"
+      "Sous surveillance"
+    else
+      ""
     end
   end
 
