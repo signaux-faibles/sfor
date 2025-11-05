@@ -1,7 +1,15 @@
 <%= turbo_frame_tag "establishment_trackings_list_widget" do %>
   <h2>Accompagnements</h2>
   <% if @in_progress_trackings.empty? and @completed_trackings.empty? %>
-    <p>Aucun accompagnement en cours.</p>
+    <div class="fr-notice fr-notice--info fr-mb-4w">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p>
+            <span class="fr-notice__title">Cet établissement n’a jamais fait l’objet d’un accompagnement.</span>
+          </p>
+        </div>
+      </div>
+    </div>
 
     <%= link_to "Créer un accompagnement",
                 new_establishment_establishment_tracking_path(@establishment),
@@ -14,14 +22,14 @@
         <div class="fr-container">
           <div class="fr-notice__body">
             <p>
-              <span class="fr-notice__title">Aucun accompagnement en cours actuellement.</span>
+              <span class="fr-notice__title">Aucun accompagnement en cours actuellement. Consultez les accompagnements sous surveillance ou terminés ci-dessous.</span>
             </p>
           </div>
         </div>
       </div>
     <% end %>
 
-    <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--no-scroll fr-table--multiline" id="sf-trackings-table">
+    <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--no-scroll" id="sf-trackings-table">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
@@ -29,13 +37,12 @@
               <caption>Accompagnements</caption>
               <thead>
               <tr>
-                <th scope="col">Date de début</th>
-                <th scope="col">Date de fin</th>
-                <th scope="col">Criticité</th>
-                <th scope="col">Référents</th>
-                <th scope="col">Date de dernière modification</th>
+                <th scope="col" class="sf-col-sm-md">Statut</th>
+                <th scope="col" class="sf-col-sm-md">Criticité</th>
+                <th scope="col" class="fr-col--md">Référents</th>
+                <th scope="col" class="sf-col-sm-md"><abbr title="Dernière modification">Dernière modif.</abbr></th>
                 <th scope="col">Actions réalisées</th>
-                <th scope="col">Actions</th>
+                <th scope="col" class="sf-col-sm-md">Actions</th>
               </tr>
               </thead>
               <tbody>
