@@ -14,4 +14,3 @@ namespace :osf do
     Osf::CotisationSyncService.new(months_back: months_back).perform
   end
 end
-

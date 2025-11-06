@@ -14,4 +14,3 @@ namespace :osf do
     Osf::DelaiSyncService.new(months_back: months_back).perform
   end
 end
-
