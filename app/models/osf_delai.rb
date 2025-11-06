@@ -3,4 +3,3 @@ class OsfDelai < ApplicationRecord
 
   validates :siret, presence: true, length: { is: 14 }
 end
-

@@ -2,7 +2,7 @@
 # Service to synchronize delai data using PostgreSQL cursors for optimal performance
 
 module Osf
-  class DelaiSyncService < BaseOsfSyncService
+  class DelaiSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
     BATCH_SIZE = 1000
 
     def initialize(months_back: nil)
@@ -143,4 +143,3 @@ module Osf
     end
   end
 end
-

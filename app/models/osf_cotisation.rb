@@ -4,4 +4,3 @@ class OsfCotisation < ApplicationRecord
   validates :siret, presence: true, length: { is: 14 }
   validates :periode, presence: true
 end
-

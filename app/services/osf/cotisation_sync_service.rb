@@ -139,4 +139,3 @@ module Osf
     end
   end
 end
-
