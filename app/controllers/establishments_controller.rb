@@ -195,9 +195,8 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @in_progress_trackings = @establishment_trackings.in_progress
     @completed_trackings = @establishment_trackings.completed
 
-
-    #@in_progress_trackings = []
-    #@completed_trackings = []
+    # @in_progress_trackings = []
+    # @completed_trackings = []
 
     render partial: "establishment_trackings_list_widget"
   end
