@@ -11,6 +11,7 @@ class Establishment < ApplicationRecord
   has_many :contacts, foreign_key: :establishment_siret, primary_key: :siret, dependent: :destroy
   has_many :osf_aps, foreign_key: :siret, primary_key: :siret, dependent: :destroy
   has_many :osf_cotisations, foreign_key: :siret, primary_key: :siret, dependent: :destroy
+  has_many :osf_delais, foreign_key: :siret, primary_key: :siret, dependent: :destroy
 
   validates :siren, presence: true, length: { is: 9 }
   validates :siret, presence: true, length: { is: 14 }, uniqueness: { scope: :siren }
@@ -26,7 +27,7 @@ class Establishment < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[establishment_trackings contacts osf_aps osf_cotisations]
+    %w[establishment_trackings contacts osf_aps osf_cotisations osf_delais]
   end
 
   def to_param

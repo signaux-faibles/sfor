@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_06_135730) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_06_143721) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -409,6 +409,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_135730) do
     t.index ["periode"], name: "index_osf_cotisations_on_periode"
     t.index ["siret", "periode"], name: "index_osf_cotisations_on_siret_and_periode"
     t.index ["siret"], name: "index_osf_cotisations_on_siret"
+  end
+
+  create_table "osf_delais", force: :cascade do |t|
+    t.string "siret", limit: 14, null: false
+    t.date "date_creation"
+    t.date "date_echeance"
+    t.integer "duree_delai"
+    t.decimal "montant_echeancier", precision: 15, scale: 2
+    t.string "stade", limit: 50
+    t.string "action", limit: 50
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date_creation"], name: "index_osf_delais_on_date_creation"
+    t.index ["date_echeance"], name: "index_osf_delais_on_date_echeance"
+    t.index ["siret"], name: "index_osf_delais_on_siret"
   end
 
   create_table "osf_effectifs", force: :cascade do |t|
