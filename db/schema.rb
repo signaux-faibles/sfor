@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_04_101754) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_06_135730) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -398,6 +398,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_04_101754) do
     t.index ["siren"], name: "index_osf_aps_on_siren"
     t.index ["siret", "periode"], name: "index_osf_aps_on_siret_and_periode"
     t.index ["siret"], name: "index_osf_aps_on_siret"
+  end
+
+  create_table "osf_cotisations", force: :cascade do |t|
+    t.string "siret", limit: 14, null: false
+    t.date "periode", null: false
+    t.decimal "du", precision: 15, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["periode"], name: "index_osf_cotisations_on_periode"
+    t.index ["siret", "periode"], name: "index_osf_cotisations_on_siret_and_periode"
+    t.index ["siret"], name: "index_osf_cotisations_on_siret"
   end
 
   create_table "osf_effectifs", force: :cascade do |t|
