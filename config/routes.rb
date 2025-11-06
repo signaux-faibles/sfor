@@ -14,14 +14,6 @@ Rails.application.routes.draw do
   get "recherche", to: "pages#search", as: :search
   get "statistiques", to: "statistics#index"
 
-  # Routes pour les graphiques de test
-  resources :charts, only: [:index] do
-    collection do
-      get :line_data
-      get :bar_data
-    end
-  end
-
   namespace :admin do
     resources :users do
       member do
