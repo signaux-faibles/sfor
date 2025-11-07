@@ -41,15 +41,22 @@
                          { class: "fr-select" } %>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-col-12 fr-col-lg-4" data-controller="geo-search">
           <div class="fr-input-group">
-            <%= f.label :departments, "Départements", class: "fr-label" %>
-            <%= f.collection_select :departments,
-                                    current_user.geo_access.departments.order(:code),
-                                    :id,
-                                    ->(d) { "#{d.code} - #{d.name}" },
-                                    { selected: search_params[:departments] },
-                                    { multiple: true, class: "tom-select", data: { controller: "tom-select" }} %>
+            <%= f.label :cp_dep_label, "Localisation (commune, département, EPCI, région)", class: "fr-label" %>
+            <div class="fr-input-wrap fr-icon-map-pin-line">
+              <%= f.text_field :cp_dep_label, 
+                              value: search_params[:cp_dep_label], 
+                              class: "fr-input", 
+                              placeholder: "Rechercher une localisation...",
+                              data: { 
+                                geo_search_target: "input",
+                                action: "input->geo-search#search"
+                              } %>
+            </div>
+            <%= f.hidden_field :cp_dep_type, value: search_params[:cp_dep_type], data: { geo_search_target: "hiddenType" } %>
+            <%= f.hidden_field :cp_dep, value: search_params[:cp_dep], data: { geo_search_target: "hiddenCode" } %>
+            <div data-geo-search-target="results" class="geo-search-results-container"></div>
           </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
