@@ -14,7 +14,7 @@ class PagesController < ApplicationController
     @results = nil
     @pagination = {}
 
-    return if @search_params[:q].blank?
+    # return if @search_params[:q].blank?
 
     # Map geo location parameters to API format
     service_params = @search_params.except(:cp_dep, :cp_dep_type, :cp_dep_label).merge(
