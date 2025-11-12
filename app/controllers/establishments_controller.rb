@@ -1,5 +1,6 @@
 class EstablishmentsController < ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :set_establishment, only: %i[show data_effectif_ap_widget establishment_trackings_list_widget]
+  before_action :set_establishment,
+                only: %i[show data_effectif_ap_widget data_urssaf_widget establishment_trackings_list_widget]
 
   def index
     @q = Establishment.ransack(params[:q])
@@ -16,160 +17,19 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     render partial: "insee_widget"
   end
 
-  def data_urssaf_widget # rubocop:disable Metrics/MethodLength
-    periodes = [
-      "2023-09-01T00:00:00Z",
-      "2023-10-01T00:00:00Z",
-      "2023-11-01T00:00:00Z",
-      "2023-12-01T00:00:00Z",
-      "2024-01-01T00:00:00Z",
-      "2024-02-01T00:00:00Z",
-      "2024-03-01T00:00:00Z",
-      "2024-04-01T00:00:00Z",
-      "2024-05-01T00:00:00Z",
-      "2024-06-01T00:00:00Z",
-      "2024-07-01T00:00:00Z",
-      "2024-08-01T00:00:00Z",
-      "2024-09-01T00:00:00Z",
-      "2024-10-01T00:00:00Z",
-      "2024-11-01T00:00:00Z",
-      "2024-12-01T00:00:00Z",
-      "2025-01-01T00:00:00Z",
-      "2025-02-01T00:00:00Z",
-      "2025-03-01T00:00:00Z",
-      "2025-04-01T00:00:00Z",
-      "2025-05-01T00:00:00Z",
-      "2025-06-01T00:00:00Z",
-      "2025-07-01T00:00:00Z",
-      "2025-08-01T00:00:00Z"
-    ]
+  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    start_date = 24.months.ago.beginning_of_month.to_date
+    periodes, @formatted_periodes = generate_formatted_periods(start_date)
 
-    @formatted_periodes = periodes.map do |date|
-      d = Date.parse(date)
-      I18n.l(d, format: "%B %Y", locale: :fr).capitalize
-    end
+    cotisations_data = fetch_cotisations_data(start_date)
+    debits_data = fetch_debits_data(start_date)
+    delais_data = fetch_delais_data(start_date)
 
-    @cotisations = [
-      5291.58349609375,
-      5056.58349609375,
-      5749.58349609375,
-      4647.58349609375,
-      2103,
-      1818,
-      1341,
-      2259,
-      2378,
-      2149,
-      2935,
-      2948,
-      2921,
-      3608,
-      2365,
-      2718,
-      2946,
-      2835,
-      3031,
-      3733,
-      5440,
-      4576,
-      3873
-    ]
-
-    @parts_patronales = [
-      54_478,
-      56_548,
-      58_645,
-      60_639,
-      62_570,
-      64_281,
-      67_293,
-      67_293,
-      68_576,
-      68_576,
-      69_708,
-      69_708,
-      69_708,
-      69_708,
-      68_868.765625,
-      67_736.765625,
-      67_736.765625,
-      69_438.765625,
-      69_438.765625,
-      69_438.765625,
-      68_526.765625,
-      68_526.765625,
-      66_823.765625,
-      64_823.76171875
-    ]
-
-    @parts_salariales = [
-      36_898,
-      38_358,
-      39_930,
-      40_987,
-      41_872,
-      43_670,
-      45_168,
-      45_168,
-      45_703,
-      45_703,
-      46_830,
-      46_830,
-      46_830,
-      46_830,
-      46_830,
-      45_703,
-      45_703,
-      46_365,
-      46_365,
-      46_365,
-      47_252,
-      47_252,
-      46_590,
-      46_590
-    ]
-
-    @montant_echeancier = [
-      4523,
-      3891,
-      2456,
-      4102,
-      3287,
-      4789,
-      2134,
-      3654,
-      4421,
-      2987,
-      3156,
-      4678,
-      2543,
-      3912,
-      4234,
-      2876,
-      3534,
-      4567,
-      2298,
-      3789,
-      4345,
-      2654,
-      3423,
-      4891
-    ]
-
-    ## @TODO : remove this -> test data state.
-    # @cotisations = []
-    # @parts_patronales = []
-    # @parts_salariales = []
-    # @montant_echeancier = []
-    # @error = nil;
-    # @error = 301;
-
-    @dataset_names = [
-      "Cotisations appelées",
-      "Dette restante (part salariale)",
-      "Dette restante (part patronale)",
-      "Montant de l'échéancier du délai de paiement"
-    ]
+    @cotisations = map_periodes_to_cotisations(periodes, cotisations_data)
+    @parts_salariales = map_periodes_to_parts_salariales(periodes, debits_data)
+    @parts_patronales = map_periodes_to_parts_patronales(periodes, debits_data)
+    @montant_echeancier = map_periodes_to_montant_echeancier(periodes, delais_data)
+    @dataset_names = urssaf_dataset_names
 
     render partial: "data_urssaf_widget"
   end
@@ -310,6 +170,83 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
       "Effectifs (salariés)",
       "Consommation activité partielle (ETP)",
       "Autorisation activité partielle (salariés)"
+    ]
+  end
+
+  def fetch_cotisations_data(start_date)
+    OsfCotisation
+      .where(siret: @establishment.siret)
+      .where(periode: start_date..)
+      .order(:periode)
+      .pluck(:periode, :du)
+      .to_h
+  end
+
+  def fetch_debits_data(start_date)
+    OsfDebit
+      .where(siret: @establishment.siret)
+      .where(periode: start_date..)
+      .order(:periode)
+      .pluck(:periode, :part_ouvriere, :part_patronale)
+      .index_by { |row| row[0] }
+  end
+
+  def fetch_delais_data(start_date) # rubocop:disable Metrics/MethodLength
+    # OsfDelai doesn't have a periode field, so we use date_creation
+    # Group by the month of date_creation and sum montant_echeancier
+    delais = OsfDelai
+             .where(siret: @establishment.siret)
+             .where(date_creation: start_date..)
+             .where.not(montant_echeancier: nil)
+
+    # Group by period (beginning of month of date_creation)
+    delais_data = {}
+    delais.each do |delai|
+      next unless delai.date_creation
+
+      periode_date = delai.date_creation.beginning_of_month
+      delais_data[periode_date] = (delais_data[periode_date] || 0) + (delai.montant_echeancier || 0)
+    end
+
+    delais_data
+  end
+
+  def map_periodes_to_cotisations(periodes, cotisations_data)
+    periodes.map do |periode_str|
+      periode_date = Date.parse(periode_str)
+      (cotisations_data[periode_date] || 0).to_f
+    end
+  end
+
+  def map_periodes_to_parts_salariales(periodes, debits_data)
+    periodes.map do |periode_str|
+      periode_date = Date.parse(periode_str)
+      debit_record = debits_data[periode_date]
+      debit_record ? (debit_record[1] || 0).to_f : 0
+    end
+  end
+
+  def map_periodes_to_parts_patronales(periodes, debits_data)
+    periodes.map do |periode_str|
+      periode_date = Date.parse(periode_str)
+      debit_record = debits_data[periode_date]
+      debit_record ? (debit_record[2] || 0).to_f : 0
+    end
+  end
+
+  def map_periodes_to_montant_echeancier(periodes, delais_data)
+    periodes.map do |periode_str|
+      periode_date = Date.parse(periode_str)
+      (delais_data[periode_date] || 0).to_f
+    end
+  end
+
+  def urssaf_dataset_names
+    [
+      "Cotisations appelées",
+      "Dette restante (part salariale)",
+      "Dette restante (part patronale)",
+      "Montant de l'échéancier du délai de paiement"
     ]
   end
 end
