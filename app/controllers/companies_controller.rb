@@ -268,7 +268,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     cotisations_data
   end
 
-  def fetch_debits_data(start_date) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+  def fetch_debits_data(start_date) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     # Aggregate debits across all establishments of the company
     siret_list = @company.establishments.pluck(:siret)
     return {} if siret_list.empty?
@@ -282,14 +282,17 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     # Group by periode and sum the values
     debits_data = {}
     debits.each do |periode, part_ouvriere, part_patronale|
+      part_ouvriere_val = part_ouvriere ? part_ouvriere.to_f : 0
+      part_patronale_val = part_patronale ? part_patronale.to_f : 0
+
       debits_data[periode] = if debits_data[periode]
                                [
                                  periode,
-                                 (debits_data[periode][1] || 0) + (part_ouvriere || 0),
-                                 (debits_data[periode][2] || 0) + (part_patronale || 0)
+                                 debits_data[periode][1].to_f + part_ouvriere_val,
+                                 debits_data[periode][2].to_f + part_patronale_val
                                ]
                              else
-                               [periode, part_ouvriere || 0, part_patronale || 0]
+                               [periode, part_ouvriere_val, part_patronale_val]
                              end
     end
 
@@ -329,7 +332,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       debit_record = debits_data[periode_date]
-      debit_record ? (debit_record[1] || 0).to_f : 0
+      if debit_record && debit_record[1]
+        debit_record[1].to_f
+      else
+        0
+      end
     end
   end
 
@@ -337,7 +344,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       debit_record = debits_data[periode_date]
-      debit_record ? (debit_record[2] || 0).to_f : 0
+      if debit_record && debit_record[2]
+        debit_record[2].to_f
+      else
+        0
+      end
     end
   end
 

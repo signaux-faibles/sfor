@@ -222,7 +222,11 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       debit_record = debits_data[periode_date]
-      debit_record ? (debit_record[1] || 0).to_f : 0
+      if debit_record && debit_record[1]
+        debit_record[1].to_f
+      else
+        0
+      end
     end
   end
 
@@ -230,7 +234,11 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       debit_record = debits_data[periode_date]
-      debit_record ? (debit_record[2] || 0).to_f : 0
+      if debit_record && debit_record[2]
+        debit_record[2].to_f
+      else
+        0
+      end
     end
   end
 
