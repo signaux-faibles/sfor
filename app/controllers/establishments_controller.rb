@@ -174,21 +174,28 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
   end
 
   def fetch_cotisations_data(start_date)
-    OsfCotisation
-      .where(siret: @establishment.siret)
-      .where(periode: start_date..)
-      .order(:periode)
-      .pluck(:periode, :du)
-      .to_h
+    # Normalize periode to beginning of month to match generated periods
+    cotisations = OsfCotisation
+                  .where(siret: @establishment.siret)
+                  .where(periode: start_date..)
+                  .order(:periode)
+                  .pluck(:periode, :du)
+
+    cotisations.each_with_object({}) do |(periode, du), hash|
+      periode_normalized = periode.beginning_of_month
+      hash[periode_normalized] = (hash[periode_normalized] || 0) + (du || 0)
+    end
   end
 
   def fetch_debits_data(start_date)
-    OsfDebit
-      .where(siret: @establishment.siret)
-      .where(periode: start_date..)
-      .order(:periode)
-      .pluck(:periode, :part_ouvriere, :part_patronale)
-      .index_by { |row| row[0] }
+    # Normalize periode to beginning of month to match generated periods
+    debits = OsfDebit
+             .where(siret: @establishment.siret)
+             .where(periode: start_date..)
+             .order(:periode)
+             .pluck(:periode, :part_ouvriere, :part_patronale)
+
+    debits.index_by { |row| row[0].beginning_of_month }
   end
 
   def fetch_delais_data(start_date) # rubocop:disable Metrics/MethodLength

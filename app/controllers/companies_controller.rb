@@ -259,10 +259,12 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
                   .order(:periode)
                   .pluck(:periode, :du)
 
-    # Group by periode and sum the values
+    # Group by periode (normalized to beginning of month) and sum the values
     cotisations_data = {}
     cotisations.each do |periode, du|
-      cotisations_data[periode] = (cotisations_data[periode] || 0) + (du || 0)
+      # Normalize periode to beginning of month to match generated periods
+      periode_normalized = periode.beginning_of_month
+      cotisations_data[periode_normalized] = (cotisations_data[periode_normalized] || 0) + (du || 0)
     end
 
     cotisations_data
@@ -279,21 +281,23 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
              .order(:periode)
              .pluck(:periode, :part_ouvriere, :part_patronale)
 
-    # Group by periode and sum the values
+    # Group by periode (normalized to beginning of month) and sum the values
     debits_data = {}
     debits.each do |periode, part_ouvriere, part_patronale|
+      # Normalize periode to beginning of month to match generated periods
+      periode_normalized = periode.beginning_of_month
       part_ouvriere_val = part_ouvriere ? part_ouvriere.to_f : 0
       part_patronale_val = part_patronale ? part_patronale.to_f : 0
 
-      debits_data[periode] = if debits_data[periode]
-                               [
-                                 periode,
-                                 debits_data[periode][1].to_f + part_ouvriere_val,
-                                 debits_data[periode][2].to_f + part_patronale_val
-                               ]
-                             else
-                               [periode, part_ouvriere_val, part_patronale_val]
-                             end
+      debits_data[periode_normalized] = if debits_data[periode_normalized]
+                                          [
+                                            periode_normalized,
+                                            debits_data[periode_normalized][1].to_f + part_ouvriere_val,
+                                            debits_data[periode_normalized][2].to_f + part_patronale_val
+                                          ]
+                                        else
+                                          [periode_normalized, part_ouvriere_val, part_patronale_val]
+                                        end
     end
 
     debits_data
