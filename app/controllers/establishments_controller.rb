@@ -245,8 +245,8 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
 
   def map_periodes_to_montant_echeancier(periodes, delais)
     # For each periode, find all active delais (date_creation < periode < date_echeance)
-    # Sort by date_creation descending (newest first) and take the first one
-    # This matches the legacy JS: delais(p).sort(...)[0]
+    # Deduplicate by date_creation and date_echeance, then sort by date_creation descending (newest first)
+    # Take the first one (most recent) - this matches the legacy JS: delais(p).sort(...)[0]
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
 
@@ -254,10 +254,13 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
         delai.date_creation < periode_date && periode_date < delai.date_echeance
       end
 
-      # Sort by date_creation descending (newest first) - matches JS: (delai1.dateCreation<delai2.dateCreation)?1:-1
-      active_delais = active_delais.sort_by(&:date_creation).reverse
+      # Deduplicate by date_creation and date_echeance (keep only unique date ranges)
+      unique_delais = active_delais.uniq { |d| [d.date_creation, d.date_echeance] }
 
-      active_delais.first ? (active_delais.first.montant_echeancier || 0).to_f : 0
+      # Sort by date_creation descending (newest first) - matches JS: (delai1.dateCreation<delai2.dateCreation)?1:-1
+      unique_delais = unique_delais.sort_by(&:date_creation).reverse
+
+      unique_delais.first ? (unique_delais.first.montant_echeancier || 0).to_f : 0
     end
   end
 
