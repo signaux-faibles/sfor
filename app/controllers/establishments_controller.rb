@@ -23,12 +23,12 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
 
     cotisations_data = fetch_cotisations_data(start_date)
     debits_data = fetch_debits_data(start_date)
-    delais_data = fetch_delais_data(start_date)
+    delais = fetch_delais_data(start_date)
 
     @cotisations = map_periodes_to_cotisations(periodes, cotisations_data)
     @parts_salariales = map_periodes_to_parts_salariales(periodes, debits_data)
     @parts_patronales = map_periodes_to_parts_patronales(periodes, debits_data)
-    @montant_echeancier = map_periodes_to_montant_echeancier(periodes, delais_data)
+    @montant_echeancier = map_periodes_to_montant_echeancier(periodes, delais)
     @dataset_names = urssaf_dataset_names
 
     render partial: "data_urssaf_widget"
@@ -198,24 +198,18 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     debits.index_by { |row| row[0].beginning_of_month }
   end
 
-  def fetch_delais_data(start_date) # rubocop:disable Metrics/MethodLength
-    # OsfDelai doesn't have a periode field, so we use date_creation
-    # Group by the month of date_creation and sum montant_echeancier
-    delais = OsfDelai
-             .where(siret: @establishment.siret)
-             .where(date_creation: start_date..)
-             .where.not(montant_echeancier: nil)
-
-    # Group by period (beginning of month of date_creation)
-    delais_data = {}
-    delais.each do |delai|
-      next unless delai.date_creation
-
-      periode_date = delai.date_creation.beginning_of_month
-      delais_data[periode_date] = (delais_data[periode_date] || 0) + (delai.montant_echeancier || 0)
-    end
-
-    delais_data
+  def fetch_delais_data(start_date)
+    # Fetch all delais that might be active during the period range
+    # A delai is active if: date_creation < periode < date_echeance
+    # We need to fetch delais where the date range overlaps with our period range
+    end_date = Date.current.end_of_month
+    OsfDelai
+      .where(siret: @establishment.siret)
+      .where("date_creation <= ? AND date_echeance >= ?", end_date, start_date)
+      .where.not(montant_echeancier: nil)
+      .where.not(date_creation: nil)
+      .where.not(date_echeance: nil)
+      .order(:date_creation)
   end
 
   def map_periodes_to_cotisations(periodes, cotisations_data)
@@ -249,10 +243,17 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     end
   end
 
-  def map_periodes_to_montant_echeancier(periodes, delais_data)
+  def map_periodes_to_montant_echeancier(periodes, delais)
+    # For each periode, find all active delais (date_creation < periode < date_echeance)
+    # and sum their montant_echeancier
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
-      (delais_data[periode_date] || 0).to_f
+
+      active_delais = delais.select do |delai|
+        delai.date_creation < periode_date && periode_date < delai.date_echeance
+      end
+
+      active_delais.sum { |delai| (delai.montant_echeancier || 0).to_f }
     end
   end
 
