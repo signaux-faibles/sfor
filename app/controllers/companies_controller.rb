@@ -353,16 +353,20 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def map_periodes_to_montant_echeancier(periodes, delais)
-    # For each periode, find active delais (date_creation < periode < date_echeance)
-    # and take the first one's montant_echeancier (sorted by date_creation)
+    # For each periode, find all active delais (date_creation < periode < date_echeance)
+    # Sort by date_creation descending (newest first) and take the first one
+    # This matches the legacy JS: delais(p).sort(...)[0]
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
 
-      active_delai = delais.find do |delai|
+      active_delais = delais.select do |delai|
         delai.date_creation < periode_date && periode_date < delai.date_echeance
       end
 
-      active_delai ? (active_delai.montant_echeancier || 0).to_f : 0
+      # Sort by date_creation descending (newest first) - matches JS: (delai1.dateCreation<delai2.dateCreation)?1:-1
+      active_delais = active_delais.sort_by { |d| d.date_creation }.reverse
+
+      active_delais.first ? (active_delais.first.montant_echeancier || 0).to_f : 0
     end
   end
 
