@@ -255,7 +255,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
       end
 
       # Sort by date_creation descending (newest first) - matches JS: (delai1.dateCreation<delai2.dateCreation)?1:-1
-      active_delais = active_delais.sort_by { |d| d.date_creation }.reverse
+      active_delais = active_delais.sort_by(&:date_creation).reverse
 
       active_delais.first ? (active_delais.first.montant_echeancier || 0).to_f : 0
     end
