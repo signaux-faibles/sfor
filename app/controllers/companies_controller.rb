@@ -353,16 +353,16 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def map_periodes_to_montant_echeancier(periodes, delais)
-    # For each periode, find all active delais (date_creation < periode < date_echeance)
-    # and sum their montant_echeancier
+    # For each periode, find active delais (date_creation < periode < date_echeance)
+    # and take the first one's montant_echeancier (sorted by date_creation)
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
 
-      active_delais = delais.select do |delai|
+      active_delai = delais.find do |delai|
         delai.date_creation < periode_date && periode_date < delai.date_echeance
       end
 
-      active_delais.sum { |delai| (delai.montant_echeancier || 0).to_f }
+      active_delai ? (active_delai.montant_echeancier || 0).to_f : 0
     end
   end
 
