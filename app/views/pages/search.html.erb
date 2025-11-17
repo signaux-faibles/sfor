@@ -28,13 +28,18 @@
                       SIREN : <%= company["siren"] %>
                     </p>
                     <div class="fr-card__start">
-                      <% if company["date_fermeture"].present? %>
-                        <ul class="fr-badges-group">
+                      <ul class="fr-badges-group">
+                        <% if company["date_fermeture"].present? %>
                           <li>
                             <p class="fr-badge fr-badge--error fr-badge--no-icon">Fermé</p>
                           </li>
-                        </ul>
-                      <% end %>
+                        <% end %>
+                        <% if company["has_tracking_in_progress"] %>
+                          <li>
+                            <p class="fr-badge fr-badge--info">Accompagnement en cours</p>
+                          </li>
+                        <% end %>
+                      </ul>
                     </div>
                     <% if company["nombre_etablissements_ouverts"] %>
                       <div class="fr-card__end">
