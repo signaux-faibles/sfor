@@ -352,7 +352,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     end
   end
 
-  def map_periodes_to_montant_echeancier(periodes, delais)
+  def map_periodes_to_montant_echeancier(periodes, delais) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     # For each periode, find all active delais (date_creation < periode < date_echeance)
     # Deduplicate by date_creation and date_echeance, then sort by date_creation descending (newest first)
     # Take the first one (most recent) - this matches the legacy JS: delais(p).sort(...)[0]
