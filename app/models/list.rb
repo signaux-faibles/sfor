@@ -1,6 +1,7 @@
 class List < ApplicationRecord
   has_many :company_lists, dependent: :destroy
   has_many :companies, through: :company_lists
+  has_many :company_score_entries, dependent: :destroy
 
   # validates :label, presence: true, uniqueness: true
   # validates :code, presence: true, uniqueness: true

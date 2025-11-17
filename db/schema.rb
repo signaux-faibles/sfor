@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_06_144248) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_17_134406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -132,6 +132,34 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_144248) do
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_company_lists_on_company_id"
     t.index ["list_id"], name: "index_company_lists_on_list_id"
+  end
+
+  create_table "company_score_entries", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "list_id", null: false
+    t.string "siren", limit: 9, null: false
+    t.string "code_naf"
+    t.decimal "score", precision: 20, scale: 10
+    t.string "code_commune", limit: 5
+    t.string "region"
+    t.string "alert"
+    t.string "batch"
+    t.string "algo"
+    t.string "periode"
+    t.decimal "seuil_modere", precision: 5, scale: 2
+    t.decimal "seuil_fort", precision: 5, scale: 2
+    t.jsonb "macro_expl"
+    t.jsonb "micro_expl"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code_commune"], name: "index_company_score_entries_on_code_commune"
+    t.index ["company_id", "list_id", "periode"], name: "idx_on_company_id_list_id_periode_e4295cc662"
+    t.index ["company_id"], name: "index_company_score_entries_on_company_id"
+    t.index ["list_id"], name: "index_company_score_entries_on_list_id"
+    t.index ["macro_expl"], name: "index_company_score_entries_on_macro_expl", using: :gin
+    t.index ["micro_expl"], name: "index_company_score_entries_on_micro_expl", using: :gin
+    t.index ["periode"], name: "index_company_score_entries_on_periode"
+    t.index ["siren"], name: "index_company_score_entries_on_siren"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -633,6 +661,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_144248) do
   add_foreign_key "comments", "users"
   add_foreign_key "company_lists", "companies"
   add_foreign_key "company_lists", "lists"
+  add_foreign_key "company_score_entries", "companies"
+  add_foreign_key "company_score_entries", "lists"
   add_foreign_key "department_geo_accesses", "departments"
   add_foreign_key "department_geo_accesses", "geo_accesses"
   add_foreign_key "departments", "regions"

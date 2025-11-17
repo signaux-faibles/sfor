@@ -7,6 +7,7 @@ class Company < ApplicationRecord
 
   has_many :company_lists, dependent: :destroy
   has_many :lists, through: :company_lists
+  has_many :company_score_entries, dependent: :destroy
 
   validates :siren, presence: true, uniqueness: true
 
