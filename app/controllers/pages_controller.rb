@@ -50,6 +50,7 @@ class PagesController < ApplicationController
       @pagination = {}
     elsif response
       @results = response["results"] || []
+      enrich_results_with_tracking_status(@results)
       @pagination = {
         page: response["page"] || @page,
         per_page: response["per_page"] || @per_page,
@@ -64,4 +65,29 @@ class PagesController < ApplicationController
   end
 
   def unauthorized; end
+
+  private
+
+  def enrich_results_with_tracking_status(results)
+    return if results.blank?
+
+    # Extract all sirens from results
+    sirens = results.pluck("siren").compact.uniq
+    return if sirens.blank?
+
+    # Find all distinct sirens that have at least one establishment with in_progress tracking
+    # Using a join to efficiently query in one go
+    sirens_with_tracking = Establishment
+                           .joins(:establishment_trackings)
+                           .where(siren: sirens)
+                           .merge(EstablishmentTracking.kept.in_progress)
+                           .distinct
+                           .pluck(:siren)
+                           .to_set
+
+    # Enrich each result with tracking status
+    results.each do |result|
+      result["has_tracking_in_progress"] = sirens_with_tracking.include?(result["siren"])
+    end
+  end
 end
