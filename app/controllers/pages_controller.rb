@@ -68,7 +68,7 @@ class PagesController < ApplicationController
 
   private
 
-  def enrich_results_with_tracking_status(results)
+  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     return if results.blank?
 
     # Extract all sirens from results
