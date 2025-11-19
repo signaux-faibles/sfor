@@ -35,6 +35,11 @@
   min-width: 8rem;
 }
 
+.geo-search-focused {
+  background-color: var(--background-action-high-blue-france);
+  color: var(--grey-1000-50);
+}
+
 /* Comments */
 
 .comment-container {
