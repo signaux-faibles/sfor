@@ -3,15 +3,16 @@
     <div class="fr-notice fr-notice--info">
       <div class="fr-container">
         <div class="fr-notice__body">
-          <p>
-            <span class="fr-notice__title">L'entreprise n'a pas d'accompagnement en cours.</span>
-            <span>
-              Pour créer un accompagnement auprès d'un établissement, accéder à une fiche établissement en cliquant sur le lien :
+          <div>
+            <p class="fr-notice__title">L'entreprise n'a pas d'accompagnement en cours.</p>
+            <p>
+              Pour créer un accompagnement auprès d'un établissement, cliquer sur le lien :
               <%= link_to "Liste des établissements - #{@company.raison_sociale}",
                           company_path(@company),
                           data: { turbo: false } %>
-            </span>
-          </p>
+            </p>
+          </div>
+
         </div>
       </div>
     </div>
