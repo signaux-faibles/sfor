@@ -3,7 +3,7 @@
     <div class="fr-container--fluid fr-m-2w">
       <h2 class="fr-h4 fr-mt-1w">Rechercher un établissement ou une entreprise</h2>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div class="fr-col-12 fr-col-lg-8">
+        <div class="fr-col-12 fr-col-xl-8">
           <div class="fr-input-group">
             <%= f.label :q, "Recherche par SIRET, SIREN ou raison sociale", class: "fr-label" %>
             <div class="fr-input-wrap fr-icon-search-line">
@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4">
           <div class="fr-input-group">
             <%= f.label :tranche_effectif_salarie, "Effectif", class: "fr-label" %>
             <%= f.select :tranche_effectif_salarie,
@@ -41,25 +41,39 @@
                          { class: "fr-select" } %>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4" data-controller="geo-search">
+        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4" data-controller="geo-search">
           <div class="fr-input-group">
-            <%= f.label :cp_dep_label, "Localisation (commune, département, EPCI, région)", class: "fr-label" %>
-            <div class="fr-input-wrap fr-icon-map-pin-line">
+            <%= f.label :cp_dep_label, "Localisation (commune, département, région...)", class: "fr-label" %>
+            <div class="fr-input-wrap fr-icon-map-pin-2-line">
               <%= f.text_field :cp_dep_label, 
                               value: search_params[:cp_dep_label], 
                               class: "fr-input", 
                               placeholder: "Rechercher une localisation...",
+                              aria: {
+                                 autocomplete: "both",
+                                 controls: "geo-list",
+                                 expanded: "false", # List closed : default state.
+                               },
+                              role: "combobox",
                               data: { 
                                 geo_search_target: "input",
-                                action: "input->geo-search#search"
+                                action: "input->geo-search#search keydown->geo-search#handleKeydown"
                               } %>
             </div>
             <%= f.hidden_field :cp_dep_type, value: search_params[:cp_dep_type], data: { geo_search_target: "hiddenType" } %>
             <%= f.hidden_field :cp_dep, value: search_params[:cp_dep], data: { geo_search_target: "hiddenCode" } %>
-            <div data-geo-search-target="results" class="geo-search-results-container"></div>
+            <div
+              id="geo-list"
+              data-geo-search-target="results"
+              class="geo-search-results-container"
+              role="listbox"
+              aria-label="Liste des communes, EPCI, départements et régions"
+            >
+
+            </div>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4">
           <div class="fr-input-group">
             <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
             <%= f.select :section_activite_principale,
