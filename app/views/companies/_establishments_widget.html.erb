@@ -35,48 +35,45 @@
               <thead>
                 <tr>
                   <th scope="col">SIRET</th>
-                  <th scope="col">Commune et code postal</th>
-                  <th scope="col">Effectif</th>
+                  <th scope="col">Commune</th>
+                  <th scope="col">Département</th>
+                  <th scope="col"><abbr title="Effectif établissement">Eff. établissement</abbr></th>
                   <th scope="col">Dette URSSAF</th>
                   <th scope="col">Activité partielle</th>
-                  <th scope="col">Accompagnements</th>
+                  <th scope="col">État</th>
+                  <th scope="col">Procédure collective</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <% all_establishments.each do |enriched_establishment| %>
                   <% rails_data = enriched_establishment[:rails_data] %>
-                  <% insee_data = enriched_establishment[:insee_data] %>
 
                   <tr>
                     <td>
                       <% if rails_data.present? %>
                         <strong>
                           <%=
-                            link_to rails_data.siret,
-                                    "/etablissements/#{rails_data.siret}",
-                                    data: { turbo_frame: "_top" }
+                            rails_data.siret
                           %>
                         </strong>
 
-                        <%# @TODO : vérifier si l'établissement est fermé. %>
-                        <p class="fr-badge fr-badge--error fr-badge--sm">23/10/2025</p>
-
-                        <%# @TODO : vérifier s'il y a une procédure en cours. %>
-                        <p class="fr-badge fr-badge--sm fr-badge--warning">Nom de la procédure en cours</p>
+                        <% if rails_data.siege %>
+                          <p class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">Siege social</p>
+                        <% end %>
                       <% end %>
 
                     </td>
                     
                     <td>
-                      <% if insee_data&.dig("adresse", "libelle_commune") %>
-                        <%= insee_data.dig("adresse", "libelle_commune") %>
-                        <% if insee_data.dig("adresse", "code_postal") %>
-                          (<%= insee_data.dig("adresse", "code_postal") %>)
-                        <% end %>
-                      <% else %>
-                        <% if rails_data.present? %>
-                          <%= rails_data.department&.name %>
-                        <% end %>
+                      <% if rails_data.present? %>
+                        <%= rails_data.commune %>
+                      <% end %>
+                    </td>
+
+                    <td>
+                      <% if rails_data.present? %>
+                        <%= rails_data.department&.name %>
                       <% end %>
                     </td>
                     
@@ -96,8 +93,27 @@
                     </td>
 
                     <td>
-                      <%# @TODO : ajouter le nombre d'accompagnements. %>
-                      9
+                      <%# @TODO : vérifier si l'établissement est fermé. %>
+                      <% if true %>
+                        <p class="fr-badge fr-badge--error fr-badge--no-icon fr-badge--sm">Fermé le 23/10/2025</p>
+                      <% end %>
+
+                      <% if false %>
+                        <p class="fr-badge fr-badge--sm">En activité</p>
+                      <% end %>
+                    </td>
+
+                    <td>
+                      <%# @TODO : vérifier s'il y a une procédure en cours. %>
+                      Nom de la procédure en cours
+                    </td>
+                    <td>
+                      <%=
+                        link_to "Consulter",
+                                "/etablissements/#{rails_data.siret}",
+                                class: "fr-link fr-icon-arrow-right-line fr-link--icon-right fr-link--sm",
+                                data: { turbo_frame: "_top" }
+                      %>
                     </td>
                   </tr>
                 <% end %>
