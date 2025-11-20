@@ -43,7 +43,7 @@
   min-width: 8rem;
 }
 
-.geo-search-focused {
+.sf-geo-search-focused {
   background-color: var(--background-action-high-blue-france);
   color: var(--grey-1000-50);
 }
@@ -239,6 +239,54 @@
   &--hidden {
     display: none;
   }
+}
+
+.sf-establishment-search {
+  .fr-container--fluid {
+    overflow: visible;
+  }
+}
+
+.sf-geo-search .fr-input-group {
+  position: relative;
+}
+
+.sf-geo-search-results-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-color: lightgrey var(--background-default-grey);
+  scrollbar-width: thin;
+  filter: drop-shadow(rgba(0, 0, 18, .16) 0px 1px 3px);
+  background: var(--background-default-grey);
+  z-index: 3000;
+}
+
+.sf-geo-search-results .fr-list {
+  padding: 0;
+}
+
+.sf-geo-search-results h3 {
+  margin-bottom: 0;
+  padding: .25rem .75rem;
+}
+
+.sf-geo-search-result-item {
+  list-style-type: none;
+  margin: 0;
+
+  .fr-btn {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+.sf-geo-search-focused {
+  background-color: var(--background-action-high-blue-france) !important;
+  color: var(--text-inverted-blue-france) !important;
 }
 
 /* Tom select */
