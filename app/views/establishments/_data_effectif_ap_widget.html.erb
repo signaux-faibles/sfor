@@ -3,8 +3,6 @@
     <h2>Effectifs / Activité partielle</h2>
 
     <% if @effectifs.present? || @consommation_ap.present? || @autorisation_ap.present? %>
-      <p>Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
-
       <div
         data-controller="segmented-control-widget"
       >

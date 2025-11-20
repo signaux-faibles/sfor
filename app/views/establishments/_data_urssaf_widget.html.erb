@@ -2,8 +2,6 @@
   <div class="fr-col-12">
     <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
     <% if @cotisations.present? || @parts_salariales.present? || @parts_patronales.present? || @montant_echeancier.present? %>
-      <p>Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
-
       <div
         data-controller="segmented-control-widget"
       >

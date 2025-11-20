@@ -26,7 +26,15 @@
   .sf-in-progress-tracking {
     td {
       background-color: var(--background-alt-blue-france);
-      font-weight: 700;
+    }
+  }
+}
+
+.sf-establishment-btns-group {
+  @media (max-width: 992px) {
+    li {
+      justify-content: flex-start;
+      text-align: left;
     }
   }
 }
@@ -172,14 +180,14 @@
   float: left;
   clear: left;
   margin: 0;
-  padding: 1rem .5em 0 0;
+  padding: 0 .5em 0 0;
   line-height: 2;
   font-weight: 700;
 }
 
 .sf-keyvalue-list__value {
   margin: 0;
-  padding: 1rem 0 0 0;
+  padding: 0;
   line-height: 2;
 }
 .sf-keyvalue-list__key:first-child {
