@@ -1,4 +1,4 @@
-<div class="fr-card establishment_search">
+<div class="fr-card sf-establishment-search">
   <%= form_with url: search_path, method: :get, scope: :search, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
     <div class="fr-container--fluid fr-m-2w">
       <h2 class="fr-h4 fr-mt-1w">Rechercher un établissement ou une entreprise</h2>
@@ -38,12 +38,14 @@
                            ["null - donnée manquante ou sans objet", "null"]
                          ],
                          { selected: search_params[:tranche_effectif_salarie] || "" },
-                         { class: "fr-select" } %>
+                         {
+                           class: "fr-select",
+                         } %>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4" data-controller="geo-search">
+        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4 sf-geo-search" data-controller="geo-search">
           <div class="fr-input-group">
-            <%= f.label :cp_dep_label, "Localisation (commune, département, région...)", class: "fr-label" %>
+            <%= f.label :cp_dep_label, "Zone géographique (ville, département ou région)", class: "fr-label" %>
             <div class="fr-input-wrap fr-icon-map-pin-2-line">
               <%= f.text_field :cp_dep_label, 
                               value: search_params[:cp_dep_label], 
@@ -51,7 +53,7 @@
                               placeholder: "Rechercher une localisation...",
                               aria: {
                                  autocomplete: "both",
-                                 controls: "geo-list",
+                                 controls: "sf-geo-search-list",
                                  expanded: "false", # List closed : default state.
                                },
                               role: "combobox",
@@ -62,15 +64,16 @@
             </div>
             <%= f.hidden_field :cp_dep_type, value: search_params[:cp_dep_type], data: { geo_search_target: "hiddenType" } %>
             <%= f.hidden_field :cp_dep, value: search_params[:cp_dep], data: { geo_search_target: "hiddenCode" } %>
+
             <div
-              id="geo-list"
+              id="sf-geo-search-list"
               data-geo-search-target="results"
-              class="geo-search-results-container"
+              class="sf-geo-search-results-container"
               role="listbox"
               aria-label="Liste des communes, EPCI, départements et régions"
             >
+          </div>
 
-            </div>
           </div>
         </div>
         <div class="fr-col-12 fr-col-md-6 fr-col-xl-4">

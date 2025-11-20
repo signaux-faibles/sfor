@@ -10,8 +10,12 @@ export default class extends Controller {
     this.selectedResult = null
     this.resultsContainer = {}
     this.focusedOptionIndex = -1
-    this.allLocations = null // Will store all departments and regions
+    this.allLocations = null
     this.loadAllLocations()
+
+    // Bind the click outside handler
+    this.handleClickOutside = this.handleClickOutside.bind(this)
+    document.addEventListener('click', this.handleClickOutside)
   }
 
   async loadAllLocations() {
@@ -46,17 +50,25 @@ export default class extends Controller {
     if (this.debounceTimeout) {
       clearTimeout(this.debounceTimeout)
     }
+
+    // Remove the click outside listener
+    document.removeEventListener('click', this.handleClickOutside)
+  }
+
+  handleClickOutside(event) {
+    // Check if the click is outside the geo-search component.
+    if (!this.element.contains(event.target)) {
+      // Close the listbox if it's open.
+      this.clearResults()
+    }
   }
 
   handleKeydown(event) {
-    console.log('Key pressed:', event.key, 'Alt:', event.altKey)
     if (event.key === 'ArrowDown') {
       event.preventDefault()
       if (event.altKey) {
-        console.log('Handling Alt+ArrowDown')
         this.handleAltArrowDown()
       } else {
-        console.log('Handling ArrowDown')
         this.handleArrowDown()
       }
     } else if (event.key === 'ArrowUp') {
@@ -79,19 +91,14 @@ export default class extends Controller {
   }
 
   handleAltArrowDown() {
-    // Opens the listbox without moving focus or changing selection
-    const isListboxDisplayed = this.resultsTarget.querySelector('.geo-search-results') !== null
-
-    // If listbox is already displayed, do nothing
+    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
     if (isListboxDisplayed) return
 
     const query = this.inputTarget.value.trim()
-
     if (query === "") {
-      // If textbox is empty, display all locations
       this.displayAllLocations()
     } else {
-      // If there's a query, trigger a search to display results
+      // If there's a query, trigger a search to display results.
       this.performSearch(query)
     }
 
@@ -99,32 +106,24 @@ export default class extends Controller {
   }
 
   handleArrowDown() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.geo-search-results') !== null
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
 
-    // If the textbox is empty and the listbox is not displayed, opens the listbox and moves visual focus to the first option
     if (!isListboxDisplayed && this.inputTarget.value.trim() === "") {
-      // Display all available locations
       this.displayAllLocations()
-      // Move visual focus to first option
       this.focusedOptionIndex = 0
-      // Update visual focus after a short delay to let the DOM update
       setTimeout(() => {
-        const options = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+        const options = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
         this.updateVisualFocus(options)
       }, 0)
       return
     }
 
-    // If no options available, do nothing
     if (allOptions.length === 0) return
 
-    // Move visual focus to the next suggested value
     if (this.focusedOptionIndex === -1) {
-      // No option selected yet, select the first one
       this.focusedOptionIndex = 0
     } else {
-      // Move to next option
       this.focusedOptionIndex++
       if (this.focusedOptionIndex >= allOptions.length) {
         this.focusedOptionIndex = 0 // Loop back to first
@@ -135,31 +134,24 @@ export default class extends Controller {
   }
 
   handleArrowUp() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.geo-search-results') !== null
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
 
-    // If the textbox is empty, first opens the listbox if it is not already displayed and then moves visual focus to the last option
-    if (!isListboxDisplayed && this.inputTarget.value.trim() === "") {
-      // Display all available locations
+     if (!isListboxDisplayed && this.inputTarget.value.trim() === "") {
       this.displayAllLocations()
-      // Move visual focus to last option
       setTimeout(() => {
-        const options = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+        const options = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
         this.focusedOptionIndex = options.length - 1
         this.updateVisualFocus(options)
       }, 0)
       return
     }
 
-    // If no options available, do nothing
     if (allOptions.length === 0) return
 
-    // If the listbox is displayed and a suggestion is selected, moves visual focus to the previous suggested value
     if (this.focusedOptionIndex === -1) {
-      // No option selected yet, select the last one
       this.focusedOptionIndex = allOptions.length - 1
     } else {
-      // Move to previous option
       this.focusedOptionIndex--
       if (this.focusedOptionIndex < 0) {
         this.focusedOptionIndex = allOptions.length - 1 // Loop back to last
@@ -170,79 +162,57 @@ export default class extends Controller {
   }
 
   handleEnter() {
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
 
-    // If no option is focused, do nothing
     if (this.focusedOptionIndex === -1 || allOptions.length === 0) return
 
-    // Get the focused option
     const focusedOption = allOptions[this.focusedOptionIndex]
 
     if (focusedOption) {
-      // Trigger click on the focused option to select it
       focusedOption.click()
-      // The selectResult method will handle setting the textbox value and closing the listbox
     }
   }
 
   handleEscape() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.geo-search-results') !== null
+    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
 
     if (isListboxDisplayed) {
-      // If the listbox is displayed, closes it
       this.clearResults()
     } else {
-      // If the listbox is not displayed, clears the textbox
       this.clearSelection()
     }
   }
 
   handleArrowRight() {
-    // Moves visual focus to the textbox (it's already there, DOM focus never left)
-    // Reset visual focus on options
     this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
     allOptions.forEach(option => {
-      option.classList.remove('geo-search-focused')
+      option.classList.remove('sf-geo-search-focused')
     })
-
-    // The cursor movement is handled automatically by the browser since we don't preventDefault
   }
 
   handleArrowLeft() {
-    // Moves visual focus to the textbox (it's already there, DOM focus never left)
-    // Reset visual focus on options
     this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
     allOptions.forEach(option => {
-      option.classList.remove('geo-search-focused')
+      option.classList.remove('sf-geo-search-focused')
     })
-
-    // The cursor movement is handled automatically by the browser since we don't preventDefault
   }
 
   handleHome() {
-    // Moves visual focus to the textbox (it's already there, DOM focus never left)
-    // Reset visual focus on options
     this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
     allOptions.forEach(option => {
-      option.classList.remove('geo-search-focused')
+      option.classList.remove('sf-geo-search-focused')
     })
-
-    // The cursor movement to beginning is handled automatically by the browser since we don't preventDefault
   }
 
   handleEnd() {
-    // Moves visual focus to the textbox (it's already there, DOM focus never left)
-    // Reset visual focus on options
     this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.geo-search-result-item button'))
+    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
     allOptions.forEach(option => {
-      option.classList.remove('geo-search-focused')
+      option.classList.remove('sf-geo-search-focused')
     })
-
-    // The cursor movement to end is handled automatically by the browser since we don't preventDefault
   }
 
   displayAllLocations() {
@@ -251,7 +221,6 @@ export default class extends Controller {
       return
     }
 
-    // Display all departments and regions
     this.resultsContainer = {
       departements: this.allLocations.departements,
       regions: this.allLocations.regions
@@ -260,23 +229,18 @@ export default class extends Controller {
   }
 
   updateVisualFocus(allOptions) {
-    // Remove visual focus from all options
     allOptions.forEach((option, index) => {
       if (index === this.focusedOptionIndex) {
-        option.classList.add('geo-search-focused')
-        // Scroll into view if needed
+        option.classList.add('sf-geo-search-focused')
         option.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
       } else {
-        option.classList.remove('geo-search-focused')
+        option.classList.remove('sf-geo-search-focused')
       }
     })
-
-    // DOM focus remains on the textbox (no option.focus() call)
   }
 
   search() {
     const query = this.inputTarget.value.trim()
-
     // Clear previous timeout
     if (this.debounceTimeout) {
       clearTimeout(this.debounceTimeout)
@@ -446,7 +410,7 @@ export default class extends Controller {
     }
 
     // Group by category for better display
-    let html = '<div class="geo-search-results fr-mt-2w">'
+    let html = '<div class="sf-geo-search-results">'
 
     categories.forEach(category => {
       const categoryResults = allResults.filter(r => r.category === category)
@@ -458,12 +422,12 @@ export default class extends Controller {
           regions: "Régions"
         }[category] || category
 
-        html += `<div class="geo-search-category fr-mb-2w">`
-        html += `<h4 class="fr-h6">${categoryLabel}</h4>`
+        html += `<div class="sf-geo-search-category">`
+        html += `<h3 class="fr-text--lead">${categoryLabel}</h3>`
         html += `<ul class="fr-list">`
 
         categoryResults.forEach(result => {
-          html += `<li class="geo-search-result-item" role="option">`
+          html += `<li class="sf-geo-search-result-item" role="option">`
           html += `<button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" `
           html += `data-action="click->geo-search#selectResult" `
           html += `data-result-type="${result.type}" `
