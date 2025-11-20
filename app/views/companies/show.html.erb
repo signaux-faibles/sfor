@@ -6,7 +6,10 @@
     <div class="fr-collapse" id="breadcrumb-1">
       <ol class="fr-breadcrumb__list">
         <li>
-          <%= link_to 'Accompagnements', establishment_trackings_path, class: 'fr-breadcrumb__link' %>
+          <%= link_to 'Accueil', '/', class: 'fr-breadcrumb__link' %>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Entreprise <%= @company.raison_sociale %></a>
         </li>
       </ol>
     </div>
