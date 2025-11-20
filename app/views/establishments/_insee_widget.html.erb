@@ -9,9 +9,15 @@
       </p>
     <% end %>
   </div>
+
   <dl class="sf-keyvalue-list">
     <dt class="sf-keyvalue-list__key">SIRET :</dt>
-    <dd class="sf-keyvalue-list__value"><%= @establishment.siret %></dd>
+    <dd class="sf-keyvalue-list__value">
+      <%= @establishment.siret %>
+      <% if @establishment.siege %>
+        <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-ml-1w">Siege social</span>
+      <% end %>
+    </dd>
     <% if @insee_data.present? %>
       <% if @insee_data["data"].present? and @insee_data["data"]["activite_principale"].present? %>
         <dt class="sf-keyvalue-list__key">Secteur d'activité : </dt>
@@ -34,7 +40,7 @@
       <% end %>
 
       <% if @insee_data["data"].present? and @insee_data["data"]["adresse"].present? %>
-        <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
+        <dt class="sf-keyvalue-list__key">Adresse postale de l'établissement : </dt>
         <dd class="sf-keyvalue-list__value">
           <%= [
                 @insee_data["data"]["adresse"]["numero_voie"],
