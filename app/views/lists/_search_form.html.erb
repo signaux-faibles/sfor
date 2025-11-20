@@ -1,0 +1,166 @@
+<div class="fr-card establishment_search">
+  <%= form_with url: list_path(list), method: :get, scope: :search, class: "fr-search-bar", html: { class: "fr-search-bar__form" } do |f| %>
+    <div class="fr-container--fluid fr-m-2w">
+      <h2 class="fr-h4 fr-mt-1w">Filtrer les entreprises</h2>
+      
+      <!-- API-based filters (like main search) -->
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div class="fr-col-12 fr-col-lg-6">
+          <div class="fr-input-group">
+            <%= f.label :q, "SIREN / Raison sociale", class: "fr-label" %>
+            <div class="fr-input-wrap fr-icon-search-line">
+              <%= f.text_field :q, value: search_params[:q], class: "fr-input", placeholder: "SIREN ou raison sociale" %>
+            </div>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-6" data-controller="geo-search">
+          <div class="fr-input-group">
+            <%= f.label :cp_dep_label, "Zone géographique", class: "fr-label" %>
+            <div class="fr-input-wrap fr-icon-map-pin-line">
+              <%= f.text_field :cp_dep_label, 
+                              value: search_params[:cp_dep_label], 
+                              class: "fr-input", 
+                              placeholder: "Rechercher une localisation...",
+                              data: { 
+                                geo_search_target: "input",
+                                action: "input->geo-search#search"
+                              } %>
+            </div>
+            <%= f.hidden_field :cp_dep_type, value: search_params[:cp_dep_type], data: { geo_search_target: "hiddenType" } %>
+            <%= f.hidden_field :cp_dep, value: search_params[:cp_dep], data: { geo_search_target: "hiddenCode" } %>
+            <div data-geo-search-target="results" class="geo-search-results-container"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
+            <%= f.select :section_activite_principale,
+                         [
+                           ["Tous", ""],
+                           ["A - Agriculture, sylviculture et pêche", "A"],
+                           ["B - Industries extractives", "B"],
+                           ["C - Industrie manufacturière", "C"],
+                           ["D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné", "D"],
+                           ["E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution", "E"],
+                           ["F - Construction", "F"],
+                           ["G - Commerce ; réparation d'automobiles et de motocycles", "G"],
+                           ["H - Transports et entreposage", "H"],
+                           ["I - Hébergement et restauration", "I"],
+                           ["J - Information et communication", "J"],
+                           ["K - Activités financières et d'assurance", "K"],
+                           ["L - Activités immobilières", "L"],
+                           ["M - Activités spécialisées, scientifiques et techniques", "M"],
+                           ["N - Activités de services administratifs et de soutien", "N"],
+                           ["O - Administration publique", "O"],
+                           ["P - Enseignement", "P"],
+                           ["Q - Santé humaine et action sociale", "Q"],
+                           ["R - Arts, spectacles et activités récréatives", "R"],
+                           ["S - Autres activités de services", "S"],
+                           ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"],
+                           ["U - Activités extra-territoriales", "U"]
+                         ],
+                         { selected: search_params[:section_activite_principale] || ""},
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :ca_min, "Chiffre d'affaire min. de l'entreprise", class: "fr-label" %>
+            <%= f.number_field :ca_min, value: search_params[:ca_min], class: "fr-input", placeholder: "Montant minimum", min: 0, step: 1000 %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :forme_juridique, "Forme juridique", class: "fr-label" %>
+            <%= f.select :forme_juridique,
+                         [["Tous", ""]] + legal_forms_options.map { |code, label| ["#{code} - #{label}", code] },
+                         { selected: search_params[:forme_juridique] || "" },
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database-based filters -->
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :effectif_min, "Effectif min. de l'entreprise", class: "fr-label" %>
+            <%= f.number_field :effectif_min, value: search_params[:effectif_min], class: "fr-input", placeholder: "Nombre minimum d'employés", min: 0, step: 1 %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
+            <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 0.01 %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :dette_sociale_min, "Montant de la dette sociale min.", class: "fr-label" %>
+            <%= f.number_field :dette_sociale_min, value: search_params[:dette_sociale_min], class: "fr-input", placeholder: "Montant minimum", min: 0, step: 1000 %>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :stade_procol, "Statut de procédure collective", class: "fr-label" %>
+            <%= f.select :stade_procol,
+                         [
+                           ["Tous", ""],
+                           ["Sans procédure", "sans"],
+                           ["Sauvegarde", "sauvegarde"],
+                           ["Redressement", "redressement"],
+                           ["Liquidation", "liquidation"]
+                         ],
+                         { selected: search_params[:stade_procol] || "" },
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :frequence_alerte, "Fréquence d'alerte", class: "fr-label" %>
+            <%= f.select :frequence_alerte,
+                         [
+                           ["Tous", ""],
+                           ["Faible", "faible"],
+                           ["Moyenne", "moyenne"],
+                           ["Élevée", "elevee"]
+                         ],
+                         { selected: search_params[:frequence_alerte] || "" },
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-input-group">
+            <%= f.label :niveau_alerte, "Niveau d'alerte", class: "fr-label" %>
+            <%= f.select :niveau_alerte,
+                         [
+                           ["Tous", ""],
+                           ["Vert", "vert"],
+                           ["Orange", "orange"],
+                           ["Rouge", "rouge"]
+                         ],
+                         { selected: search_params[:niveau_alerte] || "" },
+                         { class: "fr-select" } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr-grid-row fr-grid-row--right fr-mt-5w">
+        <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
+          <li>
+            <%= link_to "Réinitialiser les filtres", list_path(list), class: "fr-btn fr-icon-restart-line fr-btn--secondary", data: { turbo: false} %>
+          </li>
+          <li>
+            <%= f.submit "Rechercher", class: "fr-btn" %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>

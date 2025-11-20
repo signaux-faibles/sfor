@@ -1,0 +1,48 @@
+<div class="fr-container fr-mt-5w fr-mb-5w">
+  <div class="grid-row">
+    <h1>Listes d'entreprises</h1>
+
+    <div class="fr-table--lg fr-table fr-table" id="table-lg-component">
+      <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+          <div class="fr-table__content">
+            <table id="table-lg">
+              <caption>
+                Toutes les listes
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Label</th>
+                  <th scope="col">Code</th>
+                  <th scope="col">Nombre d'entreprises</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if @lists.any? %>
+                  <% @lists.each do |list| %>
+                    <tr>
+                      <td><%= list.label %></td>
+                      <td><%= list.code %></td>
+                      <td><%= list.companies.count %></td>
+                      <td>
+                        <%= link_to "Voir", list_path(list), class: "fr-btn fr-btn--sm" %>
+                      </td>
+                    </tr>
+                  <% end %>
+                <% else %>
+                  <tr>
+                    <td colspan="4" class="fr-text--center">
+                      <p class="fr-mt-2w">Aucune liste disponible</p>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
