@@ -25,7 +25,13 @@
   <%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %>
 </td>
 <td>
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non quam ultrices, pretium lectus et, bibendum dolor. Nam fringilla lacus sit amet facilisis fermentum. Ut suscipit felis quam, et dapibus leo congue ut. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+  <% if tracking.user_actions.kept.any? %>
+    <% tracking.user_actions.kept.ordered.each do |action| %>
+      <%= content_tag :span, action.name, class: "fr-tag fr-tag--sm" %>
+    <% end %>
+  <% else %>
+    <span>Non renseigné</span>
+  <% end %>
 </td>
 <td>
   <%= link_to [tracking.establishment, tracking], class: 'fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right', data: { turbo: false } do %>
