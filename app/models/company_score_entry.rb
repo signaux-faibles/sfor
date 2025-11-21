@@ -1,8 +1,10 @@
 class CompanyScoreEntry < ApplicationRecord
-  belongs_to :company
-  belongs_to :list
+  belongs_to :company, foreign_key: :siren, primary_key: :siren, optional: false
+  belongs_to :list, foreign_key: :list_name, primary_key: :label, optional: false
 
   validates :siren, presence: true, length: { is: 9 }
+  validates :list_name, presence: true
+  validates :siren, uniqueness: { scope: %i[list_name periode] }
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[

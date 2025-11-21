@@ -185,7 +185,7 @@ class ListsController < ApplicationController
     if @search_params[:score_min].present?
       score_min = @search_params[:score_min].to_f
       sirens_with_score = CompanyScoreEntry
-                          .where(list_id: @list.id, siren: company_sirens)
+                          .where(list_name: @list.label, siren: company_sirens)
                           .where("score >= ?", score_min)
                           .distinct
                           .pluck(:siren)
