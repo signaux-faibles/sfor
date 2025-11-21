@@ -66,6 +66,51 @@ and rails does not authorize ips other than localhost to access the rails web co
 
 The application can synchronize data from the database where `opensignauxfaibles` writes data. This includes `stg_apconso` and `stg_apdemande` tables.
 
+## Email Configuration (SMTP)
+
+The application uses SMTP to send emails (password reset, etc.). Configure the following environment variables:
+
+### Production Environment Variables
+
+```bash
+# SMTP Configuration
+SMTP_ADDRESS=smtp.gmail.com          # SMTP server address
+SMTP_PORT=587                        # SMTP port (587 for TLS, 465 for SSL)
+SMTP_DOMAIN=yourdomain.com           # Your domain name
+SMTP_USERNAME=your-email@domain.com  # SMTP username (usually your email)
+SMTP_PASSWORD=your-app-password       # SMTP password or app-specific password
+SMTP_AUTHENTICATION=plain             # Authentication method (plain, login, or cram_md5)
+SMTP_ENABLE_STARTTLS_AUTO=true        # Enable STARTTLS (true/false)
+
+# Email sender configuration
+DEVISE_MAILER_SENDER=noreply@yourdomain.com  # Email address shown as sender
+MAILER_FROM=noreply@yourdomain.com           # Default from address for all emails
+HOST_URL=https://yourdomain.com              # Your application URL (for email links)
+```
+
+### Development Environment
+
+In development, emails are opened in the browser using `letter_opener` by default. To use real SMTP in development, uncomment the SMTP configuration in `config/environments/development.rb`.
+
+### Common SMTP Providers
+
+**Gmail:**
+- `SMTP_ADDRESS=smtp.gmail.com`
+- `SMTP_PORT=587`
+- `SMTP_AUTHENTICATION=plain`
+- Use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password
+
+**SendGrid:**
+- `SMTP_ADDRESS=smtp.sendgrid.net`
+- `SMTP_PORT=587`
+- `SMTP_USERNAME=apikey`
+- `SMTP_PASSWORD=your-sendgrid-api-key`
+
+**Mailgun:**
+- `SMTP_ADDRESS=smtp.mailgun.org`
+- `SMTP_PORT=587`
+- Use your Mailgun SMTP credentials
+
 ## Environment Configuration
 
 Before running synchronization commands, you need to configure the `opensignauxfaibles` database connection by setting these environment variables:
