@@ -5,7 +5,7 @@ class UserAuthenticationTest < ActionDispatch::IntegrationTest
     @user = users(:user_crp_paris)
   end
 
-  test "user can authenticate via token and access the homepage" do
+  test "user can authenticate and access the homepage" do
     login_user(@user)
 
     get root_path

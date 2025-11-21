@@ -50,7 +50,7 @@ gem "bootsnap", "~> 1.18.4", require: false
 # Import wekan data
 gem "mongo", "~> 2.21.0"
 
-# Decode keycloak tokens
+# JWT token handling for API services and statistics
 gem "jwt", "~> 2.9.3"
 
 # Allow requests from legacy vue app
@@ -131,6 +131,9 @@ group :development do
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   gem "rack-mini-profiler"
+
+  # Preview emails in browser instead of sending them
+  gem "letter_opener"
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   gem "spring"

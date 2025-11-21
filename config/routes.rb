@@ -31,10 +31,6 @@ Rails.application.routes.draw do
     end
   end
 
-  devise_scope :user do
-    post "authenticate", to: "users/sessions#create"
-  end
-
   resources :establishments, only: [:show], path: "etablissements", param: :siret do
     member do
       get :insee_widget
