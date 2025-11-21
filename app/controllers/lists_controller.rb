@@ -1,6 +1,6 @@
-class ListsController < ApplicationController
+class ListsController < ApplicationController # rubocop:disable Metrics/ClassLength
   def index
-    @lists = List.all.order(label: :asc)
+    @lists = List.order(label: :asc)
   end
 
   def show # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
@@ -58,7 +58,7 @@ class ListsController < ApplicationController
     # Enrich with tracking status
     enrich_results_with_tracking_status(@results)
   rescue ActiveRecord::RecordNotFound
-    redirect_to lists_path, alert: "Liste introuvable"
+    redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
     @search_params = {}
     @companies = @list.companies.includes(:establishments).page(1).per(@per_page)
@@ -80,7 +80,7 @@ class ListsController < ApplicationController
 
   private
 
-  def apply_api_filters(list_sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
+  def apply_api_filters(list_sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
     # Check if we have any API filters
     has_api_filters = @search_params[:q].present? ||
                       @search_params[:section_activite_principale].present? ||
@@ -159,7 +159,7 @@ class ListsController < ApplicationController
     api_sirens
   end
 
-  def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     company_sirens = companies.pluck(:siren)
 
     # Filter by minimum effectif
@@ -186,7 +186,7 @@ class ListsController < ApplicationController
       score_min = @search_params[:score_min].to_f
       sirens_with_score = CompanyScoreEntry
                           .where(list_name: @list.label, siren: company_sirens)
-                          .where("score >= ?", score_min)
+                          .where(score: score_min..)
                           .distinct
                           .pluck(:siren)
                           .to_set
@@ -243,7 +243,7 @@ class ListsController < ApplicationController
     companies
   end
 
-  def enrich_results_with_tracking_status(results)
+  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     return if results.blank?
 
     sirens = results.pluck("siren").compact.uniq

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-namespace :users do
+namespace :users do # rubocop:disable Metrics/BlockLength
   desc "Set a password for a specific user"
-  task :set_password, [:email, :password] => :environment do |_t, args|
+  task :set_password, %i[email password] => :environment do |_t, args|
     email = args[:email]
     password = args[:password]
 
@@ -50,4 +50,3 @@ namespace :users do
     puts "Users should change their password on first login."
   end
 end
-
