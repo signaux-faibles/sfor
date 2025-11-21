@@ -5,9 +5,9 @@ class Company < ApplicationRecord
   has_many :campaign_companies, dependent: :destroy
   has_many :campaigns, through: :campaign_companies
 
-  has_many :company_lists, dependent: :destroy
+  has_many :company_lists, foreign_key: :siren, primary_key: :siren, dependent: :destroy
   has_many :lists, through: :company_lists
-  has_many :company_score_entries, dependent: :destroy
+  has_many :company_score_entries, foreign_key: :siren, primary_key: :siren, dependent: :destroy
 
   validates :siren, presence: true, uniqueness: true
 
