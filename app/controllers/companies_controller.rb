@@ -17,6 +17,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "insee_widget"
   end
 
+  def detection_widget
+    fetch_insee_data
+    render partial: "detection_widget"
+  end
+
   def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @company = Company.find_by!(siren: params[:siren])
 
