@@ -3,7 +3,7 @@
     <h1><%= @list.label %></h1>
     <p class="fr-text--lg fr-mb-3w">
       Code: <strong><%= @list.code %></strong> • 
-      <%= pluralize(@list.companies.count, "entreprise", "entreprises") %>
+      <%= pluralize(@list.company_score_entries.select(:siren).distinct.count, "entreprise", "entreprises") %>
     </p>
 
     <%= render 'search_form', search_params: @search_params || {}, list: @list %>
