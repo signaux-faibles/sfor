@@ -229,7 +229,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def map_periodes_to_effectifs(periodes, effectifs_data)
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
-      effectifs_data[periode_date] || 0
+      effectifs_data[periode_date]
     end
   end
 
@@ -237,7 +237,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       ap_record = ap_data[periode_date]
-      ap_record ? (ap_record[1] || 0).round : 0
+      ap_record && ap_record[1] ? ap_record[1].round : nil
     end
   end
 
@@ -245,7 +245,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       ap_record = ap_data[periode_date]
-      ap_record ? (ap_record[2] || 0).round : 0
+      ap_record && ap_record[2] ? ap_record[2].round : nil
     end
   end
 
@@ -333,7 +333,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def map_periodes_to_cotisations(periodes, cotisations_data)
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
-      (cotisations_data[periode_date] || 0).to_f
+      cotisations_data[periode_date]&.to_f
     end
   end
 
@@ -341,11 +341,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       debit_record = debits_data[periode_date]
-      if debit_record && debit_record[1]
-        debit_record[1].to_f
-      else
-        0
-      end
+      debit_record && debit_record[1] ? debit_record[1].to_f : nil
     end
   end
 
@@ -353,11 +349,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes.map do |periode_str|
       periode_date = Date.parse(periode_str)
       debit_record = debits_data[periode_date]
-      if debit_record && debit_record[2]
-        debit_record[2].to_f
-      else
-        0
-      end
+      debit_record && debit_record[2] ? debit_record[2].to_f : nil
     end
   end
 
@@ -378,7 +370,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       # Sort by date_creation descending (newest first) - matches JS: (delai1.dateCreation<delai2.dateCreation)?1:-1
       unique_delais = unique_delais.sort_by(&:date_creation).reverse
 
-      unique_delais.first ? (unique_delais.first.montant_echeancier || 0).to_f : 0
+      unique_delais.first&.montant_echeancier&.to_f
     end
   end
 

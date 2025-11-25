@@ -171,6 +171,7 @@ export default class extends Controller {
           type: 'line',
           fill: 1,
           borderDash: this.borderDashValue[index],
+          spanGaps: false, // Break line at null values
         };
       }
 
