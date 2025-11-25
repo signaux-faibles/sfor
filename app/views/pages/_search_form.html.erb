@@ -45,12 +45,12 @@
         </div>
         <div class="fr-col-12 fr-col-md-6 fr-col-xl-4 sf-geo-search" data-controller="geo-search">
           <div class="fr-input-group">
-            <%= f.label :cp_dep_label, "Zone géographique (ville, département ou région)", class: "fr-label" %>
+            <%= f.label :cp_dep_label, "Zone géographique", class: "fr-label" %>
             <div class="fr-input-wrap fr-icon-map-pin-2-line">
               <%= f.text_field :cp_dep_label, 
                               value: search_params[:cp_dep_label], 
                               class: "fr-input", 
-                              placeholder: "Rechercher une localisation...",
+                              placeholder: "Ville, département, région...",
                               aria: {
                                  autocomplete: "both",
                                  controls: "sf-geo-search-list",
