@@ -24,7 +24,7 @@
                     <tr>
                       <td><%= list.label %></td>
                       <td><%= list.code %></td>
-                      <td><%= list.companies.count %></td>
+                      <td><%= list.company_score_entries.select(:siren).distinct.count %></td>
                       <td>
                         <%= link_to "Voir", list_path(list), class: "fr-btn fr-btn--sm" %>
                       </td>

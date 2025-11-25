@@ -20,8 +20,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @per_page = @search_params[:per_page].to_i
     @per_page = 10 if @per_page < 1
 
-    # Start with companies in this list
-    list_sirens = @list.companies.pluck(:siren).to_set
+    # Start with companies in this list (from company_score_entries)
+    list_sirens = @list.company_score_entries.select(:siren).distinct.pluck(:siren).to_set
 
     # Step 1: Apply API filters if present
     api_filtered_sirens = apply_api_filters(list_sirens)
@@ -61,7 +61,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
     @search_params = {}
-    @companies = @list.companies.includes(:establishments).page(1).per(@per_page)
+    # Get sirens from company_score_entries, then query companies
+    list_sirens = @list.company_score_entries.select(:siren).distinct.pluck(:siren)
+    @companies = Company.where(siren: list_sirens).includes(:establishments).page(1).per(@per_page)
     @results = @companies.map do |company|
       {
         "siren" => company.siren,
