@@ -1,0 +1,71 @@
+  <%= turbo_frame_tag "detection_widget" do %>
+    <h2>Détection Signaux faibles</h2>
+    <!-- Modal -->
+    <button aria-controls="modal-0" data-fr-opened="false" type="button" class="fr-btn fr-btn--secondary">Historique des alertes</button>
+    <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
+      <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-modal__body">
+              <div class="fr-modal__header">
+                <button aria-controls="modal-0" title="Fermer" type="button" id="button-11" class="fr-btn--close fr-btn">Fermer</button>
+              </div>
+              <div class="fr-modal__content">
+                <h2 id="modal-0-title" class="fr-modal__title">
+                  Historique des alertes
+                </h2>
+
+                <ol class="sf-detection-list">
+                  <li class="sf-detection-list--item">
+                    <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte élevée</span> Septembre 2025
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte élevée</span> Juin 2025
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte élevée</span> Mars 2025
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte modérée</span> Janvier 2025
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte modérée</span> Septembre 2024
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte modérée</span> Juin 2024
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte modérée</span> Décembre 2023
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Alerte modérée</span> Septembre 2023
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Pas d'alerte</span> Juin 2023
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Pas d'alerte</span> Mars 2023
+                  </li>
+                  <li class="sf-detection-list--item fr-mt-1w">
+                    <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Pas d'alerte</span> Décembre 2022
+                  </li>
+
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  <% end %>
