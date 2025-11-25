@@ -145,7 +145,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       enriched_establishment = {
         rails_data: establishment,
         insee_data: api_data&.dig("data"),
-        has_api_data: api_data&.dig("data").present?
+        has_api_data: api_data&.dig("data").present?,
+        last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret)
       }
 
       @enriched_establishments << enriched_establishment
@@ -156,7 +157,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       @enriched_establishments << {
         rails_data: establishment,
         insee_data: nil,
-        has_api_data: false
+        has_api_data: false,
+        last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret)
       }
     end
   rescue StandardError => e

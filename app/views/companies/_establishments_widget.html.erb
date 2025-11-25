@@ -78,8 +78,11 @@
                     </td>
                     
                     <td>
-                      <%# @TODO : ajouter les données. %>
-                      18
+                      <% if enriched_establishment[:last_effectif].present? %>
+                        <%= enriched_establishment[:last_effectif] %>
+                      <% else %>
+                        -
+                      <% end %>
                     </td>
                     
                     <td>
