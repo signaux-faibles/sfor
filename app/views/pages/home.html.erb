@@ -1,6 +1,20 @@
 <% content_for :title, "Accueil" %>
 
 <div class="fr-container fr-mt-2w fr-mb-5w">
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button type="button" class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb">Voir le fil d&#39;arianne</button>
+    <div class="fr-collapse" id="breadcrumb">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <%= link_to 'Accueil', '/', class: 'fr-breadcrumb__link' %>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Recherche</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
   <div class="grid-row">
     <h1>Recherche</h1>
     <%= render 'search_form', search_params: {} %>
