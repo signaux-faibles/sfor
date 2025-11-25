@@ -9,13 +9,13 @@
           <%= link_to 'Accueil', '/', class: 'fr-breadcrumb__link' %>
         </li>
         <li>
-          <a class="fr-breadcrumb__link" aria-current="page">Établissement <%= @establishment.raison_sociale %></a>
+          <a class="fr-breadcrumb__link" aria-current="page">Fiche établissement — <%= @establishment.raison_sociale %></a>
         </li>
       </ol>
     </div>
   </nav>
   <div class="fr-pl-4w fr-pb-4w fr-pt-4w sf-alt-background">
-    <h1><%= @establishment.raison_sociale %></h1>
+    <h1>Fiche établissement — <%= @establishment.raison_sociale %></h1>
   </div>
 
   <div class="fr-container">
