@@ -16,51 +16,28 @@
                 </h2>
 
                 <ol class="sf-detection-list">
-                  <li class="sf-detection-list--item">
-                    <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte élevée</span> Septembre 2025
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte élevée</span> Juin 2025
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte élevée</span> Mars 2025
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte modérée</span> Janvier 2025
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte modérée</span> Septembre 2024
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte modérée</span> Juin 2024
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte modérée</span> Décembre 2023
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Alerte modérée</span> Septembre 2023
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Pas d'alerte</span> Juin 2023
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Pas d'alerte</span> Mars 2023
-                  </li>
-                  <li class="sf-detection-list--item fr-mt-1w">
-                    <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Pas d'alerte</span> Décembre 2022
-                  </li>
-
+                  <% if @alert_history.present? %>
+                    <% @alert_history.each_with_index do |item, index| %>
+                      <li class="sf-detection-list--item <%= 'fr-mt-1w' unless index == 0 %>">
+                        <% case item[:alert_level]
+                           when 'high' %>
+                          <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
+                          <span class="fr-sr-only">Alerte élevée</span>
+                        <% when 'moderate' %>
+                          <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
+                          <span class="fr-sr-only">Alerte modérée</span>
+                        <% else %>
+                          <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
+                          <span class="fr-sr-only">Pas d'alerte</span>
+                        <% end %>
+                        <%= item[:list_name] %>
+                      </li>
+                    <% end %>
+                  <% else %>
+                    <li class="sf-detection-list--item">
+                      <span>Aucun historique disponible</span>
+                    </li>
+                  <% end %>
                 </ol>
               </div>
             </div>
