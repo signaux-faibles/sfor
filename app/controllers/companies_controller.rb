@@ -1,5 +1,5 @@
 class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget]
+  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget detection_widget]
 
   def index
     initialize_search_params
@@ -18,7 +18,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def detection_widget
-    fetch_insee_data
+    fetch_alert_history
     render partial: "detection_widget"
   end
 
@@ -371,6 +371,30 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       unique_delais = unique_delais.sort_by(&:date_creation).reverse
 
       unique_delais.first&.montant_echeancier&.to_f
+    end
+  end
+
+  def fetch_alert_history # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    return if @company.siren.blank?
+
+    lists = List.order(code: :desc)
+
+    @alert_history = lists.map do |list|
+      # Check if there's an entry for this siren and list
+      entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: list.label)
+
+      alert_level = if entry&.alert&.downcase == "alerte seuil f1"
+                      "high"
+                    elsif entry&.alert&.downcase == "alerte seuil f2"
+                      "moderate"
+                    else
+                      "none"
+                    end
+
+      {
+        list_name: list.label,
+        alert_level: alert_level
+      }
     end
   end
 
