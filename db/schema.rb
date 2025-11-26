@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_21_084906) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_26_150412) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -149,8 +149,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_21_084906) do
     t.decimal "seuil_fort", precision: 5, scale: 2
     t.jsonb "macro_expl"
     t.jsonb "micro_expl"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "list_name", null: false
     t.index ["code_commune"], name: "index_company_score_entries_on_code_commune"
     t.index ["list_name"], name: "index_company_score_entries_on_list_name"
