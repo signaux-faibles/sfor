@@ -374,7 +374,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     end
   end
 
-  def fetch_alert_history # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def fetch_alert_history # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/AbcSize
     return if @company.siren.blank?
 
     lists = List.order(code: :desc)
@@ -396,6 +396,25 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         alert_level: alert_level
       }
     end
+
+    # Determine if button should be displayed
+    @show_alert_history_button = should_show_alert_history_button?
+  end
+
+  def should_show_alert_history_button? # rubocop:disable Metrics/CyclomaticComplexity
+    return false if @alert_history.blank?
+
+    has_ever_been_detected = CompanyScoreEntry.exists?(siren: @company.siren)
+    return false unless has_ever_been_detected
+
+    current_alert_index = @alert_history.find_index { |item| %w[high moderate].include?(item[:alert_level]) }
+
+    return @alert_history.any? { |item| %w[high moderate].include?(item[:alert_level]) } if current_alert_index.nil?
+
+    alert_count = @alert_history.count { |item| %w[high moderate].include?(item[:alert_level]) }
+    return false if alert_count == 1 # First alert, don't show button
+
+    true
   end
 
   def urssaf_dataset_names
