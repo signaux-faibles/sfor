@@ -7,7 +7,8 @@ class PagesController < ApplicationController
 
   def search # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
     @search_params = params.require(:search).permit(:q, :tranche_effectif_salarie, :section_activite_principale,
-                                                    :page, :per_page, :cp_dep, :cp_dep_type, :cp_dep_label) if params[:search].present?
+                                                    :page, :per_page, :cp_dep,
+                                                    :cp_dep_type, :cp_dep_label) if params[:search].present?
     @search_params ||= {}
 
     # Check if search query is a valid SIREN or SIRET and redirect if so
