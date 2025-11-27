@@ -9,11 +9,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Get search params
     @search_params = params.require(:search).permit(:q, :section_activite_principale,
-                                                    :ca_min, :forme_juridique,
+                                                    :ca_min,
                                                     :effectif_min, :score_min, :dette_sociale_min,
                                                     :stade_procol, :frequence_alerte, :niveau_alerte,
-                                                    :page, :per_page, :cp_dep,
-                                                    :cp_dep_type, :cp_dep_label) if params[:search].present?
+                                                    :page, :per_page, departement_in: [], forme_juridique: []) if params[:search].present?
     @search_params ||= {}
 
     # Check if search query is a valid SIREN or SIRET and redirect if so
@@ -25,19 +24,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @per_page = 10 if @per_page < 1
 
     # Start with companies in this list (from company_score_entries)
-    list_sirens = @list.company_score_entries.select(:siren).distinct.pluck(:siren).to_set
+    @companies = Company.joins(:company_score_entries)
+                        .where(company_score_entries: { list_name: @list.label })
+                        .distinct
 
-    # Step 1: Apply API filters if present
-    api_filtered_sirens = apply_api_filters(list_sirens)
-
-    Rails.logger.debug { "list_sirens: #{list_sirens.inspect}" }
-    Rails.logger.debug { "api_filtered_sirens: #{api_filtered_sirens.inspect}" }
-
-    # Step 2: Intersect with list companies
-    filtered_sirens = list_sirens & api_filtered_sirens
-
-    # Step 3: Get companies and apply database filters
-    @companies = Company.where(siren: filtered_sirens.to_a)
+    # Apply all database filters
     @companies = apply_database_filters(@companies)
 
     # Paginate
@@ -65,9 +56,13 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
     @search_params = {}
-    # Get sirens from company_score_entries, then query companies
-    list_sirens = @list.company_score_entries.select(:siren).distinct.pluck(:siren)
-    @companies = Company.where(siren: list_sirens).includes(:establishments).page(1).per(@per_page)
+    # Get companies from company_score_entries
+    @companies = Company.joins(:company_score_entries)
+                        .where(company_score_entries: { list_name: @list.label })
+                        .distinct
+                        .includes(:establishments)
+                        .page(1)
+                        .per(@per_page)
     @results = @companies.map do |company|
       {
         "siren" => company.siren,
@@ -86,86 +81,67 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   private
 
-  def apply_api_filters(list_sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-    # Check if we have any API filters
-    has_api_filters = @search_params[:q].present? ||
-                      @search_params[:section_activite_principale].present? ||
-                      @search_params[:ca_min].present? ||
-                      @search_params[:forme_juridique].present? ||
-                      @search_params[:cp_dep].present?
-
-    # If no API filters, return all list sirens
-    return list_sirens unless has_api_filters
-
-    # Build API service params
-    # Note: API only accepts per_page between 1 and 25 (default 10)
-    service_params = {
-      page: 1,
-      per_page: 25 # API maximum is 25
-    }
-
-    # Add query if present
-    service_params[:q] = @search_params[:q] if @search_params[:q].present?
-
-    # Add activity sector
-    service_params[:activite_principale] =
-      @search_params[:section_activite_principale] if @search_params[:section_activite_principale].present?
-
-    # Add CA min
-    service_params[:ca_min] = @search_params[:ca_min] if @search_params[:ca_min].present?
-
-    # Add forme juridique
-    service_params[:forme_juridique] = @search_params[:forme_juridique] if @search_params[:forme_juridique].present?
-
-    # Add geo location
-    if @search_params[:cp_dep].present? && @search_params[:cp_dep_type].present?
-      case @search_params[:cp_dep_type]
-      when "dep"
-        service_params[:departement] = @search_params[:cp_dep]
-      when "reg"
-        service_params[:region] = @search_params[:cp_dep]
-      when "cp"
-        service_params[:code_postal] = @search_params[:cp_dep]
-      when "epci"
-        service_params[:epci] = @search_params[:cp_dep]
-      when "insee"
-        service_params[:code_commune] = @search_params[:cp_dep]
-      end
-    end
-
-    # Call API and collect all results (handle pagination)
-    api_sirens = Set.new
-    page = 1
-    max_pages = 10 # Limit to prevent infinite loops
-
-    loop do
-      service_params[:page] = page
-      service = Api::RechercheEntreprisesApiService.new(service_params)
-      response = service.search_company
-
-      if service.errors.any? || response.nil?
-        Rails.logger.error "API search errors: #{service.errors.join(', ')}"
-        break
-      end
-
-      results = response["results"] || []
-      break if results.empty?
-
-      # Extract sirens and intersect with list immediately
-      page_sirens = results.pluck("siren").compact.to_set
-      api_sirens.merge(page_sirens & list_sirens)
-
-      # Check if we have more pages
-      total_pages = response["total_pages"] || 1
-      break if page >= total_pages || page >= max_pages
-
-      page += 1
-    end
-
-    api_sirens
-  end
-
   def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    # Filter by search query (q) - SIREN or raison sociale
+    if @search_params[:q].present?
+      query = @search_params[:q].strip
+      companies = companies.where(
+        "companies.siren ILIKE ? OR companies.raison_sociale ILIKE ?",
+        "%#{query}%", "%#{query}%"
+      )
+    end
+
+    # Filter by section_activite_principale (first character of NAF code)
+    if @search_params[:section_activite_principale].present?
+      section = @search_params[:section_activite_principale]
+      # Filter by establishments with matching code_activite first character
+      # or company_score_entries with matching code_naf first character
+      sirens_by_establishment = Establishment
+                                .where("code_activite LIKE ?", "#{section}%")
+                                .where.not(code_activite: nil)
+                                .distinct
+                                .pluck(:siren)
+                                .to_set
+
+      sirens_by_score_entry = CompanyScoreEntry
+                              .where(list_name: @list.label)
+                              .where("code_naf LIKE ?", "#{section}%")
+                              .where.not(code_naf: nil)
+                              .distinct
+                              .pluck(:siren)
+                              .to_set
+
+      # Combine both sources
+      matching_sirens = sirens_by_establishment | sirens_by_score_entry
+      companies = companies.where(siren: matching_sirens.to_a)
+    end
+
+    # Filter by forme_juridique (statut_juridique)
+    if @search_params[:forme_juridique].present? && @search_params[:forme_juridique].is_a?(Array)
+      statut_codes = @search_params[:forme_juridique].reject(&:blank?)
+      companies = companies.where(statut_juridique: statut_codes) if statut_codes.any?
+    end
+
+    # Filter by department (siege establishment)
+    if @search_params[:departement_in].present? && @search_params[:departement_in].is_a?(Array)
+      department_codes = @search_params[:departement_in].reject(&:blank?)
+      if department_codes.any?
+        # Filter by companies whose siege establishment is in the selected departments
+        matching_sirens = Establishment
+                          .where(siege: true, departement: department_codes)
+                          .distinct
+                          .pluck(:siren)
+                          .to_set
+        companies = companies.where(siren: matching_sirens.to_a)
+      end
+    end
+
+    # NOTE: ca_min (revenue) filter is not available in database
+    # The form field remains but filtering is skipped
+    if @search_params[:ca_min].present?
+      Rails.logger.warn "CA min filter requested but revenue data not available in database"
+    end
+
     company_sirens = companies.pluck(:siren)
 
     # Filter by minimum effectif
