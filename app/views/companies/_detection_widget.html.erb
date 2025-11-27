@@ -1,7 +1,6 @@
   <%= turbo_frame_tag "detection_widget" do %>
-    <h2>Détection Signaux faibles</h2>
-    <!-- Modal -->
     <% if @show_alert_history_button %>
+      <h2>Détection Signaux faibles</h2>
       <button aria-controls="modal-0" data-fr-opened="false" type="button" class="fr-btn fr-btn--secondary">Historique des alertes</button>
     <% end %>
     <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
