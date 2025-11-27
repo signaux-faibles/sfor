@@ -10,9 +10,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Get search params
     @search_params = params.require(:search).permit(:q, :section_activite_principale,
                                                     :ca_min,
-                                                    :effectif_min, :score_min, :dette_sociale_min,
-                                                    :stade_procol, :frequence_alerte, :niveau_alerte,
-                                                    :page, :per_page, departement_in: [], forme_juridique: []) if params[:search].present?
+                                                    :effectif_min, :score_min,
+                                                    :dette_sociale_min, :stade_procol,
+                                                    :frequence_alerte, :niveau_alerte,
+                                                    :page, :per_page, departement_in: [],
+                                                                      forme_juridique: []) if params[:search].present?
     @search_params ||= {}
 
     # Check if search query is a valid SIREN or SIRET and redirect if so
@@ -118,13 +120,13 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Filter by forme_juridique (statut_juridique)
     if @search_params[:forme_juridique].present? && @search_params[:forme_juridique].is_a?(Array)
-      statut_codes = @search_params[:forme_juridique].reject(&:blank?)
+      statut_codes = @search_params[:forme_juridique].compact_blank
       companies = companies.where(statut_juridique: statut_codes) if statut_codes.any?
     end
 
     # Filter by department (siege establishment)
     if @search_params[:departement_in].present? && @search_params[:departement_in].is_a?(Array)
-      department_codes = @search_params[:departement_in].reject(&:blank?)
+      department_codes = @search_params[:departement_in].compact_blank
       if department_codes.any?
         # Filter by companies whose siege establishment is in the selected departments
         matching_sirens = Establishment
