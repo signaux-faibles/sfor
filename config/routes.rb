@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   # Authentication
   devise_for :users, controllers: {
     sessions: "users/sessions"
-  }
+  }, skip: [:registrations]
 
   get "unauthorized", to: "pages#unauthorized"
   get "accueil", to: "pages#home", as: :home
