@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <title><%= content_for?(:title) ? "#{yield(:title)} — " : "" %>Signaux Faibles</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+  <script
+    src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.min.js"
+    integrity="sha384-wYec/atCKBIhxMeAqO4JgQzLgv7nPphrOELh1UduVUFqt5DXn0Ey8pqiYEyYvZZ3"
+    crossorigin="anonymous"
+    defer>
+  </script>
+
+  <script defer>
+      document.addEventListener('DOMContentLoaded', function () {
+          Sentry.init({
+              dsn: "<%= ENV['SENTRY_DSN'] %>",
+              environment: "<%= ENV['SENTRY_ENV'] || Rails.env %>",
+              tracesSampleRate: 0.1,
+          });
+      });
+  </script>
+
+  <%= javascript_importmap_tags %>
+  <meta name="turbo-prefetch" content="false">
+</head>
+
+<body>
+<!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
+<div id="flash" aria-live="polite" class="fr-container">
+  <% flash.delete(:timedout).each do |type, msg| %>
+    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm fr-mt-2w">
+      <p><%= msg %></p>
+    </div>
+  <% end %>
+</div>
+
+<main role="main" id="content">
+  <%= yield %>
+</main>
+
+</body>
+</html>
+

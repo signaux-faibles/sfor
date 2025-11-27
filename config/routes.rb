@@ -79,5 +79,5 @@ Rails.application.routes.draw do
 
   resources :lists, path: "listes", only: %i[index show]
 
-  root "establishment_trackings#index"
+  root "pages#home"
 end

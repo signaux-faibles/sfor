@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   impersonates :user
   around_action :set_time_zone
-  before_action :authenticate_user!
+  before_action :authenticate_user!, unless: :devise_controller?
   before_action :check_user_segment
   before_action :set_sentry_user
   after_action :track_action
@@ -10,7 +10,17 @@ class ApplicationController < ActionController::Base
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  layout :layout_by_resource
+
   private
+
+  def layout_by_resource
+    if devise_controller?
+      'devise'
+    else
+      'application'
+    end
+  end
 
   def user_not_authorized # rubocop:disable Metrics/MethodLength
     respond_to do |format|
