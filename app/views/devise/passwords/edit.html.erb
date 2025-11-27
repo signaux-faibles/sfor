@@ -1,0 +1,43 @@
+<main class="fr-pt-md-14v" role="main" id="content">
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+          <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <h1>Changer votre mot de passe</h1>
+
+              <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "fr-mt-4w" }) do |f| %>
+                <%= render "devise/shared/error_messages", resource: resource %>
+                <%= f.hidden_field :reset_password_token %>
+
+                <div class="fr-input-group fr-mb-3w">
+                  <%= f.label :password, "Nouveau mot de passe", class: "fr-label" %>
+                  <% if @minimum_password_length %>
+                    <span class="fr-hint-text">
+                      <%= @minimum_password_length %> caractères minimum
+                    </span>
+                  <% end %>
+                  <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "fr-input", required: true %>
+                </div>
+
+                <div class="fr-input-group fr-mb-3w">
+                  <%= f.label :password_confirmation, "Confirmer le nouveau mot de passe", class: "fr-label" %>
+                  <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "fr-input", required: true %>
+                </div>
+
+                <div class="fr-btns-group fr-btns-group--inline">
+                  <%= f.submit "Changer mon mot de passe", class: "fr-btn" %>
+                </div>
+              <% end %>
+
+              <p class="fr-mt-4w">
+                <%= link_to "Retour à la connexion", new_session_path(resource_name), class: "fr-link" %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

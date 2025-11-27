@@ -1,0 +1,42 @@
+<main class="fr-pt-md-14v" role="main" id="content">
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+          <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <h1>Connexion à Signaux Faibles</h1>
+              
+              <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "fr-mt-4w" }) do |f| %>
+                <div class="fr-input-group fr-mb-3w">
+                  <%= f.label :email, "Adresse électronique", class: "fr-label" %>
+                  <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "fr-input", required: true %>
+                </div>
+
+                <div class="fr-input-group fr-mb-3w">
+                  <%= f.label :password, "Mot de passe", class: "fr-label" %>
+                  <%= f.password_field :password, autocomplete: "current-password", class: "fr-input", required: true %>
+                </div>
+
+                <% if devise_mapping.rememberable? %>
+                  <div class="fr-checkbox-group fr-mb-3w">
+                    <%= f.check_box :remember_me, class: "fr-checkbox" %>
+                    <%= f.label :remember_me, "Se souvenir de moi", class: "fr-label" %>
+                  </div>
+                <% end %>
+
+                <div class="fr-btns-group fr-btns-group--inline">
+                  <%= f.submit "Se connecter", class: "fr-btn" %>
+                </div>
+              <% end %>
+
+              <p class="fr-mt-4w">
+                <%= link_to "Mot de passe oublié ?", new_password_path(resource_name), class: "fr-link" %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
