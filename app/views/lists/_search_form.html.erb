@@ -3,7 +3,7 @@
     <div class="fr-container--fluid fr-m-2w">
       <h2 class="fr-h4 fr-mt-1w">Filtrer les entreprises</h2>
       
-      <!-- API-based filters (like main search) -->
+      <!-- Database-based filters -->
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-12 fr-col-lg-6">
           <div class="fr-input-group">
@@ -13,22 +13,10 @@
             </div>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-6" data-controller="geo-search">
+        <div class="fr-col-12 fr-col-lg-6">
           <div class="fr-input-group">
-            <%= f.label :cp_dep_label, "Zone géographique", class: "fr-label" %>
-            <div class="fr-input-wrap fr-icon-map-pin-line">
-              <%= f.text_field :cp_dep_label, 
-                              value: search_params[:cp_dep_label], 
-                              class: "fr-input", 
-                              placeholder: "Rechercher une localisation...",
-                              data: { 
-                                geo_search_target: "input",
-                                action: "input->geo-search#search"
-                              } %>
-            </div>
-            <%= f.hidden_field :cp_dep_type, value: search_params[:cp_dep_type], data: { geo_search_target: "hiddenType" } %>
-            <%= f.hidden_field :cp_dep, value: search_params[:cp_dep], data: { geo_search_target: "hiddenCode" } %>
-            <div data-geo-search-target="results" class="geo-search-results-container"></div>
+            <%= f.label :departement_in, "Départements", class: "fr-label" %>
+            <%= f.collection_select :departement_in, current_user.geo_access.departments.order(:code), :code, ->(d) { "#{d.code} - #{d.name}" }, { selected: search_params[:departement_in] }, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
       </div>
@@ -76,9 +64,9 @@
           <div class="fr-input-group">
             <%= f.label :forme_juridique, "Forme juridique", class: "fr-label" %>
             <%= f.select :forme_juridique,
-                         [["Tous", ""]] + legal_forms_options.map { |code, label| ["#{code} - #{label}", code] },
-                         { selected: search_params[:forme_juridique] || "" },
-                         { class: "fr-select" } %>
+                         legal_forms_options.map { |code, label| ["#{code} - #{label}", code] },
+                         { selected: search_params[:forme_juridique] },
+                         { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
       </div>
