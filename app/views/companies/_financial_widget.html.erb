@@ -59,8 +59,8 @@
               <fieldset class="fr-fieldset">
                 <legend class="fr-fieldset__legend">Sélectionner les données à afficher</legend>
                 <div class="fr-fieldset__content">
-                  <div class="fr-checkbox-group fr-checkbox-group--sm">
-                    <% @financial_fields.each_with_index do |field, index| %>
+                  <% @financial_fields.each_with_index do |field, index| %>
+                    <div class="fr-checkbox-group fr-checkbox-group--sm">
                       <input
                         type="checkbox"
                         id="checkbox-<%= field %>"
@@ -73,8 +73,8 @@
                       <label class="fr-label" for="checkbox-<%= field %>">
                         <%= @dataset_names[field] %>
                       </label>
-                    <% end %>
-                  </div>
+                    </div>
+                  <% end %>
                 </div>
               </fieldset>
             </div>
