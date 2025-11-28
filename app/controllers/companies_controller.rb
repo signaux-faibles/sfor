@@ -123,14 +123,67 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @insee_data = nil
   end
 
-  def fetch_financial_data
+  def fetch_financial_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     return if @company.siren.blank?
 
-    service = Api::BanqueDeFranceApiService.new(siren: @company.siren)
-    @financial_data = service.fetch_bilans
+    service = Api::FinancialRatiosApiService.new(siren: @company.siren)
+    api_response = service.fetch_financial_ratios
+
+    if api_response && api_response["records"].present?
+      # Extract and sort records by date_cloture_exercice
+      records = api_response["records"].map { |r| r["record"]["fields"] }
+      records.sort_by! { |r| r["date_cloture_exercice"] || "" }
+
+      # Extract dates and format them
+      @dates = records.map { |r| r["date_cloture_exercice"] }.compact
+      @formatted_dates = @dates.map { |d| Date.parse(d).strftime("%d/%m/%Y") }
+
+      # Extract all available financial fields (excluding metadata fields)
+      # Collect all unique keys from all records
+      metadata_fields = %w[siren date_cloture_exercice type_bilan confidentiality]
+      all_keys = records.flat_map(&:keys).uniq
+      @financial_fields = all_keys.reject { |k| metadata_fields.include?(k) }.sort
+
+      # Build datasets for each field
+      @datasets = {}
+      @dataset_names = {}
+      @financial_fields.each do |field|
+        values = records.map { |r| r[field] }
+        @datasets[field] = values
+        @dataset_names[field] = format_field_name(field)
+      end
+
+      @error = nil
+    else
+      @dates = []
+      @formatted_dates = []
+      @financial_fields = []
+      @datasets = {}
+      @dataset_names = {}
+      @error = nil
+    end
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données financières: #{e.message}"
-    @financial_data = nil
+    @dates = []
+    @formatted_dates = []
+    @financial_fields = []
+    @datasets = {}
+    @dataset_names = {}
+    @error = e.message
+  end
+
+  def format_field_name(field)
+    # Convert snake_case to readable French names
+    field.to_s
+         .gsub(/_/, " ")
+         .split
+         .map(&:capitalize)
+         .join(" ")
+         .gsub(/Ca/, "CA")
+         .gsub(/Bfr/, "BFR")
+         .gsub(/Ebe/, "EBE")
+         .gsub(/Ebit/, "EBIT")
+         .gsub(/Caf/, "CAF")
   end
 
   def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
