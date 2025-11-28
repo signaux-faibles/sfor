@@ -42,44 +42,48 @@
         <div
           data-segmented-control-widget-target="panel"
           data-panel="chart"
-          class="sf-segmented fr-col-12 fr-col-lg-8"
+          class="sf-segmented fr-col-12"
         >
-          <div class="fr-mb-3w">
-            <fieldset class="fr-fieldset">
-              <legend class="fr-fieldset__legend">Sélectionner les données à afficher</legend>
-              <div class="fr-fieldset__content">
-                <div class="fr-checkbox-group fr-checkbox-group--sm">
-                  <% @financial_fields.each_with_index do |field, index| %>
-                    <input
-                      type="checkbox"
-                      id="checkbox-<%= field %>"
-                      name="financial-data"
-                      checked
-                      data-field-key="<%= field %>"
-                      data-action="change->financial-chart-widget#toggleDataset"
-                      data-financial-chart-widget-target="checkbox"
-                    >
-                    <label class="fr-label" for="checkbox-<%= field %>">
-                      <%= @dataset_names[field] %>
-                    </label>
-                  <% end %>
-                </div>
-              </div>
-            </fieldset>
-          </div>
-
           <div
             data-controller="financial-chart-widget"
             data-financial-chart-widget-title-value="Ratios financiers INPI/BCE"
             data-financial-chart-widget-labels-value='<%= @formatted_dates.to_json %>'
             data-financial-chart-widget-dataset-names-value='<%= @dataset_names.to_json %>'
             data-financial-chart-widget-datasets-value='<%= @datasets.to_json %>'
-            data-financial-chart-widget-colors-light-theme-value='<%= ['#000091', '#FCBFBF', '#6A6AF4', '#E1000F', '#8585F6', '#FF9575', '#C6C6FB', '#E8E8E8'].to_json %>'
-            data-financial-chart-widget-colors-dark-theme-value='<%= ['#C6C6FB', '#e1000f', '#8585F6', '#FF9575', '#000091', '#FCBFBF', '#6A6AF4', '#E8E8E8'].to_json %>'
+            data-financial-chart-widget-colors-light-theme-value='<%= ['#000091', '#FCBFBF', '#6A6AF4', '#E1000F', '#8585F6', '#FF9575', '#C6C6FB'].to_json %>'
+            data-financial-chart-widget-colors-dark-theme-value='<%= ['#C6C6FB', '#e1000f', '#8585F6', '#FF9575', '#000091', '#FCBFBF', '#6A6AF4'].to_json %>'
             data-financial-chart-widget-unit-value=""
-            class="chart-container"
+            class="fr-grid-row fr-grid-row--gutters"
           >
-            <canvas data-financial-chart-widget-target="chart" class="sf-chart"></canvas>
+            <div class="fr-col-12 fr-col-md-4">
+              <fieldset class="fr-fieldset">
+                <legend class="fr-fieldset__legend">Sélectionner les données à afficher</legend>
+                <div class="fr-fieldset__content">
+                  <div class="fr-checkbox-group fr-checkbox-group--sm">
+                    <% @financial_fields.each_with_index do |field, index| %>
+                      <input
+                        type="checkbox"
+                        id="checkbox-<%= field %>"
+                        name="financial-data"
+                        checked
+                        data-field-key="<%= field %>"
+                        data-action="change->financial-chart-widget#toggleDataset"
+                        data-financial-chart-widget-target="checkbox"
+                      >
+                      <label class="fr-label" for="checkbox-<%= field %>">
+                        <%= @dataset_names[field] %>
+                      </label>
+                    <% end %>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="fr-col-12 fr-col-md-8">
+              <div class="chart-container">
+                <canvas data-financial-chart-widget-target="chart" class="sf-chart"></canvas>
+              </div>
+            </div>
           </div>
 
           <p class="fr-mt-3w fr-mb-0"><strong>Source :</strong> INPI / BCE</p>

@@ -138,20 +138,33 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       @dates = records.pluck("date_cloture_exercice").compact
       @formatted_dates = @dates.map { |d| Date.parse(d).strftime("%d/%m/%Y") }
 
-      # Extract all available financial fields (excluding metadata fields)
-      # Collect all unique keys from all records
-      metadata_fields = %w[siren date_cloture_exercice type_bilan confidentiality]
-      all_keys = records.flat_map(&:keys).uniq
-      @financial_fields = all_keys.reject { |k| metadata_fields.include?(k) }.sort
+      # Only keep the specified financial fields
+      allowed_fields = {
+        "chiffre_d_affaires" => "Chiffre d'Affaires",
+        "ebit" => "Résultat d'exploitation",
+        "ebe" => "Excédent Brut d'exploitation (EBE)",
+        "resultat_net" => "Résultat net",
+        "marge_brute" => "Marge brute",
+        "taux_d_endettement" => "Taux d'endettement",
+        "ratio_de_liquidite" => "Ratio de liquidité"
+      }
 
-      # Build datasets for each field
+      # Build datasets only for allowed fields
+      @financial_fields = []
       @datasets = {}
       @dataset_names = {}
-      @financial_fields.each do |field|
-        values = records.map { |r| r[field] }
-        @datasets[field] = values
-        @dataset_names[field] = format_field_name(field)
+
+      allowed_fields.each do |field_key, field_label|
+        # Check if at least one record has this field
+        if records.any? { |r| r.key?(field_key) }
+          @financial_fields << field_key
+          values = records.map { |r| r[field_key] }
+          @datasets[field_key] = values
+          @dataset_names[field_key] = field_label
+        end
       end
+
+      @financial_fields.sort!
 
     else
       @dates = []
