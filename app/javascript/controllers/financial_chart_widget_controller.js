@@ -18,6 +18,7 @@ export default class extends Controller {
     Object.keys(this.datasetsValue).forEach(key => {
       this.visibleDatasets.add(key)
     })
+    
     this.createChart()
     this.observeThemeChanges()
     this.handleResize()
@@ -38,8 +39,13 @@ export default class extends Controller {
   }
 
   toggleDataset(event) {
-    const fieldKey = event.target.dataset.fieldKey
+    const fieldKey = event.target.dataset.fieldKey || event.target.getAttribute('data-field-key')
     const isChecked = event.target.checked
+
+    if (!fieldKey) {
+      console.error('No fieldKey found on checkbox', event.target)
+      return
+    }
 
     if (isChecked) {
       this.visibleDatasets.add(fieldKey)
@@ -136,12 +142,16 @@ export default class extends Controller {
   }
 
   createDatasets(colors) {
-    const fieldKeys = Array.from(this.visibleDatasets)
+    // Get all field keys in their original order, then filter to visible ones
+    const allFieldKeys = Object.keys(this.datasetsValue)
+    const visibleFieldKeys = allFieldKeys.filter(key => this.visibleDatasets.has(key))
     const datasets = []
 
-    fieldKeys.forEach((fieldKey, index) => {
+    visibleFieldKeys.forEach((fieldKey) => {
       const dataset = this.datasetsValue[fieldKey]
-      const colorIndex = index % colors.length
+      // Use the original index to maintain consistent colors
+      const originalIndex = allFieldKeys.indexOf(fieldKey)
+      const colorIndex = originalIndex % colors.length
       const color = colors[colorIndex]
 
       datasets.push({
