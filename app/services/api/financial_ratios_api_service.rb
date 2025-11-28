@@ -10,13 +10,13 @@ module Api
       @siren = siren.to_s.gsub(/\D/, "") # Remove non-digits
     end
 
-    def fetch_financial_ratios
+    def fetch_financial_ratios # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       return nil unless valid_siren?
 
       uri = URI(BASE_URL)
       uri.query = URI.encode_www_form({
-        where: "siren='#{@siren}'"
-      })
+                                        where: "siren='#{@siren}'"
+                                      })
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
@@ -27,7 +27,7 @@ module Api
       request["User-Agent"] = "SignauxFaibles/#{Rails.env} (Ruby/#{RUBY_VERSION}; Rails/#{Rails.version})"
 
       response = http.request(request)
-      Rails.logger.debug "Financial ratios API response: #{response.code}"
+      Rails.logger.debug { "Financial ratios API response: #{response.code}" }
 
       if response.is_a?(Net::HTTPSuccess)
         JSON.parse(response.body)
@@ -55,4 +55,3 @@ module Api
     end
   end
 end
-

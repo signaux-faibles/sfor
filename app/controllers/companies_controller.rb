@@ -123,7 +123,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @insee_data = nil
   end
 
-  def fetch_financial_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def fetch_financial_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     return if @company.siren.blank?
 
     service = Api::FinancialRatiosApiService.new(siren: @company.siren)
@@ -135,7 +135,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       records.sort_by! { |r| r["date_cloture_exercice"] || "" }
 
       # Extract dates and format them
-      @dates = records.map { |r| r["date_cloture_exercice"] }.compact
+      @dates = records.pluck("date_cloture_exercice").compact
       @formatted_dates = @dates.map { |d| Date.parse(d).strftime("%d/%m/%Y") }
 
       # Extract all available financial fields (excluding metadata fields)
@@ -153,15 +153,14 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         @dataset_names[field] = format_field_name(field)
       end
 
-      @error = nil
     else
       @dates = []
       @formatted_dates = []
       @financial_fields = []
       @datasets = {}
       @dataset_names = {}
-      @error = nil
     end
+    @error = nil
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données financières: #{e.message}"
     @dates = []
@@ -175,15 +174,15 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def format_field_name(field)
     # Convert snake_case to readable French names
     field.to_s
-         .gsub(/_/, " ")
+         .gsub("_", " ")
          .split
          .map(&:capitalize)
          .join(" ")
-         .gsub(/Ca/, "CA")
-         .gsub(/Bfr/, "BFR")
-         .gsub(/Ebe/, "EBE")
-         .gsub(/Ebit/, "EBIT")
-         .gsub(/Caf/, "CAF")
+         .gsub("Ca", "CA")
+         .gsub("Bfr", "BFR")
+         .gsub("Ebe", "EBE")
+         .gsub("Ebit", "EBIT")
+         .gsub("Caf", "CAF")
   end
 
   def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
