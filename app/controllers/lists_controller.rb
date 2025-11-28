@@ -84,6 +84,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   private
 
   def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    # NOTE: All filters below are combined (AND logic) - each filter narrows down the results
+    # from the previous filters. The `companies` query is progressively refined.
+
     # Filter by search query (q) - SIREN or raison sociale
     if @search_params[:q].present?
       query = @search_params[:q].strip
@@ -144,11 +147,12 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       Rails.logger.warn "CA min filter requested but revenue data not available in database"
     end
 
-    company_sirens = companies.pluck(:siren)
-
     # Filter by minimum effectif
     if @search_params[:effectif_min].present?
       effectif_min = @search_params[:effectif_min].to_i
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
+
       # Get the latest effectif for each siren
       latest_effectifs = OsfEntEffectif
                          .where(siren: company_sirens)
@@ -162,12 +166,14 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       end.keys.to_set
 
       companies = companies.where(siren: sirens_with_effectif.to_a)
-      company_sirens = companies.pluck(:siren)
     end
 
     # Filter by minimum score
     if @search_params[:score_min].present?
       score_min = @search_params[:score_min].to_f
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
+
       sirens_with_score = CompanyScoreEntry
                           .where(list_name: @list.label, siren: company_sirens)
                           .where(score: score_min..)
@@ -176,12 +182,13 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                           .to_set
 
       companies = companies.where(siren: sirens_with_score.to_a)
-      company_sirens = companies.pluck(:siren)
     end
 
     # Filter by minimum dette sociale
     if @search_params[:dette_sociale_min].present?
       dette_min = @search_params[:dette_sociale_min].to_f
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
 
       # Get all sirets for these companies
       company_sirets = Establishment.where(siren: company_sirens).pluck(:siret)
@@ -208,10 +215,48 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where(siren: sirens_with_dette.to_a)
     end
 
-    # Filter by stade_procol (placeholder - model doesn't exist yet)
+    # Filter by stade_procol (from OsfProcol via siege establishment)
     if @search_params[:stade_procol].present? && @search_params[:stade_procol] != ""
-      # TODO: Implement when OsfProcol model is created
-      # For now, this is a placeholder
+      stade_value = @search_params[:stade_procol]
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
+
+      # Get all siege establishment sirets for current companies
+      siege_sirets = Establishment
+                     .where(siren: company_sirens, siege: true)
+                     .pluck(:siret)
+                     .to_set
+
+      if stade_value == "sans"
+        # Filter for companies with no OsfProcol record for their siege establishment
+        sirets_with_procol = OsfProcol
+                             .where(siret: siege_sirets.to_a)
+                             .distinct
+                             .pluck(:siret)
+                             .to_set
+
+        sirets_without_procol = siege_sirets - sirets_with_procol
+        matching_sirens = Establishment
+                          .where(siret: sirets_without_procol.to_a)
+                          .distinct
+                          .pluck(:siren)
+                          .to_set
+      else
+        # Filter for companies whose siege establishment has matching stade_procol
+        matching_sirets = OsfProcol
+                          .where(siret: siege_sirets.to_a, stade_procol: stade_value)
+                          .distinct
+                          .pluck(:siret)
+                          .to_set
+
+        matching_sirens = Establishment
+                          .where(siret: matching_sirets.to_a)
+                          .distinct
+                          .pluck(:siren)
+                          .to_set
+      end
+
+      companies = companies.where(siren: matching_sirens.to_a)
     end
 
     # Filter by frequence_alerte (placeholder)
