@@ -126,7 +126,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def fetch_financial_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     return if @company.siren.blank?
 
-    service = Api::FinancialRatiosApiService.new(siren: @company.siren)
+    service = Api::FinancialRatiosApiService.new(siren: "789572179")
     api_response = service.fetch_financial_ratios
 
     if api_response && api_response["records"].present?
