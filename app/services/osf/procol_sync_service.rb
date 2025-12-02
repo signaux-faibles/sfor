@@ -52,7 +52,7 @@ module Osf
 
         # Declare cursor with the query
         declare_sql =
-          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_date_filter} ORDER BY siret, date_effet" # rubocop:disable Layout/LineLength
+          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_date_filter} ORDER BY siren, date_effet" # rubocop:disable Layout/LineLength
         @db_service.execute_query(declare_sql)
         @logger.debug "Declared cursor with query: #{declare_sql}"
 
@@ -132,6 +132,7 @@ module Osf
 
     def build_procol_attributes(distant_record)
       {
+        siren: distant_record["siren"],
         siret: distant_record["siret"],
         date_effet: parse_date(distant_record["date_effet"]),
         action_procol: distant_record["action_procol"],
