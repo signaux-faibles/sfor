@@ -238,7 +238,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         # Companies that ARE in the procol_at_date results with matching action_procol
         # Valid values: "sauvegarde", "redressement", "liquidation"
         sql = ActiveRecord::Base.sanitize_sql([
-                                                "SELECT DISTINCT siren FROM procol_at_date(?) AS procol WHERE procol.action_procol = ?",
+                                                "SELECT DISTINCT siren FROM procol_at_date(?) AS procol WHERE procol.action_procol = ?", # rubocop:disable Layout/LineLength
                                                 current_date, action_value
                                               ])
         matching_sirens = ActiveRecord::Base.connection.execute(sql)
