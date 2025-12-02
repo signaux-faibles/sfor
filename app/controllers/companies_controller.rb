@@ -217,7 +217,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         insee_data: api_data&.dig("data"),
         has_api_data: api_data&.dig("data").present?,
         last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret),
-        active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret)
+        active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
+        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret)
       }
 
       @enriched_establishments << enriched_establishment
@@ -230,7 +231,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         insee_data: nil,
         has_api_data: false,
         last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret),
-        active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret)
+        active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
+        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret)
       }
     end
   rescue StandardError => e
