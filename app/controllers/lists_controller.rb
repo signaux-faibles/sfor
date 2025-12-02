@@ -8,13 +8,14 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @list = List.find(params[:id])
 
     # Get search params
-    @search_params = params.require(:search).permit(:q, :section_activite_principale,
-                                                    :ca_min,
+    @search_params = params.require(:search).permit(:q, :ca_min,
                                                     :effectif_min, :score_min,
-                                                    :dette_sociale_min, :stade_procol,
+                                                    :dette_sociale_min, :action_procol,
                                                     :frequence_alerte, :niveau_alerte,
-                                                    :page, :per_page, departement_in: [],
-                                                                      forme_juridique: []) if params[:search].present?
+                                                    :page, :per_page,
+                                                    departement_in: [],
+                                                    forme_juridique: [],
+                                                    section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
 
     # Check if search query is a valid SIREN or SIRET and redirect if so
@@ -97,28 +98,27 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
 
     # Filter by section_activite_principale (first character of NAF code)
-    if @search_params[:section_activite_principale].present?
-      section = @search_params[:section_activite_principale]
-      # Filter by establishments with matching code_activite first character
-      # or company_score_entries with matching code_naf first character
-      sirens_by_establishment = Establishment
-                                .where("code_activite LIKE ?", "#{section}%")
-                                .where.not(code_activite: nil)
-                                .distinct
-                                .pluck(:siren)
-                                .to_set
+    if @search_params[:section_activite_principale].present? && @search_params[:section_activite_principale].is_a?(Array) # rubocop:disable Layout/LineLength
+      sections = @search_params[:section_activite_principale].compact_blank
+      if sections.any?
+        # Build conditions for multiple sections (OR logic within sections)
+        matching_sirens = Set.new
 
-      sirens_by_score_entry = CompanyScoreEntry
-                              .where(list_name: @list.label)
-                              .where("code_naf LIKE ?", "#{section}%")
-                              .where.not(code_naf: nil)
-                              .distinct
-                              .pluck(:siren)
-                              .to_set
+        sections.each do |section|
+          # Filter by siege establishments with matching code_activite first character
+          sirens_by_establishment = Establishment
+                                    .where(siege: true)
+                                    .where("code_activite LIKE ?", "#{section}%")
+                                    .where.not(code_activite: nil)
+                                    .distinct
+                                    .pluck(:siren)
+                                    .to_set
 
-      # Combine both sources
-      matching_sirens = sirens_by_establishment | sirens_by_score_entry
-      companies = companies.where(siren: matching_sirens.to_a)
+          matching_sirens.merge(sirens_by_establishment)
+        end
+
+        companies = companies.where(siren: matching_sirens.to_a)
+      end
     end
 
     # Filter by forme_juridique (statut_juridique)
@@ -190,8 +190,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       # Get current company sirens from the filtered companies query
       company_sirens = companies.pluck(:siren)
 
-      # Get all sirets for these companies
-      company_sirets = Establishment.where(siren: company_sirens).pluck(:siret)
+      # Get all sirets for these companies (only siege establishments)
+      company_sirets = Establishment.where(siren: company_sirens, siege: true).pluck(:siret)
 
       # Get latest periode for each siret
       latest_periodes = OsfDebit
@@ -206,57 +206,48 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         total_dette >= dette_min
       end.keys
 
-      # Get sirens from these sirets
+      # Get sirens from these sirets (only from siege establishments)
       sirens_with_dette = Establishment
-                          .where(siret: sirets_with_dette)
+                          .where(siret: sirets_with_dette, siege: true)
                           .pluck(:siren)
                           .to_set
 
       companies = companies.where(siren: sirens_with_dette.to_a)
     end
 
-    # Filter by stade_procol (from OsfProcol via siege establishment)
-    if @search_params[:stade_procol].present? && @search_params[:stade_procol] != ""
-      stade_value = @search_params[:stade_procol]
-      # Get current company sirens from the filtered companies query
-      company_sirens = companies.pluck(:siren)
+    # Filter by action_procol (using procol_at_date function)
+    if @search_params[:action_procol].present? && @search_params[:action_procol] != ""
+      action_value = @search_params[:action_procol]
+      current_date = Date.current
 
-      # Get all siege establishment sirets for current companies
-      siege_sirets = Establishment
-                     .where(siren: company_sirens, siege: true)
-                     .pluck(:siret)
-                     .to_set
+      # Execute the function query first to get sirens, then filter companies
+      # This ensures the subquery is evaluated before being used in the WHERE clause
+      if action_value == "in_bonis"
+        # Companies that are NOT in the procol_at_date results (no current action_procol = "In Bonis")
+        sql = ActiveRecord::Base.sanitize_sql([
+                                                "SELECT DISTINCT siren FROM procol_at_date(?) AS procol",
+                                                current_date
+                                              ])
+        sirens_with_procol = ActiveRecord::Base.connection.execute(sql)
+                                               .filter_map { |row| row["siren"] }
+                                               .to_set
 
-      if stade_value == "sans"
-        # Filter for companies with no OsfProcol record for their siege establishment
-        sirets_with_procol = OsfProcol
-                             .where(siret: siege_sirets.to_a)
-                             .distinct
-                             .pluck(:siret)
-                             .to_set
-
-        sirets_without_procol = siege_sirets - sirets_with_procol
-        matching_sirens = Establishment
-                          .where(siret: sirets_without_procol.to_a)
-                          .distinct
-                          .pluck(:siren)
-                          .to_set
+        # Filter for companies with no current action_procol
+        companies = companies.where.not(siren: sirens_with_procol.to_a)
       else
-        # Filter for companies whose siege establishment has matching stade_procol
-        matching_sirets = OsfProcol
-                          .where(siret: siege_sirets.to_a, stade_procol: stade_value)
-                          .distinct
-                          .pluck(:siret)
-                          .to_set
+        # Companies that ARE in the procol_at_date results with matching action_procol
+        # Valid values: "sauvegarde", "redressement", "liquidation"
+        sql = ActiveRecord::Base.sanitize_sql([
+                                                "SELECT DISTINCT siren FROM procol_at_date(?) AS procol WHERE procol.action_procol = ?",
+                                                current_date, action_value
+                                              ])
+        matching_sirens = ActiveRecord::Base.connection.execute(sql)
+                                            .filter_map { |row| row["siren"] }
+                                            .to_set
 
-        matching_sirens = Establishment
-                          .where(siret: matching_sirets.to_a)
-                          .distinct
-                          .pluck(:siren)
-                          .to_set
+        # Filter companies to only those with matching action_procol
+        companies = companies.where(siren: matching_sirens.to_a)
       end
-
-      companies = companies.where(siren: matching_sirens.to_a)
     end
 
     # Filter by frequence_alerte (placeholder)
