@@ -198,7 +198,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
          .gsub("Caf", "CAF")
   end
 
-  def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
     if @company.siren.blank?
       @enriched_establishments = []
       @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
@@ -212,18 +212,31 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     # Enrichir chaque établissement avec les données INSEE (seulement ceux de la page courante)
     @enriched_establishments = []
 
-    @paginated_establishments.each do |establishment|
+    @paginated_establishments.each do |establishment| # rubocop:disable Metrics/BlockLength
       service = Api::InseeApiService.new(siret: establishment.siret, siren: nil)
       api_data = service.fetch_establishment_by_siret(establishment.siret)
+
+      # Extraire les données de statut depuis l'API INSEE
+      insee_data = api_data&.dig("data")
+      etat_administratif = insee_data&.dig("etat_administratif")
+      date_fermeture_timestamp = insee_data&.dig("date_fermeture")
+
+      # Formater la date de fermeture si elle existe
+      date_fermeture_formatted = nil
+      if date_fermeture_timestamp.present?
+        date_fermeture_formatted = Time.at(date_fermeture_timestamp).strftime("%d/%m/%Y")
+      end
 
       # Combiner les données Rails avec les données API
       enriched_establishment = {
         rails_data: establishment,
-        insee_data: api_data&.dig("data"),
-        has_api_data: api_data&.dig("data").present?,
+        insee_data: insee_data,
+        has_api_data: insee_data.present?,
         last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret),
         active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
-        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret)
+        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret),
+        etat_administratif: etat_administratif,
+        date_fermeture_formatted: date_fermeture_formatted
       }
 
       @enriched_establishments << enriched_establishment
@@ -237,7 +250,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         has_api_data: false,
         last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret),
         active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
-        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret)
+        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret),
+        etat_administratif: nil,
+        date_fermeture_formatted: nil
       }
     end
   rescue StandardError => e

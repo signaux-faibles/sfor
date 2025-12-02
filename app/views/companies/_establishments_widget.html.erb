@@ -106,13 +106,12 @@
                     </td>
 
                     <td>
-                      <%# @TODO : vérifier si l'établissement est fermé. %>
-                      <% if true %>
-                        <p class="fr-badge fr-badge--error fr-badge--no-icon fr-badge--sm">Fermé le 23/10/2025</p>
-                      <% end %>
-
-                      <% if false %>
-                        <p class="fr-badge fr-badge--sm">En activité</p>
+                      <% if enriched_establishment[:etat_administratif] == "F" && enriched_establishment[:date_fermeture_formatted].present? %>
+                        <p class="fr-badge fr-badge--error fr-badge--no-icon fr-badge--sm">Fermé le <%= enriched_establishment[:date_fermeture_formatted] %></p>
+                      <% elsif enriched_establishment[:etat_administratif] == "A" %>
+                        <p class="fr-badge fr-badge--sm">Ouvert</p>
+                      <% else %>
+                        <p class="fr-badge fr-badge--sm">-</p>
                       <% end %>
                     </td>
 
