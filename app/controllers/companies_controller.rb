@@ -199,15 +199,20 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
-    return if @company.siren.blank?
+    if @company.siren.blank?
+      @enriched_establishments = []
+      @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
+      return
+    end
 
-    # Récupérer les établissements de la base de données
+    # Récupérer les établissements de la base de données et paginer
     establishments = @company.establishments_ordered
+    @paginated_establishments = establishments.page(params[:page]).per(10)
 
-    # Enrichir chaque établissement avec les données INSEE
+    # Enrichir chaque établissement avec les données INSEE (seulement ceux de la page courante)
     @enriched_establishments = []
 
-    establishments.each do |establishment|
+    @paginated_establishments.each do |establishment|
       service = Api::InseeApiService.new(siret: establishment.siret, siren: nil)
       api_data = service.fetch_establishment_by_siret(establishment.siret)
 
@@ -238,6 +243,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des établissements: #{e.message}"
     @enriched_establishments = []
+    @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
   end
 
   def generate_formatted_periods(start_date) # rubocop:disable Metrics/MethodLength
