@@ -96,8 +96,13 @@
                     </td>
                     
                     <td>
-                      <%# @TODO : ajouter les données. %>
-                      <p class="fr-badge fr-badge--sm fr-badge--error fr-badge--no-icon">Oui</p>
+                      <% if enriched_establishment[:active_activite_partielle] == true %>
+                        <p class="fr-badge fr-badge--sm fr-badge--error fr-badge--no-icon">Oui</p>
+                      <% elsif enriched_establishment[:active_activite_partielle] == "Na" %>
+                        <p class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">Na</p>
+                      <% else %>
+                        <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">Non</p>
+                      <% end %>
                     </td>
 
                     <td>
