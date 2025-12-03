@@ -140,7 +140,8 @@ module Osf
         siren: distant_record["siren"],
         raison_sociale: distant_record["raison_sociale"],
         statut_juridique: distant_record["statut_juridique"],
-        creation: parse_date(distant_record["creation"])
+        creation: parse_date(distant_record["creation"]),
+        naf_code: distant_record["activite_principale"]
       }
     end
   end

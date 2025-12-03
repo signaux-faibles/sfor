@@ -12,6 +12,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     :effectif_min, :score_min,
                                                     :dette_sociale_min, :action_procol,
                                                     :frequence_alerte, :niveau_alerte,
+                                                    :premieres_alertes, :sans_entreprises_recentes,
                                                     :page, :per_page,
                                                     departement_in: [],
                                                     forme_juridique: [],
@@ -87,6 +88,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # NOTE: All filters below are combined (AND logic) - each filter narrows down the results
     # from the previous filters. The `companies` query is progressively refined.
+
+    # Systematically exclude companies with excluded NAF codes
+    excluded_naf_codes = %w[
+      8411Z 8412Z 8421Z 8422Z 8423Z 8424Z 8425Z 8413Z 8430A 8430B 8430C
+      9491Z 9492Z 9420Z 9411Z 9412Z
+      6411Z 6419Z 6430Z 6491Z 6492Z 6499Z 6511Z 6512Z 6520Z 6530Z 6611Z 6612Z 6619A 6619B 6621Z 6622Z 6629Z 6630Z
+      8510Z 8520Z 8531Z 8532Z 8541Z 8542Z
+      9900Z
+    ]
+    companies = companies.where.not(naf_code: excluded_naf_codes)
 
     # Filter by search query (q) - SIREN or raison sociale
     if @search_params[:q].present?
@@ -255,9 +266,47 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       # TODO: Implement when logic is defined
     end
 
-    # Filter by niveau_alerte (placeholder)
+    # Filter by niveau_alerte (alert from CompanyScoreEntry)
     if @search_params[:niveau_alerte].present? && @search_params[:niveau_alerte] != ""
-      # TODO: Implement when logic is defined
+      alert_value = @search_params[:niveau_alerte]
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
+
+      # Filter companies by alert value in CompanyScoreEntry for this list
+      sirens_with_alert = CompanyScoreEntry
+                          .where(list_name: @list.label, siren: company_sirens, alert: alert_value)
+                          .distinct
+                          .pluck(:siren)
+                          .to_set
+
+      companies = companies.where(siren: sirens_with_alert.to_a)
+    end
+
+    # Filter by premieres_alertes (first time appearing in CompanyScoreEntry)
+    if @search_params[:premieres_alertes].present? && @search_params[:premieres_alertes] == "1"
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
+
+      # A company is a "première alerte" if it ONLY appears in the current list
+      # Find sirens that appear in other lists - these are NOT premières alertes
+      sirens_in_other_lists = CompanyScoreEntry
+                              .where(siren: company_sirens)
+                              .where.not(list_name: @list.label)
+                              .distinct
+                              .pluck(:siren)
+                              .to_set
+
+      # Filter to only sirens that don't appear in other lists
+      first_time_sirens = company_sirens.to_set - sirens_in_other_lists
+
+      companies = companies.where(siren: first_time_sirens.to_a)
+    end
+
+    # Filter by sans_entreprises_recentes (exclude companies created within last 3 years)
+    if @search_params[:sans_entreprises_recentes].present? && @search_params[:sans_entreprises_recentes] == "1"
+      three_years_ago = Date.current - 3.years
+      # Exclude companies created within last 3 years, but include companies with NULL creation date
+      companies = companies.where("creation IS NULL OR creation < ?", three_years_ago)
     end
 
     companies
