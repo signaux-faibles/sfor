@@ -110,30 +110,27 @@
         </div>
         <div class="fr-col-12 fr-col-lg-4">
           <div class="fr-input-group">
-            <%= f.label :frequence_alerte, "Fréquence d'alerte", class: "fr-label" %>
-            <%= f.select :frequence_alerte,
-                         [
-                           ["Tous", ""],
-                           ["Faible", "faible"],
-                           ["Moyenne", "moyenne"],
-                           ["Élevée", "elevee"]
-                         ],
-                         { selected: search_params[:frequence_alerte] || "" },
-                         { class: "fr-select" } %>
-          </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
             <%= f.label :niveau_alerte, "Niveau d'alerte", class: "fr-label" %>
             <%= f.select :niveau_alerte,
                          [
                            ["Tous", ""],
-                           ["Vert", "vert"],
-                           ["Orange", "orange"],
-                           ["Rouge", "rouge"]
+                           ["Alerte élevée", "Alerte seuil F1"],
+                           ["Alerte modérée", "Alerte seuil F2"]
                          ],
                          { selected: search_params[:niveau_alerte] || "" },
                          { class: "fr-select" } %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-checkbox-group">
+            <%= f.check_box :premieres_alertes, { checked: search_params[:premieres_alertes] == "1" }, "1", "0" %>
+            <%= f.label :premieres_alertes, "Premières alertes", class: "fr-label" %>
+          </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-checkbox-group">
+            <%= f.check_box :sans_entreprises_recentes, { checked: search_params[:sans_entreprises_recentes] == "1" }, "1", "0" %>
+            <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
           </div>
         </div>
       </div>
