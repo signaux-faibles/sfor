@@ -19,6 +19,49 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def detection_widget
     fetch_alert_history
+
+    data = {
+      "dettes_sociales" => 61,
+      "sante_financiere" => -21,
+      "ap" => 8,
+      "effectif" => 1
+    }
+
+    data_ordered = data.sort_by { |key, value| value }.reverse.to_h
+
+    @labels = []
+    @values = []
+
+    risk = 0
+    val1 = 0
+
+    data_ordered.each do |key, value|
+      risk += value
+      val2 = val1 + value
+
+      case key
+      when "dettes_sociales"
+        @labels << "Dettes sociales"
+      when "sante_financiere"
+        @labels << "Santé financière"
+      when "ap"
+        @labels << "Recours à l'activité partielle"
+      when "effectif"
+        @labels << "Variation de l'effectif de l'entreprise"
+      end
+
+      @values << [val1, val2]
+      val1 = val2
+    end
+
+    @values << [0, risk]
+    @labels << "Risque de défaillance (%)"
+    @seuils = [65, 88]
+
+    # À rendre dynamiques.
+    @criticite = "modéré"
+    @data_date = "1er septembre 2025"
+
     render partial: "detection_widget"
   end
 
