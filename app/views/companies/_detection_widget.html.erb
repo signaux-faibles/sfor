@@ -1,49 +1,173 @@
   <%= turbo_frame_tag "detection_widget" do %>
-    <% if @show_alert_history_button %>
-      <h2>Détection Signaux faibles</h2>
-      <button aria-controls="modal-0" data-fr-opened="false" type="button" class="fr-btn fr-btn--secondary">Historique des alertes</button>
-    <% end %>
-    <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
-      <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-modal__body">
-              <div class="fr-modal__header">
-                <button aria-controls="modal-0" title="Fermer" type="button" id="button-11" class="fr-btn--close fr-btn">Fermer</button>
-              </div>
-              <div class="fr-modal__content">
-                <h2 id="modal-0-title" class="fr-modal__title">
-                  Historique des alertes
-                </h2>
+    <h2>Détection Signaux faibles</h2>
 
-                <ol class="sf-detection-list">
-                  <% if @alert_history.present? %>
-                    <% @alert_history.each_with_index do |item, index| %>
-                      <li class="sf-detection-list--item <%= 'fr-mt-1w' unless index == 0 %>">
-                        <% case item[:alert_level]
-                           when 'high' %>
-                          <span class="fr-icon-warning-fill sf-high-alert" aria-hidden="true"></span>
-                          <span class="fr-sr-only">Alerte élevée</span>
-                        <% when 'moderate' %>
-                          <span class="fr-icon-warning-fill sf-moderated-alert" aria-hidden="true"></span>
-                          <span class="fr-sr-only">Alerte modérée</span>
-                        <% else %>
-                          <span class="fr-icon-warning-fill sf-no-alert" aria-hidden="true"></span>
-                          <span class="fr-sr-only">Pas d'alerte</span>
-                        <% end %>
-                        <%= item[:list_name] %>
-                      </li>
-                    <% end %>
-                  <% else %>
-                    <li class="sf-detection-list--item">
-                      <span>Aucun historique disponible</span>
-                    </li>
+    <div class="fr-col-12">
+      <div class="fr-alert fr-alert--info">
+        <p>Sur la base des données en notre possession, il apparaît que l'entreprise présente des caractéristiques similaires à des sociétés ayant fait défaut dans les 18 mois suivants.</p>
+        <p>Le risque de défaillance de l'entreprise sous 18 mois apparaît comme <strong><%= @criticite %></strong>.</p>
+        <p>Les données actualisées jusqu'au <strong><%= @data_date %></strong> sont mobilisées pour cette prédiction.</p>
+        <a
+          href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-f.a.q.-de-signaux-faibles/les-listes-de-detection/analyser-une-entreprise-detectee"
+          target="_blank"
+          rel="noopener external"
+          class="fr-link"
+        >
+          En savoir plus
+        </a>
+      </div>
+    </div>
+
+    <div
+      data-controller="segmented-control-widget"
+    >
+      <div>
+        <div class="fr-mb-3w fr-mt-5w">
+          <fieldset class="fr-segmented fr-segmented--no-legend">
+            <legend class="fr-segmented__legend">Format d'affichage</legend>
+            <div class="fr-segmented__elements">
+              <div class="fr-segmented__element">
+                <input
+                  value="chart"
+                  checked
+                  type="radio"
+                  id="segmented-detection-chart"
+                  name="segmented-detection"
+                  data-action="input->segmented-control-widget#switch"
+                >
+                <label class="fr-label" for="segmented-detection-chart">Graphique</label>
+              </div>
+              <div class="fr-segmented__element">
+                <input
+                  value="table"
+                  type="radio"
+                  id="segmented-detection-table"
+                  name="segmented-detection"
+                  data-action="input->segmented-control-widget#switch"
+                >
+                <label class="fr-label" for="segmented-detection-table">Tableau</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <div
+        data-segmented-control-widget-target="panel"
+        data-panel="chart"
+        class="sf-segmented fr-col-12 fr-col-lg-8"
+      >
+        <h3 class="fr-mt-3w">Éléments constitutifs de cette alerte</h3>
+        <div
+          data-controller="waterfall-chart-widget"
+          class="chart-container"
+          data-waterfall-chart-widget-colors-light-theme-value='<%= ['#e1000f', '#1f8d49', '#6a6af4', '#000091'] %>'
+          data-waterfall-chart-widget-colors-dark-theme-value='<%= ['#e1000f', '#1f8d49', '#6a6af4', '#8585f6'] %>'
+          data-waterfall-chart-widget-title-value="Éléments constitutifs de cette alerte"
+          data-waterfall-chart-widget-unit-value="%"
+          data-waterfall-chart-widget-values-value='<%= @values.to_json %>'
+          data-waterfall-chart-widget-labels-value='<%= @labels.to_json %>'
+          data-waterfall-chart-widget-seuils-value='<%= @seuils.to_json %>'
+        >
+          <canvas data-waterfall-chart-widget-target="chart" class="sf-chart"></canvas>
+        </div>
+
+        <p class="fr-mb-3w"><strong>Source :</strong> Signaux faibles</p>
+      </div>
+
+      <div
+        id="sf-detection-table"
+        class="sf-segmented sf-segmented--hidden"
+        data-segmented-control-widget-target="panel"
+        data-panel="table"
+      >
+
+        <div class="fr-table fr-table--no-caption fr-table--bordered fr-col-12 fr-col-lg-6" id="table-detection-component">
+          <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+              <div class="fr-table__content">
+                <table id="table-detection">
+                  <caption>Éléments constitutifs de cette alerte</caption>
+                  <thead>
+                  <tr>
+                    <th scope="col">Élément</th>
+                    <th scope="col">Valeur</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  <% @labels.each_with_index do |label, index| %>
+                    <tr id="table-detection-row-key-<%= index %>" data-row-key="<%= index %>">
+                      <% if index == @labels.length - 1 %>
+                        <td scope="row">
+                          <strong><%= label %></strong>
+                        </td>
+                        <td>
+                          <strong><%= @values[index][1] - @values[index][0] %> %</strong>
+                        </td>
+                      <% else %>
+                        <td scope="row"><%= label %></td>
+                        <td>
+                          <%= @values[index][1] - @values[index][0] %> %
+                        </td>
+                      <% end %>
+
+                    </tr>
                   <% end %>
-                </ol>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
+
+        <p class="fr-mb-4w"><strong>Source :</strong> Signaux faibles</p>
       </div>
-    </dialog>
+    </div>
+
+
+    <!-- Modal -->
+    <% if @show_alert_history_button %>
+      <h2>Détection Signaux faibles</h2>
+      <button aria-controls="modal-0" data-fr-opened="false" type="button" class="fr-btn fr-btn--secondary">Historique des alertes</button>
+      <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
+        <div class="fr-container fr-container--fluid fr-container-md">
+          <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+              <div class="fr-modal__body">
+                <div class="fr-modal__header">
+                  <button aria-controls="modal-0" title="Fermer" type="button" id="button-11" class="fr-btn--close fr-btn">Fermer</button>
+                </div>
+                <div class="fr-modal__content">
+                  <h2 id="modal-0-title" class="fr-modal__title">
+                    Historique des alertes
+                  </h2>
+
+                  <ol class="sf-detection-list">
+                    <% if @alert_history.present? %>
+                      <% @alert_history.each_with_index do |item, index| %>
+                        <li class="sf-detection-list--item <%= 'fr-mt-1w' unless index == 0 %>">
+                          <% case item[:alert_level]
+                             when 'high' %>
+                            <span class="fr-icon-warning-fill sf-high-alert" title="Alerte élevée"></span>
+                          <% when 'moderate' %>
+                            <span class="fr-icon-warning-fill sf-moderated-alert" title="Alerte modérée"></span>
+                          <% else %>
+                            <span class="fr-icon-warning-fill sf-no-alert" title="Pas d'alerte"></span>
+                          <% end %>
+                          <%= item[:list_name] %>
+                        </li>
+                      <% end %>
+                    <% else %>
+                      <li class="sf-detection-list--item">
+                        <span>Aucun historique disponible</span>
+                      </li>
+                    <% end %>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    <% end %>
   <% end %>
