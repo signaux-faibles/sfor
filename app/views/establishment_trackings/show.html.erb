@@ -1,7 +1,7 @@
 <% content_for :title, "Accompagnement — #{@establishment_tracking.establishment.raison_sociale}" %>
 
-<div class="fr-container--fluid">
-  <nav role="navigation" class="fr-ml-4w fr-breadcrumb" aria-label="vous êtes ici :">
+<div class="fr-container">
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
     <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">
       Voir le fil d'Ariane
     </button>
@@ -18,137 +18,143 @@
       </ol>
     </div>
   </nav>
-  <div class="fr-pl-4w fr-pb-4w fr-pt-4w sf-alt-background" style="display: flex; align-items: center; gap: 8px;">
-    <h1 style="margin: 0;">Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
-    <ul class="fr-badges-group fr-pt-1w">
-      <li>
-        <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state), style: state_style_for(@establishment_tracking.aasm.human_state) %>
-      </li>
-      <li>
-        <% if @establishment_tracking.criticality.present? %>
-          <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: criticality_style_for(@establishment_tracking.criticality.name) } %>
-        <% end %>
-      </li>
-    </ul>
+</div>
+<div>
+  <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
+    <div class="fr-container sf-fiche-title">
+      <h1>Accompagnement - <%= @establishment_tracking.establishment.raison_sociale %></h1>
+      <ul class="fr-badges-group fr-pt-1w">
+        <li>
+          <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state), style: state_style_for(@establishment_tracking.aasm.human_state) %>
+        </li>
+        <li>
+          <% if @establishment_tracking.criticality.present? %>
+            <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: criticality_style_for(@establishment_tracking.criticality.name) } %>
+          <% end %>
+        </li>
+      </ul>
+    </div>
   </div>
-  <div class="fr-tabs">
-    <ul class="fr-tabs__list sf-alt-background fr-pb-0" role="tablist" aria-label="Gestion des onglets">
-      <!-- Establishment Information Tab -->
-      <li role="presentation">
-        <button id="tabpanel-informations"
-                class="fr-tabs__tab"
-                tabindex="0" role="tab"
-                aria-selected="true"
-                aria-controls="tabpanel-informations-panel">
-          Informations
-        </button>
-      </li>
-
-      <!-- User Networks Tabs -->
-      <% current_user.active_networks.each do |network| %>
+  <div class="fr-container">
+    <div class="fr-tabs">
+      <ul class="fr-tabs__list sf-alt-background fr-pb-0" role="tablist" aria-label="Gestion des onglets">
+        <!-- Establishment Information Tab -->
         <li role="presentation">
-          <button id="tabpanel-<%= network.name.parameterize %>"
+          <button id="tabpanel-informations"
                   class="fr-tabs__tab"
-                  tabindex="-1" role="tab"
-                  aria-describedby="<%= ['CODEFI', 'CRP', 'DGFiP'].include?(network.name) ? "tooltip-#{network.name.parameterize}" : '' %>"
-                  aria-selected="false"
-                  aria-controls="tabpanel-<%= network.name.parameterize %>-panel">
-            <%= network.name %>
-            <% if network.name == 'CODEFI' %>
+                  tabindex="0" role="tab"
+                  aria-selected="true"
+                  aria-controls="tabpanel-informations-panel">
+            Informations
+          </button>
+        </li>
+
+        <!-- User Networks Tabs -->
+        <% current_user.active_networks.each do |network| %>
+          <li role="presentation">
+            <button id="tabpanel-<%= network.name.parameterize %>"
+                    class="fr-tabs__tab"
+                    tabindex="-1" role="tab"
+                    aria-describedby="<%= ['CODEFI', 'CRP', 'DGFiP'].include?(network.name) ? "tooltip-#{network.name.parameterize}" : '' %>"
+                    aria-selected="false"
+                    aria-controls="tabpanel-<%= network.name.parameterize %>-panel">
+              <%= network.name %>
+              <% if network.name == 'CODEFI' %>
               <span class="fr-tooltip fr-placement" id="tooltip-codefi" role="tooltip" aria-hidden="true">
                 L'onglet CODEFI est accessible à tous les agents Signaux Faibles de la zone géographique concernée. Des agents d'autres départements peuvent être ajoutés dans le cas d'un accompagnement à portée nationale.
               </span>
-            <% elsif network.name == 'CRP' %>
+              <% elsif network.name == 'CRP' %>
               <span class="fr-tooltip fr-placement" id="tooltip-crp" role="tooltip" aria-hidden="true">
                 L'onglet CRP est accessible à tous les agents CRP, leurs appuis, certains chargés de mission sectoriels de la région concernée. Des agents d'autres régions peuvent être ajoutés dans le cas d'un accompagnement à portée nationale. Les agents MRE et DIRE ont un accès national.
               </span>
-            <% elsif network.name == 'DGFiP' %>
+              <% elsif network.name == 'DGFiP' %>
               <span class="fr-tooltip fr-placement" id="tooltip-dgfip" role="tooltip" aria-hidden="true">
                 L'onglet DGFiP est accessible à tous les agents SP CODEFI et CDED du département concerné. Des agents d'autres départements peuvent être ajoutés dans le cas d'un accompagnement à portée nationale.Les agents MCCE ont un accès national.
               </span>
-            <% end %>
-          </button>
-        </li>
-      <% end %>
-    </ul>
+              <% end %>
+            </button>
+          </li>
+        <% end %>
+      </ul>
 
-    <%= render 'info_panel' %>
+      <%= render 'info_panel' %>
 
-    <!-- User Networks Panels -->
-    <% current_user.active_networks.each do |network| %>
-      <div id="tabpanel-<%= network.name.parameterize %>-panel"
-           class="fr-tabs__panel"
-           role="tabpanel"
-           aria-labelledby="tabpanel-<%= network.name.parameterize %>"
-           tabindex="0">
+      <!-- User Networks Panels -->
+      <% current_user.active_networks.each do |network| %>
+        <div id="tabpanel-<%= network.name.parameterize %>-panel"
+             class="fr-tabs__panel"
+             role="tabpanel"
+             aria-labelledby="tabpanel-<%= network.name.parameterize %>"
+             tabindex="0">
 
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-8">
-            <div class="fr-mb-3w">
-              <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
-                <% summaries = network.name.downcase == 'codefi' ? @codefi_summaries : @user_network_summaries %>
-                <% if summaries.present? %>
-                  <%= render summaries %>
-                <% else %>
-                  <% if policy(@establishment_tracking).edit? %>
-                    <%= render "summaries/form", summary: Summary.new(network: network), network: network %>
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-8">
+              <div class="fr-mb-3w">
+                <%= turbo_frame_tag "#{network.name.parameterize}_summary" do %>
+                  <% summaries = network.name.downcase == 'codefi' ? @codefi_summaries : @user_network_summaries %>
+                  <% if summaries.present? %>
+                    <%= render summaries %>
                   <% else %>
-                    <div class="fr-ml-3w">
-                      <h4>Synthèse
-                        <button class="fr-btn--tooltip fr-btn" type="button" id="button-summary" aria-describedby="button-summary-<%= network.name.parameterize %>">
-                          <span class="fr-icon-information-line" aria-hidden="true"></span>
-                          <span class="fr-sr-only">Information sur la synthèse</span>
-                        </button>
-                        <span class="fr-tooltip fr-placement" id="button-summary-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
+                    <% if policy(@establishment_tracking).edit? %>
+                      <%= render "summaries/form", summary: Summary.new(network: network), network: network %>
+                    <% else %>
+                      <div class="fr-ml-3w">
+                        <h4>Synthèse
+                          <button class="fr-btn--tooltip fr-btn" type="button" id="button-summary" aria-describedby="button-summary-<%= network.name.parameterize %>">
+                            <span class="fr-icon-information-line" aria-hidden="true"></span>
+                            <span class="fr-sr-only">Information sur la synthèse</span>
+                          </button>
+                          <span class="fr-tooltip fr-placement" id="button-summary-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
                           La "synthèse" permet de comprendre rapidement et simplement les grands enjeux du dossier.<br/><br/>
                           Pour une meilleure homogénéisation, elle s'articule en trois paragraphes : présentation de l’entreprise, description des difficultés ou problématiques, actions engagées et calendrier de suivi. La mise en forme de ce champ s’effectue en Markdown (cf guide utilisateur).
                         </span>
-                      </h4>
+                        </h4>
 
-                      <p>Aucune synthèse pour ce réseau.</p>
-                    </div>
-                  <% end %>
-                <% end %>
-              <% end %>
-            </div>
-
-            <div class="fr-pl-3w">
-              <h4>Commentaires
-                <button class="fr-btn--tooltip fr-btn" type="button" id="button-comments" aria-describedby="button-comments-<%= network.name.parameterize %>">
-                  <span class="fr-icon-information-line" aria-hidden="true"></span>
-                  <span class="fr-sr-only">Information sur les commentaires</span>
-                </button>
-                <span class="fr-tooltip fr-placement" id="button-comments-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
-                  Les "commentaires" informent sur les récentes actualités du dossier et la situation de l’entreprise.
-                </span>
-              </h4>
-
-              <% if policy(@establishment_tracking).edit? %>
-                <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
-                  <%= render "comments/form", comment: Comment.new(network: network), network: network %>
-                <% end %>
-              <% end %>
-
-              <div class="fr-mt-4w">
-                <div id="comments_<%= network.name.parameterize %>">
-                  <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
-                    <% comments = network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments %>
-
-                    <% if comments.any? %>
-                      <% comments.each do |comment| %>
-                        <%= render "comments/comment", comment: comment %>
-                      <% end %>
-                    <% else %>
-                      <p id="no_comments_message_<%= network.name.parameterize %>">Il n'y a pas encore de commentaires
-                        pour ce suivi</p>
+                        <p>Aucune synthèse pour ce réseau.</p>
+                      </div>
                     <% end %>
                   <% end %>
+                <% end %>
+              </div>
+
+              <div class="fr-pl-3w">
+                <h4>Commentaires
+                  <button class="fr-btn--tooltip fr-btn" type="button" id="button-comments" aria-describedby="button-comments-<%= network.name.parameterize %>">
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Information sur les commentaires</span>
+                  </button>
+                  <span class="fr-tooltip fr-placement" id="button-comments-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
+                  Les "commentaires" informent sur les récentes actualités du dossier et la situation de l’entreprise.
+                </span>
+                </h4>
+
+                <% if policy(@establishment_tracking).edit? %>
+                  <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
+                    <%= render "comments/form", comment: Comment.new(network: network), network: network %>
+                  <% end %>
+                <% end %>
+
+                <div class="fr-mt-4w">
+                  <div id="comments_<%= network.name.parameterize %>">
+                    <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
+                      <% comments = network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments %>
+
+                      <% if comments.any? %>
+                        <% comments.each do |comment| %>
+                          <%= render "comments/comment", comment: comment %>
+                        <% end %>
+                      <% else %>
+                        <p id="no_comments_message_<%= network.name.parameterize %>">Il n'y a pas encore de commentaires
+                          pour ce suivi</p>
+                      <% end %>
+                    <% end %>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 </div>
