@@ -25,15 +25,16 @@
     <% if false %>
       <p class="fr-badge fr-badge--pink-macaron fr-ml-3w">Alerte modérée</p>
     <% end %>
+      <%# Statut procédure collective (si différent de in bonis) %>
+      <% if true %>
+        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">Statut procédure collective</p>
+      <% end %>
 
-    <% if false %>
-      <p class="fr-badge fr-badge--brown-caramel fr-ml-3w">Alerte faible</p>
-    <% end %>
-
-    <%# Statut procédure collective (si différent de in bonis) %>
-    <% if true %>
-      <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">Statut procédure collective</p>
-    <% end %>
+      <%# Première alerte %>
+      <% if true %>
+        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1re alerte</p>
+      <% end %>
+    </div>
   </div>
   <div class="fr-tabs">
     <ul class="fr-tabs__list sf-alt-background fr-pb-0" role="tablist" aria-label="Informations sur l'entreprise">
