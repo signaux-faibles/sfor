@@ -26,8 +26,8 @@ class OsfAp < ApplicationRecord
     # If no entry exists, return "Na"
     return "Na" unless entries.exists?
 
-    # If entry exists, check if etp_consomme is > 0
-    has_active_ap = entries.where("etp_consomme > 0").exists?
+    # If entry exists, check if the sum of etp_autorise and etp_consomme is > 0
+    has_active_ap = entries.where("COALESCE(etp_autorise, 0) + COALESCE(etp_consomme, 0) > 0").exists?
 
     has_active_ap ? true : false
   end
