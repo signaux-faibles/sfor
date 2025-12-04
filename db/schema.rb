@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_03_141608) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_03_155502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -122,6 +122,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_03_141608) do
     t.datetime "updated_at", null: false
     t.string "statut_juridique", limit: 10
     t.date "creation"
+    t.string "naf_code", limit: 5
+    t.index ["naf_code"], name: "index_companies_on_naf_code"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
   end
 
