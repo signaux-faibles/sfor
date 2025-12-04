@@ -35,6 +35,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Apply all database filters
     @companies = apply_database_filters(@companies)
 
+    # Calculate alert breakdown from filtered results (before pagination)
+    @alert_breakdown = calculate_alert_breakdown(@companies)
+
     # Paginate
     @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
@@ -60,13 +63,24 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
     @search_params = {}
-    # Get companies from company_score_entries
+    @page = 1
+    @per_page = 10
+
+    # Start with companies in this list (from company_score_entries)
     @companies = Company.joins(:company_score_entries)
                         .where(company_score_entries: { list_name: @list.label })
                         .distinct
-                        .includes(:establishments)
-                        .page(1)
-                        .per(@per_page)
+
+    # Apply all database filters
+    @companies = apply_database_filters(@companies)
+
+    # Calculate alert breakdown from filtered results (before pagination)
+    @alert_breakdown = calculate_alert_breakdown(@companies)
+
+    # Paginate
+    @companies = @companies.includes(:establishments).page(@page).per(@per_page)
+
+    # Format results for display
     @results = @companies.map do |company|
       {
         "siren" => company.siren,
@@ -74,12 +88,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         "nombre_etablissements_ouverts" => company.establishments.size
       }
     end
+
     @pagination = {
-      page: 1,
+      page: @page,
       per_page: @per_page,
       total_pages: @companies.total_pages,
       total_results: @companies.total_count
     }
+
+    # Enrich with tracking status
     enrich_results_with_tracking_status(@results)
   end
 
@@ -331,5 +348,30 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     results.each do |result|
       result["has_tracking_in_progress"] = sirens_with_tracking.include?(result["siren"])
     end
+  end
+
+  def calculate_alert_breakdown(companies_query) # rubocop:disable Metrics/MethodLength
+    # Get all sirens from the filtered companies query
+    filtered_sirens = companies_query.pluck(:siren).to_set
+
+    return { alerte_elevee: 0, alerte_moderee: 0 } if filtered_sirens.empty?
+
+    # Count distinct sirens with each alert level in this list
+    alerte_elevee_count = CompanyScoreEntry
+                          .where(list_name: @list.label, siren: filtered_sirens.to_a, alert: "Alerte seuil F1")
+                          .select(:siren)
+                          .distinct
+                          .count
+
+    alerte_moderee_count = CompanyScoreEntry
+                           .where(list_name: @list.label, siren: filtered_sirens.to_a, alert: "Alerte seuil F2")
+                           .select(:siren)
+                           .distinct
+                           .count
+
+    {
+      alerte_elevee: alerte_elevee_count,
+      alerte_moderee: alerte_moderee_count
+    }
   end
 end

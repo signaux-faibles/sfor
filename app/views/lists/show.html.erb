@@ -12,9 +12,20 @@
 
     <% if @results && @results.any? %>
       <p class="fr-mt-2w">
-        <%= @pagination[:total_results] %> résultat(s) trouvé(s)
+        <%= pluralize(@pagination[:total_results], "entreprise", "entreprises") %>
+        <% if @alert_breakdown %>
+          • 
+          <span class="fr-badge fr-badge--error fr-badge--no-icon">
+            <%= @alert_breakdown[:alerte_elevee] %> <%= @alert_breakdown[:alerte_elevee] > 1 ? "Alertes élevées" : "Alerte élevée" %>
+          </span>
+          et
+          <span class="fr-badge fr-badge--pink-macaron">
+            <%= @alert_breakdown[:alerte_moderee] %> <%= @alert_breakdown[:alerte_moderee] > 1 ? "Alertes modérées" : "Alerte modérée" %>
+          </span>
+        <% end %>
         <% if @pagination[:total_pages] > 1 %>
-          - Page <%= @pagination[:page] %> sur <%= @pagination[:total_pages] %>
+          <br>
+          Page <%= @pagination[:page] %> sur <%= @pagination[:total_pages] %>
         <% end %>
       </p>
 
