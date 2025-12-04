@@ -97,7 +97,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       8510Z 8520Z 8531Z 8532Z 8541Z 8542Z
       9900Z
     ]
-    companies = companies.where.not(naf_code: excluded_naf_codes)
+
+    # TODO : update this to companies.where.not(naf_code: excluded_naf_codes) when naf_code is populated
+    companies = companies.where("naf_code IS NULL OR naf_code NOT IN (?)", excluded_naf_codes)
 
     # Filter by search query (q) - SIREN or raison sociale
     if @search_params[:q].present?
