@@ -34,7 +34,9 @@
 
 
   <!-- Detection Widget with Turbo Frame -->
-  <%if true %>
+  <% last_list = List.order(code: :desc).first %>
+  <% company_in_last_list = last_list && CompanyScoreEntry.exists?(siren: @company.siren, list_name: last_list.label) %>
+  <% if company_in_last_list %>
     <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
       <div class="fr-col-12">
         <%= turbo_frame_tag "detection_widget",

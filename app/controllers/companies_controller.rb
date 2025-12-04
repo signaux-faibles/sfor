@@ -17,17 +17,37 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "insee_widget"
   end
 
-  def detection_widget
+  def detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     fetch_alert_history
 
-    data = {
-      "dettes_sociales" => 61,
-      "sante_financiere" => -21,
-      "ap" => 8,
-      "effectif" => 1
+    # Get the last list
+    last_list = List.order(code: :desc).first
+    return render partial: "detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
+
+    # Find the CompanyScoreEntry for this company and last list
+    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    return render partial: "detection_widget",
+                  locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
+
+    # Get macro_expl data
+    macro_expl = entry.macro_expl || {}
+
+    # Map macro_expl keys to internal keys and labels
+    key_mapping = {
+      "Dettes-sociales" => { key: "dettes_sociales", label: "Dettes sociales" },
+      "Données-financières" => { key: "sante_financiere", label: "Santé financière" },
+      "Recours-à-l'activité-partielle" => { key: "ap", label: "Recours à l'activité partielle" },
+      "Variation-de-l'effectif-de-l'entreprise" => { key: "effectif", label: "Variation de l'effectif de l'entreprise" }
     }
 
-    data_ordered = data.sort_by { |key, value| value }.reverse.to_h
+    # Build data hash from macro_expl
+    data = {}
+    macro_expl.each do |macro_key, value|
+      data[key_mapping[macro_key][:key]] = value.to_f.round(1) if key_mapping[macro_key]
+    end
+
+    # Sort by value descending
+    data_ordered = data.sort_by { |_key, value| value }.reverse.to_h
 
     @labels = []
     @values = []
@@ -35,32 +55,47 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     risk = 0
     val1 = 0
 
+    # Build waterfall chart data
     data_ordered.each do |key, value|
       risk += value
-      val2 = val1 + value
+      val2 = (val1 + value).round(1)
 
-      case key
-      when "dettes_sociales"
-        @labels << "Dettes sociales"
-      when "sante_financiere"
-        @labels << "Santé financière"
-      when "ap"
-        @labels << "Recours à l'activité partielle"
-      when "effectif"
-        @labels << "Variation de l'effectif de l'entreprise"
-      end
+      # Find the label for this key
+      label = key_mapping.values.find { |m| m[:key] == key }&.dig(:label)
+      @labels << label if label
 
-      @values << [val1, val2]
+      @values << [val1.round(1), val2]
       val1 = val2
     end
 
-    @values << [0, risk]
+    # Add the final risk score (from entry.score)
+    # Use entry.score directly, or fallback to calculated risk if score is nil
+    final_score = (entry.score&.to_f || risk).round(1)
+    @values << [0, final_score]
     @labels << "Risque de défaillance (%)"
-    @seuils = [65, 88]
 
-    # À rendre dynamiques.
-    @criticite = "modéré"
-    @data_date = "1er septembre 2025"
+    # Get seuils from environment variables
+    seuil_f2 = ENV.fetch("SEUIL_F2", "65").to_f
+    seuil_f1 = ENV.fetch("SEUIL_F1", "88").to_f
+    @seuils = [seuil_f2, seuil_f1]
+
+    # Determine criticite from alert field
+    @criticite = if entry.alert&.downcase == "alerte seuil f1"
+                   "élevé"
+                 elsif entry.alert&.downcase == "alerte seuil f2"
+                   "modéré"
+                 else
+                   "faible"
+                 end
+
+    # Format data_date from list_date or created_at
+    @data_date = if last_list.list_date
+                   I18n.l(last_list.list_date, format: :long, locale: :fr)
+                 elsif entry.created_at
+                   I18n.l(entry.created_at.to_date, format: :long, locale: :fr)
+                 else
+                   "Date non disponible"
+                 end
 
     render partial: "detection_widget"
   end
