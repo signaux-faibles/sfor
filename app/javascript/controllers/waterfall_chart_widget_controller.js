@@ -132,7 +132,7 @@ export default class extends Controller {
         meta.data.forEach((bar, index) => {
           const dataValue = data.datasets[0].data[index];
           const value = Array.isArray(dataValue) ? dataValue[1] - dataValue[0] : dataValue;
-          const label = value + '%';
+          const label = Math.round(value * 10) / 10 + '%';
 
           // Changer la couleur pour le dernier label
           if (index === meta.data.length - 1) {
