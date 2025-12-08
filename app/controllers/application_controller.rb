@@ -59,6 +59,8 @@ class ApplicationController < ActionController::Base
   end
 
   def track_action
+    return if Rails.env.development?
+
     name = "#{controller_name}##{action_name}"
     ahoy.track name, request.path_parameters
   end
