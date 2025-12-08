@@ -1,0 +1,143 @@
+<div class="fr-mb-3w">
+  <div class="fr-mb-2w">
+    <%= link_to "← Retour à la liste", admin_users_path, class: "fr-link" %>
+  </div>
+  
+  <h1 class="fr-h1 fr-mb-2w">Utilisateur : <%= @user.email %></h1>
+</div>
+
+<div class="fr-card fr-mb-3w">
+  <div class="fr-card__body">
+    <div class="fr-card__content">
+      <h2 class="fr-h3 fr-mb-2w">Informations</h2>
+      
+      <dl class="fr-mb-3w">
+        <dt class="fr-text--sm fr-text--bold">Email</dt>
+        <dd class="fr-mb-2w"><%= @user.email %></dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Nom complet</dt>
+        <dd class="fr-mb-2w"><%= @user.display_name %></dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Prénom</dt>
+        <dd class="fr-mb-2w"><%= @user.first_name || "Non renseigné" %></dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Nom</dt>
+        <dd class="fr-mb-2w"><%= @user.last_name || "Non renseigné" %></dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Entité</dt>
+        <dd class="fr-mb-2w"><%= @user.entity&.name || "Non renseigné" %></dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Segment</dt>
+        <dd class="fr-mb-2w">
+          <% if @user.segment&.name %>
+            <span class="fr-badge fr-badge--sm <%= 'fr-badge--success' if @user.segment.name == 'sf' %>">
+              <%= @user.segment.name %>
+            </span>
+          <% else %>
+            <span class="fr-badge fr-badge--sm">Aucun</span>
+          <% end %>
+        </dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Réseaux</dt>
+        <dd class="fr-mb-2w">
+          <% if @user.networks.any? %>
+            <% @user.networks.each do |network| %>
+              <span class="fr-badge fr-badge--sm <%= 'fr-badge--success' if network.name == 'SIGNAUX FAIBLES' %>">
+                <%= network.name %>
+              </span>
+            <% end %>
+          <% else %>
+            <span class="fr-badge fr-badge--sm">Aucun</span>
+          <% end %>
+        </dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Dernière connexion</dt>
+        <dd class="fr-mb-2w">
+          <%= @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short) : "Jamais" %>
+        </dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Compte créé le</dt>
+        <dd class="fr-mb-2w">
+          <%= @user.created_at ? l(@user.created_at, format: :short) : "Non renseigné" %>
+        </dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="fr-card fr-mb-3w">
+  <div class="fr-card__body">
+    <div class="fr-card__content">
+      <h2 class="fr-h3 fr-mb-2w">Réinitialisation du mot de passe</h2>
+      
+      <p class="fr-text--sm fr-mb-2w">
+        Si l'utilisateur ne peut pas recevoir l'email de réinitialisation, vous pouvez générer un lien de réinitialisation manuel ci-dessous.
+      </p>
+      
+      <% if flash[:reset_password_url].present? %>
+        <div class="fr-alert fr-alert--success fr-mb-2w">
+          <p>
+            Un nouveau lien de réinitialisation a été généré. Le lien est valide pendant 6 heures.
+          </p>
+        </div>
+        
+        <div class="fr-input-group fr-mb-2w">
+          <label class="fr-label" for="reset-link">Lien de réinitialisation</label>
+          <input 
+            type="text" 
+            id="reset-link" 
+            class="fr-input" 
+            value="<%= flash[:reset_password_url] %>" 
+            readonly
+            onclick="this.select(); document.execCommand('copy');"
+          />
+          <div class="fr-messages-group" id="reset-link-messages" aria-live="polite">
+            <p class="fr-message fr-message--info">
+              Cliquez sur le champ pour sélectionner et copier le lien
+            </p>
+          </div>
+        </div>
+      <% elsif @user.reset_password_token.present? && @user.reset_password_sent_at.present? %>
+        <% if @user.reset_password_sent_at > 6.hours.ago %>
+          <div class="fr-alert fr-alert--info fr-mb-2w">
+            <p>
+              Un lien de réinitialisation a été généré le <%= l(@user.reset_password_sent_at, format: :short) %>.
+              Le lien est valide pendant 6 heures.
+            </p>
+            <p class="fr-text--sm fr-mt-1w">
+              <strong>Note :</strong> Le token est chiffré dans la base de données. Pour obtenir le lien complet, veuillez générer un nouveau lien.
+            </p>
+          </div>
+        <% else %>
+          <div class="fr-alert fr-alert--warning fr-mb-2w">
+            <p>
+              Le lien de réinitialisation précédent a expiré (généré le <%= l(@user.reset_password_sent_at, format: :short) %>).
+              Veuillez en générer un nouveau.
+            </p>
+          </div>
+        <% end %>
+      <% end %>
+      
+      <div class="fr-btns-group">
+        <%= button_to "Générer un nouveau lien de réinitialisation", 
+            reset_password_admin_user_path(@user), 
+            method: :post,
+            class: "fr-btn fr-btn--secondary",
+            data: { 
+              confirm: "Générer un nouveau lien de réinitialisation pour #{@user.email} ?" 
+            } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fr-btns-group">
+  <%= link_to "Imiter cet utilisateur", 
+      [:impersonate, :admin, @user], 
+      method: :get,
+      class: "fr-btn fr-btn--secondary",
+      data: { 
+        confirm: "Êtes-vous sûr de vouloir vous connecter en tant que #{@user.email} ?" 
+      } %>
+</div>
+
