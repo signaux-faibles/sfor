@@ -7,4 +7,3 @@ class CompanyPolicy < ApplicationPolicy
     end
   end
 end
-
