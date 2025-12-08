@@ -32,6 +32,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                         .where(company_score_entries: { list_name: @list.label })
                         .distinct
 
+    # Apply policy scope to restrict to user's departments
+    @companies = policy_scope(@companies)
+
     # Apply all database filters
     @companies = apply_database_filters(@companies)
 
@@ -70,6 +73,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @companies = Company.joins(:company_score_entries)
                         .where(company_score_entries: { list_name: @list.label })
                         .distinct
+
+    # Apply policy scope to restrict to user's departments
+    @companies = policy_scope(@companies)
 
     # Apply all database filters
     @companies = apply_database_filters(@companies)
