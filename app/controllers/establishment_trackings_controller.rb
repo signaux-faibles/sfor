@@ -111,10 +111,15 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   end
 
   def set_tracking
-    @establishment_tracking = EstablishmentTracking.includes(
-      tracking_referents: { user: :entity },
-      tracking_participants: { user: :entity }
-    ).find(params[:id])
+    @establishment_tracking = if %w[manage_contributors update_contributors remove_referent
+                                    remove_participant].include?(action_name)
+                                EstablishmentTracking.includes(
+                                  tracking_referents: { user: :entity },
+                                  tracking_participants: { user: :entity }
+                                ).find(params[:id])
+                              else
+                                EstablishmentTracking.find(params[:id])
+                              end
     authorize @establishment_tracking
   end
 

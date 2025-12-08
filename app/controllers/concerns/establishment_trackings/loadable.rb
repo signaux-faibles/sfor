@@ -31,7 +31,7 @@ module EstablishmentTrackings::Loadable
                                               .not(id: @establishment_tracking.id)
     @company_trackings = EstablishmentTracking
                          .joins(:establishment)
-                         .includes(:criticality, :referents)
+                         .includes(:criticality, :referents, establishment: %i[company department])
                          .where(establishments: { siren: @establishment_tracking.establishment.siren })
                          .where.not(id: @establishment_tracking.id)
                          .distinct

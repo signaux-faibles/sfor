@@ -2,7 +2,7 @@ class Admin::UsersController < Admin::ApplicationController
   before_action :set_user, only: %i[show impersonate reset_password]
 
   def index
-    @users = User.includes(:entity, :segment, :geo_access)
+    @users = User.includes(:entity, :segment, :geo_access, :networks)
     @users = @users.where("email ILIKE ?", "%#{params[:search].strip}%") if params[:search].present?
     @users = @users.order(:email)
 
@@ -34,6 +34,6 @@ class Admin::UsersController < Admin::ApplicationController
   private
 
   def set_user
-    @user = User.includes(geo_access: :departments).find(params[:id])
+    @user = User.find(params[:id])
   end
 end
