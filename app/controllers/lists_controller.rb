@@ -108,11 +108,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Systematically exclude companies with excluded NAF codes
     excluded_naf_codes = %w[
-      8411Z 8412Z 8421Z 8422Z 8423Z 8424Z 8425Z 8413Z 8430A 8430B 8430C
-      9491Z 9492Z 9420Z 9411Z 9412Z
-      6411Z 6419Z 6430Z 6491Z 6492Z 6499Z 6511Z 6512Z 6520Z 6530Z 6611Z 6612Z 6619A 6619B 6621Z 6622Z 6629Z 6630Z
-      8510Z 8520Z 8531Z 8532Z 8541Z 8542Z
-      9900Z
+      84.11Z 84.12Z 84.21Z 84.22Z 84.23Z 84.24Z 84.25Z 84.13Z 84.30A 84.30B 84.30C
+      94.91Z 94.92Z 94.20Z 94.11Z 94.12Z
+      64.11Z 64.19Z 64.30Z 64.91Z 64.92Z 64.99Z 65.11Z 65.12Z 65.20Z 65.30Z 66.11Z 66.12Z 66.19A 66.19B 66.21Z 66.22Z
+      66.29Z 66.30Z 85.10Z 85.20Z 85.31Z 85.32Z 85.41Z 85.42Z
+      99.00Z
     ]
 
     # TODO : update this to companies.where.not(naf_code: excluded_naf_codes) when naf_code is populated
