@@ -44,6 +44,7 @@
         <th scope="col">Nom</th>
         <th scope="col">Segment</th>
         <th scope="col">Réseaux</th>
+        <th scope="col">Accès géographique</th>
         <th scope="col">Dernière connexion</th>
         <th scope="col">Actions</th>
       </tr>
@@ -72,6 +73,15 @@
             <% else %>
               <span class="fr-badge fr-badge--sm">Aucun</span>
             <% end %>  
+          </td>
+          <td>
+            <% if user.geo_access %>
+              <span class="fr-badge fr-badge--sm fr-badge--info">
+                <%= user.geo_access.name %>
+              </span>
+            <% else %>
+              <span class="fr-badge fr-badge--sm">Non renseigné</span>
+            <% end %>
           </td>
           <td>
             <%= user.last_sign_in_at ? l(user.last_sign_in_at, format: :short) : "Jamais" %>

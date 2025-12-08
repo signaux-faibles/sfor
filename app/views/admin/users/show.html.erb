@@ -51,6 +51,39 @@
           <% end %>
         </dd>
         
+        <dt class="fr-text--sm fr-text--bold">Accès géographique</dt>
+        <dd class="fr-mb-2w">
+          <% if @user.geo_access %>
+            <span class="fr-badge fr-badge--sm fr-badge--info">
+              <%= @user.geo_access.name %>
+            </span>
+          <% else %>
+            <span class="fr-badge fr-badge--sm">Non renseigné</span>
+          <% end %>
+        </dd>
+        
+        <dt class="fr-text--sm fr-text--bold">Départements associés</dt>
+        <dd class="fr-mb-2w">
+          <% if @user.geo_access&.departments&.any? %>
+            <div class="fr-tags-group">
+              <% @user.geo_access.departments.order(:code).each do |department| %>
+                <span class="fr-tag">
+                  <%= department.code %> - <%= department.name %>
+                </span>
+              <% end %>
+            </div>
+            <p class="fr-text--xs fr-mt-1w">
+              <%= pluralize(@user.geo_access.departments.count, "département") %>
+            </p>
+          <% elsif @user.geo_access&.name&.downcase == "france entière" %>
+            <div class="fr-alert fr-alert--info fr-alert--sm">
+              <p>Accès à tous les départements de France</p>
+            </div>
+          <% else %>
+            <span class="fr-badge fr-badge--sm">Aucun département associé</span>
+          <% end %>
+        </dd>
+        
         <dt class="fr-text--sm fr-text--bold">Dernière connexion</dt>
         <dd class="fr-mb-2w">
           <%= @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short) : "Jamais" %>
