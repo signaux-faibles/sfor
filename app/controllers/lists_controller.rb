@@ -41,27 +41,34 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Calculate alert breakdown from filtered results (before pagination)
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
-    # Paginate
-    @companies = @companies.includes(:establishments).page(@page).per(@per_page)
+    respond_to do |format|
+      format.html do
+        # Paginate
+        @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
-    # Format results for display
-    @results = @companies.map do |company|
-      {
-        "siren" => company.siren,
-        "nom_complet" => company.raison_sociale || company.siren,
-        "nombre_etablissements_ouverts" => company.establishments.size
-      }
+        # Format results for display
+        @results = @companies.map do |company|
+          {
+            "siren" => company.siren,
+            "nom_complet" => company.raison_sociale || company.siren,
+            "nombre_etablissements_ouverts" => company.establishments.size
+          }
+        end
+
+        @pagination = {
+          page: @page,
+          per_page: @per_page,
+          total_pages: @companies.total_pages,
+          total_results: @companies.total_count
+        }
+
+        # Enrich with tracking status
+        enrich_results_with_tracking_status(@results)
+      end
+      format.xlsx do
+        export_list(@companies)
+      end
     end
-
-    @pagination = {
-      page: @page,
-      per_page: @per_page,
-      total_pages: @companies.total_pages,
-      total_results: @companies.total_count
-    }
-
-    # Enrich with tracking status
-    enrich_results_with_tracking_status(@results)
   rescue ActiveRecord::RecordNotFound
     redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
@@ -83,30 +90,51 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Calculate alert breakdown from filtered results (before pagination)
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
-    # Paginate
-    @companies = @companies.includes(:establishments).page(@page).per(@per_page)
+    respond_to do |format|
+      format.html do
+        # Paginate
+        @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
-    # Format results for display
-    @results = @companies.map do |company|
-      {
-        "siren" => company.siren,
-        "nom_complet" => company.raison_sociale || company.siren,
-        "nombre_etablissements_ouverts" => company.establishments.size
-      }
+        # Format results for display
+        @results = @companies.map do |company|
+          {
+            "siren" => company.siren,
+            "nom_complet" => company.raison_sociale || company.siren,
+            "nombre_etablissements_ouverts" => company.establishments.size
+          }
+        end
+
+        @pagination = {
+          page: @page,
+          per_page: @per_page,
+          total_pages: @companies.total_pages,
+          total_results: @companies.total_count
+        }
+
+        # Enrich with tracking status
+        enrich_results_with_tracking_status(@results)
+      end
+      format.xlsx do
+        export_list(@companies)
+      end
     end
-
-    @pagination = {
-      page: @page,
-      per_page: @per_page,
-      total_pages: @companies.total_pages,
-      total_results: @companies.total_count
-    }
-
-    # Enrich with tracking status
-    enrich_results_with_tracking_status(@results)
   end
 
   private
+
+  def export_list(companies)
+    all_companies = companies.includes(:establishments, :company_score_entries, :activity_sector,
+                                       establishments: %i[department establishment_trackings])
+    response.headers["Cache-Control"] = "no-store"
+    send_data generate_excel(all_companies),
+              filename: "#{@list.label.parameterize}.xlsx",
+              type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              disposition: "attachment"
+  end
+
+  def generate_excel(companies)
+    Excel::ListGenerator.new(@list, companies, @search_params, current_user).generate
+  end
 
   def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # NOTE: All filters below are combined (AND logic) - each filter narrows down the results
@@ -133,28 +161,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       )
     end
 
-    # Filter by section_activite_principale (first character of NAF code)
+    # Filter by section_activite_principale using company.naf_section (1-letter)
     if @search_params[:section_activite_principale].present? && @search_params[:section_activite_principale].is_a?(Array) # rubocop:disable Layout/LineLength
       sections = @search_params[:section_activite_principale].compact_blank
-      if sections.any?
-        # Build conditions for multiple sections (OR logic within sections)
-        matching_sirens = Set.new
-
-        sections.each do |section|
-          # Filter by siege establishments with matching code_activite first character
-          sirens_by_establishment = Establishment
-                                    .where(siege: true)
-                                    .where("code_activite LIKE ?", "#{section}%")
-                                    .where.not(code_activite: nil)
-                                    .distinct
-                                    .pluck(:siren)
-                                    .to_set
-
-          matching_sirens.merge(sirens_by_establishment)
-        end
-
-        companies = companies.where(siren: matching_sirens.to_a)
-      end
+      companies = companies.where(naf_section: sections) if sections.any?
     end
 
     # Filter by forme_juridique (statut_juridique)
