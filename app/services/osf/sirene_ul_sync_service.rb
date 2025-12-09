@@ -141,7 +141,9 @@ module Osf
         raison_sociale: distant_record["raison_sociale"],
         statut_juridique: distant_record["statut_juridique"],
         creation: parse_date(distant_record["creation"]),
-        naf_code: distant_record["activite_principale"]
+        naf_code: distant_record["activite_principale"],
+        naf_section: distant_record["naf_section"],
+        department: distant_record["departement"]
       }
     end
   end

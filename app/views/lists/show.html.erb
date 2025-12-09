@@ -11,6 +11,17 @@
     <h2 class="fr-mt-5w">Résultats de recherche</h2>
 
     <% if @results && @results.any? %>
+      <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+        <div class="fr-col-12">
+          <%= link_to list_path(@list, search: @search_params, format: :xlsx),
+                      class: 'fr-link--download fr-link',
+                      data: { controller: 'download', action: 'click->download#disable', download_target: 'button' },
+                      id: 'download-button' do %>
+            Télécharger les <%= @pagination[:total_results] %> résultats de la recherche
+            <span class="fr-link__detail">XLS</span>
+          <% end %>
+        </div>
+      </div>
       <p class="fr-mt-2w">
         <%= pluralize(@pagination[:total_results], "entreprise", "entreprises") %>
         <% if @alert_breakdown %>

@@ -1,5 +1,6 @@
 class Company < ApplicationRecord
   belongs_to :activity_sector, optional: true
+  belongs_to :department, foreign_key: :department, primary_key: :code, optional: false
   has_many :establishments, foreign_key: :siren, primary_key: :siren, dependent: :nullify
 
   has_many :campaign_companies, dependent: :destroy
@@ -11,6 +12,7 @@ class Company < ApplicationRecord
   has_many :osf_procols, foreign_key: :siren, primary_key: :siren, dependent: :destroy
 
   validates :siren, presence: true, uniqueness: true
+  validates :department, presence: true, length: { maximum: 10 }
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[created_at id id_value siren raison_sociale statut_juridique creation updated_at]
