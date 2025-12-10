@@ -327,19 +327,22 @@ If you encounter "Asset not declared to be precompiled" errors in Docker:
 
 **Action Required**: This issue should be addressed based on the target browser support requirements.
 
-# Import Wekan data
+# Import data from opensignauxfaibles
 
-You can import data from signaux faibles wekan into the rails app.
-To do so, you must open a terminal in the rails web container and run the following rake tasks all located in the `import_from_wekan` rake namespace for clarity :
-
-## Users
-```shell
-# Import the users from wekan
-rake import_from_wekan:users
 ```
 
-## Companies
+bin/rails osf:sync_all[months_back]           # Sync all OSF data from OSF database to local Rails tables
+bin/rails osf:sync_ap[months_back]            # Sync OSF ap data from clean_ap materialized view to local Rails tables
+bin/rails osf:sync_cotisation[months_back]    # Sync OSF cotisation data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_debit[months_back]         # Sync OSF debit data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_delai[months_back]         # Sync OSF delai data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_effectif[months_back]      # Sync OSF effectif data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_effectif_ent[months_back]  # Sync OSF effectif_ent data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_procol[months_back]        # Sync OSF procol data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_sirene                     # Sync establishments from SIRENE clean view (cursor-based)
+bin/rails osf:sync_sirene_ul
 
+```
 
 # Tests
 L'application est testée grâce à un ensemble de tests d'intégration écrits à l'aide de la librairie `Minitest` fournie avec `Ruby on Rails`.
