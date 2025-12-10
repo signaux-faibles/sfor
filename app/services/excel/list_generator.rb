@@ -123,7 +123,7 @@ module Excel
         format_last_effectif(company.siren),
         format_social_debt(company.siren, siege_establishment),
         format_insee_sector(company),
-        format_naf_activity(company, siege_establishment),
+        format_naf_activity(company),
         format_alert_level(score_entry),
         format_alert_frequency(company.siren),
         format_score(score_entry&.score),
@@ -166,33 +166,19 @@ module Excel
     def format_social_debt(_siren, siege_establishment)
       return "-" unless siege_establishment
 
-      siret = siege_establishment.siret
-      latest_periode = OsfDebit.where(siret: siret).maximum(:periode)
-      return "-" unless latest_periode
-
-      debit = OsfDebit.where(siret: siret, periode: latest_periode).first
+      debit = OsfDebit.where(siret: siege_establishment.siret, is_last: true).first
       return "-" unless debit
 
       total = (debit.part_ouvriere.to_f + debit.part_patronale.to_f)
       total.positive? ? total.round(2) : "-"
     end
 
-    def format_insee_sector(_company)
-      # TODO: Implement if insee sector needs to be included
-      "-"
+    def format_insee_sector(company)
+      company.naf_section || "-"
     end
 
-    def format_naf_activity(company, siege_establishment)
-      naf_code = company.naf_code || siege_establishment&.code_activite
-      return "-" unless naf_code
-
-      # Try to find activity sector by code
-      activity_sector = ActivitySector.find_by(code: naf_code)
-      if activity_sector
-        "#{activity_sector.code} - #{activity_sector.libelle}"
-      else
-        naf_code
-      end
+    def format_naf_activity(company)
+      company.naf_code || "-"
     end
 
     def format_alert_level(score_entry)

@@ -135,8 +135,17 @@ module Osf
         siret: distant_record["siret"],
         periode: parse_date(distant_record["periode"]),
         part_ouvriere: safe_to_float(distant_record["part_ouvriere"]),
-        part_patronale: safe_to_float(distant_record["part_patronale"])
+        part_patronale: safe_to_float(distant_record["part_patronale"]),
+        is_last: safe_to_boolean(distant_record["is_last"])
       }
+    end
+
+    def safe_to_boolean(value)
+      return false if value.blank?
+      return true if [true, "t", "true", 1, "1"].include?(value)
+      return false if [false, "f", "false", 0, "0"].include?(value)
+
+      false
     end
   end
 end
