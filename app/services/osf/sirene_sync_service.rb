@@ -7,7 +7,7 @@ module Osf
     # Set of valid French department codes: 01-95, 2A, 2B, 971-978
     # Using Set for O(1) lookup performance (faster than regex for exact matches)
     VALID_DEPARTEMENTS = Set.new(
-      (1..95).map { |n| "%02d" % n } + # 01-95
+      (1..95).map { |n| "%02d" % n } + # 01-95 # rubocop:disable Style/FormatString
       %w[2A 2B] + # Corsica
       (971..978).map(&:to_s) # DOM/COM
     ).freeze
