@@ -180,8 +180,17 @@ module Osf
         ape: distant_record["ape"],
         date_creation: parse_date(distant_record["date_creation"]),
         longitude: safe_to_float(distant_record["longitude"]),
-        latitude: safe_to_float(distant_record["latitude"])
+        latitude: safe_to_float(distant_record["latitude"]),
+        is_active: safe_to_boolean(distant_record["est_actif"])
       }
+    end
+
+    def safe_to_boolean(value)
+      return false if value.blank?
+      return true if [true, "t", "true", 1, "1"].include?(value)
+      return false if [false, "f", "false", 0, "0"].include?(value)
+
+      false
     end
   end
 end

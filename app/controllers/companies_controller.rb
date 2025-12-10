@@ -280,12 +280,18 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     if @company.siren.blank?
       @enriched_establishments = []
       @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
+      @total_establishments = 0
+      @active_establishments = 0
       return
     end
 
     # Récupérer les établissements de la base de données et paginer
     establishments = @company.establishments_ordered
     @paginated_establishments = establishments.page(params[:page]).per(10)
+
+    # Calculer les statistiques globales (tous les établissements, pas seulement la page courante)
+    @total_establishments = establishments.count
+    @active_establishments = establishments.where(is_active: true).count
 
     # Enrichir chaque établissement avec les données INSEE (seulement ceux de la page courante)
     @enriched_establishments = []

@@ -23,7 +23,7 @@ class Establishment < ApplicationRecord
       type_voie voie commune commune_etranger distribution_speciale
       code_commune code_cedex cedex code_pays_etranger pays_etranger
       code_postal departement ape code_activite nomenclature_activite
-      date_creation longitude latitude created_at updated_at
+      date_creation longitude latitude is_active created_at updated_at
     ]
   end
 
