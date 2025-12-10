@@ -2,7 +2,7 @@
 # Service to synchronize debit data using PostgreSQL cursors for optimal performance
 
 module Osf
-  class DebitSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
+  class DebitSyncService < BaseOsfSyncService
     BATCH_SIZE = 1000
 
     def initialize(months_back: nil)
