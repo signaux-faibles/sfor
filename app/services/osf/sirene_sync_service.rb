@@ -146,11 +146,6 @@ module Osf
       # Compute departement, handling DOM/COM special case where source gives "97"
       source_departement = distant_record["departement"].to_s.strip.upcase
       computed_departement = source_departement
-      if source_departement == "97"
-        raw_cp = distant_record["code_commune"].to_s
-        cp_digits = raw_cp.gsub(/\D/, "")
-        computed_departement = cp_digits.start_with?("97") && cp_digits.length >= 3 ? cp_digits[0, 3] : nil
-      end
 
       # Accept only valid department codes; otherwise set to nil (skip invalid/blank/garbage)
       # Valid: 01-95, 2A, 2B, 971-978
