@@ -176,8 +176,6 @@ module Osf
         code_postal: distant_record["code_postal"],
         departement: computed_departement,
         ape: distant_record["ape"],
-        code_activite: distant_record["code_activite"],
-        nomenclature_activite: distant_record["nomenclature_activite"],
         date_creation: parse_date(distant_record["date_creation"]),
         longitude: safe_to_float(distant_record["longitude"]),
         latitude: safe_to_float(distant_record["latitude"])
