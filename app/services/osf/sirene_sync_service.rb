@@ -4,6 +4,13 @@
 module Osf
   class SireneSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
     BATCH_SIZE = 1000
+    # Set of valid French department codes: 01-95, 2A, 2B, 971-978
+    # Using Set for O(1) lookup performance (faster than regex for exact matches)
+    VALID_DEPARTEMENTS = Set.new(
+      (1..95).map { |n| "%02d" % n } + # 01-95
+      %w[2A 2B] + # Corsica
+      (971..978).map(&:to_s) # DOM/COM
+    ).freeze
 
     def initialize
       super
@@ -149,7 +156,7 @@ module Osf
 
       # Accept only valid department codes; otherwise set to nil (skip invalid/blank/garbage)
       # Valid: 01-95, 2A, 2B, 971-978
-      computed_departement = nil unless computed_departement.to_s.match?(/^(?:0[1-9]|[1-8][0-9]|9[0-5]|2A|2B|97[1-8])$/)
+      computed_departement = nil unless VALID_DEPARTEMENTS.include?(computed_departement)
 
       {
         siren: distant_record["siren"],
