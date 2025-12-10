@@ -11,8 +11,7 @@
             <div class="fr-container">
               <div class="fr-notice__body">
                 <p>
-                  <%# @TODO : Modifier les valeurs. %>
-                  <span class="fr-notice__title">Cette structure possède 7 établissements dont 5 sont en activité.</span>
+                  <span class="fr-notice__title">Cette structure possède <%= @total_establishments || 0 %> établissement<%= 's' if (@total_establishments || 0) > 1 %> dont <%= @active_establishments || 0 %> <%= (@active_establishments || 0) > 1 ? 'sont' : 'est' %> en activité.</span>
                 </p>
               </div>
             </div>

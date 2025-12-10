@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_10_143944) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_10_164442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -348,6 +348,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_10_143944) do
     t.date "date_creation"
     t.float "longitude"
     t.float "latitude"
+    t.boolean "is_active", default: false, null: false
     t.index ["departement"], name: "index_establishments_on_departement"
     t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siren"], name: "index_establishments_on_siren"
