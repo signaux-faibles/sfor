@@ -123,7 +123,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   private
 
   def export_list(companies)
-    all_companies = companies.includes(:establishments, :company_score_entries, :activity_sector,
+    all_companies = companies.includes(:establishments, :company_score_entries,
                                        establishments: %i[department establishment_trackings])
     response.headers["Cache-Control"] = "no-store"
     send_data generate_excel(all_companies),
