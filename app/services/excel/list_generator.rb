@@ -240,8 +240,6 @@ module Excel
       return "-" unless siege_establishment
 
       has_delai = OsfDelai.active_dette_urssaf?(siege_establishment.siret)
-      return "-" if has_delai == "Na"
-
       has_delai ? "Oui" : "Non"
     end
 

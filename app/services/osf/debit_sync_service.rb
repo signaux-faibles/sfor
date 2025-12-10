@@ -139,13 +139,5 @@ module Osf
         is_last: safe_to_boolean(distant_record["is_last"])
       }
     end
-
-    def safe_to_boolean(value)
-      return false if value.blank?
-      return true if [true, "t", "true", 1, "1"].include?(value)
-      return false if [false, "f", "false", 0, "0"].include?(value)
-
-      false
-    end
   end
 end

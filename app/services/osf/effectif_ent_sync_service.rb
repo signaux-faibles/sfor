@@ -134,7 +134,8 @@ module Osf
       {
         siren: distant_record["siren"],
         periode: parse_date(distant_record["periode"]),
-        effectif: safe_to_integer(distant_record["effectif_ent"])
+        effectif: safe_to_integer(distant_record["effectif_ent"]),
+        is_latest: safe_to_boolean(distant_record["is_latest"])
       }
     end
   end

@@ -131,7 +131,8 @@ module Osf
         periode: parse_date(distant_record["periode"]),
         etp_autorise: safe_to_float(distant_record["etp_autorise"]),
         etp_consomme: safe_to_float(distant_record["etp_consomme"]),
-        motif_recours: distant_record["motif_recours"]
+        motif_recours: distant_record["motif_recours"],
+        is_last: safe_to_boolean(distant_record["is_last"])
       }
     end
   end

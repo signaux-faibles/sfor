@@ -3,30 +3,14 @@ class OsfDelai < ApplicationRecord
 
   validates :siret, presence: true, length: { is: 14 }
 
-  def self.active_dette_urssaf?(siret) # rubocop:disable Metrics/AbcSize
-    # Get the last list by list_date (most recent list_date)
-    last_list = List.where.not(list_date: nil).order(list_date: :desc).first
+  def self.active_dette_urssaf?(siret)
+    # Find the last debit entry (is_last: true) for this siret
+    debit = OsfDebit.where(siret: siret, is_last: true).first
 
-    return "Na" unless last_list
+    # If no entry found, no active dette
+    return false unless debit
 
-    # Check if current date is superior or equal to the list_date
-    return "Na" unless Date.current >= last_list.list_date
-
-    # Get the month that precedes the list_date month
-    # e.g., if list_date is 2025-08-03, we look into July 2025
-    previous_month_start = last_list.list_date.beginning_of_month - 1.month
-    previous_month_end = previous_month_start.end_of_month
-
-    # Check if there's any entry in OsfDebit for this month
-    entries = OsfDebit.where(siret: siret)
-                      .where(periode: previous_month_start..previous_month_end)
-
-    # If no entry exists, return "Na"
-    return "Na" unless entries.exists?
-
-    # If entry exists, check if part_ouvriere or part_patronale is > 0
-    has_active_dette = entries.where("part_ouvriere > 0 OR part_patronale > 0").exists?
-
-    has_active_dette ? true : false
+    # Check if at least one of the dettes is positive
+    debit.part_ouvriere.to_f.positive? || debit.part_patronale.to_f.positive?
   end
 end

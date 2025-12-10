@@ -67,6 +67,14 @@ class BaseOsfSyncService
     value&.to_i
   end
 
+  def safe_to_boolean(value)
+    return false if value.blank?
+    return true if [true, "t", "true", 1, "1"].include?(value)
+    return false if [false, "f", "false", 0, "0"].include?(value)
+
+    false
+  end
+
   def increment_stat(key)
     @stats[key] += 1
   end

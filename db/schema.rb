@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_10_164442) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_10_171355) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -429,6 +429,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_10_164442) do
     t.text "motif_recours"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_last"
     t.index ["periode"], name: "index_osf_aps_on_periode"
     t.index ["siren"], name: "index_osf_aps_on_siren"
     t.index ["siret", "periode"], name: "index_osf_aps_on_siret_and_periode"
