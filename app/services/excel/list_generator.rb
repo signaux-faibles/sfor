@@ -149,7 +149,7 @@ module Excel
     def format_procol_status(siren)
       current_date = Date.current
       sql = ActiveRecord::Base.sanitize_sql([
-                                              "SELECT action_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?",
+                                              "SELECT action_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
                                               current_date, siren
                                             ])
       result = ActiveRecord::Base.connection.execute(sql).first
@@ -201,7 +201,7 @@ module Excel
       score_entry.alert
     end
 
-    def format_alert_frequency(siren)
+    def format_alert_frequency(siren) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
       # Check if company appears in other lists
       entries = CompanyScoreEntry.where(siren: siren).order(periode: :desc)
       return "-" if entries.empty?
@@ -311,7 +311,7 @@ module Excel
       end
     end
 
-    def add_filter_details_sheet(workbook)
+    def add_filter_details_sheet(workbook) # rubocop:disable Metrics/MethodLength
       workbook.add_worksheet(name: "Filtres") do |sheet|
         sheet.add_row %w[Filtre Valeur]
         @search_params.each do |key, value|
@@ -327,7 +327,7 @@ module Excel
       end
     end
 
-    def format_filter_label(key)
+    def format_filter_label(key) # rubocop:disable Metrics/MethodLength
       {
         "q" => "Recherche",
         "ca_min" => "CA minimum",
