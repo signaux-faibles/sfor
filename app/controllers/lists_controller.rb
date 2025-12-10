@@ -173,18 +173,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where(statut_juridique: statut_codes) if statut_codes.any?
     end
 
-    # Filter by department (siege establishment)
+    # Filter by department (company level)
     if @search_params[:departement_in].present? && @search_params[:departement_in].is_a?(Array)
       department_codes = @search_params[:departement_in].compact_blank
-      if department_codes.any?
-        # Filter by companies whose siege establishment is in the selected departments
-        matching_sirens = Establishment
-                          .where(siege: true, departement: department_codes)
-                          .distinct
-                          .pluck(:siren)
-                          .to_set
-        companies = companies.where(siren: matching_sirens.to_a)
-      end
+      companies = companies.where(department: department_codes) if department_codes.any?
     end
 
     # NOTE: ca_min (revenue) filter is not available in database
