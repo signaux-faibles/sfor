@@ -638,6 +638,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     last_list = List.order(code: :desc).first
     return false unless last_list
 
+    # Check if company appears in the current list
+    current_entry = CompanyScoreEntry.exists?(siren: @company.siren, list_name: last_list.label)
+    return false unless current_entry
+
     # Check if company appears in other lists
     other_entries = CompanyScoreEntry.where(siren: @company.siren)
                                      .where.not(list_name: last_list.label)
