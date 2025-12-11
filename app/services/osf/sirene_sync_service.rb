@@ -162,7 +162,7 @@ module Osf
         siren: distant_record["siren"],
         siret: distant_record["siret"],
         siege: distant_record["siege"],
-        adresse: distant_record["adresse"],
+        address: distant_record["adresse"],
         code_commune: distant_record["code_commune"],
         departement: computed_departement,
         ape: distant_record["ape"],
