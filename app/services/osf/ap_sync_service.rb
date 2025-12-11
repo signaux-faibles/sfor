@@ -57,14 +57,14 @@ module Osf
 
         # Progress reporting
         progress = ((offset.to_f / total_count) * 100).round(2)
-        @logger.info "Progress: #{progress}% - Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}" # rubocop:disable Layout/LineLength
+        @logger.info "Progress: #{progress}% - Stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}"
 
         # Memory monitoring
         memory_mb = `ps -o rss= -p #{Process.pid}`.to_i / 1024
         @logger.info "Current memory usage: #{memory_mb}MB"
       end
 
-      @logger.info "Ap sync completed. Final stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}, Skipped: #{@stats[:skipped]}" # rubocop:disable Layout/LineLength
+      @logger.info "Ap sync completed. Final stats: Created: #{@stats[:created]}, Errors: #{@stats[:errors]}"
     end
 
     private
@@ -85,21 +85,10 @@ module Osf
       return if distant_records.ntuples.zero?
 
       begin
-        # Preload establishments to avoid N+1 queries
-        sirets = distant_records.pluck("siret").compact.uniq
-        establishments_by_siret = Establishment.where(siret: sirets).index_by(&:siret)
-
         # Prepare bulk operations
         records_to_create = []
 
         distant_records.each do |record|
-          establishment = establishments_by_siret[record["siret"]]
-          unless establishment
-            increment_stat(:skipped)
-            @logger.warn "No establishment found for siret: #{record['siret']}"
-            next
-          end
-
           attributes = build_ap_attributes(record)
           records_to_create << attributes
         end
