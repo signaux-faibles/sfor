@@ -9,7 +9,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def show
     @establishments = @company.establishments_ordered
-    # No longer fetch data here - will be loaded by Turbo Frames
+    load_company_badges
   end
 
   def insee_widget
@@ -596,5 +596,54 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       "Dette restante (part patronale)",
       "Montant de l'échéancier du délai de paiement"
     ]
+  end
+
+  def load_company_badges
+    @alert_level = calculate_alert_level
+    @procol_status = calculate_procol_status
+    @is_first_alert = calculate_is_first_alert
+  end
+
+  def calculate_alert_level
+    # Get the last list
+    last_list = List.order(code: :desc).first
+    return nil unless last_list
+
+    # Find the CompanyScoreEntry for this company and last list
+    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    return nil unless entry&.alert
+
+    case entry.alert.downcase
+    when "alerte seuil f1"
+      "elevee"
+    when "alerte seuil f2"
+      "moderee"
+    end
+  end
+
+  def calculate_procol_status
+    current_date = Date.current
+    sql = ActiveRecord::Base.sanitize_sql([
+                                            "SELECT action_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
+                                            current_date, @company.siren
+                                          ])
+    result = ActiveRecord::Base.connection.execute(sql).first
+    result ? result["action_procol"] : "In Bonis"
+  rescue StandardError
+    "In Bonis"
+  end
+
+  def calculate_is_first_alert
+    # Get the last list
+    last_list = List.order(code: :desc).first
+    return false unless last_list
+
+    # Check if company appears in other lists
+    other_entries = CompanyScoreEntry.where(siren: @company.siren)
+                                     .where.not(list_name: last_list.label)
+                                     .exists?
+
+    # If no other entries, it's a first alert
+    !other_entries
   end
 end

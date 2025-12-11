@@ -18,22 +18,23 @@
     <h1 style="margin: 0;">Fiche Entreprise — <%= @company.raison_sociale %></h1>
 
     <%# Niveau d'alerte %>
-    <% if true %>
+    <% if @alert_level == "elevee" %>
       <p class="fr-badge fr-badge--error fr-badge--no-icon fr-ml-3w">Alerte élevée</p>
     <% end %>
 
-    <% if false %>
+    <% if @alert_level == "moderee" %>
       <p class="fr-badge fr-badge--pink-macaron fr-ml-3w">Alerte modérée</p>
     <% end %>
-      <%# Statut procédure collective (si différent de in bonis) %>
-      <% if true %>
-        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">Statut procédure collective</p>
-      <% end %>
 
-      <%# Première alerte %>
-      <% if true %>
-        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1re alerte</p>
-      <% end %>
+    <%# Statut procédure collective (si différent de in bonis) %>
+    <% if @procol_status && @procol_status != "In Bonis" %>
+      <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w"><%= @procol_status %></p>
+    <% end %>
+
+    <%# Première alerte %>
+    <% if @is_first_alert %>
+      <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1re alerte</p>
+    <% end %>
     </div>
   </div>
   <div class="fr-tabs">
@@ -71,25 +72,10 @@
           Accompagnements
         </button>
       </li>
-
-      <!-- Financial Data Tab -->
-      <!--<li role="presentation">
-        <button id="tabpanel-financier"
-                type="button"
-                class="fr-tabs__tab"
-                tabindex="-1" role="tab"
-                aria-selected="false"
-                aria-controls="tabpanel-financier-panel">
-          Données financières
-        </button>
-      </li>-->
     </ul>
 
     <%= render 'info_panel_with_widgets' %>
     <%= render 'data_panel_with_widgets' %>
     <%= render 'establishment_trackings_list_panel' %>
-    <%# render 'financial_panel_with_widgets' %>
-
-
   </div>
 </div>
