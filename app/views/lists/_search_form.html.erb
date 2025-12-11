@@ -133,6 +133,19 @@
             <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
           </div>
         </div>
+        <div class="fr-col-12 fr-col-lg-4">
+          <div class="fr-checkbox-group">
+            <%= f.check_box :liste_retraitee, { checked: search_params[:liste_retraitee] == "1" }, "1", "0" %>
+            <%= f.label :liste_retraitee, "Liste retraitée", class: "fr-label" %>
+            <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
+              <span class="fr-icon-information-line" aria-hidden="true"></span>
+              <span class="fr-sr-only">Information sur la liste retraitée</span>
+            </button>
+            <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip" aria-hidden="true">
+              Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI
+            </span>
+          </div>
+        </div>
       </div>
 
       <div class="fr-grid-row fr-grid-row--right fr-mt-5w">
