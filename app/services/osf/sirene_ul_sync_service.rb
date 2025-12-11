@@ -4,6 +4,13 @@
 module Osf
   class SireneUlSyncService < BaseOsfSyncService # rubocop:disable Metrics/ClassLength
     BATCH_SIZE = 1000
+    # Set of valid French department codes: 01-95, 2A, 2B, 971-978
+    # Using Set for O(1) lookup performance (faster than regex for exact matches)
+    VALID_DEPARTEMENTS = Set.new(
+      (1..95).map { |n| "%02d" % n } + # 01-95 # rubocop:disable Style/FormatString
+      %w[2A 2B] + # Corsica
+      (971..978).map(&:to_s) # DOM/COM
+    ).freeze
 
     def initialize
       super
@@ -107,6 +114,13 @@ module Osf
 
         attributes = build_company_attributes(record)
 
+        # Skip records with invalid/missing department after normalization
+        if attributes[:department].blank?
+          increment_stat(:skipped)
+          @logger.warn "Skipping siren #{siren}: invalid or missing department"
+          next
+        end
+
         records_to_create << attributes
         processed_count += 1
       end
@@ -136,6 +150,14 @@ module Osf
     end
 
     def build_company_attributes(distant_record)
+      # Compute department, handling DOM/COM special case where source gives "97"
+      source_department = distant_record["departement"].to_s.strip.upcase
+      computed_department = source_department
+
+      # Accept only valid department codes; otherwise set to nil (skip invalid/blank/garbage)
+      # Valid: 01-95, 2A, 2B, 971-978
+      computed_department = nil unless VALID_DEPARTEMENTS.include?(computed_department)
+
       {
         siren: distant_record["siren"],
         raison_sociale: distant_record["raison_sociale"],
@@ -143,7 +165,7 @@ module Osf
         creation: parse_date(distant_record["creation"]),
         naf_code: distant_record["activite_principale"],
         naf_section: distant_record["naf_section"],
-        department: distant_record["departement"]
+        department: computed_department
       }
     end
   end
