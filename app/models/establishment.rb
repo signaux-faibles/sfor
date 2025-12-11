@@ -19,11 +19,8 @@ class Establishment < ApplicationRecord
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[
-      siren siret siege complement_adresse numero_voie indrep
-      type_voie voie commune commune_etranger distribution_speciale
-      code_commune code_cedex cedex code_pays_etranger pays_etranger
-      code_postal departement ape code_activite nomenclature_activite
-      date_creation longitude latitude is_active created_at updated_at
+      siren siret siege code_commune departement ape code_activite
+      address date_creation longitude latitude is_active created_at updated_at
     ]
   end
 
