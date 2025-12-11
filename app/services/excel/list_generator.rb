@@ -69,7 +69,6 @@ module Excel
         "Siren",
         "Siret",
         "Raison sociale",
-        "Commune du siège",
         "Année de création de l'entreprise",
         "Forme juridique",
         "Statut de procédure collective",
@@ -89,7 +88,7 @@ module Excel
         "Entreprises récentes",
         "Accompagnement"
       ]
-      sheet.add_row headers, style: Array.new(23) { header_style(sheet) }
+      sheet.add_row headers, style: Array.new(22) { header_style(sheet) }
     end
 
     def add_company_rows(sheet)
@@ -102,8 +101,8 @@ module Excel
 
       companies_with_data.each do |company|
         sheet.add_row prepare_company_row(company, sheet),
-                      style: Array.new(23, centered_style(sheet)),
-                      types: [:string] * 23
+                      style: Array.new(22, centered_style(sheet)),
+                      types: [:string] * 22
       end
     end
 
@@ -116,7 +115,6 @@ module Excel
         company.siren,
         siege_establishment&.siret || "-",
         company.raison_sociale || "-",
-        siege_establishment&.commune || "-",
         format_creation_year(company.creation),
         format_statut_juridique(company.statut_juridique),
         format_procol_status(company.siren),
