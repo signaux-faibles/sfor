@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_10_172352) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_11_135426) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -324,31 +324,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_10_172352) do
   create_table "establishments", force: :cascade do |t|
     t.string "siret", limit: 14
     t.string "siren", limit: 9
-    t.text "commune"
     t.string "code_activite", limit: 5
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "siege"
-    t.text "complement_adresse"
-    t.string "numero_voie", limit: 10
-    t.string "indrep", limit: 10
-    t.string "type_voie", limit: 20
-    t.text "voie"
-    t.text "commune_etranger"
-    t.text "distribution_speciale"
     t.string "code_commune", limit: 5
-    t.string "code_cedex", limit: 5
-    t.string "cedex", limit: 100
-    t.string "code_pays_etranger", limit: 10
-    t.string "pays_etranger", limit: 100
-    t.string "code_postal", limit: 10
     t.string "departement", limit: 10
     t.string "ape", limit: 100
-    t.string "nomenclature_activite", limit: 10
     t.date "date_creation"
     t.float "longitude"
     t.float "latitude"
     t.boolean "is_active", default: false, null: false
+    t.text "address"
     t.index ["departement"], name: "index_establishments_on_departement"
     t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siren"], name: "index_establishments_on_siren"
