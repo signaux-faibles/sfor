@@ -340,7 +340,7 @@ bin/rails osf:sync_effectif[months_back]      # Sync OSF effectif data using Pos
 bin/rails osf:sync_effectif_ent[months_back]  # Sync OSF effectif_ent data using PostgreSQL cursors (high performance)
 bin/rails osf:sync_procol[months_back]        # Sync OSF procol data using PostgreSQL cursors (high performance)
 bin/rails osf:sync_sirene                     # Sync establishments from SIRENE clean view (cursor-based)
-bin/rails osf:sync_sirene_ul
+bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL clean view (cursor-based) ~ 1 hour
 
 ```
 
