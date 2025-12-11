@@ -13,6 +13,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     :dette_sociale_min, :action_procol,
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
+                                                    :liste_retraitee,
                                                     :page, :per_page,
                                                     departement_in: [],
                                                     forme_juridique: [],
@@ -334,6 +335,21 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       three_years_ago = Date.current - 3.years
       # Exclude companies created within last 3 years, but include companies with NULL creation date
       companies = companies.where("creation IS NULL OR creation < ?", three_years_ago)
+    end
+
+    # Filter by liste_retraitee (only show companies in SjcfCompany for this list)
+    if @search_params[:liste_retraitee].present? && @search_params[:liste_retraitee] == "1"
+      # Get current company sirens from the filtered companies query
+      company_sirens = companies.pluck(:siren)
+
+      # Get sirens that exist in SjcfCompany for this list
+      sirens_in_sjcf = SjcfCompany
+                       .where(libelle_liste: @list.label, siren: company_sirens)
+                       .distinct
+                       .pluck(:siren)
+                       .to_set
+
+      companies = companies.where(siren: sirens_in_sjcf.to_a)
     end
 
     companies
