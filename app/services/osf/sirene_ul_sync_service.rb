@@ -149,7 +149,7 @@ module Osf
       @stats[key] += count
     end
 
-    def build_company_attributes(distant_record)
+    def build_company_attributes(distant_record) # rubocop:disable Metrics/MethodLength
       # Compute department, handling DOM/COM special case where source gives "97"
       source_department = distant_record["departement"].to_s.strip.upcase
       computed_department = source_department
