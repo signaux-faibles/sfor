@@ -12,15 +12,15 @@
 
       <div class="fr-col-12 fr-col-lg-8 fr-mb-5w">
         <%# @TODO : set conditions from backend. %>
-        <% if true %>
-          <div data-controller="feedback-detection-widget">
-            <button
-              type="button"
-              class="fr-btn fr-btn--secondary sf-feedback-detection-button"
-              data-action="click->feedback-detection-widget#handleUsefulDetection"
-            >
-              Détection utile
-            </button>
+
+        <% if true %> <%# @TODO : condition : no feedback and no error. %>
+          <div>
+            <%= form_with model: [@entry],
+                          url: feedback_detection_widget_company_path(@company),
+                          method: :post,
+                          data: { turbo_frame: "feedback-detection_widget" } do |f| %>
+              <button type="submit" class="fr-btn fr-btn--secondary sf-feedback-detection-button">Détection utile</button>
+            <% end %>
 
             <button aria-controls="modal-feedback-detection" data-fr-opened="false" type="button" class="fr-btn sf-feedback-detection-button">Détection inutile</button>
 
@@ -36,59 +36,66 @@
                         <h2 id="modal-feedback-detection-title" class="fr-modal__title">
                           <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Pourquoi la détection est-elle inutile ?
                         </h2>
-                        <form data-action="submit->feedback-detection-widget#handleUselessDetection">
+                        <%= form_with model: [@entry],
+                                      url: feedback_detection_widget_company_path(@company),
+                                      method: :post,
+                                      data: { turbo_frame: "feedback-detection_widget" } do |f| %>
                           <fieldset class="fr-fieldset" id="raisons" aria-labelledby="raisons-legend raisons-messages">
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="raisons-legend"> Sélectionnez les motifs (obligatoire) </legend>
                             <div class="fr-fieldset__element">
-                              <div class="fr-checkbox-group">
-                                <input name="raisons-1" id="raisons-1" type="checkbox" aria-describedby="raisons-messages">
-                                <label class="fr-label" for="raisons-1"> Les données à ma disposition n'expliquent pas la détection </label>
+                              <div class="fr-fieldset__element">
+                                <div class="fr-checkbox-group">
+                                  <%= check_box_tag 'raisons[]', 'donnees_inexpliquees', false, id: 'raisons-1', 'aria-describedby': 'raisons-messages' %>
+                                  <%= label_tag 'raisons-1', "Les données à ma disposition n'expliquent pas la détection", class: 'fr-label' %>
+                                </div>
                               </div>
-                            </div>
-                            <div class="fr-fieldset__element">
-                              <div class="fr-checkbox-group">
-                                <input name="raisons-2" id="raisons-2" type="checkbox" aria-describedby="raisons-messages">
-                                <label class="fr-label" for="raisons-2"> L'entreprise ne présente pas de difficultés </label>
+                              <div class="fr-fieldset__element">
+                                <div class="fr-checkbox-group">
+                                  <%= check_box_tag 'raisons[]', 'pas_difficultes', false, id: 'raisons-2', 'aria-describedby': 'raisons-messages' %>
+                                  <%= label_tag 'raisons-2', "L'entreprise ne présente pas de difficultés", class: 'fr-label' %>
+                                </div>
                               </div>
-                            </div>
-                            <div class="fr-fieldset__element">
-                              <div class="fr-checkbox-group">
-                                <input name="raisons-3" id="raisons-3" type="checkbox" aria-describedby="raisons-messages">
-                                <label class="fr-label" for="raisons-3"> L'entreprise est détectée trop tardivement </label>
+                              <div class="fr-fieldset__element">
+                                <div class="fr-checkbox-group">
+                                  <%= check_box_tag 'raisons[]', 'detection_tardive', false, id: 'raisons-3', 'aria-describedby': 'raisons-messages' %>
+                                  <%= label_tag 'raisons-3', "L'entreprise est détectée trop tardivement", class: 'fr-label' %>
+                                </div>
                               </div>
-                            </div>
-                            <div class="fr-fieldset__element">
-                              <div class="fr-checkbox-group">
-                                <input name="raisons-4" id="raisons-4" type="checkbox" aria-describedby="raisons-messages">
-                                <label class="fr-label" for="raisons-4"> L'entreprise n'entre pas dans mon périmètre </label>
+                              <div class="fr-fieldset__element">
+                                <div class="fr-checkbox-group">
+                                  <%= check_box_tag 'raisons[]', 'hors_perimetre', false, id: 'raisons-4', 'aria-describedby': 'raisons-messages' %>
+                                  <%= label_tag 'raisons-4', "L'entreprise n'entre pas dans mon périmètre", class: 'fr-label' %>
+                                </div>
                               </div>
-                            </div>
-                            <div class="fr-fieldset__element">
-                              <div class="fr-checkbox-group">
-                                <input name="raisons-5" id="raisons-5" type="checkbox" aria-describedby="raisons-messages">
-                                <label class="fr-label" for="raisons-5"> L'entreprise ne considère pas être en difficulté </label>
+                              <div class="fr-fieldset__element">
+                                <div class="fr-checkbox-group">
+                                  <%= check_box_tag 'raisons[]', 'pas_en_difficulte', false, id: 'raisons-5', 'aria-describedby': 'raisons-messages' %>
+                                  <%= label_tag 'raisons-5', "L'entreprise ne considère pas être en difficulté", class: 'fr-label' %>
+                                </div>
                               </div>
-                            </div>
-                            <div class="fr-fieldset__element">
-                              <div class="fr-checkbox-group">
-                                <input name="raisons-6" id="raisons-6" type="checkbox" aria-describedby="raisons-messages">
-                                <label class="fr-label" for="raisons-6"> Autre </label>
+                              <div class="fr-fieldset__element">
+                                <div class="fr-checkbox-group">
+                                  <%= check_box_tag 'raisons[]', 'autre', false, id: 'raisons-6', 'aria-describedby': 'raisons-messages' %>
+                                  <%= label_tag 'raisons-6', "Autre", class: 'fr-label' %>
+                                </div>
                               </div>
                             </div>
                             <div class="fr-messages-group" id="raisons-messages" aria-live="polite">
+                              <%# @TODO : display error dynamically. %>
+                              <%# <p class="fr-message fr-message--error">Vous devez cocher au moins une raison.</p> %>
                             </div>
                           </fieldset>
 
                           <div class="fr-input-group">
-                            <label class="fr-label" for="precisions">Précisez les raisons de votre choix</label>
-                            <textarea class="fr-input" aria-describedby="precisions-messages" id="precisions" name="precisions"></textarea>
+                            <%= label_tag 'precisions', 'Précisez les raisons de votre choix', class: 'fr-label' %>
+                            <%= text_area_tag 'precisions', nil, class: 'fr-input', id: 'precisions', 'aria-describedby': 'precisions-messages' %>
                             <div class="fr-messages-group" id="precisions-messages" aria-live="polite">
                             </div>
                           </div>
 
                           <button type="submit" class="fr-btn">Valider votre avis</button>
                           <button aria-controls="modal-feedback-detection" title="Annuler" type="button" class="fr-btn fr-btn--secondary">Annuler</button>
-                        </form>
+                        <% end %>
                       </div>
                     </div>
                   </div>
@@ -96,14 +103,18 @@
               </div>
             </dialog>
           </div>
-          <% elsif false %>
+          <% elsif false %> <%# @TODO : condition : feedback "useless". %>
             <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
               <p>Vous avez déjà indiqué que la détection était inutile.</p>
             </div>
-          <% else %>
+          <% elsif false %> <%# @TODO : condition : feedback "useful". %>
             <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
               <p>Vous avez déjà indiqué que la détection était utile.</p>
             </div>
+          <% else %> <%# @TODO : condition : backend error. %>
+          <div class="fr-alert fr-alert--error fr-alert--sm fr-mb-3w">
+            <p>Une erreur est survenue. Veuillez réessayer plus tard.</p>
+          </div>
           <% end %>
       </div>
 
