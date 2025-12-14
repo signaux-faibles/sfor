@@ -68,7 +68,7 @@ Rails.application.routes.draw do
       get :financial_widget
       get :establishments_widget
       get :establishment_trackings_list_widget
-      get :detection_widget
+      get :feedback_detection_widget
     end
   end
 
