@@ -18,6 +18,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def feedback_detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+
+    #@TODO : valid form data and save data.
+
     fetch_alert_history
 
     # Get the last list
@@ -26,6 +29,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     # Find the CompanyScoreEntry for this company and last list
     entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    @entry = entry
     return render partial: "feedback_detection_widget",
                   locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
 
