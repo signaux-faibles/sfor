@@ -1,5 +1,5 @@
 class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget detection_widget]
+  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget feedback_detection_widget]
 
   def index
     initialize_search_params
@@ -17,16 +17,16 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "insee_widget"
   end
 
-  def detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def feedback_detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     fetch_alert_history
 
     # Get the last list
     last_list = List.order(code: :desc).first
-    return render partial: "detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
+    return render partial: "feedback_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
 
     # Find the CompanyScoreEntry for this company and last list
     entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
-    return render partial: "detection_widget",
+    return render partial: "feedback_detection_widget",
                   locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
 
     # Get macro_expl data
@@ -97,7 +97,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
                    "Date non disponible"
                  end
 
-    render partial: "detection_widget"
+    render partial: "feedback_detection_widget"
   end
 
   def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
