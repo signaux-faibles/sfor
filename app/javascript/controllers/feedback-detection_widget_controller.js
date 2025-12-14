@@ -4,11 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["usefulDetection"]
 
-  connect() {
-
-  }
-
-  unusefulDetection(event) {
+  handleUselessDetection(event) {
     event.preventDefault()
 
     const form = event.target
@@ -39,19 +35,26 @@ export default class extends Controller {
 
     // @Todo : save data.
 
-
-    this.showSuccess();
+    if (true) {
+      this.showSuccess()
+    } else {
+      this.showError()
+    }
 
     // Close modale.
     const modal = document.querySelector('#modal-feedback-detection')
     window.dsfr(modal).modal.conceal()
   }
 
-  usefulDetection(event) {
+  handleUsefulDetection(event) {
     event.preventDefault()
     // @Todo : save data.
 
-    this.showSuccess();
+    if (true) {
+      this.showSuccess()
+    } else {
+      this.showError()
+    }
   }
 
   showSuccess() {
@@ -65,5 +68,14 @@ export default class extends Controller {
     // Hide buttons.
     const buttons = this.element.querySelectorAll('.sf-feedback-detection-button')
     buttons.forEach(button => button.style.display = 'none')
+  }
+
+  showError() {
+    // Display error message.
+    const errorAlert = document.createElement('div')
+    errorAlert.className = 'fr-alert fr-alert--error fr-alert--sm fr-mb-3w'
+    errorAlert.innerHTML = '<p>Une erreur est survenue. Veuillez réessayer.</p>'
+
+    this.element.insertAdjacentElement('afterbegin', errorAlert)
   }
 }

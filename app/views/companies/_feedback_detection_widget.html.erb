@@ -11,12 +11,13 @@
       <h3>Donnez votre avis à l'équipe de Signaux Faibles</h3>
 
       <div class="fr-col-12 fr-col-lg-8 fr-mb-5w">
+        <%# @TODO : set conditions from backend. %>
         <% if true %>
           <div data-controller="feedback-detection-widget">
             <button
               type="button"
               class="fr-btn fr-btn--secondary sf-feedback-detection-button"
-              data-action="click->feedback-detection-widget#usefulDetection"
+              data-action="click->feedback-detection-widget#handleUsefulDetection"
             >
               Détection utile
             </button>
@@ -35,7 +36,7 @@
                         <h2 id="modal-feedback-detection-title" class="fr-modal__title">
                           <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Pourquoi la détection est-elle inutile ?
                         </h2>
-                        <form data-action="submit->feedback-detection-widget#unusefulDetection">
+                        <form data-action="submit->feedback-detection-widget#handleUselessDetection">
                           <fieldset class="fr-fieldset" id="raisons" aria-labelledby="raisons-legend raisons-messages">
                             <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="raisons-legend"> Sélectionnez les motifs (obligatoire) </legend>
                             <div class="fr-fieldset__element">
@@ -96,14 +97,14 @@
             </dialog>
           </div>
           <% elsif false %>
-          <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
-            <p>Vous avez déjà indiqué que la détection était inutile.</p>
-          </div>
-        <% else %>
-          <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
-            <p>Vous avez déjà indiqué que la détection était utile.</p>
-          </div>
-        <% end %>
+            <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
+              <p>Vous avez déjà indiqué que la détection était inutile.</p>
+            </div>
+          <% else %>
+            <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
+              <p>Vous avez déjà indiqué que la détection était utile.</p>
+            </div>
+          <% end %>
       </div>
 
 
