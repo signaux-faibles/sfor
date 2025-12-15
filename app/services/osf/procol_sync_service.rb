@@ -9,7 +9,7 @@ module Osf
       super()
       @months_back = months_back
       @schema = ENV.fetch("OSF_DATABASE_SCHEMA", "sfdata")
-      @source_relation = "#{@schema}.stg_procol"
+      @source_relation = "#{@schema}.clean_procol"
     end
 
     protected
@@ -133,7 +133,6 @@ module Osf
     def build_procol_attributes(distant_record)
       {
         siren: distant_record["siren"],
-        siret: distant_record["siret"],
         date_effet: parse_date(distant_record["date_effet"]),
         action_procol: distant_record["action_procol"],
         stade_procol: distant_record["stade_procol"]
