@@ -9,7 +9,7 @@ module Osf
       super()
       @months_back = months_back
       @schema = ENV.fetch("OSF_DATABASE_SCHEMA", "public")
-      @source_relation = "#{@schema}.stg_effectif"
+      @source_relation = "#{@schema}.clean_effectif"
     end
 
     protected
