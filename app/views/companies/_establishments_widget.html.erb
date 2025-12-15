@@ -34,7 +34,6 @@
               <thead>
                 <tr>
                   <th scope="col">SIRET</th>
-                  <th scope="col">Commune</th>
                   <th scope="col">Département</th>
                   <th scope="col"><abbr title="Effectif établissement">Eff. établissement</abbr></th>
                   <th scope="col">Dette sociale</th>
@@ -63,12 +62,6 @@
 
                     </td>
                     
-                    <td>
-                      <% if rails_data.present? %>
-                        <%= rails_data.commune %>
-                      <% end %>
-                    </td>
-
                     <td>
                       <% if rails_data.present? %>
                         <%= rails_data.department&.name %>
