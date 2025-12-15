@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_11_143512) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_15_090615) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -540,8 +540,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_11_143512) do
   create_table "sjcf_companies", force: :cascade do |t|
     t.string "siren", limit: 9, null: false
     t.string "libelle_liste", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["libelle_liste"], name: "index_sjcf_companies_on_libelle_liste"
     t.index ["siren", "libelle_liste"], name: "index_sjcf_companies_on_siren_and_libelle_liste", unique: true
     t.index ["siren"], name: "index_sjcf_companies_on_siren"
