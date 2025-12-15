@@ -189,20 +189,14 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Filter by minimum effectif
     if @search_params[:effectif_min].present?
       effectif_min = @search_params[:effectif_min].to_i
-      # Get current company sirens from the filtered companies query
       company_sirens = companies.pluck(:siren)
 
-      # Get the latest effectif for each siren
-      latest_effectifs = OsfEntEffectif
-                         .where(siren: company_sirens)
-                         .group(:siren)
-                         .maximum(:periode)
-
-      # Filter sirens where latest effectif >= min
-      sirens_with_effectif = latest_effectifs.select do |siren, _periode|
-        latest = OsfEntEffectif.where(siren: siren, periode: latest_effectifs[siren]).first
-        latest&.effectif.to_i >= effectif_min
-      end.keys.to_set
+      sirens_with_effectif = OsfEntEffectif
+                             .where(siren: company_sirens, is_latest: true)
+                             .where(effectif: effectif_min..)
+                             .distinct
+                             .pluck(:siren)
+                             .to_set
 
       companies = companies.where(siren: sirens_with_effectif.to_a)
     end
