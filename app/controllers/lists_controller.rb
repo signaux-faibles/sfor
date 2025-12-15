@@ -214,29 +214,18 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Filter by minimum dette sociale
     if @search_params[:dette_sociale_min].present?
       dette_min = @search_params[:dette_sociale_min].to_f
-      # Get current company sirens from the filtered companies query
       company_sirens = companies.pluck(:siren)
 
-      # Get all sirets for these companies (only siege establishments)
-      company_sirets = Establishment.where(siren: company_sirens, siege: true).pluck(:siret)
-
-      # Get latest periode for each siret
-      latest_periodes = OsfDebit
-                        .where(siret: company_sirets)
-                        .group(:siret)
-                        .maximum(:periode)
-
-      # Calculate total dette for each siret at latest periode
-      sirets_with_dette = latest_periodes.select do |siret, _periode|
-        debit = OsfDebit.where(siret: siret, periode: latest_periodes[siret]).first
-        total_dette = (debit&.part_ouvriere.to_f + debit&.part_patronale.to_f)
-        total_dette >= dette_min
-      end.keys
-
-      # Get sirens from these sirets (only from siege establishments)
-      sirens_with_dette = Establishment
-                          .where(siret: sirets_with_dette, siege: true)
-                          .pluck(:siren)
+      # Sum dette sociale across ALL establishments of each company, using latest (`is_last`) OSF debit rows
+      sirens_with_dette = OsfDebit
+                          .joins(:establishment)
+                          .where(is_last: true, establishments: { siren: company_sirens })
+                          .group("establishments.siren")
+                          .having(
+                            "SUM(COALESCE(osf_debits.part_ouvriere, 0) + COALESCE(osf_debits.part_patronale, 0)) >= ?",
+                            dette_min
+                          )
+                          .pluck("establishments.siren")
                           .to_set
 
       companies = companies.where(siren: sirens_with_dette.to_a)
