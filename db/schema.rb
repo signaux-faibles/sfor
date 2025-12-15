@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_15_090615) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_15_135752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -487,7 +487,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_15_090615) do
   end
 
   create_table "osf_procols", force: :cascade do |t|
-    t.string "siret", limit: 14, null: false
     t.date "date_effet"
     t.text "action_procol"
     t.text "stade_procol"
@@ -496,7 +495,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_15_090615) do
     t.string "siren", limit: 9
     t.index ["date_effet"], name: "index_osf_procols_on_date_effet"
     t.index ["siren"], name: "index_osf_procols_on_siren"
-    t.index ["siret"], name: "index_osf_procols_on_siret"
   end
 
   create_table "regions", force: :cascade do |t|
