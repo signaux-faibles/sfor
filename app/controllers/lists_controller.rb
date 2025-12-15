@@ -8,7 +8,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @list = List.find(params[:id])
 
     # Get search params
-    @search_params = params.require(:search).permit(:q, :ca_min,
+    @search_params = params.require(:search).permit(:q,
                                                     :effectif_min, :score_min,
                                                     :dette_sociale_min, :action_procol,
                                                     :frequence_alerte, :niveau_alerte,
@@ -178,12 +178,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     if @search_params[:departement_in].present? && @search_params[:departement_in].is_a?(Array)
       department_codes = @search_params[:departement_in].compact_blank
       companies = companies.where(department: department_codes) if department_codes.any?
-    end
-
-    # NOTE: ca_min (revenue) filter is not available in database
-    # The form field remains but filtering is skipped
-    if @search_params[:ca_min].present?
-      Rails.logger.warn "CA min filter requested but revenue data not available in database"
     end
 
     # Filter by minimum effectif
