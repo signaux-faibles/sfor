@@ -39,8 +39,8 @@
   <% if company_in_last_list %>
     <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
       <div class="fr-col-12">
-        <%= turbo_frame_tag "feedback_detection_widget",
-                            src: feedback_detection_widget_company_path(@company),
+        <%= turbo_frame_tag "detection_widget",
+                            src: detection_widget_company_path(@company),
                             loading: :lazy do %>
           <h2>Détection Signaux faibles</h2>
           <p class="fr-mt-2w">Récupération des données de la détection</p>

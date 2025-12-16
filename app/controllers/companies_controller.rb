@@ -1,5 +1,5 @@
 class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget feedback_detection_widget]
+  before_action :set_company, only: %i[show insee_widget financial_widget establishments_widget detection_widget feedback_detection_widget history_detection_widget waterfall_detection_widget]
 
   def index
     initialize_search_params
@@ -17,20 +17,35 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "insee_widget"
   end
 
-  def feedback_detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
 
+    render partial: "detection_widget"
+  end
+
+  def feedback_detection_widget
     #@TODO : valid form data and save data.
+    last_list = List.order(code: :desc).first
+    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    @entry = entry
 
+    render partial: "feedback_detection_widget"
+  end
+
+  def history_detection_widget
     fetch_alert_history
 
+    render partial: "history_detection_widget"
+  end
+
+  def waterfall_detection_widget
     # Get the last list
     last_list = List.order(code: :desc).first
-    return render partial: "feedback_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
+    return render partial: "waterfall_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
 
     # Find the CompanyScoreEntry for this company and last list
     entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
     @entry = entry
-    return render partial: "feedback_detection_widget",
+    return render partial: "waterfall_detection_widget",
                   locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
 
     # Get macro_expl data
@@ -101,7 +116,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
                    "Date non disponible"
                  end
 
-    render partial: "feedback_detection_widget"
+    render partial: "waterfall_detection_widget"
   end
 
   def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength

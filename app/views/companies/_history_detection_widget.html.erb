@@ -1,0 +1,46 @@
+<%= turbo_frame_tag "history_detection_widget" do %>
+  <!-- Modal -->
+  <% if @show_alert_history_button %>
+    <button aria-controls="modal-0" data-fr-opened="false" type="button" class="fr-btn fr-btn--secondary">Historique des alertes</button>
+    <dialog id="modal-0" class="fr-modal" aria-labelledby="modal-0-title" data-fr-concealing-backdrop="true">
+      <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-modal__body">
+              <div class="fr-modal__header">
+                <button aria-controls="modal-0" title="Fermer" type="button" id="button-11" class="fr-btn--close fr-btn">Fermer</button>
+              </div>
+              <div class="fr-modal__content">
+                <h2 id="modal-0-title" class="fr-modal__title">
+                  Historique des alertes
+                </h2>
+
+                <ol class="sf-detection-list">
+                  <% if @alert_history.present? %>
+                    <% @alert_history.each_with_index do |item, index| %>
+                      <li class="sf-detection-list--item <%= 'fr-mt-1w' unless index == 0 %>">
+                        <% case item[:alert_level]
+                           when 'high' %>
+                          <span class="fr-icon-warning-fill sf-high-alert" title="Alerte élevée"></span>
+                        <% when 'moderate' %>
+                          <span class="fr-icon-warning-fill sf-moderated-alert" title="Alerte modérée"></span>
+                        <% else %>
+                          <span class="fr-icon-warning-fill sf-no-alert" title="Pas d'alerte"></span>
+                        <% end %>
+                        <%= item[:list_name] %>
+                      </li>
+                    <% end %>
+                  <% else %>
+                    <li class="sf-detection-list--item">
+                      <span>Aucun historique disponible</span>
+                    </li>
+                  <% end %>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  <% end %>
+<% end %>

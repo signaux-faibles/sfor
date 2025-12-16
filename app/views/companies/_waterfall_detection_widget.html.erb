@@ -1,0 +1,109 @@
+<%= turbo_frame_tag "waterfall_detection_widget" do %>
+  <% unless local_assigns[:error] %>
+    <div
+      data-controller="segmented-control-widget"
+    >
+      <div>
+        <div class="fr-mb-3w fr-mt-5w">
+          <fieldset class="fr-segmented fr-segmented--no-legend">
+            <legend class="fr-segmented__legend">Format d'affichage</legend>
+            <div class="fr-segmented__elements">
+              <div class="fr-segmented__element">
+                <input
+                  value="chart"
+                  checked
+                  type="radio"
+                  id="segmented-detection-chart"
+                  name="segmented-detection"
+                  data-action="input->segmented-control-widget#switch"
+                >
+                <label class="fr-label" for="segmented-detection-chart">Graphique</label>
+              </div>
+              <div class="fr-segmented__element">
+                <input
+                  value="table"
+                  type="radio"
+                  id="segmented-detection-table"
+                  name="segmented-detection"
+                  data-action="input->segmented-control-widget#switch"
+                >
+                <label class="fr-label" for="segmented-detection-table">Tableau</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        data-segmented-control-widget-target="panel"
+        data-panel="chart"
+        class="sf-segmented fr-col-12 fr-col-lg-8"
+      >
+        <h3 class="fr-mt-3w">Éléments constitutifs de cette alerte</h3>
+        <div
+          data-controller="waterfall-chart-widget"
+          class="chart-container"
+          data-waterfall-chart-widget-colors-light-theme-value='<%= ['#e1000f', '#1f8d49', '#6a6af4', '#000091'] %>'
+          data-waterfall-chart-widget-colors-dark-theme-value='<%= ['#e1000f', '#1f8d49', '#6a6af4', '#8585f6'] %>'
+          data-waterfall-chart-widget-title-value="Éléments constitutifs de cette alerte"
+          data-waterfall-chart-widget-unit-value="%"
+          data-waterfall-chart-widget-values-value='<%= @values.to_json %>'
+          data-waterfall-chart-widget-labels-value='<%= @labels.to_json %>'
+          data-waterfall-chart-widget-seuils-value='<%= @seuils.to_json %>'
+        >
+          <canvas data-waterfall-chart-widget-target="chart" class="sf-chart"></canvas>
+        </div>
+
+        <p class="fr-mb-3w"><strong>Source :</strong> Signaux faibles</p>
+      </div>
+
+      <div
+        id="sf-detection-table"
+        class="sf-segmented sf-segmented--hidden"
+        data-segmented-control-widget-target="panel"
+        data-panel="table"
+      >
+
+        <div class="fr-table fr-table--no-caption fr-table--bordered fr-col-12 fr-col-lg-6" id="table-detection-component">
+          <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+              <div class="fr-table__content">
+                <table id="table-detection">
+                  <caption>Éléments constitutifs de cette alerte</caption>
+                  <thead>
+                  <tr>
+                    <th scope="col">Élément</th>
+                    <th scope="col">Valeur</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+
+                  <% @labels.each_with_index do |label, index| %>
+                    <tr id="table-detection-row-key-<%= index %>" data-row-key="<%= index %>">
+                      <% if index == @labels.length - 1 %>
+                        <td scope="row">
+                          <strong><%= label %></strong>
+                        </td>
+                        <td>
+                          <strong><%= (@values[index][1] - @values[index][0]).round(1) %> %</strong>
+                        </td>
+                      <% else %>
+                        <td scope="row"><%= label %></td>
+                        <td>
+                          <%= (@values[index][1] - @values[index][0]).round(1) %> %
+                        </td>
+                      <% end %>
+
+                    </tr>
+                  <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="fr-mb-4w"><strong>Source :</strong> Signaux faibles</p>
+      </div>
+    </div>
+  <% end %>
+<% end %>
