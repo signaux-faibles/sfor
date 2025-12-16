@@ -130,10 +130,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     debits_data = fetch_debits_data(start_date)
     delais = fetch_delais_data(start_date)
 
-    @cotisations = map_periodes_to_cotisations(periodes, cotisations_data)
-    @parts_salariales = map_periodes_to_parts_salariales(periodes, debits_data)
-    @parts_patronales = map_periodes_to_parts_patronales(periodes, debits_data)
-    @montant_echeancier = map_periodes_to_montant_echeancier(periodes, delais)
+    @cotisations = forward_fill(map_periodes_to_cotisations(periodes, cotisations_data))
+    @parts_salariales = forward_fill(map_periodes_to_parts_salariales(periodes, debits_data))
+    @parts_patronales = forward_fill(map_periodes_to_parts_patronales(periodes, debits_data))
+    @montant_echeancier = forward_fill(map_periodes_to_montant_echeancier(periodes, delais))
     @dataset_names = urssaf_dataset_names
 
     render partial: "data_urssaf_widget"
@@ -607,6 +607,19 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     return false if alert_count == 1 # First alert, don't show button
 
     true
+  end
+
+  def forward_fill(array)
+    # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
+    last_value = nil
+    array.map do |value|
+      if value.nil? && !last_value.nil?
+        last_value
+      else
+        last_value = value unless value.nil?
+        value
+      end
+    end
   end
 
   def urssaf_dataset_names
