@@ -15,15 +15,20 @@
 
         <% if true %> <%# @TODO : condition : no feedback and no error. %>
           <div>
-            <%= form_with model: [@entry],
-                          url: feedback_detection_widget_company_path(@company),
-                          method: :post,
-                          data: { turbo_frame: "feedback-detection_widget" } do |f| %>
-              <button type="submit" class="fr-btn fr-btn--secondary sf-feedback-detection-button">Détection utile</button>
-            <% end %>
+            <ul class="fr-btns-group fr-btns-group--inline-md">
+              <li>
+                <%= form_with model: [@entry],
+                              url: feedback_detection_widget_company_path(@company),
+                              method: :post,
+                              data: { turbo_frame: "feedback-detection_widget" } do |f| %>
+                  <button type="submit" class="fr-btn fr-btn--secondary sf-feedback-detection-button">Détection utile</button>
+                <% end %>
+              </li>
 
-            <button aria-controls="modal-feedback-detection" data-fr-opened="false" type="button" class="fr-btn sf-feedback-detection-button">Détection inutile</button>
-
+              <li>
+                <button aria-controls="modal-feedback-detection" data-fr-opened="false" type="button" class="fr-btn sf-feedback-detection-button">Détection inutile</button>
+              </li>
+            </ul>
             <dialog id="modal-feedback-detection" class="fr-modal" aria-labelledby="modal-feedback-detection-title" data-fr-concealing-backdrop="true">
               <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
