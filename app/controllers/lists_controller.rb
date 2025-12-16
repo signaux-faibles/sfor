@@ -42,7 +42,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Calculate alert breakdown from filtered results (before pagination)
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
-    respond_to do |format|
+    respond_to do |format| # rubocop:disable Metrics/BlockLength
       format.html do
         # Paginate
         @companies = @companies.includes(:establishments).page(@page).per(@per_page)

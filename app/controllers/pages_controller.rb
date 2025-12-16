@@ -1,4 +1,4 @@
-class PagesController < ApplicationController
+class PagesController < ApplicationController # rubocop:disable Metrics/ClassLength
   include SirenSiretRedirectable
 
   skip_before_action :authenticate_user!, only: [:unauthorized]
@@ -59,6 +59,7 @@ class PagesController < ApplicationController
     elsif response
       @results = response["results"] || []
       enrich_results_with_tracking_status(@results)
+      enrich_results_with_alert_levels(@results)
       @pagination = {
         page: response["page"] || @page,
         per_page: response["per_page"] || @per_page,
@@ -96,6 +97,44 @@ class PagesController < ApplicationController
     # Enrich each result with tracking status
     results.each do |result|
       result["has_tracking_in_progress"] = sirens_with_tracking.include?(result["siren"])
+    end
+  end
+
+  def enrich_results_with_alert_levels(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    return if results.blank?
+
+    # Get the last list
+    last_list = List.order(code: :desc).first
+    return unless last_list
+
+    # Extract all sirens from results
+    sirens = results.pluck("siren").compact.uniq
+    return if sirens.blank?
+
+    # Find all CompanyScoreEntry records for these sirens in the last list
+    # Group by siren and take the most recent entry (by created_at) for each siren
+    alert_entries = {}
+    CompanyScoreEntry
+      .where(siren: sirens, list_name: last_list.label)
+      .where.not(alert: nil)
+      .order(created_at: :desc)
+      .pluck(:siren, :alert)
+      .each do |siren, alert|
+        # Only keep the first (most recent) entry for each siren
+        alert_entries[siren] ||= alert
+      end
+
+    # Enrich each result with alert level
+    results.each do |result|
+      alert = alert_entries[result["siren"]]
+      if alert
+        case alert.downcase
+        when "alerte seuil f1"
+          result["alert_level"] = "elevee"
+        when "alerte seuil f2"
+          result["alert_level"] = "moderee"
+        end
+      end
     end
   end
 end
