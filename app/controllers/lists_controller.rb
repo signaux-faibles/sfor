@@ -13,7 +13,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     :dette_sociale_min, :action_procol,
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
-                                                    :liste_retraitee,
+                                                    :sans_delai_urssaf, :liste_retraitee,
                                                     :page, :per_page,
                                                     departement_in: [],
                                                     forme_juridique: [],
@@ -312,6 +312,32 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       three_years_ago = Date.current - 3.years
       # Exclude companies created within last 3 years, but include companies with NULL creation date
       companies = companies.where("creation IS NULL OR creation < ?", three_years_ago)
+    end
+
+    # Filter by sans_delai_urssaf (exclude companies with establishments having OsfDelai date_echeance > list_date)
+    if @search_params[:sans_delai_urssaf].present? && @search_params[:sans_delai_urssaf] == "1" && @list.list_date.present? # rubocop:disable Layout/LineLength
+      company_sirens = companies.pluck(:siren)
+
+      # Get all sirets for these companies
+      company_sirets = Establishment.where(siren: company_sirens).pluck(:siret)
+
+      # Find sirets that have OsfDelai with date_echeance > list_date
+      sirets_with_delai = OsfDelai
+                          .where(siret: company_sirets)
+                          .where("date_echeance > ?", @list.list_date)
+                          .distinct
+                          .pluck(:siret)
+                          .to_set
+
+      # Get sirens from these sirets
+      sirens_with_delai = Establishment
+                          .where(siret: sirets_with_delai.to_a)
+                          .distinct
+                          .pluck(:siren)
+                          .to_set
+
+      # Exclude these sirens from the companies query
+      companies = companies.where.not(siren: sirens_with_delai.to_a)
     end
 
     # Filter by liste_retraitee (only show companies in SjcfCompany for this list)
