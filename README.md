@@ -334,7 +334,7 @@ bin/rails osf:sync_all[months_back]           # Sync all OSF data from OSF datab
 bin/rails osf:sync_ap[months_back]            # Sync OSF ap data from clean_ap materialized view to local Rails tables
 bin/rails osf:sync_cotisation[months_back]    # Sync OSF cotisation data using PostgreSQL cursors (high performance)
 bin/rails osf:sync_debit[months_back]         # Sync OSF debit data using PostgreSQL cursors (high performance) ~ 6 mins
-bin/rails osf:sync_delai[months_back]         # Sync OSF delai data using PostgreSQL cursors (high performance)
+bin/rails osf:sync_delai[months_back]         # Sync OSF delai data using PostgreSQL cursors (high performance) ~ quelques secondes
 bin/rails osf:sync_effectif[months_back]      # Sync OSF effectif data using PostgreSQL cursors (high performance) ~ 28 mins
 bin/rails osf:sync_effectif_ent[months_back]  # Sync OSF effectif_ent data using PostgreSQL cursors (high performance) ~ 13 mins
 bin/rails osf:sync_procol[months_back]        # Sync OSF procol data using PostgreSQL cursors (high performance) ~ quelques secondes
