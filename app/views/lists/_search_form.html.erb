@@ -135,6 +135,12 @@
             </div>
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-checkbox-group">
+                <%= f.check_box :sans_delai_urssaf, { checked: search_params[:sans_delai_urssaf] == "1" }, "1", "0" %>
+                <%= f.label :sans_delai_urssaf, "Sans délai de paiement URSSAF", class: "fr-label" %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-checkbox-group">
                 <%= f.check_box :liste_retraitee, { checked: search_params[:liste_retraitee] == "1" }, "1", "0" %>
                 <%= f.label :liste_retraitee, "Liste retraitée", class: "fr-label" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
