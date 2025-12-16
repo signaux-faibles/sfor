@@ -86,71 +86,87 @@
         </div>
       </div>
 
-      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
-            <%= f.label :action_procol, "Action de procédure collective", class: "fr-label" %>
-            <%= f.select :action_procol,
-                         [
-                           ["Tous", ""],
-                           ["In Bonis", "in_bonis"],
-                           ["Sauvegarde", "sauvegarde"],
-                           ["Redressement", "redressement"],
-                           ["Liquidation", "liquidation"]
-                         ],
-                         { selected: search_params[:action_procol] || "" },
-                         { class: "fr-select" } %>
+      <div data-controller="filters-toggle">
+        <%= f.hidden_field :filters_open,
+                           value: params.dig(:q, :filters_open) || "false",
+                           id: "filters_open",
+                           data: { filters_toggle_target: "filtersOpenInput" } %>
+        <div data-filters-toggle-target="hiddenFilters" style="display: <%= params.dig(:q, :filters_open) == "true" ? "block" : "none" %>">
+          <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-input-group">
+                <%= f.label :action_procol, "Action de procédure collective", class: "fr-label" %>
+                <%= f.select :action_procol,
+                             [
+                               ["Tous", ""],
+                               ["In Bonis", "in_bonis"],
+                               ["Sauvegarde", "sauvegarde"],
+                               ["Redressement", "redressement"],
+                               ["Liquidation", "liquidation"]
+                             ],
+                             { selected: search_params[:action_procol] || "" },
+                             { class: "fr-select" } %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-input-group">
+                <%= f.label :niveau_alerte, "Niveau d'alerte", class: "fr-label" %>
+                <%= f.select :niveau_alerte,
+                             [
+                               ["Tous", ""],
+                               ["Alerte élevée", "Alerte seuil F1"],
+                               ["Alerte modérée", "Alerte seuil F2"]
+                             ],
+                             { selected: search_params[:niveau_alerte] || "" },
+                             { class: "fr-select" } %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-checkbox-group">
+                <%= f.check_box :premieres_alertes, { checked: search_params[:premieres_alertes] == "1" }, "1", "0" %>
+                <%= f.label :premieres_alertes, "Premières alertes", class: "fr-label" %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-checkbox-group">
+                <%= f.check_box :sans_entreprises_recentes, { checked: search_params[:sans_entreprises_recentes] == "1" }, "1", "0" %>
+                <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-checkbox-group">
+                <%= f.check_box :liste_retraitee, { checked: search_params[:liste_retraitee] == "1" }, "1", "0" %>
+                <%= f.label :liste_retraitee, "Liste retraitée", class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur la liste retraitée</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip" aria-hidden="true">
+                Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI
+              </span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
-            <%= f.label :niveau_alerte, "Niveau d'alerte", class: "fr-label" %>
-            <%= f.select :niveau_alerte,
-                         [
-                           ["Tous", ""],
-                           ["Alerte élevée", "Alerte seuil F1"],
-                           ["Alerte modérée", "Alerte seuil F2"]
-                         ],
-                         { selected: search_params[:niveau_alerte] || "" },
-                         { class: "fr-select" } %>
-          </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-checkbox-group">
-            <%= f.check_box :premieres_alertes, { checked: search_params[:premieres_alertes] == "1" }, "1", "0" %>
-            <%= f.label :premieres_alertes, "Premières alertes", class: "fr-label" %>
-          </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-checkbox-group">
-            <%= f.check_box :sans_entreprises_recentes, { checked: search_params[:sans_entreprises_recentes] == "1" }, "1", "0" %>
-            <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
-          </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-checkbox-group">
-            <%= f.check_box :liste_retraitee, { checked: search_params[:liste_retraitee] == "1" }, "1", "0" %>
-            <%= f.label :liste_retraitee, "Liste retraitée", class: "fr-label" %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur la liste retraitée</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip" aria-hidden="true">
-              Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI
-            </span>
-          </div>
-        </div>
-      </div>
 
-      <div class="fr-grid-row fr-grid-row--right fr-mt-5w">
-        <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
-          <li>
-            <%= link_to "Réinitialiser les filtres", list_path(list), class: "fr-btn fr-icon-restart-line fr-btn--secondary", data: { turbo: false} %>
-          </li>
-          <li>
-            <%= f.submit "Rechercher", class: "fr-btn" %>
-          </li>
-        </ul>
+        </div>
+        <div class="fr-grid-row fr-grid-row--right fr-mt-5w">
+          <ul class="fr-btns-group fr-btns-group--center fr-btns-group--inline-lg fr-btns-group--icon-left">
+            <li>
+              <%= button_tag type: "button",
+                             class: "fr-btn fr-btn--tertiary fr-btn--icon-left",
+                             data: { action: "click->filters-toggle#toggle", filters_toggle_target: "toggleButton" } do %>
+                <span class="<%= params.dig(:q, :filters_open) == "true" ? 'fr-icon-arrow-up-line' : 'fr-icon-arrow-down-line' %>" aria-hidden="true"></span>
+                <%= params.dig(:q, :filters_open) == "true" ? 'Réduire les critères supplémentaires' : 'Afficher des critères supplémentaires' %>
+              <% end %>
+            </li>
+            <li>
+              <%= link_to "Réinitialiser les filtres", list_path(list), class: "fr-btn fr-icon-restart-line fr-btn--secondary", data: { turbo: false} %>
+            </li>
+            <li>
+              <%= f.submit "Rechercher", class: "fr-btn" %>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   <% end %>
