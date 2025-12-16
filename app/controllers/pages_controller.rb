@@ -84,19 +84,45 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
     sirens = results.pluck("siren").compact.uniq
     return if sirens.blank?
 
-    # Find all distinct sirens that have at least one establishment with in_progress tracking
-    # Using a join to efficiently query in one go
-    sirens_with_tracking = Establishment
-                           .joins(:establishment_trackings)
-                           .where(siren: sirens)
-                           .merge(EstablishmentTracking.kept.in_progress)
-                           .distinct
-                           .pluck(:siren)
-                           .to_set
+    # Count trackings by state for each siren
+    # Get all trackings for these establishments, grouped by siren and state
+    tracking_counts = EstablishmentTracking
+                      .kept
+                      .joins(:establishment)
+                      .where(establishments: { siren: sirens })
+                      .group("establishments.siren", "establishment_trackings.state")
+                      .count
 
-    # Enrich each result with tracking status
+    # Initialize counts for each siren
+    tracking_by_siren = {}
+    sirens.each do |siren|
+      tracking_by_siren[siren] = {
+        in_progress: 0,
+        under_surveillance: 0,
+        completed: 0
+      }
+    end
+
+    # Populate counts from grouped query results
+    tracking_counts.each do |(siren, state), count|
+      case state
+      when "in_progress"
+        tracking_by_siren[siren][:in_progress] = count
+      when "under_surveillance"
+        tracking_by_siren[siren][:under_surveillance] = count
+      when "completed"
+        tracking_by_siren[siren][:completed] = count
+      end
+    end
+
+    # Enrich each result with tracking counts
     results.each do |result|
-      result["has_tracking_in_progress"] = sirens_with_tracking.include?(result["siren"])
+      siren = result["siren"]
+      counts = tracking_by_siren[siren] || { in_progress: 0, under_surveillance: 0, completed: 0 }
+      result["tracking_in_progress_count"] = counts[:in_progress]
+      result["tracking_under_surveillance_count"] = counts[:under_surveillance]
+      result["tracking_completed_count"] = counts[:completed]
+      result["has_tracking_in_progress"] = counts[:in_progress] > 0
     end
   end
 
