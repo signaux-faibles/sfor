@@ -1,5 +1,23 @@
 <% content_for :title, "Statistiques" %>
 
+<div class="fr-container">
+  <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb">
+      Voir le fil d'Ariane
+    </button>
+    <div class="fr-collapse" id="breadcrumb">
+      <ol class="fr-breadcrumb__list">
+        <li>
+          <%= link_to 'Accueil', '/', class: 'fr-breadcrumb__link' %>
+        </li>
+        <li>
+          <a class="fr-breadcrumb__link" aria-current="page">Statistiques</a>
+        </li>
+      </ol>
+    </div>
+  </nav>
+</div>
+
 <div class="container mx-auto px-4 py-8">
   <div class="bg-white rounded-lg shadow-lg p-6">
     <iframe
