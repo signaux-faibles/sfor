@@ -47,12 +47,21 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         # Paginate
         @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
+        Rails.logger.info "companies: #{@companies.inspect}"
+
+        # Preload establishment counts to avoid N+1 queries
+        company_sirens = @companies.pluck(:siren)
+        establishment_counts = Establishment
+                               .where(siren: company_sirens)
+                               .group(:siren)
+                               .count
+
         # Format results for display
         @results = @companies.map do |company|
           {
             "siren" => company.siren,
             "nom_complet" => company.raison_sociale || company.siren,
-            "nombre_etablissements_ouverts" => company.establishments.size
+            "nombre_etablissements_ouverts" => establishment_counts[company.siren] || 0
           }
         end
 
@@ -96,12 +105,19 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         # Paginate
         @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
+        # Preload establishment counts to avoid N+1 queries
+        company_sirens = @companies.pluck(:siren)
+        establishment_counts = Establishment
+                               .where(siren: company_sirens)
+                               .group(:siren)
+                               .count
+
         # Format results for display
         @results = @companies.map do |company|
           {
             "siren" => company.siren,
             "nom_complet" => company.raison_sociale || company.siren,
-            "nombre_etablissements_ouverts" => company.establishments.size
+            "nombre_etablissements_ouverts" => establishment_counts[company.siren] || 0
           }
         end
 
