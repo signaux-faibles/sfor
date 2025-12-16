@@ -36,12 +36,12 @@
                             <p class="fr-badge fr-badge--error fr-badge--no-icon">Fermé</p>
                           </li>
                         <% end %>
-                        <% if false %>
+                        <% if company["alert_level"] == "elevee" %>
                           <li>
                             <p class="fr-badge fr-badge--error fr-badge--no-icon">Alerte élevée</p>
                           </li>
                         <% end %>
-                        <% if false %>
+                        <% if company["alert_level"] == "moderee" %>
                           <li>
                             <p class="fr-badge fr-badge--pink-macaron">Alerte modérée</p>
                           </li>
