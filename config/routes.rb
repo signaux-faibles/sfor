@@ -71,7 +71,7 @@ Rails.application.routes.draw do
       get :detection_widget
       get :history_detection_widget
       get :waterfall_detection_widget
-      match :feedback_detection_widget, via: [:get, :post]
+      match :feedback_detection_widget, via: %i[get post]
     end
   end
 

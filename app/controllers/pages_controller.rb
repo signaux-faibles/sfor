@@ -77,7 +77,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   private
 
-  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
     return if results.blank?
 
     # Extract all sirens from results
@@ -122,7 +122,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
       result["tracking_in_progress_count"] = counts[:in_progress]
       result["tracking_under_surveillance_count"] = counts[:under_surveillance]
       result["tracking_completed_count"] = counts[:completed]
-      result["has_tracking_in_progress"] = counts[:in_progress] > 0
+      result["has_tracking_in_progress"] = (counts[:in_progress]).positive?
     end
   end
 
