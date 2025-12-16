@@ -46,19 +46,34 @@
                             <p class="fr-badge fr-badge--pink-macaron">Alerte modérée</p>
                           </li>
                         <% end %>
-                        <% if false %>
+                        <% if company["tracking_under_surveillance_count"].to_i > 0 %>
                           <li>
-                            <p class="fr-badge fr-badge--beige-gris-galet">Accompagnement sous surveillance</p>
+                            <p class="fr-badge fr-badge--beige-gris-galet">
+                              Accompagnement sous surveillance
+                              <% if company["tracking_under_surveillance_count"].to_i > 1 %>
+                                (<%= company["tracking_under_surveillance_count"] %>)
+                              <% end %>
+                            </p>
                           </li>
                         <% end %>
-                        <% if company["has_tracking_in_progress"] %>
+                        <% if company["tracking_in_progress_count"].to_i > 0 %>
                           <li>
-                            <p class="fr-badge fr-badge--yellow-moutarde">Accompagnement en cours</p>
+                            <p class="fr-badge fr-badge--yellow-moutarde">
+                              Accompagnement en cours
+                              <% if company["tracking_in_progress_count"].to_i > 1 %>
+                                (<%= company["tracking_in_progress_count"] %>)
+                              <% end %>
+                            </p>
                           </li>
                         <% end %>
-                        <% if false %>
+                        <% if company["tracking_completed_count"].to_i > 0 %>
                           <li>
-                            <p class="fr-badge">Accompagnement terminé</p>
+                            <p class="fr-badge">
+                              Accompagnement terminé
+                              <% if company["tracking_completed_count"].to_i > 1 %>
+                                (<%= company["tracking_completed_count"] %>)
+                              <% end %>
+                            </p>
                           </li>
                         <% end %>
                       </ul>
