@@ -87,7 +87,7 @@
                     <tbody>
 
                     <% @formatted_periodes.each_with_index do |periode, index| %>
-                      <tr id="table-urssaf-row-key-1" data-row-key="<%= index %>">
+                      <tr id="table-urssaf-row-key-<%= index %>" data-row-key="<%= index %>">
                         <td scope="row"><%= periode %></td>
                         <td>
                           <% if @cotisations[index].present? %>
