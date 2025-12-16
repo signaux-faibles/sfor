@@ -27,6 +27,12 @@
           </div>
         </div>
       </div>
+
+      <%= link_to "Créer un accompagnement",
+                  new_establishment_establishment_tracking_path(@establishment),
+                  class: "fr-btn fr-mt-2w",
+                  data: { turbo: false }
+      %>
     <% end %>
 
     <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--no-scroll" id="sf-trackings-table">
