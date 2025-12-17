@@ -5,12 +5,19 @@
         <div class="fr-notice__body">
           <div>
             <p class="fr-notice__title">L'entreprise n'a pas d'accompagnement en cours.</p>
-            <p>
-              Pour créer un accompagnement auprès d'un établissement, cliquer sur le lien :
-              <%= link_to "Liste des établissements - #{@company.raison_sociale}",
-                          company_path(@company),
-                          data: { turbo: false } %>
-            </p>
+            <p class="fr-mt-2w">Rappel : les accompagnements sont créés au niveau des fiches établissements.</p>
+            <ul>
+              <li>
+                <%= link_to "Consultez la fiche de l'établissement siège",
+                            establishment_path(@siege),
+                            data: { turbo: false } %>
+              </li>
+              <li>
+                <%= link_to "Consultez  Liste des établissements - #{@company.raison_sociale}",
+                            company_path(@company),
+                            data: { turbo: false } %>
+              </li>
+            </ul>
           </div>
 
         </div>
