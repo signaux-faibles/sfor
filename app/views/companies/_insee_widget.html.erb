@@ -4,8 +4,8 @@
         Informations générales
       </h2>
       <% if @date_fermeture_formatted.present? %>
-        <p class="fr-badge fr-badge--error fr-badge--sm">
-          <%= @date_fermeture_formatted %>
+        <p class="fr-badge fr-badge--error fr-badge--no-icon">
+          Fermé le <%= @date_fermeture_formatted %>
         </p>
       <% end %>
     </div>

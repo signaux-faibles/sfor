@@ -42,9 +42,9 @@
           <div class="fr-card__content">
             <h3 class="fr-card__title">Données INSEE
               <% if @insee_data %>
-                <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
+                <span class="fr-badge fr-badge--success fr-badge--no-icon">Disponibles</span>
               <% else %>
-                <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
+                <span class="fr-badge fr-badge--error fr-badge--no-icon">Indisponibles</span>
               <% end %>
             </h3>
             
@@ -93,9 +93,9 @@
                   <dt class="fr-col-4"><strong>État:</strong></dt>
                   <dd class="fr-col-8">
                     <% if data["etat_administratif"] == "A" %>
-                      <span class="fr-badge fr-badge--success fr-badge--sm">Actif</span>
+                      <span class="fr-badge fr-badge--success fr-badge--no-icon">Actif</span>
                     <% else %>
-                      <span class="fr-badge fr-badge--error fr-badge--sm">Cessé</span>
+                      <span class="fr-badge fr-badge--error fr-badge--no-icon">Cessé</span>
                     <% end %>
                   </dd>
                 <% end %>
@@ -110,7 +110,7 @@
                 <% if data["economie_sociale_et_solidaire"] %>
                   <dt class="fr-col-4"><strong>ESS:</strong></dt>
                   <dd class="fr-col-8">
-                    <span class="fr-badge fr-badge--info fr-badge--sm">Oui</span>
+                    <span class="fr-badge fr-badge--info fr-badge--no-icon">Oui</span>
                   </dd>
                 <% end %>
               </dl>

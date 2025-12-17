@@ -43,24 +43,24 @@ module ApplicationHelper
   def badge_class_for(state)
     case state
     when "En cours", "in_progress"
-      "fr-badge fr-badge--info fr-badge--sm fr-badge--no-icon"
+      "fr-badge fr-badge--purple-glycine"
     when "Sous surveillance", "under_surveillance"
-      "fr-badge fr-badge--warning fr-badge--sm fr-badge--no-icon"
+      "fr-badge fr-badge--info fr-badge--no-icon"
     when "Terminé", "completed"
-      "fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon"
+      "fr-badge"
     else
-      "fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon"
+      "fr-badge"
     end
   end
 
   def state_wording_for(state)
     case state
     when "in_progress"
-      "En cours"
+      "Accompagnement en cours"
     when "completed"
-      "Terminé"
+      "Accompagnement terminé"
     when "under_surveillance"
-      "Sous surveillance"
+      "Accompagnement sous surveillance"
     else
       ""
     end
@@ -69,13 +69,13 @@ module ApplicationHelper
   def criticality_class_for(level)
     case level
     when "Criticité élevée"
-      "fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon"
+      "fr-badge fr-badge--error fr-badge--no-icon"
     when "Criticité modérée"
-      "fr-badge fr-badge--warning fr-badge--sm fr-badge--no-icon"
+      "fr-badge fr-badge--yellow-tournesol"
     when "Niveau vert", "Pas de criticité"
-      "fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon"
+      "fr-badge fr-badge--success fr-badge--no-icon"
     else
-      "fr-badge fr-badge--sm fr-badge--no-icon"
+      "fr-badge"
     end
   end
 
