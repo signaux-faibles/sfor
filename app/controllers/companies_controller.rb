@@ -169,6 +169,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def establishment_trackings_list_widget
     @company = Company.find_by!(siren: params[:siren])
     @establishments = @company.establishments
+
+    @siege = @establishments.find_by(siege: true)
+
     @establishment_trackings = EstablishmentTracking.where(establishment: @establishments)
 
     @in_progress_trackings = @establishment_trackings.in_progress
