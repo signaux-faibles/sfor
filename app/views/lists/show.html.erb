@@ -21,7 +21,7 @@
 
 <div class="fr-container fr-mt-5w fr-mb-5w">
   <div class="grid-row">
-    <h1><%= @list.label %></h1>
+    <h1>Liste <%= @list.label %></h1>
     <p class="fr-text--lg fr-mb-3w">
       Code: <strong><%= @list.code %></strong> • 
       <%= pluralize(@list.company_score_entries.select(:siren).distinct.count, "entreprise", "entreprises") %>
