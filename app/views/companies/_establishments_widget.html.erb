@@ -56,7 +56,7 @@
                         </strong>
 
                         <% if rails_data.siege %>
-                          <p class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">Siege social</p>
+                          <p class="fr-badge">Siège social</p>
                         <% end %>
                       <% end %>
 
@@ -80,7 +80,7 @@
                       <% if enriched_establishment[:active_dette_urssaf] == true %>
                         <p class="fr-badge fr-badge--sm fr-badge--error fr-badge--no-icon">Oui</p>
                       <% elsif enriched_establishment[:active_dette_urssaf] == "Na" %>
-                        <p class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">Na</p>
+                        <p class="fr-badge fr-badge--sm">N/A</p>
                       <% else %>
                         <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">Non</p>
                       <% end %>
@@ -98,7 +98,7 @@
                       <% if enriched_establishment[:etat_administratif] == "F" && enriched_establishment[:date_fermeture_formatted].present? %>
                         <p class="fr-badge fr-badge--error fr-badge--no-icon fr-badge--sm">Fermé le <%= enriched_establishment[:date_fermeture_formatted] %></p>
                       <% elsif enriched_establishment[:etat_administratif] == "A" %>
-                        <p class="fr-badge fr-badge--sm">Ouvert</p>
+                        <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">En activité</p>
                       <% else %>
                         <p class="fr-badge fr-badge--sm">-</p>
                       <% end %>

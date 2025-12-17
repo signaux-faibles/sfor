@@ -43,12 +43,12 @@
                         <% end %>
                         <% if company["alert_level"] == "moderee" %>
                           <li>
-                            <p class="fr-badge fr-badge--pink-macaron">Alerte modérée</p>
+                            <p class="fr-badge fr-badge--yellow-tournesol">Alerte modérée</p>
                           </li>
                         <% end %>
                         <% if company["tracking_under_surveillance_count"].to_i > 0 %>
                           <li>
-                            <p class="fr-badge fr-badge--beige-gris-galet">
+                            <p class="fr-badge fr-badge--info fr-badge--no-icon">
                               Accompagnement sous surveillance
                               <% if company["tracking_under_surveillance_count"].to_i > 1 %>
                                 (<%= company["tracking_under_surveillance_count"] %>)
@@ -58,7 +58,7 @@
                         <% end %>
                         <% if company["tracking_in_progress_count"].to_i > 0 %>
                           <li>
-                            <p class="fr-badge fr-badge--yellow-moutarde">
+                            <p class="fr-badge fr-badge--purple-glycine">
                               Accompagnement en cours
                               <% if company["tracking_in_progress_count"].to_i > 1 %>
                                 (<%= company["tracking_in_progress_count"] %>)

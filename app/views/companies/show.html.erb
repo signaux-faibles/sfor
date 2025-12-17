@@ -25,17 +25,17 @@
       <% end %>
 
       <% if @alert_level == "moderee" %>
-        <p class="fr-badge fr-badge--brown-caramel fr-ml-3w">Alerte modérée</p>
+        <p class="fr-badge fr-badge--yellow-tournesol fr-ml-3w">Alerte modérée</p>
       <% end %>
 
       <%# Statut procédure collective (si différent de in bonis) %>
       <% if @procol_status && @procol_status != "In Bonis" %>
-        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w"><%= @procol_status %></p>
+        <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
       <% end %>
 
       <%# Première alerte %>
       <% if @is_first_alert %>
-        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1re alerte</p>
+        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1e alerte</p>
       <% end %>
     </div>
   </div>

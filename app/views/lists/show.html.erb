@@ -51,7 +51,7 @@
             <%= @alert_breakdown[:alerte_elevee] %> <%= @alert_breakdown[:alerte_elevee] > 1 ? "Alertes élevées" : "Alerte élevée" %>
           </span>
           et
-          <span class="fr-badge fr-badge--pink-macaron">
+          <span class="fr-badge fr-badge--yellow-tournesol">
             <%= @alert_breakdown[:alerte_moderee] %> <%= @alert_breakdown[:alerte_moderee] > 1 ? "Alertes modérées" : "Alerte modérée" %>
           </span>
         <% end %>
@@ -78,7 +78,7 @@
                       <ul class="fr-badges-group">
                         <% if company["has_tracking_in_progress"] %>
                           <li>
-                            <p class="fr-badge fr-badge--info">Accompagnement en cours</p>
+                            <p class="fr-badge fr-badge--purple-glycine">Accompagnement en cours</p>
                           </li>
                         <% end %>
                       </ul>

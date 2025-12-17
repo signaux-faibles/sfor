@@ -9,9 +9,9 @@
       <h4>
         Données financières Banque de France
         <% if @financial_data&.dig("data")&.any? %>
-          <span class="fr-badge fr-badge--success fr-badge--sm">Disponibles</span>
+          <span class="fr-badge fr-badge--success fr-badge--no-icon">Disponibles</span>
         <% else %>
-          <span class="fr-badge fr-badge--error fr-badge--sm">Indisponibles</span>
+          <span class="fr-badge fr-badge--error fr-badge--no-icon">Indisponibles</span>
         <% end %>
       </h4>
       
@@ -92,7 +92,7 @@
                                 evolution >= 0 ? 'fr-badge--success' : 'fr-badge--error'
                               end
                             %>
-                            <span class="fr-badge fr-badge--sm <%= badge_class %>">
+                            <span class="fr-badge fr-badge--sm <%= badge_class %> fr-badge--no-icon">
                               <%= evolution >= 0 ? '+' : '' %><%= evolution.round(1) %>%
                             </span>
                           <% end %>

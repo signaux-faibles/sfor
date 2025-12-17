@@ -4,8 +4,8 @@
       Informations générales
     </h2>
     <% if @date_fermeture_formatted.present? %>
-      <p class="fr-badge fr-badge--error fr-badge--sm">
-        <%= @date_fermeture_formatted %>
+      <p class="fr-badge fr-badge--error fr-badge--no-icon">
+        Fermé le <%= @date_fermeture_formatted %>
       </p>
     <% end %>
   </div>
@@ -15,7 +15,7 @@
     <dd class="sf-keyvalue-list__value">
       <%= @establishment.siret %>
       <% if @establishment.siege %>
-        <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-ml-1w">Siege social</span>
+        <span class="fr-badge fr-ml-1w">Siège social</span>
       <% end %>
     </dd>
     <% if @insee_data.present? %>
