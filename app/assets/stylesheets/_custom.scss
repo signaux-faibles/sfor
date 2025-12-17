@@ -338,3 +338,8 @@
     background-color: #003366 !important; /* Dark blue, adjust as needed */
     color: #fff !important;               /* White text for high contrast */
 }
+
+/* Table cells */
+.sf-cell-no-wrap {
+  white-space: nowrap;
+}
