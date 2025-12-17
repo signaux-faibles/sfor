@@ -5,7 +5,7 @@
       
       <!-- Database-based filters -->
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div class="fr-col-12 fr-col-lg-6">
+        <div class="fr-col-12 fr-col-lg-4">
           <div class="fr-input-group">
             <%= f.label :q, "SIREN / Raison sociale", class: "fr-label" %>
             <div class="fr-input-wrap fr-icon-search-line">
@@ -13,78 +13,23 @@
             </div>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-6">
+        <div class="fr-col-12 fr-col-lg-4">
           <div class="fr-input-group">
             <%= f.label :departement_in, "Départements", class: "fr-label" %>
             <%= f.collection_select :departement_in, current_user.geo_access.departments.order(:code), :code, ->(d) { "#{d.code} - #{d.name}" }, { selected: search_params[:departement_in] }, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
-      </div>
-
-      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
-            <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
-            <%= f.select :section_activite_principale,
-                         [
-                           ["A - Agriculture, sylviculture et pêche", "A"],
-                           ["B - Industries extractives", "B"],
-                           ["C - Industrie manufacturière", "C"],
-                           ["D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné", "D"],
-                           ["E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution", "E"],
-                           ["F - Construction", "F"],
-                           ["G - Commerce ; réparation d'automobiles et de motocycles", "G"],
-                           ["H - Transports et entreposage", "H"],
-                           ["I - Hébergement et restauration", "I"],
-                           ["J - Information et communication", "J"],
-                           ["K - Activités financières et d'assurance", "K"],
-                           ["L - Activités immobilières", "L"],
-                           ["M - Activités spécialisées, scientifiques et techniques", "M"],
-                           ["N - Activités de services administratifs et de soutien", "N"],
-                           ["O - Administration publique", "O"],
-                           ["P - Enseignement", "P"],
-                           ["Q - Santé humaine et action sociale", "Q"],
-                           ["R - Arts, spectacles et activités récréatives", "R"],
-                           ["S - Autres activités de services", "S"],
-                           ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"],
-                           ["U - Activités extra-territoriales", "U"]
-                         ],
-                         { selected: search_params[:section_activite_principale] },
-                         { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
-          </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
-            <%= f.label :forme_juridique, "Forme juridique", class: "fr-label" %>
-            <%= f.select :forme_juridique,
-                         legal_forms_options.map { |code, label| ["#{code} - #{label}", code] },
-                         { selected: search_params[:forme_juridique] },
-                         { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
-          </div>
-        </div>
-      </div>
-
-      <!-- Database-based filters -->
-      <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-12 fr-col-lg-4">
           <div class="fr-input-group">
             <%= f.label :effectif_min, "Effectif min. de l'entreprise", class: "fr-label" %>
             <%= f.number_field :effectif_min, value: search_params[:effectif_min], class: "fr-input", placeholder: "Nombre minimum d'employés", min: 0, step: 1 %>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
-            <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
-            <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 0.01 %>
-          </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-          <div class="fr-input-group">
-            <%= f.label :dette_sociale_min, "Montant de la dette sociale min.", class: "fr-label" %>
-            <%= f.number_field :dette_sociale_min, value: search_params[:dette_sociale_min], class: "fr-input", placeholder: "Montant minimum", min: 0, step: 1000 %>
-          </div>
-        </div>
       </div>
+
+
+
+      <!-- Database-based filters -->
 
       <div data-controller="filters-toggle">
         <%= f.hidden_field :filters_open,
@@ -93,6 +38,61 @@
                            data: { filters_toggle_target: "filtersOpenInput" } %>
         <div data-filters-toggle-target="hiddenFilters" style="display: <%= params.dig(:q, :filters_open) == "true" ? "block" : "none" %>">
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-input-group">
+                <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
+                <%= f.select :section_activite_principale,
+                             [
+                               ["A - Agriculture, sylviculture et pêche", "A"],
+                               ["B - Industries extractives", "B"],
+                               ["C - Industrie manufacturière", "C"],
+                               ["D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné", "D"],
+                               ["E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution", "E"],
+                               ["F - Construction", "F"],
+                               ["G - Commerce ; réparation d'automobiles et de motocycles", "G"],
+                               ["H - Transports et entreposage", "H"],
+                               ["I - Hébergement et restauration", "I"],
+                               ["J - Information et communication", "J"],
+                               ["K - Activités financières et d'assurance", "K"],
+                               ["L - Activités immobilières", "L"],
+                               ["M - Activités spécialisées, scientifiques et techniques", "M"],
+                               ["N - Activités de services administratifs et de soutien", "N"],
+                               ["O - Administration publique", "O"],
+                               ["P - Enseignement", "P"],
+                               ["Q - Santé humaine et action sociale", "Q"],
+                               ["R - Arts, spectacles et activités récréatives", "R"],
+                               ["S - Autres activités de services", "S"],
+                               ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"],
+                               ["U - Activités extra-territoriales", "U"]
+                             ],
+                             { selected: search_params[:section_activite_principale] },
+                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-input-group">
+                <%= f.label :forme_juridique, "Forme juridique", class: "fr-label" %>
+                <%= f.select :forme_juridique,
+                             legal_forms_options.map { |code, label| ["#{code} - #{label}", code] },
+                             { selected: search_params[:forme_juridique] },
+                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+              </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-input-group">
+                <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
+                <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 0.01 %>
+              </div>
+            </div>
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+            <div class="fr-col-12 fr-col-lg-4">
+              <div class="fr-input-group">
+                <%= f.label :dette_sociale_min, "Montant de la dette sociale min.", class: "fr-label" %>
+                <%= f.number_field :dette_sociale_min, value: search_params[:dette_sociale_min], class: "fr-input", placeholder: "Montant minimum", min: 0, step: 1000 %>
+              </div>
+            </div>
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-input-group">
                 <%= f.label :action_procol, "Action de procédure collective", class: "fr-label" %>
@@ -121,35 +121,44 @@
                              { class: "fr-select" } %>
               </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4">
+          </div>
+
+          <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+
+            <div class="fr-col-12">
               <div class="fr-checkbox-group">
                 <%= f.check_box :premieres_alertes, { checked: search_params[:premieres_alertes] == "1" }, "1", "0" %>
                 <%= f.label :premieres_alertes, "Premières alertes", class: "fr-label" %>
               </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12">
               <div class="fr-checkbox-group">
                 <%= f.check_box :sans_entreprises_recentes, { checked: search_params[:sans_entreprises_recentes] == "1" }, "1", "0" %>
                 <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
               </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12">
               <div class="fr-checkbox-group">
                 <%= f.check_box :sans_delai_urssaf, { checked: search_params[:sans_delai_urssaf] == "1" }, "1", "0" %>
                 <%= f.label :sans_delai_urssaf, "Sans délai de paiement URSSAF", class: "fr-label" %>
               </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12">
               <div class="fr-checkbox-group">
                 <%= f.check_box :liste_retraitee, { checked: search_params[:liste_retraitee] == "1" }, "1", "0" %>
-                <%= f.label :liste_retraitee, "Liste retraitée", class: "fr-label" %>
-                <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
-                  <span class="fr-icon-information-line" aria-hidden="true"></span>
-                  <span class="fr-sr-only">Information sur la liste retraitée</span>
-                </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip" aria-hidden="true">
-                Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI
-              </span>
+
+                <%= f.label :liste_retraitee, class: "fr-label" do %>
+                  Liste retraitée
+                  <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-sr-only">Information sur la liste retraitée</span>
+                  </button>
+                  <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip" aria-hidden="true">
+                    Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI
+                  </span>
+                <% end %>
+
+
               </div>
             </div>
           </div>
