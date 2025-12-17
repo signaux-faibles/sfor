@@ -3,7 +3,7 @@
     <h2>Ratios financiers INPI/BCE</h2>
 
     <% if @financial_fields.present? && @datasets.present? %>
-      <p>Les données ci-dessous proviennent des bilans déposés à l'INPI et au BCE.</p>
+      <p>Les données ci-dessous n'ont pas été mobilisées dans le calcul de la probabilité de défaillance de l'entreprise. Les données financières mobilisées dans la détection sont issues des liasses fiscales et soumises au secret fiscal.</p>
 
       <div
         data-controller="segmented-control-widget"
@@ -96,7 +96,7 @@
           data-panel="table"
         >
 
-          <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--no-scroll fr-table--multiline" id="table-financial-component">
+          <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--multiline" id="table-financial-component">
             <div class="fr-table__wrapper">
               <div class="fr-table__container">
                 <div class="fr-table__content">
@@ -116,11 +116,12 @@
                       <tr id="table-financial-row-<%= index %>" data-row-key="<%= index %>">
                         <td scope="row"><%= date %></td>
                         <% @financial_fields.each do |field| %>
-                          <td>
+                          <td class="sf-cell-no-wrap">
                             <% value = @datasets[field][index] %>
                             <% if value.present? %>
                               <% if value.is_a?(Numeric) %>
-                                <%= number_with_precision(value, precision: 2, delimiter: ' ', separator: ',') %>
+                                <%= number_with_precision(value, precision: 2, delimiter: ' ', separator: ',', strip_insignificant_zeros: true) %>
+                                <% @financial_fields_units[index] %>
                               <% else %>
                                 <%= value %>
                               <% end %>

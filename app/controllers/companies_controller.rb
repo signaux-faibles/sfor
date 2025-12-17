@@ -266,6 +266,15 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       end
 
       @financial_fields.sort!
+      @financial_fields_units = [
+        '€',
+        '€',
+        '€',
+        '€',
+        '',
+        '€',
+        ''
+      ]
 
     else
       @dates = []
