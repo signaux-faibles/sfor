@@ -3,7 +3,8 @@
     <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
 
     <% if @cotisations.present? || @parts_salariales.present? || @parts_patronales.present? || @montant_echeancier.present? %>
-      <p>Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
+      <p class="fr-mb-0">Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
+      <p>Les données ci-dessous sont strictement confidentielles et doivent être partagées uniquement à des agents habilités à l'outil.</p>
 
       <div
         data-controller="segmented-control-widget"
