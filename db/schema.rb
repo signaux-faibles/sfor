@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_15_135752) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -158,6 +158,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_15_135752) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "list_name", null: false
     t.index ["code_commune"], name: "index_company_score_entries_on_code_commune"
+    t.index ["list_name", "siren"], name: "index_company_score_entries_on_list_name_and_siren"
     t.index ["list_name"], name: "index_company_score_entries_on_list_name"
     t.index ["macro_expl"], name: "index_company_score_entries_on_macro_expl", using: :gin
     t.index ["micro_expl"], name: "index_company_score_entries_on_micro_expl", using: :gin
