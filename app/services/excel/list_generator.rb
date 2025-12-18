@@ -182,33 +182,28 @@ module Excel
     def format_alert_level(score_entry)
       return "-" unless score_entry&.alert
 
-      score_entry.alert
+      case score_entry.alert.downcase
+      when "alerte seuil f1"
+        "Alerte élevée"
+      when "alerte seuil f2"
+        "Alerte modérée"
+      else
+        "-"
+      end
     end
 
-    def format_alert_frequency(siren) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+    def format_alert_frequency(siren)
+      # Check if company appears in the current list
+      current_entry_exists = CompanyScoreEntry.exists?(siren: siren, list_name: @list.label)
+      return "-" unless current_entry_exists
+
       # Check if company appears in other lists
-      entries = CompanyScoreEntry.where(siren: siren).order(periode: :desc)
-      return "-" if entries.empty?
+      other_entries_exist = CompanyScoreEntry.where(siren: siren)
+                                             .where.not(list_name: @list.label)
+                                             .exists?
 
-      current_entry = entries.find_by(list_name: @list.label)
-      return "-" unless current_entry
-
-      # Check if it's the first time appearing
-      other_entries = entries.where.not(list_name: @list.label)
-      if other_entries.empty?
-        "1ère alerte"
-      else
-        # Check if alert level increased (aggravation)
-        previous_entries = other_entries.order(periode: :desc).limit(5)
-        has_aggravation = previous_entries.any? do |prev|
-          current_alert = current_entry.alert&.downcase
-          prev_alert = prev.alert&.downcase
-          (current_alert == "alerte seuil f1" && prev_alert == "alerte seuil f2") ||
-            (current_alert == "alerte seuil f1" && prev_alert.blank?)
-        end
-
-        has_aggravation ? "Aggravation alerte" : "Multi-alerte"
-      end
+      # If no other entries, it's a first alert; otherwise nothing
+      other_entries_exist ? "-" : "1ère alerte"
     end
 
     def format_score(score)
