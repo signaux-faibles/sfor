@@ -188,10 +188,8 @@ module NetworkManager
 
       # DGEFP segments
       "darp" => @dgefp_network,
-      "ddets" => @dgefp_network,
       "muteco" => @dgefp_network,
       "dgefp" => @dgefp_network,
-      "dreets" => @dgefp_network,
 
       # URSSAF segments
       "urssaf" => @urssaf_network
