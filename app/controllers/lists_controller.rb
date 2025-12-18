@@ -72,8 +72,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           total_results: @companies.total_count
         }
 
-        # Enrich with tracking status
+        # Enrich with tracking & alert data
         enrich_results_with_tracking_status(@results)
+        enrich_results_with_alert_levels(@results)
+        enrich_results_with_first_alert_flag(@results)
       end
       format.xlsx do
         export_list(@companies)
@@ -100,7 +102,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Calculate alert breakdown from filtered results (before pagination)
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
-    respond_to do |format|
+    respond_to do |format| # rubocop:disable Metrics/BlockLength
       format.html do
         # Paginate
         @companies = @companies.includes(:establishments).page(@page).per(@per_page)
@@ -128,8 +130,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           total_results: @companies.total_count
         }
 
-        # Enrich with tracking status
+        # Enrich with tracking & alert data
         enrich_results_with_tracking_status(@results)
+        enrich_results_with_alert_levels(@results)
+        enrich_results_with_first_alert_flag(@results)
       end
       format.xlsx do
         export_list(@companies)
@@ -374,22 +378,105 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     companies
   end
 
-  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+    return if results.blank?
+
+    # Extract all sirens from results
+    sirens = results.pluck("siren").compact.uniq
+    return if sirens.blank?
+
+    # Count trackings by state for each siren
+    tracking_counts = EstablishmentTracking
+                      .kept
+                      .joins(:establishment)
+                      .where(establishments: { siren: sirens })
+                      .group("establishments.siren", "establishment_trackings.state")
+                      .count
+
+    # Initialize counts for each siren
+    tracking_by_siren = {}
+    sirens.each do |siren|
+      tracking_by_siren[siren] = {
+        in_progress: 0,
+        under_surveillance: 0,
+        completed: 0
+      }
+    end
+
+    # Populate counts from grouped query results
+    tracking_counts.each do |(siren, state), count|
+      case state
+      when "in_progress"
+        tracking_by_siren[siren][:in_progress] = count
+      when "under_surveillance"
+        tracking_by_siren[siren][:under_surveillance] = count
+      when "completed"
+        tracking_by_siren[siren][:completed] = count
+      end
+    end
+
+    # Enrich each result with tracking counts
+    results.each do |result|
+      siren = result["siren"]
+      counts = tracking_by_siren[siren] || { in_progress: 0, under_surveillance: 0, completed: 0 }
+      result["tracking_in_progress_count"] = counts[:in_progress]
+      result["tracking_under_surveillance_count"] = counts[:under_surveillance]
+      result["tracking_completed_count"] = counts[:completed]
+      result["has_tracking_in_progress"] = (counts[:in_progress]).positive?
+    end
+  end
+
+  def enrich_results_with_alert_levels(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+    return if results.blank?
+
+    # Extract all sirens from results
+    sirens = results.pluck("siren").compact.uniq
+    return if sirens.blank?
+
+    # Find all CompanyScoreEntry records for these sirens in the current list
+    alert_entries = {}
+    CompanyScoreEntry
+      .where(siren: sirens, list_name: @list.label)
+      .where.not(alert: nil)
+      .order(created_at: :desc)
+      .pluck(:siren, :alert)
+      .each do |siren, alert|
+        # Only keep the first (most recent) entry for each siren
+        alert_entries[siren] ||= alert
+      end
+
+    # Enrich each result with alert level
+    results.each do |result|
+      alert = alert_entries[result["siren"]]
+      next unless alert
+
+      case alert.downcase
+      when "alerte seuil f1"
+        result["alert_level"] = "elevee"
+      when "alerte seuil f2"
+        result["alert_level"] = "moderee"
+      end
+    end
+  end
+
+  def enrich_results_with_first_alert_flag(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     return if results.blank?
 
     sirens = results.pluck("siren").compact.uniq
     return if sirens.blank?
 
-    sirens_with_tracking = Establishment
-                           .joins(:establishment_trackings)
-                           .where(siren: sirens)
-                           .merge(EstablishmentTracking.kept.in_progress)
-                           .distinct
-                           .pluck(:siren)
-                           .to_set
+    # A company is a "première alerte" if it ONLY appears in the current list
+    sirens_in_other_lists = CompanyScoreEntry
+                            .where(siren: sirens)
+                            .where.not(list_name: @list.label)
+                            .distinct
+                            .pluck(:siren)
+                            .to_set
+
+    first_time_sirens = sirens.to_set - sirens_in_other_lists
 
     results.each do |result|
-      result["has_tracking_in_progress"] = sirens_with_tracking.include?(result["siren"])
+      result["is_first_alert"] = first_time_sirens.include?(result["siren"])
     end
   end
 
