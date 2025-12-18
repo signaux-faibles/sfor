@@ -174,7 +174,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     @establishment_trackings = EstablishmentTracking.where(establishment: @establishments)
 
+    # Trackings considered "actifs" : en cours ou sous surveillance
     @in_progress_trackings = @establishment_trackings.in_progress
+    @under_surveillance_trackings = @establishment_trackings.under_surveillance
+    @active_trackings = @establishment_trackings.where(state: %w[in_progress under_surveillance])
     @completed_trackings = @establishment_trackings.completed
 
     render partial: "establishment_trackings_list_widget"
