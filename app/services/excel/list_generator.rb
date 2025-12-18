@@ -248,7 +248,7 @@ module Excel
       creation_date >= three_years_ago ? "Oui" : "Non"
     end
 
-    def format_tracking_status(siren)
+    def format_tracking_status(siren) # rubocop:disable Metrics/MethodLength
       # Check if any establishment of this company has tracking
       establishments = Establishment.where(siren: siren)
       trackings = EstablishmentTracking
@@ -259,6 +259,9 @@ module Excel
 
       in_progress = trackings.in_progress.exists?
       return "Accompagnement en cours" if in_progress
+
+      under_surveillance = trackings.under_surveillance.exists?
+      return "Accompagnement sous surveillance" if under_surveillance
 
       completed = trackings.completed.exists?
       return "Accompagnement terminé" if completed
