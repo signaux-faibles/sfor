@@ -65,7 +65,7 @@
         <div class="fr-grid-row fr-grid-row--gutters">
           <% @results.each do |company| %>
             <div class="fr-col-12">
-              <div class="fr-card fr-enlarge-link fr-card--sm">
+              <div class="fr-card fr-card--sm">
                 <div class="fr-card__body">
                   <div class="fr-card__content">
                     <h3 class="fr-card__title">
@@ -76,9 +76,39 @@
                     </p>
                     <div class="fr-card__start">
                       <ul class="fr-badges-group">
+                        <% if true %>
+                          <li>
+                            <p class="fr-badge fr-badge--info fr-badge--no-icon">1e alerte</p>
+                          </li>
+                        <% end %>
+
+                        <% if company["alert_level"] == "elevee" %>
+                          <li>
+                            <p class="fr-badge fr-badge--error fr-badge--no-icon">Alerte élevée</p>
+                          </li>
+                        <% end %>
+
+                        <% if company["alert_level"] == "moderee" %>
+                          <li>
+                            <p class="fr-badge fr-badge--yellow-tournesol">Alerte modérée</p>
+                          </li>
+                        <% end %>
+
                         <% if company["has_tracking_in_progress"] %>
                           <li>
                             <p class="fr-badge fr-badge--purple-glycine">Accompagnement en cours</p>
+                          </li>
+                        <% end %>
+
+                        <% if true %>
+                          <li>
+                            <p class="fr-badge">Accompagnement terminé</p>
+                          </li>
+                        <% end %>
+
+                        <% if true %>
+                          <li>
+                            <p class="fr-badge fr-badge--info fr-badge--no-icon">Accompagnement sous surveillance</p>
                           </li>
                         <% end %>
                       </ul>
