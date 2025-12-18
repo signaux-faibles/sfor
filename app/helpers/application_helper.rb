@@ -48,7 +48,7 @@ module ApplicationHelper
       "fr-badge fr-badge--info fr-badge--no-icon"
     when "Terminé", "completed"
       "fr-badge"
-    else
+    else # rubocop:disable Lint/DuplicateBranch
       "fr-badge"
     end
   end
