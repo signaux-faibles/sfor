@@ -357,17 +357,14 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Filter by liste_retraitee (only show companies in SjcfCompany for this list)
     if @search_params[:liste_retraitee].present? && @search_params[:liste_retraitee] == "1"
-      # Get current company sirens from the filtered companies query
-      company_sirens = companies.pluck(:siren)
-
-      # Get sirens that exist in SjcfCompany for this list
-      sirens_in_sjcf = SjcfCompany
-                       .where(libelle_liste: @list.label, siren: company_sirens)
-                       .distinct
-                       .pluck(:siren)
-                       .to_set
-
-      companies = companies.where(siren: sirens_in_sjcf.to_a)
+      # Use EXISTS subquery to avoid materializing sirens in Ruby
+      companies = companies.where(
+        "EXISTS (
+          SELECT 1 FROM sjcf_companies sc
+          WHERE sc.siren = companies.siren
+          AND sc.libelle_liste = ?
+        )", @list.label
+      )
     end
 
     companies
