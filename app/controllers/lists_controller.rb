@@ -292,17 +292,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Filter by niveau_alerte (alert from CompanyScoreEntry)
     if @search_params[:niveau_alerte].present? && @search_params[:niveau_alerte] != ""
       alert_value = @search_params[:niveau_alerte]
-      # Get current company sirens from the filtered companies query
-      company_sirens = companies.pluck(:siren)
-
-      # Filter companies by alert value in CompanyScoreEntry for this list
-      sirens_with_alert = CompanyScoreEntry
-                          .where(list_name: @list.label, siren: company_sirens, alert: alert_value)
-                          .distinct
-                          .pluck(:siren)
-                          .to_set
-
-      companies = companies.where(siren: sirens_with_alert.to_a)
+      # Use EXISTS subquery to avoid materializing sirens in Ruby
+      companies = companies.where(
+        "EXISTS (
+          SELECT 1 FROM company_score_entries cse
+          WHERE cse.siren = companies.siren
+          AND cse.list_name = ?
+          AND cse.alert = ?
+        )", @list.label, alert_value
+      )
     end
 
     # Filter by premieres_alertes (first time appearing in CompanyScoreEntry)
