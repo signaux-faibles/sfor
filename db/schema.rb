@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_20_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -158,6 +158,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "list_name", null: false
     t.index ["code_commune"], name: "index_company_score_entries_on_code_commune"
+    t.index ["list_name", "siren", "alert"], name: "index_company_score_entries_on_list_name_siren_alert"
+    t.index ["list_name", "siren", "score"], name: "index_company_score_entries_on_list_name_siren_score"
     t.index ["list_name", "siren"], name: "index_company_score_entries_on_list_name_and_siren"
     t.index ["list_name"], name: "index_company_score_entries_on_list_name"
     t.index ["macro_expl"], name: "index_company_score_entries_on_macro_expl", using: :gin
@@ -337,6 +339,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
     t.float "latitude"
     t.boolean "is_active", default: false, null: false
     t.text "address"
+    t.index ["departement", "siege"], name: "index_establishments_on_departement_siege"
     t.index ["departement"], name: "index_establishments_on_departement"
     t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siren"], name: "index_establishments_on_siren"
@@ -444,6 +447,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
     t.datetime "updated_at", null: false
     t.boolean "is_last"
     t.index ["periode"], name: "index_osf_debits_on_periode"
+    t.index ["siret", "is_last"], name: "index_osf_debits_on_siret_is_last", where: "(is_last = true)"
     t.index ["siret", "periode"], name: "index_osf_debits_on_siret_and_periode"
     t.index ["siret"], name: "index_osf_debits_on_siret"
   end
@@ -460,6 +464,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
     t.datetime "updated_at", null: false
     t.index ["date_creation"], name: "index_osf_delais_on_date_creation"
     t.index ["date_echeance"], name: "index_osf_delais_on_date_echeance"
+    t.index ["siret", "date_echeance"], name: "index_osf_delais_on_siret_date_echeance"
     t.index ["siret"], name: "index_osf_delais_on_siret"
   end
 
@@ -483,6 +488,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_18_160000) do
     t.datetime "updated_at", null: false
     t.boolean "is_latest"
     t.index ["periode"], name: "index_osf_ent_effectifs_on_periode"
+    t.index ["siren", "is_latest", "effectif"], name: "index_osf_ent_effectifs_on_siren_is_latest_effectif", where: "(is_latest = true)"
     t.index ["siren", "periode"], name: "index_osf_ent_effectifs_on_siren_and_periode"
     t.index ["siren"], name: "index_osf_ent_effectifs_on_siren"
   end
