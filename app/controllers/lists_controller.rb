@@ -304,22 +304,17 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Filter by premieres_alertes (first time appearing in CompanyScoreEntry)
     if @search_params[:premieres_alertes].present? && @search_params[:premieres_alertes] == "1"
-      # Get current company sirens from the filtered companies query
-      company_sirens = companies.pluck(:siren)
-
       # A company is a "première alerte" if it ONLY appears in the current list
-      # Find sirens that appear in other lists - these are NOT premières alertes
-      sirens_in_other_lists = CompanyScoreEntry
-                              .where(siren: company_sirens)
-                              .where.not(list_name: @list.label)
-                              .distinct
-                              .pluck(:siren)
-                              .to_set
-
-      # Filter to only sirens that don't appear in other lists
-      first_time_sirens = company_sirens.to_set - sirens_in_other_lists
-
-      companies = companies.where(siren: first_time_sirens.to_a)
+      # Use NOT EXISTS to avoid materializing sirens in Ruby
+      # Since the base query already filters to companies in the current list,
+      # we just need to ensure they don't appear in any other list
+      companies = companies.where(
+        "NOT EXISTS (
+          SELECT 1 FROM company_score_entries cse
+          WHERE cse.siren = companies.siren
+          AND cse.list_name != ?
+        )", @list.label
+      )
     end
 
     # Filter by sans_entreprises_recentes (exclude companies created within last 3 years)
