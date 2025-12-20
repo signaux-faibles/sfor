@@ -218,17 +218,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Filter by minimum score
     if @search_params[:score_min].present?
       score_min = @search_params[:score_min].to_f
-      # Get current company sirens from the filtered companies query
-      company_sirens = companies.pluck(:siren)
-
-      sirens_with_score = CompanyScoreEntry
-                          .where(list_name: @list.label, siren: company_sirens)
-                          .where(score: score_min..)
-                          .distinct
-                          .pluck(:siren)
-                          .to_set
-
-      companies = companies.where(siren: sirens_with_score.to_a)
+      # Use EXISTS subquery to avoid materializing sirens in Ruby
+      companies = companies.where(
+        "EXISTS (
+          SELECT 1 FROM company_score_entries cse
+          WHERE cse.siren = companies.siren
+          AND cse.list_name = ?
+          AND cse.score >= ?
+        )", @list.label, score_min
+      )
     end
 
     # Filter by minimum dette sociale
