@@ -231,21 +231,18 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Filter by minimum dette sociale
     if @search_params[:dette_sociale_min].present?
       dette_min = @search_params[:dette_sociale_min].to_f
-      company_sirens = companies.pluck(:siren)
-
+      # Use EXISTS with aggregated subquery to avoid materializing sirens in Ruby
       # Sum dette sociale across ALL establishments of each company, using latest (`is_last`) OSF debit rows
-      sirens_with_dette = OsfDebit
-                          .joins(:establishment)
-                          .where(is_last: true, establishments: { siren: company_sirens })
-                          .group("establishments.siren")
-                          .having(
-                            "SUM(COALESCE(osf_debits.part_ouvriere, 0) + COALESCE(osf_debits.part_patronale, 0)) >= ?",
-                            dette_min
-                          )
-                          .pluck("establishments.siren")
-                          .to_set
-
-      companies = companies.where(siren: sirens_with_dette.to_a)
+      companies = companies.where(
+        "EXISTS (
+          SELECT 1 FROM establishments e
+          INNER JOIN osf_debits od ON od.siret = e.siret
+          WHERE e.siren = companies.siren
+          AND od.is_last = true
+          GROUP BY e.siren
+          HAVING SUM(COALESCE(od.part_ouvriere, 0) + COALESCE(od.part_patronale, 0)) >= ?
+        )", dette_min
+      )
     end
 
     # Filter by action_procol (using procol_at_date function)
