@@ -58,6 +58,12 @@ class User < ApplicationRecord
     networks.where(active: true).sort_by { |network| network.name == "CODEFI" ? 0 : 1 }
   end
 
+  def should_show_confidentiality_modal?
+    return true if last_confidentiality_acknowledged_at.nil?
+
+    last_confidentiality_acknowledged_at < 3.months.ago
+  end
+
   private
 
   def update_departments_based_on_geo_access
