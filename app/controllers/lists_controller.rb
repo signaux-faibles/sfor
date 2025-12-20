@@ -203,16 +203,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Filter by minimum effectif
     if @search_params[:effectif_min].present?
       effectif_min = @search_params[:effectif_min].to_i
-      company_sirens = companies.pluck(:siren)
-
-      sirens_with_effectif = OsfEntEffectif
-                             .where(siren: company_sirens, is_latest: true)
-                             .where(effectif: effectif_min..)
-                             .distinct
-                             .pluck(:siren)
-                             .to_set
-
-      companies = companies.where(siren: sirens_with_effectif.to_a)
+      # Use EXISTS subquery to avoid materializing sirens in Ruby
+      companies = companies.where(
+        "EXISTS (
+          SELECT 1 FROM osf_ent_effectifs oee
+          WHERE oee.siren = companies.siren
+          AND oee.is_latest = true
+          AND oee.effectif >= ?
+        )", effectif_min
+      )
     end
 
     # Filter by minimum score
