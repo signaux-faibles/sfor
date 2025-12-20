@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     collection do
       post :stop_impersonating
       post :set_time_zone
+      post :acknowledge_confidentiality
     end
   end
 

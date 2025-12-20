@@ -1,6 +1,7 @@
 <%# Message prévention %>
-<div data-controller="confidentiality-modal">
-  <dialog id="sf-confidentiality-modal" class="fr-modal" aria-labelledby="sf-confidentiality-modal-title" data-fr-concealing-backdrop="false" data-confidentiality-modal-target="modal">
+<% if user_signed_in? && current_user.should_show_confidentiality_modal? %>
+  <div data-controller="confidentiality-modal" data-confidentiality-modal-should-show-value="true">
+    <dialog id="sf-confidentiality-modal" class="fr-modal" aria-labelledby="sf-confidentiality-modal-title" data-fr-concealing-backdrop="false" data-confidentiality-modal-target="modal">
     <div class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
@@ -38,7 +39,8 @@
       </div>
     </div>
   </dialog>
-</div>
+  </div>
+<% end %>
 
 <div class="fr-skiplinks">
   <nav role="navigation" aria-label="Accès rapide" class="fr-container">

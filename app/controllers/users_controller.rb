@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  around_action :set_time_zone, except: [:stop_impersonating]
+  around_action :set_time_zone, except: %i[stop_impersonating acknowledge_confidentiality]
   def stop_impersonating
     authorize current_user
     stop_impersonating_user
@@ -12,6 +12,15 @@ class UsersController < ApplicationController
       head :ok
     else
       head :unprocessable_entity
+    end
+  end
+
+  def acknowledge_confidentiality
+    if current_user
+      current_user.update_column(:last_confidentiality_acknowledged_at, Time.current)
+      head :ok
+    else
+      head :unauthorized
     end
   end
 end
