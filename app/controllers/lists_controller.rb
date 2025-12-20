@@ -331,28 +331,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Filter by sans_delai_urssaf (exclude companies with establishments having OsfDelai date_echeance > list_date)
     if @search_params[:sans_delai_urssaf].present? && @search_params[:sans_delai_urssaf] == "1" && @list.list_date.present? # rubocop:disable Layout/LineLength
-      company_sirens = companies.pluck(:siren)
-
-      # Get all sirets for these companies
-      company_sirets = Establishment.where(siren: company_sirens).pluck(:siret)
-
-      # Find sirets that have OsfDelai with date_echeance > list_date
-      sirets_with_delai = OsfDelai
-                          .where(siret: company_sirets)
-                          .where("date_echeance > ?", @list.list_date)
-                          .distinct
-                          .pluck(:siret)
-                          .to_set
-
-      # Get sirens from these sirets
-      sirens_with_delai = Establishment
-                          .where(siret: sirets_with_delai.to_a)
-                          .distinct
-                          .pluck(:siren)
-                          .to_set
-
-      # Exclude these sirens from the companies query
-      companies = companies.where.not(siren: sirens_with_delai.to_a)
+      # Use NOT EXISTS subquery to avoid materializing sirens/sirets in Ruby
+      # Exclude companies that have at least one establishment with OsfDelai where date_echeance > list_date
+      companies = companies.where(
+        "NOT EXISTS (
+          SELECT 1 FROM establishments e
+          INNER JOIN osf_delais od ON od.siret = e.siret
+          WHERE e.siren = companies.siren
+          AND od.date_echeance > ?
+        )", @list.list_date
+      )
     end
 
     # Filter by liste_retraitee (only show companies in SjcfCompany for this list)
