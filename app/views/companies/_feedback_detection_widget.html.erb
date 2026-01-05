@@ -2,16 +2,18 @@
   <h3>Donnez votre avis à l'équipe de Signaux Faibles</h3>
 
   <div class="fr-col-12 fr-col-lg-8 fr-mb-5w">
-    <%# @TODO : set conditions from backend. %>
-
-    <% if true %> <%# @TODO : condition : no feedback and no error. %>
+    <% if local_assigns[:error].present? || @error.present? %>
+      <div class="fr-alert fr-alert--error fr-alert--sm fr-mb-3w">
+        <p><%= local_assigns[:error] || @error %></p>
+      </div>
+    <% elsif @existing_rating.nil? %>
       <div>
         <ul class="fr-btns-group fr-btns-group--inline-md">
           <li>
-            <%= form_with model: [@entry],
-                          url: feedback_detection_widget_company_path(@company),
+            <%= form_with url: feedback_detection_widget_company_path(@company),
                           method: :post,
-                          data: { turbo_frame: "feedback-detection_widget" } do |f| %>
+                          data: { turbo_frame: "feedback_detection_widget" } do |f| %>
+              <%= hidden_field_tag 'useful', 'true' %>
               <button type="submit" class="fr-btn fr-btn--secondary sf-feedback-detection-button">Détection utile</button>
             <% end %>
           </li>
@@ -32,53 +34,30 @@
                     <h2 id="modal-feedback-detection-title" class="fr-modal__title">
                       <span class="fr-icon-info-line fr-icon--lg" aria-hidden="true"></span> Pourquoi la détection est-elle inutile ?
                     </h2>
-                    <%= form_with model: [@entry],
-                                  url: feedback_detection_widget_company_path(@company),
+                    <%= form_with url: feedback_detection_widget_company_path(@company),
                                   method: :post,
-                                  data: { turbo_frame: "feedback-detection_widget" } do |f| %>
+                                  data: { 
+                                    turbo_frame: "feedback_detection_widget",
+                                    controller: "feedback-detection",
+                                    action: "submit->feedback-detection#validateForm"
+                                  } do |f| %>
+                      <%= hidden_field_tag 'useful', 'false' %>
                       <fieldset class="fr-fieldset" id="raisons" aria-labelledby="raisons-legend raisons-messages">
                         <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="raisons-legend"> Sélectionnez les motifs (obligatoire) </legend>
-                        <div class="fr-fieldset__element">
-                          <div class="fr-fieldset__element">
-                            <div class="fr-checkbox-group">
-                              <%= check_box_tag 'raisons[]', 'donnees_inexpliquees', false, id: 'raisons-1', 'aria-describedby': 'raisons-messages' %>
-                              <%= label_tag 'raisons-1', "Les données à ma disposition n'expliquent pas la détection", class: 'fr-label' %>
+                        <div class="fr-fieldset__element" data-feedback-detection-target="reasonsContainer">
+                          <% @rating_reasons.each_with_index do |reason, index| %>
+                            <div class="fr-fieldset__element">
+                              <div class="fr-checkbox-group">
+                                <%= check_box_tag 'raisons[]', reason.code, false, id: "raisons-#{index + 1}", 'aria-describedby': 'raisons-messages', data: { feedback_detection_target: "reasonCheckbox" } %>
+                                <%= label_tag "raisons-#{index + 1}", reason.libelle, class: 'fr-label' %>
+                              </div>
                             </div>
-                          </div>
-                          <div class="fr-fieldset__element">
-                            <div class="fr-checkbox-group">
-                              <%= check_box_tag 'raisons[]', 'pas_difficultes', false, id: 'raisons-2', 'aria-describedby': 'raisons-messages' %>
-                              <%= label_tag 'raisons-2', "L'entreprise ne présente pas de difficultés", class: 'fr-label' %>
-                            </div>
-                          </div>
-                          <div class="fr-fieldset__element">
-                            <div class="fr-checkbox-group">
-                              <%= check_box_tag 'raisons[]', 'detection_tardive', false, id: 'raisons-3', 'aria-describedby': 'raisons-messages' %>
-                              <%= label_tag 'raisons-3', "L'entreprise est détectée trop tardivement", class: 'fr-label' %>
-                            </div>
-                          </div>
-                          <div class="fr-fieldset__element">
-                            <div class="fr-checkbox-group">
-                              <%= check_box_tag 'raisons[]', 'hors_perimetre', false, id: 'raisons-4', 'aria-describedby': 'raisons-messages' %>
-                              <%= label_tag 'raisons-4', "L'entreprise n'entre pas dans mon périmètre", class: 'fr-label' %>
-                            </div>
-                          </div>
-                          <div class="fr-fieldset__element">
-                            <div class="fr-checkbox-group">
-                              <%= check_box_tag 'raisons[]', 'pas_en_difficulte', false, id: 'raisons-5', 'aria-describedby': 'raisons-messages' %>
-                              <%= label_tag 'raisons-5', "L'entreprise ne considère pas être en difficulté", class: 'fr-label' %>
-                            </div>
-                          </div>
-                          <div class="fr-fieldset__element">
-                            <div class="fr-checkbox-group">
-                              <%= check_box_tag 'raisons[]', 'autre', false, id: 'raisons-6', 'aria-describedby': 'raisons-messages' %>
-                              <%= label_tag 'raisons-6', "Autre", class: 'fr-label' %>
-                            </div>
-                          </div>
+                          <% end %>
                         </div>
-                        <div class="fr-messages-group" id="raisons-messages" aria-live="polite">
-                          <%# @TODO : display error dynamically. %>
-                          <%# <p class="fr-message fr-message--error">Vous devez cocher au moins une raison.</p> %>
+                        <div class="fr-messages-group" id="raisons-messages" aria-live="polite" data-feedback-detection-target="errorMessage">
+                          <% if @error == "Vous devez cocher au moins une raison." %>
+                            <p class="fr-message fr-message--error">Vous devez cocher au moins une raison.</p>
+                          <% end %>
                         </div>
                       </fieldset>
 
@@ -89,7 +68,7 @@
                         </div>
                       </div>
 
-                      <button type="submit" class="fr-btn">Valider votre avis</button>
+                      <button type="submit" class="fr-btn" data-feedback-detection-target="submitButton">Valider votre avis</button>
                       <button aria-controls="modal-feedback-detection" title="Annuler" type="button" class="fr-btn fr-btn--secondary">Annuler</button>
                     <% end %>
                   </div>
@@ -99,17 +78,24 @@
           </div>
         </dialog>
       </div>
-    <% elsif false %> <%# @TODO : condition : feedback "useless". %>
+    <% elsif @existing_rating&.useful == false %>
       <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
         <p>Vous avez déjà indiqué que la détection était inutile.</p>
+        <% if @existing_rating.comment.present? %>
+          <p class="fr-mt-2w"><strong>Votre commentaire :</strong> <%= @existing_rating.comment %></p>
+        <% end %>
+        <% if @existing_rating.rating_reasons.any? %>
+          <p class="fr-mt-2w"><strong>Motifs sélectionnés :</strong></p>
+          <ul class="fr-mt-1w">
+            <% @existing_rating.rating_reasons.each do |reason| %>
+              <li><%= reason.libelle %></li>
+            <% end %>
+          </ul>
+        <% end %>
       </div>
-    <% elsif false %> <%# @TODO : condition : feedback "useful". %>
+    <% elsif @existing_rating&.useful == true %>
       <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
         <p>Vous avez déjà indiqué que la détection était utile.</p>
-      </div>
-    <% else %> <%# @TODO : condition : backend error. %>
-      <div class="fr-alert fr-alert--error fr-alert--sm fr-mb-3w">
-        <p>Une erreur est survenue. Veuillez réessayer plus tard.</p>
       </div>
     <% end %>
   </div>

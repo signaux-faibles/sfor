@@ -26,6 +26,7 @@ class User < ApplicationRecord
 
   has_many :user_departments, dependent: :destroy
   has_many :departments, through: :user_departments
+  has_many :company_list_ratings, foreign_key: :user_email, primary_key: :email, dependent: :destroy
 
   validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name), allow_nil: true }
   validates :email, presence: true, uniqueness: true

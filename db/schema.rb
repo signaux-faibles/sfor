@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_20_172255) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_21_100003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -128,6 +128,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_20_172255) do
     t.index ["department"], name: "index_companies_on_department"
     t.index ["naf_code"], name: "index_companies_on_naf_code"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
+  end
+
+  create_table "company_list_ratings", force: :cascade do |t|
+    t.string "siren", limit: 9, null: false
+    t.string "list_name", null: false
+    t.boolean "useful", null: false
+    t.text "comment"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "user_email", null: false
+    t.string "user_segment"
+    t.index ["list_name"], name: "index_company_list_ratings_on_list_name"
+    t.index ["siren", "user_email", "list_name"], name: "idx_company_list_ratings_unique", unique: true
+    t.index ["siren"], name: "index_company_list_ratings_on_siren"
+    t.index ["useful"], name: "index_company_list_ratings_on_useful"
+    t.index ["user_email"], name: "index_company_list_ratings_on_user_email"
+    t.index ["user_segment"], name: "index_company_list_ratings_on_user_segment"
   end
 
   create_table "company_lists", force: :cascade do |t|
@@ -504,6 +521,25 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_20_172255) do
     t.index ["siren"], name: "index_osf_procols_on_siren"
   end
 
+  create_table "rating_reasons", force: :cascade do |t|
+    t.string "code", limit: 10, null: false
+    t.text "libelle", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "date_add", limit: 50
+    t.index ["code"], name: "index_rating_reasons_on_code", unique: true
+  end
+
+  create_table "rating_reasons_ratings", force: :cascade do |t|
+    t.bigint "rating_id", null: false
+    t.bigint "reason_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["rating_id", "reason_id"], name: "idx_rating_reasons_ratings_unique", unique: true
+    t.index ["rating_id"], name: "index_rating_reasons_ratings_on_rating_id"
+    t.index ["reason_id"], name: "index_rating_reasons_ratings_on_reason_id"
+  end
+
   create_table "regions", force: :cascade do |t|
     t.string "code", null: false
     t.string "libelle", null: false
@@ -705,6 +741,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_20_172255) do
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "network_memberships", "networks"
   add_foreign_key "network_memberships", "users"
+  add_foreign_key "rating_reasons_ratings", "company_list_ratings", column: "rating_id", on_delete: :cascade
+  add_foreign_key "rating_reasons_ratings", "rating_reasons", column: "reason_id", on_delete: :cascade
   add_foreign_key "segments", "networks"
   add_foreign_key "summaries", "establishment_trackings"
   add_foreign_key "summaries", "networks"
