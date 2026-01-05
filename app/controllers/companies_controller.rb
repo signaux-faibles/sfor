@@ -23,13 +23,80 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "detection_widget"
   end
 
-  def feedback_detection_widget
-    # @TODO : valid form data and save data.
+  def feedback_detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     last_list = List.order(code: :desc).first
+    return render partial: "feedback_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
+
     entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
     @entry = entry
 
+    @rating_reasons = RatingReason.order(:code)
+
+    @existing_rating = CompanyListRating.find_by(
+      siren: @company.siren,
+      list_name: last_list.label,
+      user_email: current_user.email
+    )
+
+    if request.post?
+      handle_feedback_submission(last_list)
+    else
+      render partial: "feedback_detection_widget"
+    end
+  end
+
+  def handle_feedback_submission(list) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    @rating_reasons = RatingReason.order(:code)
+
+    existing_rating = CompanyListRating.find_by(
+      siren: @company.siren,
+      list_name: list.label,
+      user_email: current_user.email
+    )
+
+    if existing_rating
+      @existing_rating = existing_rating
+      render partial: "feedback_detection_widget", status: :unprocessable_entity
+      return
+    end
+
+    useful = params[:useful] == "true" || params[:useful] == true
+
+    if !useful && (params[:raisons].blank? || params[:raisons].empty?)
+      @error = "Vous devez cocher au moins une raison."
+      render partial: "feedback_detection_widget", status: :unprocessable_entity
+      return
+    end
+
+    # Create the rating
+    rating = CompanyListRating.create!(
+      siren: @company.siren,
+      list_name: list.label,
+      user_email: current_user.email,
+      user_segment: current_user.segment.name,
+      useful: useful,
+      comment: params[:precisions]
+    )
+
+    # Associate rating reasons if not useful
+    if !useful && params[:raisons].present?
+      params[:raisons].each do |reason_code|
+        reason = RatingReason.find_by(code: reason_code)
+        next unless reason
+
+        RatingReasonsRating.create!(
+          rating_id: rating.id,
+          reason_id: reason.id
+        )
+      end
+    end
+
+    @existing_rating = rating
     render partial: "feedback_detection_widget"
+  rescue StandardError => e
+    Rails.logger.error "Error creating rating: #{e.message}"
+    @error = "Une erreur est survenue. Veuillez réessayer plus tard."
+    render partial: "feedback_detection_widget", status: :unprocessable_entity
   end
 
   def history_detection_widget
