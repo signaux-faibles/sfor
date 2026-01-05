@@ -1,9 +1,7 @@
 class CompanyPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
-      scope.joins(:establishments)
-           .where(establishments: { siege: true, departement: user.departments.pluck(:code) })
-           .distinct
+      scope.where(department: user.departments.pluck(:code))
     end
   end
 end
