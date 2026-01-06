@@ -53,8 +53,14 @@
               </thead>
               <tbody>
 
-              <% @under_surveillance_trackings.each do |tracking| %>
+              <% @in_progress_trackings.each do |tracking| %>
                 <tr class="sf-in-progress-tracking fr-text--lg">
+                  <%= render partial: "establishment_trackings_row", locals: { tracking: tracking } %>
+                </tr>
+              <% end %>
+
+              <% @under_surveillance_trackings.each do |tracking| %>
+                <tr>
                   <%= render partial: "establishment_trackings_row", locals: { tracking: tracking } %>
                 </tr>
               <% end %>
