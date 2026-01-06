@@ -53,7 +53,9 @@
           <canvas data-waterfall-chart-widget-target="chart" class="sf-chart"></canvas>
         </div>
 
-        <p class="fr-mb-3w"><strong>Source :</strong> Signaux faibles</p>
+        <p class="fr-mt-1w"><strong>L'entreprise présente un risque de défaillance <%= @criticite %>.</strong></p>
+
+        <p class="fr-mb-3w fr-text--sm"><strong>Source :</strong> Signaux faibles — <strong>Mise à jour : </strong><%= @data_date %></p>
       </div>
 
       <div
@@ -84,12 +86,12 @@
                           <strong><%= label %></strong>
                         </td>
                         <td>
-                          <strong><%= (@values[index][1] - @values[index][0]).round(1) %> %</strong>
+                          <strong><%= (@values[index][1] - @values[index][0]) %> %</strong>
                         </td>
                       <% else %>
                         <td scope="row"><%= label %></td>
                         <td>
-                          <%= (@values[index][1] - @values[index][0]).round(1) %> %
+                          <%= (@values[index][1] - @values[index][0]) %> %
                         </td>
                       <% end %>
 
@@ -102,7 +104,9 @@
           </div>
         </div>
 
-        <p class="fr-mb-4w"><strong>Source :</strong> Signaux faibles</p>
+        <p class="fr-mt-1w"><strong>L'entreprise présente un risque de défaillance <%= @criticite %>.</strong></p>
+
+        <p class="fr-mb-4w fr-text--sm"><strong>Source :</strong> Signaux faibles — <strong>Mise à jour : </strong><%= @data_date %></p>
       </div>
     </div>
   <% end %>
