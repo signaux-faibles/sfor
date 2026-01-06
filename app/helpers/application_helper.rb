@@ -56,11 +56,11 @@ module ApplicationHelper
   def state_wording_for(state)
     case state
     when "in_progress"
-      "Accompagnement en cours"
+      "En cours"
     when "completed"
-      "Accompagnement terminé"
+      "Terminé"
     when "under_surveillance"
-      "Accompagnement sous surveillance"
+      "Sous surveillance"
     else
       ""
     end
