@@ -81,7 +81,7 @@
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-input-group">
                 <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
-                <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 0.01 %>
+                <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 5 %>
               </div>
             </div>
           </div>
