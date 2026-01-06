@@ -44,7 +44,13 @@
                       </td>
                       <td><%= list.company_score_entries.select(:siren).distinct.count %></td>
                       <td>
-                        <%= link_to "Voir la liste", list_path(list), class: "fr-link fr-icon-arrow-right-line fr-link--icon-right" %>
+                        <%= link_to list_path(list),
+                                    class: "fr-link",
+                              title: "Voir la liste",
+                              aria_label: "Voir la liste" do %>
+                          <span class="fr-icon-eye-fill" aria-hidden="true"></span>
+                          <span class="fr-sr-only">Voir la liste</span>
+                      <% end %>
                       </td>
                     </tr>
                   <% end %>

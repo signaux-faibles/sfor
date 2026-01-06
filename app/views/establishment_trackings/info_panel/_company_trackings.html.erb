@@ -60,8 +60,13 @@
                     <td><%= tracking.establishment.department.code %></td>
                     <td>
                       <% if policy(tracking).show? %>
-                        <%= link_to [tracking.establishment, tracking], class: 'fr-link fr-icon-arrow-right-line fr-link--icon-right' do %>
-                          Consulter <span class="fr-sr-only"><%= tracking.establishment.raison_sociale %></span>
+
+                        <%= link_to [tracking.establishment, tracking],
+                                    class: 'fr-link',
+                                    title: "Consulter #{tracking.establishment.raison_sociale}",
+                                    aria_label: "Consulter #{tracking.establishment.raison_sociale}" do %>
+                          <span class="fr-icon-eye-fill" aria-hidden="true"></span>
+                          <span class="fr-sr-only">Consulter <%= tracking.establishment.raison_sociale %></span>
                         <% end %>
                       <% else %>
                         <span>-</span>

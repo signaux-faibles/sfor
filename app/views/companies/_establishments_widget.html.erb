@@ -104,12 +104,14 @@
                       <% end %>
                     </td>
                     <td>
-                      <%=
-                        link_to "Consulter",
-                                "/etablissements/#{rails_data.siret}",
-                                class: "fr-link fr-icon-arrow-right-line fr-link--icon-right fr-link--sm",
-                                data: { turbo_frame: "_top" }
-                      %>
+                      <%= link_to "/etablissements/#{rails_data.siret}",
+                                  class: "fr-link",
+                                  title: "Consulter #{rails_data.raison_sociale} (#{rails_data.siret})",
+                                  aria_label: "Consulter #{rails_data.raison_sociale} (#{rails_data.siret})",
+                                  data: { turbo_frame: "_top" } do %>
+                        <span class="fr-icon-eye-fill" aria-hidden="true"></span>
+                        <span class="fr-sr-only">Consulter <%= rails_data.raison_sociale %> (<%= rails_data.siret %>)</span>
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>
