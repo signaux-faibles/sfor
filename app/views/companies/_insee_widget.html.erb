@@ -13,23 +13,27 @@
       <dt class="sf-keyvalue-list__key">SIREN : </dt>
       <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
       <% if @insee_data.present? %>
-        <% if @insee_data["data"].present? and @insee_data["data"]["activite_principale"].present? %>
+        <% if @insee_data["data"].present? && @insee_data["data"]["activite_principale"].present? %>
           <dt class="sf-keyvalue-list__key">Secteur d'activité : </dt>
           <dd class="sf-keyvalue-list__value">
             <%= @insee_data["data"]["activite_principale"]["libelle"]%> - <%= @insee_data["data"]["activite_principale"]["code"]%>
           </dd>
         <% end %>
 
-        <% if @insee_data["data"].present? and @insee_data["data"]["unite_legale"].present? %>
+        <% if @insee_data["data"].present? && @insee_data["data"]["forme_juridique"].present? %>
           <dt class="sf-keyvalue-list__key">Forme juridique : </dt>
-          <dd class="sf-keyvalue-list__value"><%= @insee_data["data"]["unite_legale"]["forme_juridique"]["libelle"] %></dd>
+          <dd class="sf-keyvalue-list__value"><%= @insee_data["data"]["forme_juridique"]["libelle"] %></dd>
+        <% end %>
+
+
+        <% if @insee_data["data"].present? && @insee_data["data"]["date_creation"].present? %>
           <dt class="sf-keyvalue-list__key">Date de création de l'entreprise : </dt>
           <dd class="sf-keyvalue-list__value">
-            <%= format_date_with_age(@insee_data["data"]["unite_legale"]["date_creation"]) %>
+            <%= format_date_with_age(@insee_data["data"]["date_creation"]) %>
           </dd>
         <% end %>
 
-        <% if @insee_data["data"].present? and @insee_data["data"]["adresse"].present? %>
+        <% if @insee_data["data"].present? && @insee_data["data"]["adresse"].present? %>
           <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
           <dd class="sf-keyvalue-list__value">
             <%= [

@@ -281,14 +281,20 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     redirect_back(fallback_location: home_path)
   end
 
-  def fetch_insee_data
+  def fetch_insee_data # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
     return if @company.siren.blank?
 
     service = Api::InseeApiService.new
-    @insee_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
+    @insee_data = service.fetch_unite_legale_by_siren(@company.siren)
 
     date_fermeture = @insee_data&.dig("data", "date_fermeture")
     @date_fermeture_formatted = Time.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
+
+    siege_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
+    if siege_data&.dig("data", "adresse").present?
+      @insee_data["data"] ||= {}
+      @insee_data["data"]["adresse"] = siege_data["data"]["adresse"]
+    end
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
     @insee_data = nil
