@@ -517,6 +517,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_21_100003) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "siren", limit: 9
+    t.string "libelle_procol"
     t.index ["date_effet"], name: "index_osf_procols_on_date_effet"
     t.index ["siren"], name: "index_osf_procols_on_siren"
   end
