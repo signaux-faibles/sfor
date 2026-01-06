@@ -135,7 +135,8 @@ module Osf
         siren: distant_record["siren"],
         date_effet: parse_date(distant_record["date_effet"]),
         action_procol: distant_record["action_procol"],
-        stade_procol: distant_record["stade_procol"]
+        stade_procol: distant_record["stade_procol"],
+        libelle_procol: distant_record["libelle_procol"]
       }
     end
   end
