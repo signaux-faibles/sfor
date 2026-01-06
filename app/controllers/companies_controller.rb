@@ -145,19 +145,19 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     # Build waterfall chart data
     data_ordered.each do |key, value|
       risk += value
-      val2 = (val1 + value).round(1)
+      val2 = (val1 + value).round(0)
 
       # Find the label for this key
       label = key_mapping.values.find { |m| m[:key] == key }&.dig(:label)
       @labels << label if label
 
-      @values << [val1.round(1), val2]
+      @values << [val1.round(0), val2]
       val1 = val2
     end
 
     # Add the final risk score (from entry.score)
     # Use entry.score directly, or fallback to calculated risk if score is nil
-    final_score = (entry.score&.to_f || risk).round(1)
+    final_score = (entry.score&.to_f || risk).round(0)
     @values << [0, final_score]
     @labels << "Risque de défaillance (%)"
 
@@ -168,9 +168,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     # Determine criticite from alert field
     @criticite = if entry.alert&.downcase == "alerte seuil f1"
-                   "élevé"
+                   "élevée"
                  elsif entry.alert&.downcase == "alerte seuil f2"
-                   "modéré"
+                   "modérée"
                  else
                    "faible"
                  end
