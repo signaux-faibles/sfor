@@ -197,10 +197,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     debits_data = fetch_debits_data(start_date)
     delais = fetch_delais_data(start_date)
 
-    @cotisations = forward_fill(map_periodes_to_cotisations(periodes, cotisations_data))
-    @parts_salariales = forward_fill(map_periodes_to_parts_salariales(periodes, debits_data))
-    @parts_patronales = forward_fill(map_periodes_to_parts_patronales(periodes, debits_data))
-    @montant_echeancier = forward_fill(map_periodes_to_montant_echeancier(periodes, delais))
+    @cotisations = round_values(forward_fill(map_periodes_to_cotisations(periodes, cotisations_data)))
+    @parts_salariales = round_values(forward_fill(map_periodes_to_parts_salariales(periodes, debits_data)))
+    @parts_patronales = round_values(forward_fill(map_periodes_to_parts_patronales(periodes, debits_data)))
+    @montant_echeancier = round_values(forward_fill(map_periodes_to_montant_echeancier(periodes, delais)))
     @dataset_names = urssaf_dataset_names
 
     render partial: "data_urssaf_widget"
@@ -708,6 +708,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         value
       end
     end
+  end
+
+  def round_values(array)
+    array.map { |value| value&.round }
   end
 
   def urssaf_dataset_names
