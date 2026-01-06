@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "establishment_trackings_list_widget" do %>
   <h2>Accompagnements</h2>
-  <% if @in_progress_trackings.empty? and @completed_trackings.empty? %>
+  <% if @in_progress_trackings.empty? && @under_surveillance_trackings.empty? && @completed_trackings.empty? %>
     <div class="fr-notice fr-notice--info fr-mb-4w">
       <div class="fr-container">
         <div class="fr-notice__body">
