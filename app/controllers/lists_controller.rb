@@ -10,7 +10,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Get search params
     @search_params = params.require(:search).permit(:q,
                                                     :effectif_min, :score_min,
-                                                    :dette_sociale_min, :action_procol,
+                                                    :dette_sociale_min, :libelle_procol,
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
                                                     :sans_delai_urssaf, :liste_retraitee,
@@ -245,31 +245,19 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       )
     end
 
-    # Filter by action_procol (using procol_at_date function)
-    if @search_params[:action_procol].present? && @search_params[:action_procol] != ""
-      action_value = @search_params[:action_procol]
+    # Filter by libelle_procol (using procol_at_date function)
+    if @search_params[:libelle_procol].present? && @search_params[:libelle_procol] != ""
+      libelle_value = @search_params[:libelle_procol]
       current_date = Date.current
 
-      # Use EXISTS/NOT EXISTS subquery with procol_at_date function to avoid materializing sirens in Ruby
-      companies = if action_value == "in_bonis"
-                    # Companies that are NOT in the procol_at_date results (no current action_procol = "In Bonis")
-                    companies.where(
-                      "NOT EXISTS (
-            SELECT 1 FROM procol_at_date(?) AS procol
-            WHERE procol.siren = companies.siren
-          )", current_date
-                    )
-                  else
-                    # Companies that ARE in the procol_at_date results with matching action_procol
-                    # Valid values: "sauvegarde", "redressement", "liquidation"
-                    companies.where(
-                      "EXISTS (
-            SELECT 1 FROM procol_at_date(?) AS procol
-            WHERE procol.siren = companies.siren
-            AND procol.action_procol = ?
-          )", current_date, action_value
-                    )
-                  end
+      # Use EXISTS subquery with procol_at_date function to avoid materializing sirens in Ruby
+      companies = companies.where(
+        "EXISTS (
+          SELECT 1 FROM procol_at_date(?) AS procol
+          WHERE procol.siren = companies.siren
+          AND procol.libelle_procol = ?
+        )", current_date, libelle_value
+      )
     end
 
     # Filter by frequence_alerte (placeholder)
