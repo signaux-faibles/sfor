@@ -96,7 +96,7 @@
 
                     <td>
                       <% if enriched_establishment[:etat_administratif] == "F" && enriched_establishment[:date_fermeture_formatted].present? %>
-                        <p class="fr-badge fr-badge--error fr-badge--no-icon fr-badge--sm">Fermé le <%= enriched_establishment[:date_fermeture_formatted] %></p>
+                        <p class="fr-badge fr-badge--pink-macaron fr-badge--sm">Fermé le <%= enriched_establishment[:date_fermeture_formatted] %></p>
                       <% elsif enriched_establishment[:etat_administratif] == "A" %>
                         <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">En activité</p>
                       <% else %>
