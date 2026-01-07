@@ -45,7 +45,7 @@ module ApplicationHelper
     when "En cours", "in_progress"
       "fr-badge fr-badge--purple-glycine"
     when "Sous surveillance", "under_surveillance"
-      "fr-badge fr-badge--info fr-badge--no-icon"
+      "fr-badge fr-badge--brown-caramel"
     when "Terminé", "completed"
       "fr-badge"
     else # rubocop:disable Lint/DuplicateBranch
@@ -98,7 +98,7 @@ module ApplicationHelper
     when "Terminé"
       "background-color: var(--background-default-grey-active); color: var(--text-mention-grey);"
     when "Sous surveillance"
-      "background-color: var(--beige-gris-galet-950-100); color: var(--brown-opera-sun-395);"
+      "background-color: var(--background-contrast-brown-caramel); color: var(--text-label-brown-caramel);"
     end
   end
 end
