@@ -49,10 +49,10 @@
             data-controller="financial-chart-widget"
             data-financial-chart-widget-title-value="Ratios financiers INPI/BCE"
             data-financial-chart-widget-labels-value='<%= @formatted_dates.to_json %>'
-            data-financial-chart-widget-dataset-names-value='<%= @dataset_names_graph.to_json %>'
-            data-financial-chart-widget-datasets-value='<%= @datasets_graph.to_json %>'
-            data-financial-chart-widget-colors-light-theme-value='<%= ['#000091', '#FCBFBF', '#6A6AF4', '#E1000F', '#B7A73F'].to_json %>'
-            data-financial-chart-widget-colors-dark-theme-value='<%= ['#C6C6FB', '#e1000f', '#8585F6', '#FF9575', '#B7A73F'].to_json %>'
+            data-financial-chart-widget-dataset-names-value='<%= @dataset_names.to_json %>'
+            data-financial-chart-widget-datasets-value='<%= @datasets.to_json %>'
+            data-financial-chart-widget-colors-light-theme-value='<%= @light_colors.to_json %>'
+            data-financial-chart-widget-colors-dark-theme-value='<%= @dark_colors.to_json %>'
             data-financial-chart-widget-unit-value=""
             class="fr-grid-row fr-grid-row--gutters"
           >
@@ -72,7 +72,8 @@
                         data-financial-chart-widget-target="checkbox"
                       >
                       <label class="fr-label" for="checkbox-<%= field %>">
-                        <%= @dataset_names_graph[field] %>
+                        <span class="sf-ratio-financiers-color sf-ratio-financiers-color--<%= field %>"></span>
+                        <%= @dataset_names[field] %>
                       </label>
                     </div>
                   <% end %>
