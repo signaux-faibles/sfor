@@ -345,7 +345,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
       @dataset_names_graph = @dataset_names.except("ratio_de_liquidite", "taux_d_endettement")
       @datasets_graph = @datasets.except("ratio_de_liquidite", "taux_d_endettement")
-      @financial_fields_graph = @financial_fields - ["ratio_de_liquidite", "taux_d_endettement"]
+      @financial_fields_graph = @financial_fields - %w[ratio_de_liquidite taux_d_endettement]
 
     else
       @dates = []
@@ -357,8 +357,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       @dataset_names = {}
       @dataset_names_graph = {}
     end
-    @light_colors = ['#6A6AF4', '#E1000F', '#B7A73F', '#E18B76', '#00A95F']
-    @dark_colors = ['#6A6AF4', '#E1000F', '#B7A73F', '#E18B76', '#00A95F']
+    @light_colors = ["#6A6AF4", "#E1000F", "#B7A73F", "#E18B76", "#00A95F"]
+    @dark_colors = ["#6A6AF4", "#E1000F", "#B7A73F", "#E18B76", "#00A95F"]
     @error = nil
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données financières: #{e.message}"
