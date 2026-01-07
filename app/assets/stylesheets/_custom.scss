@@ -343,3 +343,31 @@
 .sf-cell-no-wrap {
   white-space: nowrap;
 }
+
+.sf-ratio-financiers-color {
+  width: 1rem;
+  height: 1rem;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: .5rem;
+}
+
+.sf-ratio-financiers-color--chiffre_d_affaires {
+  background-color: var(--blue-france-main-525);
+}
+
+.sf-ratio-financiers-color--ebe {
+  background-color: var(--red-marianne-main-472);
+}
+
+.sf-ratio-financiers-color--ebit {
+  background-color: var(--green-tilleul-verveine-main-707);
+}
+
+.sf-ratio-financiers-color--marge_brute {
+  background-color: var(--pink-macaron-main-689);
+}
+
+.sf-ratio-financiers-color--resultat_net {
+  background-color: var(--green-emeraude-main-632);
+}
