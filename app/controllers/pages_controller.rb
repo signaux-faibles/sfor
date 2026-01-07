@@ -76,6 +76,8 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   def unauthorized; end
 
+  def accessibilite; end
+
   private
 
   def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity

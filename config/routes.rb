@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get "accueil", to: "pages#home", as: :home
   get "recherche", to: "pages#search", as: :search
   get "statistiques", to: "statistics#index"
+  get "accessibilite", to: "pages#accessibilite", as: :accessibilite
 
   namespace :admin do
     resources :users do
