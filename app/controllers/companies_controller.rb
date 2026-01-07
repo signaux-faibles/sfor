@@ -317,13 +317,13 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
       # Only keep the specified financial fields
       allowed_fields = {
-        "chiffre_d_affaires" => "Chiffre d'Affaires",
-        "ebit" => "Résultat d'exploitation",
-        "ebe" => "Excédent Brut d'exploitation (EBE)",
-        "resultat_net" => "Résultat net",
-        "marge_brute" => "Marge brute",
-        "taux_d_endettement" => "Taux d'endettement",
-        "ratio_de_liquidite" => "Ratio de liquidité"
+        "chiffre_d_affaires" => "Chiffre d'Affaires (€)",
+        "ebit" => "Résultat d'exploitation (€)",
+        "ebe" => "Excédent Brut d'exploitation (EBE) (€)",
+        "resultat_net" => "Résultat net (€)",
+        "marge_brute" => "Marge brute (€)",
+        "taux_d_endettement" => "Taux d'endettement (%)",
+        "ratio_de_liquidite" => "Ratio de liquidité (%)"
       }
 
       # Build datasets only for allowed fields
@@ -342,22 +342,20 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       end
 
       @financial_fields.sort!
-      @financial_fields_units = [
-        "€",
-        "€",
-        "€",
-        "€",
-        "",
-        "€",
-        ""
-      ]
+
+      @dataset_names_graph = @dataset_names.except("ratio_de_liquidite", "taux_d_endettement")
+      @datasets_graph = @datasets.except("ratio_de_liquidite", "taux_d_endettement")
+      @financial_fields_graph = @financial_fields - ["ratio_de_liquidite", "taux_d_endettement"]
 
     else
       @dates = []
       @formatted_dates = []
       @financial_fields = []
+      @financial_fields_graph = []
       @datasets = {}
+      @datasets_graph = {}
       @dataset_names = {}
+      @dataset_names_graph = {}
     end
     @error = nil
   rescue StandardError => e

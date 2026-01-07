@@ -39,6 +39,7 @@
           </div>
         </div>
 
+
         <div
           data-segmented-control-widget-target="panel"
           data-panel="chart"
@@ -48,10 +49,10 @@
             data-controller="financial-chart-widget"
             data-financial-chart-widget-title-value="Ratios financiers INPI/BCE"
             data-financial-chart-widget-labels-value='<%= @formatted_dates.to_json %>'
-            data-financial-chart-widget-dataset-names-value='<%= @dataset_names.to_json %>'
-            data-financial-chart-widget-datasets-value='<%= @datasets.to_json %>'
-            data-financial-chart-widget-colors-light-theme-value='<%= ['#000091', '#FCBFBF', '#6A6AF4', '#E1000F', '#8585F6', '#FF9575', '#C6C6FB'].to_json %>'
-            data-financial-chart-widget-colors-dark-theme-value='<%= ['#C6C6FB', '#e1000f', '#8585F6', '#FF9575', '#000091', '#FCBFBF', '#6A6AF4'].to_json %>'
+            data-financial-chart-widget-dataset-names-value='<%= @dataset_names_graph.to_json %>'
+            data-financial-chart-widget-datasets-value='<%= @datasets_graph.to_json %>'
+            data-financial-chart-widget-colors-light-theme-value='<%= ['#000091', '#FCBFBF', '#6A6AF4', '#E1000F', '#B7A73F'].to_json %>'
+            data-financial-chart-widget-colors-dark-theme-value='<%= ['#C6C6FB', '#e1000f', '#8585F6', '#FF9575', '#B7A73F'].to_json %>'
             data-financial-chart-widget-unit-value=""
             class="fr-grid-row fr-grid-row--gutters"
           >
@@ -59,7 +60,7 @@
               <fieldset class="fr-fieldset">
                 <legend class="fr-fieldset__legend">Sélectionner les données à afficher</legend>
                 <div class="fr-fieldset__content">
-                  <% @financial_fields.each_with_index do |field, index| %>
+                  <% @financial_fields_graph.each_with_index do |field, index| %>
                     <div class="fr-checkbox-group fr-checkbox-group--sm">
                       <input
                         type="checkbox"
@@ -71,7 +72,7 @@
                         data-financial-chart-widget-target="checkbox"
                       >
                       <label class="fr-label" for="checkbox-<%= field %>">
-                        <%= @dataset_names[field] %>
+                        <%= @dataset_names_graph[field] %>
                       </label>
                     </div>
                   <% end %>
@@ -95,7 +96,6 @@
           data-segmented-control-widget-target="panel"
           data-panel="table"
         >
-
           <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--multiline" id="table-financial-component">
             <div class="fr-table__wrapper">
               <div class="fr-table__container">
@@ -103,25 +103,21 @@
                   <table id="table-financial">
                     <caption>Ratios financiers INPI/BCE</caption>
                     <thead>
-                    <tr>
-                      <th scope="col">Date de clôture</th>
-                      <% @financial_fields.each do |field| %>
-                        <th scope="col"><%= @dataset_names[field] %></th>
+                      <th scope="row">Date de clôture</th>
+                      <% @formatted_dates.each_with_index do |date, index| %>
+                        <th scope="col"><%= date %></th>
                       <% end %>
-                    </tr>
                     </thead>
                     <tbody>
-
-                    <% @formatted_dates.each_with_index do |date, index| %>
-                      <tr id="table-financial-row-<%= index %>" data-row-key="<%= index %>">
-                        <td scope="row"><%= date %></td>
-                        <% @financial_fields.each do |field| %>
+                    <% @financial_fields.each do |field| %>
+                      <tr>
+                        <th scope="row"><%= @dataset_names[field] %></th>
+                        <% @formatted_dates.each_with_index do |date, index| %>
                           <td class="sf-cell-no-wrap">
                             <% value = @datasets[field][index] %>
                             <% if value.present? %>
                               <% if value.is_a?(Numeric) %>
                                 <%= number_with_precision(value, precision: 2, delimiter: ' ', separator: ',', strip_insignificant_zeros: true) %>
-                                <% @financial_fields_units[index] %>
                               <% else %>
                                 <%= value %>
                               <% end %>
