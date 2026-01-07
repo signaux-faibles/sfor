@@ -80,7 +80,6 @@
             <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
             <%= f.select :section_activite_principale,
                          [
-                           ["Tous", ""],
                            ["A - Agriculture, sylviculture et pêche", "A"],
                            ["B - Industries extractives", "B"],
                            ["C - Industrie manufacturière", "C"],
@@ -103,8 +102,8 @@
                            ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"],
                            ["U - Activités extra-territoriales", "U"]
                          ],
-                         { selected: search_params[:section_activite_principale] || ""},
-                         { class: "fr-select" } %>
+                         { selected: Array(search_params[:section_activite_principale]).compact_blank },
+                         { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
           </div>
         </div>
       </div>
