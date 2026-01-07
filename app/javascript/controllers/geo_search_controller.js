@@ -271,7 +271,6 @@ export default class extends Controller {
         await Promise.all([
           this.searchCommunes(query),
           this.searchDepartments(query),
-          this.searchEpcis(query),
           this.searchRegions(query)
         ])
       }
@@ -340,25 +339,6 @@ export default class extends Controller {
     }
   }
 
-  async searchEpcis(query) {
-    try {
-      const url = `https://geo.api.gouv.fr/epcis?fields=nom,code&nom=${encodeURIComponent(query)}`
-      const response = await fetch(url)
-      const data = await response.json()
-
-      if (Array.isArray(data) && data.length > 0) {
-        this.displayResults(data.map(item => ({
-          type: "epci",
-          code: item.code,
-          label: `${item.nom} (EPCI)`,
-          fullLabel: item.nom
-        })), "epcis")
-      }
-    } catch (error) {
-      console.error("Error searching epcis:", error)
-    }
-  }
-
   async searchRegions(query) {
     try {
       const url = `https://geo.api.gouv.fr/regions?fields=nom,code&nom=${encodeURIComponent(query)}`
@@ -393,8 +373,8 @@ export default class extends Controller {
 
     const allResults = []
 
-    // Combine all results in order: communes, departments, epcis, regions
-    const categories = ["communes", "departements", "epcis", "regions"]
+    // Combine all results in order: communes, departments, regions
+    const categories = ["communes", "departements", "regions"]
 
     categories.forEach(category => {
       if (this.resultsContainer && this.resultsContainer[category]) {
@@ -418,7 +398,6 @@ export default class extends Controller {
         const categoryLabel = {
           communes: "Communes",
           departements: "Départements",
-          epcis: "EPCI",
           regions: "Régions"
         }[category] || category
 
