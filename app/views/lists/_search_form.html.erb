@@ -95,16 +95,17 @@
             </div>
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-input-group">
-                <%= f.label :action_procol, "Action de procédure collective", class: "fr-label" %>
-                <%= f.select :action_procol,
+                <%= f.label :libelle_procol, "Action de procédure collective", class: "fr-label" %>
+                <%= f.select :libelle_procol,
                              [
                                ["Tous", ""],
-                               ["In Bonis", "in_bonis"],
-                               ["Sauvegarde", "sauvegarde"],
-                               ["Redressement", "redressement"],
-                               ["Liquidation", "liquidation"]
+                               ["Redressement judiciaire", "Redressement judiciaire"],
+                               ["Plan de redressement", "Plan de redressement"],
+                               ["Sauvegarde", "Sauvegarde"],
+                               ["Plan de sauvegarde", "Plan de sauvegarde"],
+                               ["Liquidation judiciaire", "Liquidation judiciaire"],
                              ],
-                             { selected: search_params[:action_procol] || "" },
+                             { selected: search_params[:libelle_procol] || "" },
                              { class: "fr-select" } %>
               </div>
             </div>
