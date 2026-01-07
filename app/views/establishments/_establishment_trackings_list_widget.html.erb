@@ -11,11 +11,13 @@
       </div>
     </div>
 
-    <%= link_to "Créer un accompagnement",
-                new_establishment_establishment_tracking_path(@establishment),
-                class: "fr-btn",
-                data: { turbo: false }
-    %>
+    <% if @establishment.is_active %>
+      <%= link_to "Créer un accompagnement",
+                  new_establishment_establishment_tracking_path(@establishment),
+                  class: "fr-btn",
+                  data: { turbo: false }
+      %>
+    <% end %>
   <% else %>
     <% if !@in_progress_trackings.present? %>
       <div class="fr-notice fr-notice--info">
@@ -28,11 +30,13 @@
         </div>
       </div>
 
-      <%= link_to "Créer un accompagnement",
-                  new_establishment_establishment_tracking_path(@establishment),
-                  class: "fr-btn fr-mt-2w",
-                  data: { turbo: false }
-      %>
+      <% if @establishment.is_active %>
+        <%= link_to "Créer un accompagnement",
+                    new_establishment_establishment_tracking_path(@establishment),
+                    class: "fr-btn fr-mt-2w",
+                    data: { turbo: false }
+        %>
+      <% end %>
     <% end %>
 
     <div class="fr-table fr-table--no-caption fr-table--bordered fr-table--no-scroll" id="sf-trackings-table">
