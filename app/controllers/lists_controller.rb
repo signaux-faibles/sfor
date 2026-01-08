@@ -41,7 +41,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @companies = apply_database_filters(@companies)
 
     # Calculate alert breakdown from filtered results (before pagination)
-    @alert_breakdown = calculate_alert_breakdown(@companies)
+    # @alert_breakdown = calculate_alert_breakdown(@companies)
 
     respond_to do |format| # rubocop:disable Metrics/BlockLength
       format.html do
@@ -103,7 +103,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @companies = apply_database_filters(@companies)
 
     # Calculate alert breakdown from filtered results (before pagination)
-    @alert_breakdown = calculate_alert_breakdown(@companies)
+    # @alert_breakdown = calculate_alert_breakdown(@companies)
 
     respond_to do |format| # rubocop:disable Metrics/BlockLength
       format.html do
