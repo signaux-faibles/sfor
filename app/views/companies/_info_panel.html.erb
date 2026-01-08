@@ -103,7 +103,7 @@
                 <% if data["date_creation"] %>
                   <dt class="fr-col-4"><strong>Date création:</strong></dt>
                   <dd class="fr-col-8">
-                    <%= Time.at(data["date_creation"]).strftime("%d/%m/%Y") rescue "Date invalide" %>
+                    <%= Time.zone.at(data["date_creation"]).strftime("%d/%m/%Y") rescue "Date invalide" %>
                   </dd>
                 <% end %>
                 
