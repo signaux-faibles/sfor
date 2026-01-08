@@ -132,7 +132,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def alert_breakdown
+  def alert_breakdown # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @list = List.find(params[:id])
 
     # Get search params (same as show action)
