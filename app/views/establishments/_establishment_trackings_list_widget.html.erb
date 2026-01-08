@@ -19,7 +19,7 @@
       %>
     <% end %>
   <% else %>
-    <% if !@in_progress_trackings.present? %>
+    <% if !@in_progress_trackings.present? && !@under_surveillance_trackings.present? %>
       <div class="fr-notice fr-notice--info">
         <div class="fr-container">
           <div class="fr-notice__body">
