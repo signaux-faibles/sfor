@@ -40,8 +40,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Apply all database filters
     @companies = apply_database_filters(@companies)
 
-    # Calculate alert breakdown from filtered results (before pagination)
-    @alert_breakdown = calculate_alert_breakdown(@companies)
+    # Alert breakdown is loaded asynchronously via Turbo Frame for better performance
 
     respond_to do |format|
       format.html do
@@ -89,8 +88,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Apply all database filters
     @companies = apply_database_filters(@companies)
 
-    # Calculate alert breakdown from filtered results (before pagination)
-    @alert_breakdown = calculate_alert_breakdown(@companies)
+    # Alert breakdown is loaded asynchronously via Turbo Frame for better performance
 
     respond_to do |format|
       format.html do
@@ -131,6 +129,60 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html # Renders enrich_company.html.erb for turbo_frame
+    end
+  end
+
+  def alert_breakdown
+    @list = List.find(params[:id])
+
+    # Get search params (same as show action)
+    @search_params = params.require(:search).permit(:q,
+                                                    :effectif_min, :score_min,
+                                                    :dette_sociale_min, :libelle_procol,
+                                                    :frequence_alerte, :niveau_alerte,
+                                                    :premieres_alertes, :sans_entreprises_recentes,
+                                                    :sans_delai_urssaf, :liste_retraitee,
+                                                    departement_in: [],
+                                                    forme_juridique: [],
+                                                    section_activite_principale: []) if params[:search].present?
+    @search_params ||= {}
+
+    # Start with companies in this list (from company_score_entries)
+    @companies = Company.joins(:company_score_entries)
+                        .where(company_score_entries: { list_name: @list.label })
+                        .distinct
+
+    # Apply policy scope to restrict to user's departments
+    @companies = policy_scope(@companies)
+
+    # Apply all database filters
+    @companies = apply_database_filters(@companies)
+
+    # Calculate alert breakdown from filtered results
+    @alert_breakdown = calculate_alert_breakdown(@companies)
+
+    respond_to do |format|
+      format.html # Renders alert_breakdown.html.erb for turbo_frame
+    end
+  rescue ActionController::ParameterMissing
+    @search_params = {}
+
+    # Start with companies in this list (from company_score_entries)
+    @companies = Company.joins(:company_score_entries)
+                        .where(company_score_entries: { list_name: @list.label })
+                        .distinct
+
+    # Apply policy scope to restrict to user's departments
+    @companies = policy_scope(@companies)
+
+    # Apply all database filters
+    @companies = apply_database_filters(@companies)
+
+    # Calculate alert breakdown from filtered results
+    @alert_breakdown = calculate_alert_breakdown(@companies)
+
+    respond_to do |format|
+      format.html
     end
   end
 
