@@ -73,66 +73,21 @@
                       SIREN : <%= company["siren"] %>
                     </p>
                     <div class="fr-card__start">
-                      <ul class="fr-badges-group">
-                        <% if company["is_first_alert"] %>
-                          <li>
-                            <p class="fr-badge fr-badge--info fr-badge--no-icon">1ère alerte</p>
-                          </li>
-                        <% end %>
-
-                        <% if company["alert_level"] == "elevee" %>
-                          <li>
-                            <p class="fr-badge fr-badge--error fr-badge--no-icon">Alerte élevée</p>
-                          </li>
-                        <% end %>
-
-                        <% if company["alert_level"] == "moderee" %>
-                          <li>
-                            <p class="fr-badge fr-badge--yellow-tournesol">Alerte modérée</p>
-                          </li>
-                        <% end %>
-
-                        <% if company["tracking_under_surveillance_count"].to_i > 0 %>
-                          <li>
-                            <p class="fr-badge fr-badge--brown-caramel">
-                              Accompagnement sous surveillance
-                              <% if company["tracking_under_surveillance_count"].to_i > 1 %>
-                                (<%= company["tracking_under_surveillance_count"] %>)
-                              <% end %>
-                            </p>
-                          </li>
-                        <% end %>
-
-                        <% if company["tracking_in_progress_count"].to_i > 0 %>
-                          <li>
-                            <p class="fr-badge fr-badge--purple-glycine">
-                              Accompagnement en cours
-                              <% if company["tracking_in_progress_count"].to_i > 1 %>
-                                (<%= company["tracking_in_progress_count"] %>)
-                              <% end %>
-                            </p>
-                          </li>
-                        <% end %>
-
-                        <% if company["tracking_completed_count"].to_i > 0 %>
-                          <li>
-                            <p class="fr-badge">
-                              Accompagnement terminé
-                              <% if company["tracking_completed_count"].to_i > 1 %>
-                                (<%= company["tracking_completed_count"] %>)
-                              <% end %>
-                            </p>
-                          </li>
-                        <% end %>
-                      </ul>
+                      <%= turbo_frame_tag "company_badges_#{company["siren"]}", 
+                          src: enrich_company_list_path(@list, siren: company["siren"]),
+                          loading: "lazy" do %>
+                        <ul class="fr-badges-group">
+                          <!-- Loading badges... -->
+                        </ul>
+                      <% end %>
                     </div>
-                    <% if company["nombre_etablissements_ouverts"] %>
-                      <div class="fr-card__end">
-                        <p class="fr-card__detail fr-icon-building-4-line">
-                          <%= pluralize(company["nombre_etablissements_ouverts"], "établissement", "établissements") %> en activité
-                        </p>
-                      </div>
-                    <% end %>
+                    <div class="fr-card__end">
+                      <%= turbo_frame_tag "company_establishments_#{company["siren"]}", 
+                          src: enrich_company_list_path(@list, siren: company["siren"]),
+                          loading: "lazy" do %>
+                        <!-- Loading establishment count... -->
+                      <% end %>
+                    </div>
                   </div>
                 </div>
               </div>

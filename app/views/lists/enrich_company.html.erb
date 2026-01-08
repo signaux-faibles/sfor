@@ -1,0 +1,63 @@
+<%= turbo_frame_tag "company_badges_#{params[:siren]}" do %>
+  <ul class="fr-badges-group">
+    <% if @enrichment[:is_first_alert] %>
+      <li>
+        <p class="fr-badge fr-badge--info fr-badge--no-icon">1ère alerte</p>
+      </li>
+    <% end %>
+
+    <% if @enrichment[:alert_level] == "elevee" %>
+      <li>
+        <p class="fr-badge fr-badge--error fr-badge--no-icon">Alerte élevée</p>
+      </li>
+    <% end %>
+
+    <% if @enrichment[:alert_level] == "moderee" %>
+      <li>
+        <p class="fr-badge fr-badge--yellow-tournesol">Alerte modérée</p>
+      </li>
+    <% end %>
+
+    <% if @enrichment[:tracking_under_surveillance_count].to_i > 0 %>
+      <li>
+        <p class="fr-badge fr-badge--brown-caramel">
+          Accompagnement sous surveillance
+          <% if @enrichment[:tracking_under_surveillance_count].to_i > 1 %>
+            (<%= @enrichment[:tracking_under_surveillance_count] %>)
+          <% end %>
+        </p>
+      </li>
+    <% end %>
+
+    <% if @enrichment[:tracking_in_progress_count].to_i > 0 %>
+      <li>
+        <p class="fr-badge fr-badge--purple-glycine">
+          Accompagnement en cours
+          <% if @enrichment[:tracking_in_progress_count].to_i > 1 %>
+            (<%= @enrichment[:tracking_in_progress_count] %>)
+          <% end %>
+        </p>
+      </li>
+    <% end %>
+
+    <% if @enrichment[:tracking_completed_count].to_i > 0 %>
+      <li>
+        <p class="fr-badge">
+          Accompagnement terminé
+          <% if @enrichment[:tracking_completed_count].to_i > 1 %>
+            (<%= @enrichment[:tracking_completed_count] %>)
+          <% end %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= turbo_frame_tag "company_establishments_#{params[:siren]}" do %>
+  <% if @enrichment[:nombre_etablissements_ouverts] > 0 %>
+    <p class="fr-card__detail fr-icon-building-4-line">
+      <%= pluralize(@enrichment[:nombre_etablissements_ouverts], "établissement", "établissements") %> en activité
+    </p>
+  <% end %>
+<% end %>
+

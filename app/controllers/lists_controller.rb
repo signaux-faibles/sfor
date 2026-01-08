@@ -43,27 +43,18 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Calculate alert breakdown from filtered results (before pagination)
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
-    respond_to do |format| # rubocop:disable Metrics/BlockLength
+    respond_to do |format|
       format.html do
         # Paginate
         @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
         Rails.logger.info "companies: #{@companies.inspect}"
 
-        # Preload establishment counts to avoid N+1 queries
-        company_sirens = @companies.pluck(:siren)
-        establishment_counts = Establishment
-                               .where(siren: company_sirens)
-                               .where(is_active: true)
-                               .group(:siren)
-                               .count
-
-        # Format results for display
+        # Format results for display (establishment count loaded via Turbo Frame)
         @results = @companies.map do |company|
           {
             "siren" => company.siren,
-            "nom_complet" => company.raison_sociale || company.siren,
-            "nombre_etablissements_ouverts" => establishment_counts[company.siren] || 0
+            "nom_complet" => company.raison_sociale || company.siren
           }
         end
 
@@ -74,10 +65,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           total_results: @companies.total_count
         }
 
-        # Enrich with tracking & alert data
-        enrich_results_with_tracking_status(@results)
-        enrich_results_with_alert_levels(@results)
-        enrich_results_with_first_alert_flag(@results)
+        # Enrichment is done per-result via Turbo Frames for better performance
       end
       format.xlsx do
         export_list(@companies)
@@ -104,25 +92,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Calculate alert breakdown from filtered results (before pagination)
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
-    respond_to do |format| # rubocop:disable Metrics/BlockLength
+    respond_to do |format|
       format.html do
         # Paginate
         @companies = @companies.includes(:establishments).page(@page).per(@per_page)
 
-        # Preload establishment counts to avoid N+1 queries
-        company_sirens = @companies.pluck(:siren)
-        establishment_counts = Establishment
-                               .where(siren: company_sirens)
-                               .where(is_active: true)
-                               .group(:siren)
-                               .count
-
-        # Format results for display
+        # Format results for display (establishment count loaded via Turbo Frame)
         @results = @companies.map do |company|
           {
             "siren" => company.siren,
-            "nom_complet" => company.raison_sociale || company.siren,
-            "nombre_etablissements_ouverts" => establishment_counts[company.siren] || 0
+            "nom_complet" => company.raison_sociale || company.siren
           }
         end
 
@@ -133,14 +112,25 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           total_results: @companies.total_count
         }
 
-        # Enrich with tracking & alert data
-        enrich_results_with_tracking_status(@results)
-        enrich_results_with_alert_levels(@results)
-        enrich_results_with_first_alert_flag(@results)
+        # Enrichment is done per-result via Turbo Frames for better performance
       end
       format.xlsx do
         export_list(@companies)
       end
+    end
+  end
+
+  def enrich_company
+    @list = List.find(params[:id])
+    siren = params[:siren]
+
+    return head :bad_request if siren.blank?
+
+    # Get enrichment data for a single company
+    @enrichment = enrich_single_company(siren)
+
+    respond_to do |format|
+      format.html # Renders enrich_company.html.erb for turbo_frame
     end
   end
 
@@ -451,5 +441,66 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       alerte_elevee: counts[0].to_i,
       alerte_moderee: counts[1].to_i
     }
+  end
+
+  def enrich_single_company(siren) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+    enrichment = {
+      is_first_alert: false,
+      alert_level: nil,
+      tracking_in_progress_count: 0,
+      tracking_under_surveillance_count: 0,
+      tracking_completed_count: 0,
+      nombre_etablissements_ouverts: 0
+    }
+
+    # Get tracking counts
+    tracking_counts = EstablishmentTracking
+                      .kept
+                      .joins(:establishment)
+                      .where(establishments: { siren: siren })
+                      .group("establishment_trackings.state")
+                      .count
+
+    tracking_counts.each do |state, count|
+      case state
+      when "in_progress"
+        enrichment[:tracking_in_progress_count] = count
+      when "under_surveillance"
+        enrichment[:tracking_under_surveillance_count] = count
+      when "completed"
+        enrichment[:tracking_completed_count] = count
+      end
+    end
+
+    # Get alert level
+    alert_entry = CompanyScoreEntry
+                  .where(siren: siren, list_name: @list.label)
+                  .where.not(alert: nil)
+                  .order(created_at: :desc)
+                  .first
+
+    if alert_entry
+      case alert_entry.alert&.downcase
+      when "alerte seuil f1"
+        enrichment[:alert_level] = "elevee"
+      when "alerte seuil f2"
+        enrichment[:alert_level] = "moderee"
+      end
+    end
+
+    # Get first alert flag
+    sirens_in_other_lists = CompanyScoreEntry
+                            .where(siren: siren)
+                            .where.not(list_name: @list.label)
+                            .exists?
+
+    enrichment[:is_first_alert] = !sirens_in_other_lists
+
+    # Get establishment count
+    enrichment[:nombre_etablissements_ouverts] = Establishment
+                                                 .where(siren: siren, is_active: true)
+                                                 .count
+
+    enrichment
   end
 end

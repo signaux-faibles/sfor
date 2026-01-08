@@ -83,7 +83,11 @@ Rails.application.routes.draw do
   get "establishment_trackings/new_by_siret", to: "establishment_trackings#new_by_siret",
                                               as: "new_establishment_tracking_by_siret"
 
-  resources :lists, path: "listes", only: %i[index show], defaults: { format: :html }
+  resources :lists, path: "listes", only: %i[index show], defaults: { format: :html } do
+    member do
+      get :enrich_company
+    end
+  end
 
   root "pages#home"
 end
