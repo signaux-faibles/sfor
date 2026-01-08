@@ -502,7 +502,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       tracking_in_progress_count: 0,
       tracking_under_surveillance_count: 0,
       tracking_completed_count: 0,
-      nombre_etablissements_ouverts: 0
+      nombre_etablissements_ouverts: 0,
+      procol_status: nil
     }
 
     # Get tracking counts
@@ -552,6 +553,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     enrichment[:nombre_etablissements_ouverts] = Establishment
                                                  .where(siren: siren, is_active: true)
                                                  .count
+
+    # Get procol status
+    enrichment[:procol_status] = procol_status_for_siren(siren)
 
     enrichment
   end

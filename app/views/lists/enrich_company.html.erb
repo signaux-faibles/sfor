@@ -50,6 +50,12 @@
         </p>
       </li>
     <% end %>
+
+    <% if @enrichment[:procol_status].present? && @enrichment[:procol_status] != "In Bonis" %>
+      <li>
+        <p class="fr-badge fr-badge--purple-glycine"><%= @enrichment[:procol_status] %></p>
+      </li>
+    <% end %>
   </ul>
 <% end %>
 
