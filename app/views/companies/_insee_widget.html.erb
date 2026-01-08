@@ -14,7 +14,7 @@
       <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
       <% if @insee_data.present? %>
         <% if @insee_data["data"].present? && @insee_data["data"]["activite_principale"].present? %>
-          <dt class="sf-keyvalue-list__key">Secteur d'activité : </dt>
+          <dt class="sf-keyvalue-list__key">Activité principale (NAF/APE) : </dt>
           <dd class="sf-keyvalue-list__value">
             <%= @insee_data["data"]["activite_principale"]["libelle"]%> - <%= @insee_data["data"]["activite_principale"]["code"]%>
           </dd>
