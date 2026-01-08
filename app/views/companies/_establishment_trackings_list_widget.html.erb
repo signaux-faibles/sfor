@@ -37,17 +37,16 @@
         </div>
       </div>
     <% end %>
-
-    <% if @completed_trackings.present? %>
-      <div class="fr-card fr-mt-5w">
-        <div class="fr-card__body">
-          <div class="fr-card__content">
-            <h2>Historique des accompagnements de l’entreprise</h2>
-            <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
-          </div>
+  <% end %>
+  <% if @completed_trackings.present? %>
+    <div class="fr-card fr-mt-5w">
+      <div class="fr-card__body">
+        <div class="fr-card__content">
+          <h2>Historique des accompagnements de l’entreprise</h2>
+          <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
         </div>
       </div>
-    <% end %>
+    </div>
   <% end %>
 <% end %>
 
