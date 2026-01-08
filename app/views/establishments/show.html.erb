@@ -21,6 +21,10 @@
   <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
     <div class="fr-container sf-fiche-title">
       <h1>Fiche établissement <%= @establishment.raison_sociale %></h1>
+      <%# Statut procédure collective (si différent de in bonis) %>
+      <% if @procol_status && @procol_status != "In Bonis" %>
+        <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
+      <% end %>
     </div>
   </div>
 

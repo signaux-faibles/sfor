@@ -1,4 +1,6 @@
 class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
+  include ProcolStatusable
+
   before_action :set_company,
                 only: %i[show insee_widget financial_widget establishments_widget detection_widget
                          feedback_detection_widget history_detection_widget waterfall_detection_widget]
@@ -747,15 +749,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def calculate_procol_status
-    current_date = Date.current
-    sql = ActiveRecord::Base.sanitize_sql([
-                                            "SELECT action_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
-                                            current_date, @company.siren
-                                          ])
-    result = ActiveRecord::Base.connection.execute(sql).first
-    result ? result["action_procol"] : "In Bonis"
-  rescue StandardError
-    "In Bonis"
+    procol_status_for_siren(@company.siren)
   end
 
   def calculate_is_first_alert

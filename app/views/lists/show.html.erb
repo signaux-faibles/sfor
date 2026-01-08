@@ -124,6 +124,13 @@
                             </p>
                           </li>
                         <% end %>
+
+                        <%# Statut procédure collective (si différent de in bonis) %>
+                        <% if company["procol_status"].present? && company["procol_status"] != "In Bonis" %>
+                          <li>
+                            <p class="fr-badge fr-badge--purple-glycine"><%= company["procol_status"] %></p>
+                          </li>
+                        <% end %>
                       </ul>
                     </div>
                     <% if company["nombre_etablissements_ouverts"] %>

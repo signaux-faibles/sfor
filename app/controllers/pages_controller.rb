@@ -1,5 +1,6 @@
 class PagesController < ApplicationController # rubocop:disable Metrics/ClassLength
   include SirenSiretRedirectable
+  include ProcolStatusable
 
   skip_before_action :authenticate_user!, only: [:unauthorized]
 
@@ -61,6 +62,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
       @results = response["results"] || []
       enrich_results_with_tracking_status(@results)
       enrich_results_with_alert_levels(@results)
+      enrich_results_with_procol_status(@results)
       @pagination = {
         page: response["page"] || @page,
         per_page: response["per_page"] || @per_page,

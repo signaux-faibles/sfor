@@ -1,5 +1,6 @@
 class ListsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include SirenSiretRedirectable
+  include ProcolStatusable
   def index
     @lists = List.order(label: :asc)
   end
@@ -77,6 +78,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         enrich_results_with_tracking_status(@results)
         enrich_results_with_alert_levels(@results)
         enrich_results_with_first_alert_flag(@results)
+        enrich_results_with_procol_status(@results)
       end
       format.xlsx do
         export_list(@companies)
@@ -136,6 +138,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         enrich_results_with_tracking_status(@results)
         enrich_results_with_alert_levels(@results)
         enrich_results_with_first_alert_flag(@results)
+        enrich_results_with_procol_status(@results)
       end
       format.xlsx do
         export_list(@companies)
