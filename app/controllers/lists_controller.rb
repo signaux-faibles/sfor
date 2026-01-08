@@ -41,7 +41,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @companies = apply_database_filters(@companies)
 
     # Calculate alert breakdown from filtered results (before pagination)
-    # @alert_breakdown = calculate_alert_breakdown(@companies)
+    @alert_breakdown = calculate_alert_breakdown(@companies)
 
     respond_to do |format| # rubocop:disable Metrics/BlockLength
       format.html do
@@ -102,7 +102,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @companies = apply_database_filters(@companies)
 
     # Calculate alert breakdown from filtered results (before pagination)
-    # @alert_breakdown = calculate_alert_breakdown(@companies)
+    @alert_breakdown = calculate_alert_breakdown(@companies)
 
     respond_to do |format| # rubocop:disable Metrics/BlockLength
       format.html do
@@ -436,27 +436,20 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def calculate_alert_breakdown(companies_query) # rubocop:disable Metrics/MethodLength
-    # Get all sirens from the filtered companies query
-    filtered_sirens = companies_query.pluck(:siren).to_set
-
-    return { alerte_elevee: 0, alerte_moderee: 0 } if filtered_sirens.empty?
-
-    # Count distinct sirens with each alert level in this list
-    alerte_elevee_count = CompanyScoreEntry
-                          .where(list_name: @list.label, siren: filtered_sirens.to_a, alert: "Alerte seuil F1")
-                          .select(:siren)
-                          .distinct
-                          .count
-
-    alerte_moderee_count = CompanyScoreEntry
-                           .where(list_name: @list.label, siren: filtered_sirens.to_a, alert: "Alerte seuil F2")
-                           .select(:siren)
-                           .distinct
-                           .count
+    # Use a single aggregated query with conditional aggregation to count both alert types
+    # This avoids materializing all SIRENs in Ruby and reduces from 3 queries to 1
+    counts = CompanyScoreEntry
+             .where(list_name: @list.label)
+             .where(siren: companies_query.select(:siren))
+             .where(alert: ["Alerte seuil F1", "Alerte seuil F2"])
+             .pick(
+               Arel.sql("COUNT(DISTINCT CASE WHEN alert = 'Alerte seuil F1' THEN siren END)"),
+               Arel.sql("COUNT(DISTINCT CASE WHEN alert = 'Alerte seuil F2' THEN siren END)")
+             ) || [0, 0]
 
     {
-      alerte_elevee: alerte_elevee_count,
-      alerte_moderee: alerte_moderee_count
+      alerte_elevee: counts[0].to_i,
+      alerte_moderee: counts[1].to_i
     }
   end
 end
