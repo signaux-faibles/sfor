@@ -86,6 +86,7 @@ Rails.application.routes.draw do
   resources :lists, path: "listes", only: %i[index show], defaults: { format: :html } do
     member do
       get :enrich_company
+      get :alert_breakdown
     end
   end
 

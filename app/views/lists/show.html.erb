@@ -43,15 +43,10 @@
       </div>
       <p class="fr-mt-2w">
         <%= pluralize(@pagination[:total_results], "entreprise", "entreprises") %>
-        <% if @alert_breakdown %>
-          • 
-          <span class="fr-badge fr-badge--error fr-badge--no-icon">
-            <%= @alert_breakdown[:alerte_elevee] %> <%= @alert_breakdown[:alerte_elevee] > 1 ? "Alertes élevées" : "Alerte élevée" %>
-          </span>
-          et
-          <span class="fr-badge fr-badge--yellow-tournesol">
-            <%= @alert_breakdown[:alerte_moderee] %> <%= @alert_breakdown[:alerte_moderee] > 1 ? "Alertes modérées" : "Alerte modérée" %>
-          </span>
+        <%= turbo_frame_tag "alert_breakdown", 
+            src: alert_breakdown_list_path(@list, search: @search_params),
+            loading: "lazy" do %>
+          <!-- Loading alert breakdown... -->
         <% end %>
         <% if @pagination[:total_pages] > 1 %>
           <br>
