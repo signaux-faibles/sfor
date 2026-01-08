@@ -53,6 +53,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         company_sirens = @companies.pluck(:siren)
         establishment_counts = Establishment
                                .where(siren: company_sirens)
+                               .where(is_active: true)
                                .group(:siren)
                                .count
 
@@ -111,6 +112,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         company_sirens = @companies.pluck(:siren)
         establishment_counts = Establishment
                                .where(siren: company_sirens)
+                               .where(is_active: true)
                                .group(:siren)
                                .count
 
