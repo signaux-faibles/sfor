@@ -93,7 +93,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @company_insee_data = service.fetch_unite_legale_by_siren(siren) if siren.present?
 
     date_fermeture = @insee_data&.dig("data", "date_fermeture")
-    @date_fermeture_formatted = Time.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
+    @date_fermeture_formatted = Time.zone.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
   rescue StandardError => e
     Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
     @insee_data = nil

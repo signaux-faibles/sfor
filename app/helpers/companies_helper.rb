@@ -66,7 +66,7 @@ module CompaniesHelper
   def format_date_with_age(timestamp)
     return "" if timestamp.blank?
 
-    date = Time.at(timestamp).to_date
+    date = Time.zone.at(timestamp).to_date
     age = Date.current.year - date.year
     age -= 1 if Date.current.strftime("%m%d") < date.strftime("%m%d")
 

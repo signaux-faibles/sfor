@@ -288,7 +288,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @insee_data = service.fetch_unite_legale_by_siren(@company.siren)
 
     date_fermeture = @insee_data&.dig("data", "date_fermeture")
-    @date_fermeture_formatted = Time.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
+    @date_fermeture_formatted = Time.zone.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
 
     siege_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
     if siege_data&.dig("data", "adresse").present?
@@ -416,7 +416,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       # Formater la date de fermeture si elle existe
       date_fermeture_formatted = nil
       if date_fermeture_timestamp.present?
-        date_fermeture_formatted = Time.at(date_fermeture_timestamp).strftime("%d/%m/%Y")
+        date_fermeture_formatted = Time.zone.at(date_fermeture_timestamp).strftime("%d/%m/%Y")
       end
 
       # Combiner les données Rails avec les données API
