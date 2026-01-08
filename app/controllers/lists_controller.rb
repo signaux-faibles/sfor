@@ -44,8 +44,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Paginate
-        @companies = @companies.includes(:establishments).page(@page).per(@per_page)
+        # Paginate (no includes needed - establishment counts loaded via Turbo Frame)
+        @companies = @companies.page(@page).per(@per_page)
 
         Rails.logger.info "companies: #{@companies.inspect}"
 
