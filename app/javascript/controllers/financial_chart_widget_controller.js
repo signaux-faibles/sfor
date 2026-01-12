@@ -142,19 +142,21 @@ export default class extends Controller {
   }
 
   createDatasets(colors) {
-    // Get all field keys in their original order, then filter to visible ones
-    const allFieldKeys = Object.keys(this.datasetsValue)
-    const visibleFieldKeys = allFieldKeys.filter(key => this.visibleDatasets.has(key))
+    // Get all field keys and sort them to match checkbox order
+    // This ensures datasets are in the same order as checkboxes
+    const allFieldKeys = Object.keys(this.datasetsValue).sort()
     const datasets = []
 
-    visibleFieldKeys.forEach((fieldKey) => {
+    // Create all datasets, but mark hidden ones
+    allFieldKeys.forEach((fieldKey) => {
       const dataset = this.datasetsValue[fieldKey]
-      // Use the original index to maintain consistent colors
-      const originalIndex = allFieldKeys.indexOf(fieldKey)
-      const colorIndex = originalIndex % colors.length
+      // Use the sorted index to maintain consistent colors
+      const sortedIndex = allFieldKeys.indexOf(fieldKey)
+      const colorIndex = sortedIndex % colors.length
       const color = colors[colorIndex]
 
       datasets.push({
+        id: fieldKey, // Add unique ID to identify datasets
         label: this.datasetNamesValue[fieldKey],
         data: dataset,
         borderColor: color,
@@ -162,7 +164,8 @@ export default class extends Controller {
         type: 'line',
         fill: false,
         spanGaps: false, // Break line at null values
-        tension: 0.1
+        tension: 0.1,
+        hidden: !this.visibleDatasets.has(fieldKey) // Hide if not in visible set
       })
     })
 
@@ -178,6 +181,8 @@ export default class extends Controller {
       colors = this.colorsDarkThemeValue;
     }
 
+    // Recreate the datasets array to ensure correct order and matching
+    // This is more reliable than trying to update existing datasets
     this.chart.data.datasets = this.createDatasets(colors)
     this.chart.update()
   }
