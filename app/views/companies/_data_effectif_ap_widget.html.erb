@@ -126,7 +126,16 @@
         </div>
       </div>
     <% else %>
-      <%= render 'shared/data_state', error: @error %>
+      <% if @error.present? %>
+        <%= render 'shared/data_state', error: @error %>
+      <% else %>
+        <div class="fr-alert fr-alert--info">
+          <p>
+            <span class="fr-icon-information-line" aria-hidden="true"></span>
+            Aucune donnée disponible pour cette entreprise.
+          </p>
+        </div>
+      <% end %>
     <% end %>
 
   </div>

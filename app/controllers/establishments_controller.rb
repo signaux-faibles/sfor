@@ -20,7 +20,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     render partial: "insee_widget"
   end
 
-  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     start_date = 24.months.ago.beginning_of_month.to_date
     periodes, @formatted_periodes = generate_formatted_periods(start_date)
 
@@ -32,12 +32,19 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @parts_salariales = forward_fill(map_periodes_to_parts_salariales(periodes, debits_data))
     @parts_patronales = forward_fill(map_periodes_to_parts_patronales(periodes, debits_data))
     @montant_echeancier = forward_fill(map_periodes_to_montant_echeancier(periodes, delais))
+
+    # Set arrays to empty if they only contain nil values
+    @cotisations = [] if @cotisations.all?(&:nil?)
+    @parts_salariales = [] if @parts_salariales.all?(&:nil?)
+    @parts_patronales = [] if @parts_patronales.all?(&:nil?)
+    @montant_echeancier = [] if @montant_echeancier.all?(&:nil?)
+
     @dataset_names = urssaf_dataset_names
 
     render partial: "data_urssaf_widget"
   end
 
-  def data_effectif_ap_widget
+  def data_effectif_ap_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     start_date = 24.months.ago.beginning_of_month.to_date
     periodes, @formatted_periodes = generate_formatted_periods(start_date)
 
@@ -47,6 +54,12 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @effectifs = map_periodes_to_effectifs(periodes, effectifs_data)
     @consommation_ap = map_periodes_to_consommation(periodes, ap_data)
     @autorisation_ap = map_periodes_to_autorisation(periodes, ap_data)
+
+    # Set arrays to empty if they only contain nil values
+    @effectifs = [] if @effectifs.all?(&:nil?)
+    @consommation_ap = [] if @consommation_ap.all?(&:nil?)
+    @autorisation_ap = [] if @autorisation_ap.all?(&:nil?)
+
     @dataset_names = effectif_ap_dataset_names
 
     render partial: "data_effectif_ap_widget"
