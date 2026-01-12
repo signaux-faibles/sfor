@@ -178,11 +178,6 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @criticite = calculate_criticite(entry)
     @data_date = format_data_date(last_list, entry)
 
-    Rails.logger.info "Criticite: #{@criticite}"
-    Rails.logger.info "Entry: #{entry.inspect}"
-    Rails.logger.info "Last list: #{last_list.inspect}"
-    Rails.logger.info "Data date: #{@data_date}"
-
     render partial: "waterfall_detection_widget"
   end
 

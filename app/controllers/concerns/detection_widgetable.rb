@@ -32,17 +32,19 @@ module DetectionWidgetable
     end
   end
 
-  # Format data_date from list_date or entry.created_at
+  # Format data_date as the last day of the month preceding the month of list_date
   # @param list [List] The list
-  # @param entry [CompanyScoreEntry] The company score entry
+  # @param _entry [CompanyScoreEntry] The company score entry (unused, kept for compatibility)
   # @return [String] Formatted date or "Date non disponible"
-  def format_data_date(list, entry)
-    if list&.list_date
-      I18n.l(list.list_date, format: :long, locale: :fr)
-    elsif entry&.created_at
-      I18n.l(entry.created_at.to_date, format: :long, locale: :fr)
-    else
-      "Date non disponible"
-    end
+  def format_data_date(list, _entry)
+    return "Date non disponible" unless list&.list_date
+
+    # Ensure we're working with a Date object
+    list_date = list.list_date.to_date
+
+    # Get the last day of the month preceding the month of list_date
+    # Example: if list_date is 2025-09-01, we want 2025-08-31
+    preceding_month_last_day = list_date.beginning_of_month - 1.day
+    I18n.l(preceding_month_last_day, format: :long, locale: :fr)
   end
 end
