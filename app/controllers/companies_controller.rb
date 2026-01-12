@@ -1,5 +1,6 @@
 class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
   include ProcolStatusable
+  include DetectionWidgetable
 
   before_action :set_company,
                 only: %i[show insee_widget financial_widget establishments_widget detection_widget
@@ -22,6 +23,15 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def detection_widget
+    last_list, entry = fetch_last_list_and_entry
+    return render partial: "detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
+
+    return render partial: "detection_widget",
+                  locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
+
+    @criticite = calculate_criticite(entry)
+    @data_date = format_data_date(last_list, entry)
+
     render partial: "detection_widget"
   end
 
@@ -108,12 +118,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def waterfall_detection_widget # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-    # Get the last list
-    last_list = List.order(code: :desc).first
+    last_list, entry = fetch_last_list_and_entry
     return render partial: "waterfall_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
 
-    # Find the CompanyScoreEntry for this company and last list
-    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
     @entry = entry
     return render partial: "waterfall_detection_widget",
                   locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
@@ -168,23 +175,13 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     seuil_f1 = ENV.fetch("SEUIL_F1", "88").to_f
     @seuils = [seuil_f2, seuil_f1]
 
-    # Determine criticite from alert field
-    @criticite = if entry.alert&.downcase == "alerte seuil f1"
-                   "élevée"
-                 elsif entry.alert&.downcase == "alerte seuil f2"
-                   "modérée"
-                 else
-                   "faible"
-                 end
+    @criticite = calculate_criticite(entry)
+    @data_date = format_data_date(last_list, entry)
 
-    # Format data_date from list_date or created_at
-    @data_date = if last_list.list_date
-                   I18n.l(last_list.list_date, format: :long, locale: :fr)
-                 elsif entry.created_at
-                   I18n.l(entry.created_at.to_date, format: :long, locale: :fr)
-                 else
-                   "Date non disponible"
-                 end
+    Rails.logger.info "Criticite: #{@criticite}"
+    Rails.logger.info "Entry: #{entry.inspect}"
+    Rails.logger.info "Last list: #{last_list.inspect}"
+    Rails.logger.info "Data date: #{@data_date}"
 
     render partial: "waterfall_detection_widget"
   end
