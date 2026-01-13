@@ -7,7 +7,7 @@
           <div class="fr-input-group">
             <%= f.label :q, "Recherche par SIRET, SIREN ou raison sociale", class: "fr-label" %>
             <div class="fr-input-wrap fr-icon-search-line">
-              <%= f.text_field :q, value: search_params[:q], class: "fr-input", placeholder: "SIRET, SIREN ou raison sociale" %>
+              <%= f.text_field :q, value: search_params[:q], class: "fr-input", placeholder: "SIRET, SIREN ou raison sociale", required: true %>
             </div>
           </div>
         </div>
