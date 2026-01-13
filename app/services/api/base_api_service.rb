@@ -28,7 +28,7 @@ module Api
         return false if expiration < Time.now
 
         true
-      rescue JWT::DecodeError => e
+      rescue JWT::DecodeError
         false
       end
     end
