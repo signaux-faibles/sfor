@@ -20,10 +20,22 @@
             <h3>Accéder à des informations complémentaires</h3>
             <ul>
               <li>
-                <%= link_to "Voir sur Annuaire des Entreprises", "https://annuaire-entreprises.data.gouv.fr/entreprise/#{@company.siren}", target: "_blank", rel: "noopener" %>
+                <%=
+                  link_to "Voir sur Annuaire des Entreprises",
+                          "https://annuaire-entreprises.data.gouv.fr/entreprise/#{@company.siren}",
+                          target: "_blank",
+                          class: "fr-link",
+                          rel: "noopener"
+                %>
               </li>
               <li>
-                <%= link_to "Voir sur Fiche Commune Entreprise", "https://fce.fabrique.social.gouv.fr/enterprise/#{@company.siren}", target: "_blank", rel: "noopener" %>
+                <%=
+                  link_to "Voir sur Fiche Commune Entreprise",
+                          "https://fce.fabrique.social.gouv.fr/enterprise/#{@company.siren}",
+                          target: "_blank",
+                          class: "fr-link",
+                          rel: "noopener"
+                %>
               </li>
             </ul>
           </div>
