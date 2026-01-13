@@ -26,7 +26,7 @@
       # Utiliser les établissements enrichis (Rails + INSEE)
       all_establishments = @enriched_establishments
     %>
-    <div class="fr-table fr-table--no-caption">
+    <div class="fr-table fr-table--no-caption fr-table--bordered">
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
@@ -48,7 +48,7 @@
                   <% rails_data = enriched_establishment[:rails_data] %>
 
                   <tr>
-                    <td>
+                    <th scope="row">
                       <% if rails_data.present? %>
                         <strong>
                           <%=
@@ -57,11 +57,11 @@
                         </strong>
 
                         <% if rails_data.siege %>
-                          <p class="fr-badge">Siège social</p>
+                          <p class="fr-badge fr-ml-1w">Siège social</p>
                         <% end %>
                       <% end %>
 
-                    </td>
+                    </th>
                     
                     <td>
                       <% if rails_data.present? %>

@@ -91,7 +91,7 @@
 
                     <% @formatted_periodes.each_with_index do |periode, index| %>
                       <tr id="table-effectif-ap-row-key-1" data-row-key="<%= index %>">
-                        <td scope="row"><%= periode %></td>
+                        <th scope="row"><%= periode %></th>
                         <td>
                           <% if @effectifs[index].present? %>
                             <%= @effectifs[index] %>
