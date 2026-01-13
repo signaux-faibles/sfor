@@ -1,10 +1,10 @@
 <div class="contributors-info">
-  <div class="accompagnement__tab-title">
-    <h3>Contributeurs de l'accompagnement
-      <% if show_manage_button? %>
-        <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-add-line fr-mb-2w' %>
-      <% end %>
+  <div class="accompagnement__tab-title fr-mb-3w">
+    <h3 class="fr-mb-0">Contributeurs de l'accompagnement
     </h3>
+    <% if show_manage_button? %>
+      <%= link_to 'Gérer les contributeurs', manage_contributors_establishment_establishment_tracking_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-user-add-line fr-mb-2w' %>
+    <% end %>
   </div>
   <h4 class="accompagnement__tab-subtitle"><strong>Référents :</strong>
     <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-referents" aria-describedby="button-tracking-info-referents">
