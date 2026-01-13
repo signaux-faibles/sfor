@@ -1,8 +1,8 @@
 <% if current_user.networks.exists?(name: 'CRP') %>
-  <div class="accompagnement__tab-title">
-    <h3>Contacts disponibles
-      <%= link_to 'Ajouter un contact', new_establishment_establishment_tracking_contact_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-add-line fr-mb-2w' %>
+  <div class="accompagnement__tab-title fr-mb-3w">
+    <h3 class="fr-mb-0">Contacts disponibles
     </h3>
+    <%= link_to 'Ajouter un contact', new_establishment_establishment_tracking_contact_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--tertiary-no-outline fr-btn--icon-left fr-icon-add-line fr-mb-2w' %>
   </div>
 
 
