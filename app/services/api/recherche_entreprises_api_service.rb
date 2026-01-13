@@ -81,7 +81,7 @@ module Api
         add_error(error_message)
         nil
       end
-    rescue JSON::ParserError => e
+    rescue JSON::ParserError
       add_error("Réponse API invalide")
       nil
     end

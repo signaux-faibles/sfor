@@ -105,7 +105,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     @existing_rating = rating
     render partial: "feedback_detection_widget"
-  rescue StandardError => e
+  rescue StandardError
     @error = "Une erreur est survenue. Veuillez réessayer plus tard."
     render partial: "feedback_detection_widget", status: :unprocessable_entity
   end
