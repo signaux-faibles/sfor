@@ -36,9 +36,6 @@ module Api
       uri = URI("#{BASE_URL}#{endpoint}")
       uri.query = URI.encode_www_form(params) if params.any?
 
-      Rails.logger.debug { "URI: #{uri}" }
-      Rails.logger.debug { "Params: #{params}" }
-
       # Configuration de la requête HTTP
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
@@ -53,19 +50,13 @@ module Api
       # Exécution de la requête
       response = http.request(request)
 
-      Rails.logger.debug { "Response: #{response.body}" }
-
       handle_response(response)
     rescue StandardError => e
       add_error("Erreur de connexion à l'API Recherche Entreprises: #{e.message}")
-      Rails.logger.error "#{self.class.name}: #{e.message}"
       nil
     end
 
     def handle_response(response) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-      Rails.logger.debug { "Response code: #{response.code}" }
-      Rails.logger.debug { "Response body: #{response.body}" }
-
       # Ensure response body is UTF-8 encoded
       body_utf8 = response.body.force_encoding("UTF-8")
       body_utf8 = body_utf8.encode("UTF-8", invalid: :replace, undef: :replace) unless body_utf8.valid_encoding?
@@ -76,27 +67,22 @@ module Api
       when 404
         error_message = extract_error_message(body_utf8) || "Entreprise non trouvée"
         add_error(error_message)
-        Rails.logger.error "Entreprise non trouvée"
         nil
       when 429
         error_message = extract_error_message(body_utf8) || "Limite de taux d'appels dépassée"
         add_error(error_message)
-        Rails.logger.error "Limite de taux d'appels dépassée"
         nil
       when 500..599
         error_message = extract_error_message(body_utf8) || "Erreur du serveur API"
         add_error(error_message)
-        Rails.logger.error "Erreur serveur API Recherche Entreprises: #{response.code} - #{body_utf8}"
         nil
       else
         error_message = extract_error_message(body_utf8) || "Erreur API inattendue"
         add_error(error_message)
-        Rails.logger.error "Erreur API Recherche Entreprises: #{response.code} - #{body_utf8}"
         nil
       end
     rescue JSON::ParserError => e
       add_error("Réponse API invalide")
-      Rails.logger.error "Erreur de parsing JSON: #{e.message}"
       nil
     end
 

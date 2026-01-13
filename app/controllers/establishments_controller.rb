@@ -99,7 +99,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
       .order(start_date: :asc)
   end
 
-  def fetch_insee_data # rubocop:disable Metrics/AbcSize
+  def fetch_insee_data
     return if @establishment.siret.blank?
 
     service = Api::InseeApiService.new
@@ -110,8 +110,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
 
     date_fermeture = @insee_data&.dig("data", "date_fermeture")
     @date_fermeture_formatted = Time.zone.at(date_fermeture).to_date.strftime("%d/%m/%Y") if date_fermeture.present?
-  rescue StandardError => e
-    Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
+  rescue StandardError
     @insee_data = nil
   end
 

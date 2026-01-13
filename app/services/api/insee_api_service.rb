@@ -40,13 +40,9 @@ module Api
       # SIREN must be exactly 9 digits
       siren_cleaned = @siren.to_s.gsub(/\D/, "") # Remove non-digits
 
-      if siren_cleaned.length != 9
-        Rails.logger.error "SIREN invalide: '#{@siren}' (longueur: #{siren_cleaned.length}, attendu: 9)"
-        return false
-      end
+      return false if siren_cleaned.length != 9
 
       @siren = siren_cleaned # Use cleaned version
-      Rails.logger.debug { "SIREN valide: #{@siren}" }
       true
     end
 
@@ -56,12 +52,8 @@ module Api
       # SIREN must be exactly 9 digits
       siren_cleaned = siren.to_s.gsub(/\D/, "") # Remove non-digits
 
-      if siren_cleaned.length != 9
-        Rails.logger.error "SIREN invalide pour INSEE: '#{siren}' (longueur: #{siren_cleaned.length}, attendu: 9)"
-        return false
-      end
+      return false if siren_cleaned.length != 9
 
-      Rails.logger.debug { "SIREN valide pour INSEE: #{siren_cleaned}" }
       true
     end
 
@@ -71,12 +63,8 @@ module Api
       # SIRET must be exactly 14 digits
       siret_cleaned = siret.to_s.gsub(/\D/, "") # Remove non-digits
 
-      if siret_cleaned.length != 14
-        Rails.logger.error "SIRET invalide pour INSEE: '#{siret}' (longueur: #{siret_cleaned.length}, attendu: 14)"
-        return false
-      end
+      return false if siret_cleaned.length != 14
 
-      Rails.logger.debug { "SIRET valide pour INSEE: #{siret_cleaned}" }
       true
     end
   end

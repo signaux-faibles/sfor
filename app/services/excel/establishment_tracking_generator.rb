@@ -84,8 +84,6 @@ module Excel
     end
 
     def format_department_value(value)
-      Rails.logger.debug "Departements"
-      Rails.logger.debug value
       value.split(",").map { |code| Department.find_by(code: code)&.name || code }.join(", ")
     end
 
