@@ -19,19 +19,16 @@ module Api
       @token && @recipient
     end
 
-    def valid_token? # rubocop:disable Metrics/MethodLength
+    def valid_token?
       return false unless @token
 
       begin
         decoded_token = JWT.decode(@token, nil, false)
         expiration = Time.at(decoded_token[0]["exp"])
-        if expiration < Time.now
-          Rails.logger.error "Token JWT expiré"
-          return false
-        end
+        return false if expiration < Time.now
+
         true
       rescue JWT::DecodeError => e
-        Rails.logger.error "Erreur de décodage du token JWT: #{e.message}"
         false
       end
     end
@@ -62,16 +59,9 @@ module Api
 
       # Exécution de la requête
       response = http.request(request)
-      Rails.logger.debug response.body
 
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        Rails.logger.error "Erreur API: #{response.code} - #{response.body}"
-        nil
-      end
-    rescue StandardError => e
-      Rails.logger.error "Erreur lors de la requête API: #{e.message}"
+      JSON.parse(response.body) if response.is_a?(Net::HTTPSuccess)
+    rescue StandardError
       nil
     end
   end

@@ -27,16 +27,9 @@ module Api
       request["User-Agent"] = "SignauxFaibles/#{Rails.env} (Ruby/#{RUBY_VERSION}; Rails/#{Rails.version})"
 
       response = http.request(request)
-      Rails.logger.debug { "Financial ratios API response: #{response.code}" }
 
-      if response.is_a?(Net::HTTPSuccess)
-        JSON.parse(response.body)
-      else
-        Rails.logger.error "Erreur API ratios financiers: #{response.code} - #{response.body}"
-        nil
-      end
-    rescue StandardError => e
-      Rails.logger.error "Erreur lors de la requête API ratios financiers: #{e.message}"
+      JSON.parse(response.body) if response.is_a?(Net::HTTPSuccess)
+    rescue StandardError
       nil
     end
 
@@ -45,12 +38,8 @@ module Api
     def valid_siren?
       return false if @siren.blank?
 
-      if @siren.length != 9
-        Rails.logger.error "SIREN invalide pour ratios financiers: '#{@siren}' (longueur: #{@siren.length}, attendu: 9)"
-        return false
-      end
+      return false if @siren.length != 9
 
-      Rails.logger.debug { "SIREN valide pour ratios financiers: #{@siren}" }
       true
     end
   end

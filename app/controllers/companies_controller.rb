@@ -106,7 +106,6 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @existing_rating = rating
     render partial: "feedback_detection_widget"
   rescue StandardError => e
-    Rails.logger.error "Error creating rating: #{e.message}"
     @error = "Une erreur est survenue. Veuillez réessayer plus tard."
     render partial: "feedback_detection_widget", status: :unprocessable_entity
   end
@@ -302,8 +301,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       @insee_data["data"] ||= {}
       @insee_data["data"]["adresse"] = siege_data["data"]["adresse"]
     end
-  rescue StandardError => e
-    Rails.logger.error "Erreur lors de la récupération des données INSEE: #{e.message}"
+  rescue StandardError
     @insee_data = nil
   end
 
@@ -368,7 +366,6 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @dark_colors = ["#6A6AF4", "#E1000F", "#B7A73F", "#E18B76", "#00A95F"]
     @error = nil
   rescue StandardError => e
-    Rails.logger.error "Erreur lors de la récupération des données financières: #{e.message}"
     @dates = []
     @formatted_dates = []
     @financial_fields = []
@@ -439,9 +436,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       }
 
       @enriched_establishments << enriched_establishment
-    rescue StandardError => e
-      Rails.logger.error "Erreur lors de la récupération des données INSEE pour #{establishment.siret}: #{e.message}"
-
+    rescue StandardError
       # Ajouter l'établissement même sans données API
       @enriched_establishments << {
         rails_data: establishment,
@@ -454,8 +449,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         date_fermeture_formatted: nil
       }
     end
-  rescue StandardError => e
-    Rails.logger.error "Erreur lors de la récupération des établissements: #{e.message}"
+  rescue StandardError
     @enriched_establishments = []
     @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
   end

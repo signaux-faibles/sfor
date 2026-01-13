@@ -20,13 +20,9 @@ module Api
       # SIREN must be exactly 9 digits
       siren_cleaned = @siren.to_s.gsub(/\D/, "") # Remove non-digits
 
-      if siren_cleaned.length != 9
-        Rails.logger.error "SIREN invalide pour BDF: '#{@siren}' (longueur: #{siren_cleaned.length}, attendu: 9)"
-        return false
-      end
+      return false if siren_cleaned.length != 9
 
       @siren = siren_cleaned # Use cleaned version
-      Rails.logger.debug { "SIREN valide pour BDF: #{@siren}" }
       true
     end
   end
