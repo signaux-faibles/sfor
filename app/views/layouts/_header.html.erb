@@ -57,24 +57,23 @@
     </ul>
   </nav>
 </div>
-<header role="banner" class="fr-header">
+
+<header role="banner" class="fr-header" id="header">
   <div class="fr-header__body">
     <div class="fr-container">
       <div class="fr-header__body-row">
         <div class="fr-header__brand fr-enlarge-link">
           <div class="fr-header__brand-top">
             <div class="fr-header__logo">
-              <p class="fr-logo">
-                République
-                <br>française
-              </p>
+              <p class="fr-logo"> République <br>Française </p>
+            </div>
+            <div class="fr-header__navbar">
+              <button data-fr-opened="false" aria-controls="header-menu" title="Menu" type="button" id="header-menu-btn" class="fr-btn--menu fr-btn">Menu</button>
             </div>
           </div>
           <div class="fr-header__service">
-            <a href="/" title="Accueil - Signaux Faibles">
-              <p class="fr-header__service-title">
-                Signaux Faibles
-              </p>
+            <a href="/" title="Retour à l'accueil du site - Signaux Faibles - République Française">
+              <p class="fr-header__service-title"> Signaux Faibles </p>
             </a>
           </div>
         </div>
@@ -84,8 +83,6 @@
               <li>
                 <button class="fr-btn fr-icon-theme-fill" aria-controls="fr-theme-modal" data-fr-opened="false" data-action="click->theme#open" data-theme-target="button" data-turbo-permanent>Paramètres d'affichage</button>
               </li>
-            </ul>
-            <ul class="fr-btns-group">
               <% if current_user != true_user && current_user&.segment&.name != "sf" %>
                 <li>
                   <%= button_to("Retour à l'admin", stop_impersonating_users_path, data: { turbo: false }, class: 'fr-btn fr-icon-settings-5-fill') %>
@@ -104,7 +101,7 @@
               <li>
                 <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
                   <%= submit_tag 'Se déconnecter', class: 'fr-btn fr-icon-logout-box-r-fill' %>
-                <% end %>                
+                <% end %>
               </li>
             </ul>
           </div>
@@ -112,5 +109,38 @@
       </div>
     </div>
   </div>
-  <%= render 'layouts/main_navigation' %>
+  <div class="fr-header__menu fr-modal" id="header-menu" aria-labelledby="header-menu-btn">
+    <div class="fr-container">
+      <button aria-controls="header-menu" title="Fermer" type="button" id="button-101" class="fr-btn--close fr-btn">Fermer</button>
+      <div class="fr-header__menu-links">
+        <ul class="fr-btns-group">
+          <li>
+            <button class="fr-btn fr-icon-theme-fill" aria-controls="fr-theme-modal" data-fr-opened="false" data-action="click->theme#open" data-theme-target="button" data-turbo-permanent>Paramètres d'affichage</button>
+          </li>
+          <% if current_user != true_user && current_user&.segment&.name != "sf" %>
+            <li>
+              <%= button_to("Retour à l'admin", stop_impersonating_users_path, data: { turbo: false }, class: 'fr-btn fr-icon-settings-5-fill') %>
+            </li>
+          <% end %>
+          <% if current_user&.segment&.name == "sf" %>
+            <li>
+              <%= link_to admin_root_path, class: 'fr-btn fr-icon-settings-5-fill' do %>
+                Administration centrale
+              <% end %>
+            </li>
+          <% end %>
+          <li>
+            <%= link_to "#{current_user&.full_name}", "#", class: 'fr-btn fr-icon-account-circle-fill' %>
+          </li>
+          <li>
+            <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
+              <%= submit_tag 'Se déconnecter', class: 'fr-btn fr-icon-logout-box-r-fill' %>
+            <% end %>
+          </li>
+        </ul>
+      </div>
+
+      <%= render 'layouts/main_navigation' %>
+    </div>
+  </div>
 </header>
