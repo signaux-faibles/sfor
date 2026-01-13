@@ -15,6 +15,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
                                                     :sans_delai_urssaf, :liste_retraitee,
+                                                    :filters_open,
                                                     :page, :per_page,
                                                     departement_in: [],
                                                     forme_juridique: [],
@@ -140,6 +141,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
                                                     :sans_delai_urssaf, :liste_retraitee,
+                                                    :filters_open,
                                                     departement_in: [],
                                                     forme_juridique: [],
                                                     section_activite_principale: []) if params[:search].present?
