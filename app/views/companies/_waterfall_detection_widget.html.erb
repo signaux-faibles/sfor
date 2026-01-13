@@ -82,14 +82,14 @@
                   <% @labels.each_with_index do |label, index| %>
                     <tr id="table-detection-row-key-<%= index %>" data-row-key="<%= index %>">
                       <% if index == @labels.length - 1 %>
-                        <td scope="row">
+                        <th scope="row">
                           <strong><%= label %></strong>
-                        </td>
+                        </th>
                         <td>
                           <strong><%= (@values[index][1] - @values[index][0]) %> %</strong>
                         </td>
                       <% else %>
-                        <td scope="row"><%= label %></td>
+                        <th scope="row"><%= label %></th>
                         <td>
                           <%= (@values[index][1] - @values[index][0]) %> %
                         </td>
