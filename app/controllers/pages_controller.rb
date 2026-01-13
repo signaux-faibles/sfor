@@ -32,6 +32,18 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
       per_page: @per_page
     )
 
+    # Handle section_activite_principale: convert array to comma-separated string for API
+    # If empty, default to all sections except O and U for API call (business request)
+    # But keep @search_params empty so the form remains visually empty
+    sections_array = Array(service_params[:section_activite_principale]).compact_blank
+    service_params[:section_activite_principale] = if sections_array.empty?
+                                                     # Default to all sections except O and U
+                                                     "A,B,C,D,E,F,G,H,I,J,K,L,M,N,P,Q,R,S,T"
+                                                   else
+                                                     # Convert array to comma-separated string
+                                                     sections_array.join(",")
+                                                   end
+
     # Convert cp_dep_type and cp_dep to API parameters
     cp_dep = @search_params[:cp_dep]
     cp_dep_type = @search_params[:cp_dep_type]

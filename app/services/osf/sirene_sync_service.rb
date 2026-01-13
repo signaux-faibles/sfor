@@ -27,7 +27,7 @@ module Osf
     def sync_data
       @logger.info "Starting establishments synchronization from #{@source_relation} using PostgreSQL cursor"
 
-      base_filter = ""
+      base_filter = "WHERE naf_section NOT IN ('O', 'U')"
 
       # 1) Delete ALL establishments - no FK constraints, we can delete freely
       # Trackings will keep their establishment_siret values and establishments will be re-imported
