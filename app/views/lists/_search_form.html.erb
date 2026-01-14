@@ -80,8 +80,17 @@
             </div>
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-input-group">
-                <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
-                <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 5 %>
+
+
+                <div class="sf-label--tooltip">
+                  <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
+                  <span id="sf-score-defaillance-infobulle">
+                    <button aria-describedby="tooltip-score-defaillance-min" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip-score-defaillance-min" role="tooltip">Minimum du cumul de la dette sociale (part patronale et part salariale) sur le mois dernier.</span>
+                  </span>
+                </div>
+
+                <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 5, aria: { describedby: "sf-score-defaillance-infobulle" } %>
               </div>
             </div>
           </div>
@@ -89,8 +98,22 @@
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-input-group">
-                <%= f.label :dette_sociale_min, "Montant de la dette sociale min.", class: "fr-label" %>
-                <%= f.number_field :dette_sociale_min, value: search_params[:dette_sociale_min], class: "fr-input", placeholder: "Montant minimum", min: 0, step: 1000 %>
+                <div class="sf-label--tooltip">
+                  <%= f.label :dette_sociale_min, "Montant de la dette sociale min.", class: "fr-label" %>
+                  <span id="sf-dette-sociale-infobulle">
+                    <button aria-describedby="tooltip-dette-sociale-min" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip-dette-sociale-min" role="tooltip">Minimum du cumul de la dette sociale (part patronale et part salariale) sur le mois dernier.</span>
+                  </span>
+                </div>
+                <%=
+                  f.number_field :dette_sociale_min,
+                                 value: search_params[:dette_sociale_min],
+                                 class: "fr-input",
+                                 placeholder: "Montant minimum",
+                                 min: 0,
+                                 step: 1000,
+                                 aria: { describedby: "sf-dette-sociale-infobulle" }
+                %>
               </div>
             </div>
             <div class="fr-col-12 fr-col-lg-4">
@@ -127,38 +150,72 @@
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
 
             <div class="fr-col-12">
-              <div class="fr-checkbox-group">
-                <%= f.check_box :premieres_alertes, { checked: search_params[:premieres_alertes] == "1" }, "1", "0" %>
+              <div class="fr-checkbox-group sf-checkbox-group--tooltip">
+                <%= f.check_box :premieres_alertes,
+                                { checked: search_params[:premieres_alertes] == "1",
+                                  aria: { describedby: "sf-premieres-alertes-infobulle" }},
+                                "1",
+                                "0"
+                %>
+
                 <%= f.label :premieres_alertes, "Premières alertes", class: "fr-label" %>
+                <span id="sf-premieres-alertes-infobulle">
+                  <button aria-describedby="tooltip-premieres-alertes" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                  <span class="fr-tooltip fr-placement" id="tooltip-premieres-alertes" role="tooltip">Affiche uniquement les entreprises en alerte pour la première fois.</span>
+                </span>
+
               </div>
             </div>
             <div class="fr-col-12">
-              <div class="fr-checkbox-group">
-                <%= f.check_box :sans_entreprises_recentes, { checked: search_params[:sans_entreprises_recentes] == "1" }, "1", "0" %>
+              <div class="fr-checkbox-group sf-checkbox-group--tooltip">
+                <%=
+                  f.check_box :sans_entreprises_recentes,
+                              { checked: search_params[:sans_entreprises_recentes] == "1",
+                                aria: { describedby: "sf-sans-entreprises-recentes-infobulle" }},
+                              "1",
+                              "0"
+                %>
                 <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
+                <span id="sf-sans-entreprises-recentes-infobulle">
+                  <button aria-describedby="tooltip-sans-entreprises-recentes" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                  <span class="fr-tooltip fr-placement" id="tooltip-sans-entreprises-recentes" role="tooltip">Affiche uniquement les entreprises ne bénéficiant pas de délai de paiement Urssaf sur le dernier mois.</span>
+                </span>
               </div>
             </div>
             <div class="fr-col-12">
-              <div class="fr-checkbox-group">
-                <%= f.check_box :sans_delai_urssaf, { checked: search_params[:sans_delai_urssaf] == "1" }, "1", "0" %>
+              <div class="fr-checkbox-group sf-checkbox-group--tooltip">
+                <%=
+                  f.check_box :sans_delai_urssaf,
+                              { checked: search_params[:sans_delai_urssaf] == "1",
+                                aria: { describedby: "sf-sans-delai-paiement-urssaf-infobulle" }},
+                              "1",
+                              "0"
+                %>
                 <%= f.label :sans_delai_urssaf, "Sans délai de paiement URSSAF", class: "fr-label" %>
+                <span id="sf-sans-delai-paiement-urssaf-infobulle">
+                  <button aria-describedby="tooltip-sans-delai-paiement-urssaf-infobulle" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                  <span class="fr-tooltip fr-placement" id="tooltip-sans-delai-paiement-urssaf-infobulle" role="tooltip">Affiche uniquement les entreprises créées avant le 20 septembre 2023.</span>
+                </span>
               </div>
             </div>
             <div class="fr-col-12">
-              <div class="fr-checkbox-group">
-                <%= f.check_box :liste_retraitee, { checked: search_params[:liste_retraitee] == "1" }, "1", "0" %>
+              <div class="fr-checkbox-group sf-checkbox-group--tooltip">
+                <%=
+                  f.check_box :liste_retraitee,
+                                { checked: search_params[:liste_retraitee] == "1",
+                                  aria: { describedby: "sf-liste-retraitee-infobulle" }},
+                                "1",
+                                "0"
+                %>
 
                 <%= f.label :liste_retraitee, class: "fr-label" do %>
                   Liste retraitée
-                  <button class="fr-btn--tooltip fr-btn" type="button" id="button-liste-retraitee" aria-describedby="tooltip-liste-retraitee">
-                    <span class="fr-icon-information-line" aria-hidden="true"></span>
-                    <span class="fr-sr-only">Information sur la liste retraitée</span>
-                  </button>
-                  <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip" aria-hidden="true">
-                    Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI
-                  </span>
                 <% end %>
 
+                <span id="sf-liste-retraitee-infobulle">
+                  <button aria-describedby="tooltip-liste-retraitee" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                  <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip">Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI</span>
+                </span>
 
               </div>
             </div>

@@ -5,15 +5,32 @@
      tabindex="0">
   <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--top">
     <!-- INSEE Widget with Turbo Frame -->
-    <div class="fr-col-12 fr-col-lg-6">
+    <div class="fr-col-12 fr-col-lg-8">
       <%= turbo_frame_tag "insee_widget", 
           src: insee_widget_company_path(@company), 
           loading: :lazy do %>
-        <h2>Informations générales</h2>
+        <div class="sf-entreprise-subtitle fr-mb-3w">
+          <h2 class="fr-mb-0">
+            Informations générales
+          </h2>
+
+          <div>
+            <button aria-describedby="tooltip-infos-generales-panel" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+            <span class="fr-tooltip fr-placement" id="tooltip-infos-generales-panel" role="tooltip">
+          Les données d’identité de l’entreprise sont principalement issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.
+        </span>
+          </div>
+
+          <% if @date_fermeture_formatted.present? %>
+            <p class="fr-badge fr-badge--pink-macaron fr-mb-0">
+              Fermé le <%= @date_fermeture_formatted %>
+            </p>
+          <% end %>
+        </div>
         <p class="fr-mt-2w">Récupération des données INSEE...</p>
       <% end %>
     </div>
-    <div class="fr-col-12 fr-col-lg-6">
+    <div class="fr-col-12 fr-col-lg-4">
       <div class="fr-card">
         <div class="fr-card__body">
           <div class="fr-card__content">
@@ -68,7 +85,20 @@
       <%= turbo_frame_tag "establishments_widget", 
           src: establishments_widget_company_path(@company), 
           loading: :lazy do %>
-        <h2>Liste des établissements</h2>
+
+        <div class="sf-entreprise-subtitle fr-mb-3w">
+          <h2 class="fr-mb-0">
+            Liste des établissements
+          </h2>
+
+          <div>
+            <button aria-describedby="tooltip-liste-etab-panel" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+            <div class="fr-tooltip fr-placement" id="tooltip-liste-etab-panel" role="tooltip">
+              <p class="fr-text--xs fr-mb-0">Liste indiquant le siège social et les établissements secondaires. Ces données sont issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.</p>
+            </div>
+          </div>
+        </div>
+
         <p class="fr-mt-2w">Récupération des établissements</p>
       <% end %>
     </div>

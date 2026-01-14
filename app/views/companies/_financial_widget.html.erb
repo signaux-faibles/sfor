@@ -61,7 +61,7 @@
                 <legend class="fr-fieldset__legend">Sélectionner les données à afficher</legend>
                 <div class="fr-fieldset__content">
                   <% @financial_fields_graph.each_with_index do |field, index| %>
-                    <div class="fr-checkbox-group fr-checkbox-group--sm">
+                    <div class="fr-checkbox-group fr-checkbox-group--sm sf-checkbox-group--tooltip">
                       <input
                         type="checkbox"
                         id="checkbox-<%= field %>"
@@ -70,11 +70,38 @@
                         data-field-key="<%= field %>"
                         data-action="change->financial-chart-widget#toggleDataset"
                         data-financial-chart-widget-target="checkbox"
+                        aria-labelledby="sf-<%= field %>-infobulle"
                       >
                       <label class="fr-label" for="checkbox-<%= field %>">
                         <span class="sf-ratio-financiers-color sf-ratio-financiers-color--<%= field %>"></span>
                         <%= @dataset_names[field] %>
                       </label>
+
+                      <div id="sf-<%= field %>-infobulle">
+                        <button aria-describedby="tooltip-<%= field %>" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                        <div class="fr-tooltip fr-placement" id="tooltip-<%= field %>" role="tooltip">
+
+                          <% case field %>
+                          <% when "chiffre_d_affaires" %>
+                            <p class="fr-text--sm">Le Chiffre d'affaires (CA) indique le niveau d'activité d'une entreprise sur une période donnée.</p>
+                            <p class="fr-text--sm">Pour en savoir plus, consultez la <a href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-f.a.q.-de-signaux-faibles/consulter-des-informations-dentreprises/analyse-financiere/les-principes-de-la-comptabilite#le-chiffre-daffaires" target="_blank" title="définition complète - Nouvelle fenêtre" class="fr-link fr-text--sm">définition complète</a>.</p>
+                          <% when "ebe" %>
+                            <p class="fr-text--sm">L'excédent brut d'exploitation exprime la capacité d'une entreprise à générer des ressources de trésorerie grâce à son exploitation.</p>
+                            <p class="fr-text--sm">Pour en savoir plus, consultez la <a href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-faq/consultation/ratios-financiers/les-principes-de-la-comptabilite#lexcedent-brut-dexploitation-ebe" target="_blank" title="définition complète - Nouvelle fenêtre" class="fr-link fr-text--sm">définition complète</a>.</p>
+                          <% when "ebit" %>
+                            <p class="fr-text--sm">Le résultat d'exploitation mesure la capacité de l'entreprise à générer des ressources avec son activité principale, sans prendre en compte les éléments financiers ni exceptionnels.</p>
+                            <p class="fr-text--sm">Pour en savoir plus, consultez la <a href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-faq/consultation/ratios-financiers/les-principes-de-la-comptabilite#le-resultat-dexploitation-rex" target="_blank" title="définition complète - Nouvelle fenêtre" class="fr-link fr-text--sm">définition complète</a>.</p>
+                          <% when "marge_brute" %>
+                            <p class="fr-text--sm">La marge brute permet de mesurer la capacité de l'entreprise à dégager des profits.</p>
+                            <p class="fr-text--sm">Pour en savoir plus, consultez la <a href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-faq/consultation/ratios-financiers/les-principes-de-la-comptabilite#la-marge-commerciale-ou-marge-brute" target="_blank" title="définition complète - Nouvelle fenêtre" class="fr-link fr-text--sm">définition complète</a>.</p>
+                          <% else %> <%# resultat_net %>
+                            <p class="fr-text--sm">Le résultat net caractérise l'enrichissement ou l'appauvrissement de l'entreprise au cours d'une période considérée.</p>
+                            <p class="fr-text--sm">Pour en savoir plus, consultez la <a href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-faq/consultation/ratios-financiers/les-principes-de-la-comptabilite#le-resultat-net" target="_blank" title="définition complète - Nouvelle fenêtre" class="fr-link fr-text--sm">définition complète</a>.</p>
+                          <% end %>
+
+                        </div>
+                      </div>
+
                     </div>
                   <% end %>
                 </div>

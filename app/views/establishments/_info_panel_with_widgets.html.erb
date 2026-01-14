@@ -9,7 +9,24 @@
       <%= turbo_frame_tag "insee_widget",
                           src: insee_widget_establishment_path(@establishment),
                           loading: :lazy do %>
-        <h2>Informations générales</h2>
+        <div class="sf-entreprise-subtitle fr-mb-3w">
+          <h2 class="fr-mb-0">
+            Informations générales
+          </h2>
+
+          <div>
+            <button aria-describedby="tooltip-infos-generales-panel" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+            <span class="fr-tooltip fr-placement" id="tooltip-infos-generales-panel" role="tooltip">
+          Les données d’identité de l’entreprise sont principalement issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.
+        </span>
+          </div>
+
+          <% if @date_fermeture_formatted.present? %>
+            <p class="fr-badge fr-badge--pink-macaron fr-mb-0">
+              Fermé le <%= @date_fermeture_formatted %>
+            </p>
+          <% end %>
+        </div>
         <p class="fr-mt-2w">Récupération des données INSEE...</p>
       <% end %>
     </div>

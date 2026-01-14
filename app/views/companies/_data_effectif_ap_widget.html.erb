@@ -1,6 +1,22 @@
 <%= turbo_frame_tag "data_effectif_ap_widget" do %>
   <div class="fr-col-12">
-    <h2>Effectifs / Activité partielle</h2>
+    <div class="sf-entreprise-subtitle fr-mb-3w">
+      <h2 class="fr-mb-0">
+        Effectifs / Activité partielle
+      </h2>
+
+      <div>
+        <button aria-describedby="tooltip-effectif-ap" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+        <div class="fr-tooltip fr-placement" id="tooltip-effectif-ap" role="tooltip">
+          <p class="fr-text--xs fr-mb-0">Ce graphique illustre les données d'emploi.</p>
+          <ul>
+            <li>Effectifs : Évolution des effectifs en nombre de salariés. (donnée fournie par l'ACOSS)</li>
+            <li>Autorisation d'activité partielle: Nombre de salariés concernés par une autorisation d'activité partielle pour la période représentée. (donnée fournie par la DGEFP)</li>
+            <li>Consommation d'activité partielle: Nombre d'équivalents temps plein mensuel calculé à partir de la somme du nombre d'heures d'activité partielle consommées divisée par la durée légale de 151,67 h. (donnée fournie par la DGEFP)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <% if @effectifs.present? || @consommation_ap.present? || @autorisation_ap.present? %>
       <p class="fr-mb-0">Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
