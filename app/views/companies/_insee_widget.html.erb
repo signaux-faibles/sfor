@@ -1,10 +1,18 @@
   <%= turbo_frame_tag "insee_widget" do %>
-    <div class="sf-entreprise-subtitle">
-      <h2>
+    <div class="sf-entreprise-subtitle fr-mb-3w">
+      <h2 class="fr-mb-0">
         Informations générales
       </h2>
+
+      <div>
+        <button aria-describedby="tooltip-infos-generales" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+        <span class="fr-tooltip fr-placement" id="tooltip-infos-generales" role="tooltip">
+          Les données d’identité de l’entreprise sont principalement issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.
+        </span>
+      </div>
+
       <% if @date_fermeture_formatted.present? %>
-        <p class="fr-badge fr-badge--pink-macaron">
+        <p class="fr-badge fr-badge--pink-macaron fr-mb-0">
           Fermé le <%= @date_fermeture_formatted %>
         </p>
       <% end %>
@@ -14,15 +22,28 @@
       <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
       <% if @insee_data.present? %>
         <% if @insee_data["data"].present? && @insee_data["data"]["activite_principale"].present? %>
-          <dt class="sf-keyvalue-list__key">Activité principale (NAF/APE) : </dt>
+          <dt class="sf-keyvalue-list__key">
+              Activité principale (NAF/APE) :
+          </dt>
           <dd class="sf-keyvalue-list__value">
+            <button aria-describedby="tooltip-activite-principale" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+            <span class="fr-tooltip fr-placement" id="tooltip-activite-principale" role="tooltip">
+                Le niveau de secteur indiqué correspond à la sous-classe de la nomenclature Insee. Il s'agit d'une donnée déclarative fournie par l’entreprise lors de sa création. Il est suivi du code NAF.
+            </span>
             <%= @insee_data["data"]["activite_principale"]["libelle"]%> - <%= @insee_data["data"]["activite_principale"]["code"]%>
+
           </dd>
         <% end %>
 
         <% if @insee_data["data"].present? && @insee_data["data"]["forme_juridique"].present? %>
           <dt class="sf-keyvalue-list__key">Forme juridique : </dt>
-          <dd class="sf-keyvalue-list__value"><%= @insee_data["data"]["forme_juridique"]["libelle"] %></dd>
+          <dd class="sf-keyvalue-list__value">
+            <button aria-describedby="tooltip-forme-juridique" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+            <span class="fr-tooltip fr-placement" id="tooltip-forme-juridique" role="tooltip">
+              La donnée correspond à la catégorie juridique de niveau III.
+            </span>
+            <%= @insee_data["data"]["forme_juridique"]["libelle"] %>
+          </dd>
         <% end %>
 
 

@@ -1,6 +1,25 @@
 <%= turbo_frame_tag "data_urssaf_widget" do %>
   <div class="fr-col-12">
-    <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
+    <div class="sf-entreprise-subtitle fr-mb-3w">
+      <h2 class="fr-mb-0">
+        Cotisations, impayés et délais de paiement URSSAF
+      </h2>
+
+      <div>
+        <button aria-describedby="tooltip-urssaf" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+        <div class="fr-tooltip fr-placement" id="tooltip-urssaf" role="tooltip">
+          <p class="fr-text--xs fr-mb-0">Ce graphique représente les données de l'URSSAF.</p>
+          <p class="fr-text--xs fr-mb-0">Les dates représentées sont les dates de fin des périodes appelées.</p>
+          <ul>
+            <li>Cotisations : montant des cotisations appelées.</li>
+            <li>Dette (part patronale) : montant cumulé des dettes restant à payer sur la part patronale.</li>
+            <li>Dette (part salariale) : montant cumulé des dettes restant à payer sur la part salariale (ou ouvrière).</li>
+            <li>Délai de paiement accordé (expérimental) : montant cumulé des délais accordés sur la période séparant leur création et leur échéances.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <% if @cotisations.present? || @parts_salariales.present? || @parts_patronales.present? || @montant_echeancier.present? %>
       <p class="fr-mb-0">Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
       <p>Les informations ne doivent pas être partagées en dehors du CODEFI ou des agents habilités à l’outil.</p>

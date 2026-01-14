@@ -1,9 +1,18 @@
 <%= turbo_frame_tag "establishments_widget" do %>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
-      <h2>
-        Liste des établissements
-      </h2>
+      <div class="sf-entreprise-subtitle fr-mb-3w">
+        <h2 class="fr-mb-0">
+          Liste des établissements
+        </h2>
+
+        <div>
+          <button aria-describedby="tooltip-liste-etab" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+          <div class="fr-tooltip fr-placement" id="tooltip-liste-etab" role="tooltip">
+            <p class="fr-text--xs fr-mb-0">Liste indiquant le siège social et les établissements secondaires. Ces données sont issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.</p>
+          </div>
+        </div>
+      </div>
 
       <% if @enriched_establishments&.any? %>
         <div class="fr-col-12 fr-col-xl-8">

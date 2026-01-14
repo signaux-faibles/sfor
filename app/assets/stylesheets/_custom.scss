@@ -371,3 +371,15 @@
 .sf-ratio-financiers-color--resultat_net {
   background-color: var(--green-emeraude-main-632);
 }
+
+.sf-label--tooltip {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
+
+.sf-checkbox-group--tooltip {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
