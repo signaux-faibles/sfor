@@ -245,7 +245,27 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     @siege = @establishments.find_by(siege: true)
 
-    @establishment_trackings = EstablishmentTracking.where(establishment: @establishments)
+    # Custom authorization logic:
+    # 1. If one of the establishments of the company is in the user departments, show all trackings
+    # 2. If the user is referent or participant in one of the existing trackings, show all trackings
+    # 3. Otherwise, show none
+    all_company_trackings = EstablishmentTracking.where(establishment: @establishments)
+
+    can_see_trackings = false
+
+    # Check if any establishment is in user's departments
+    if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
+      Rails.logger.info "Any establishment is in user's departments ==================================================="
+      can_see_trackings = true
+    end
+
+    # Check if user is referent or participant in any tracking of the company
+    if !can_see_trackings && all_company_trackings.with_user_as_referent_or_participant(current_user).exists?
+      can_see_trackings = true
+    end
+
+    Rails.logger.info "Can see trackings: #{can_see_trackings} ==================================================="
+    @establishment_trackings = can_see_trackings ? all_company_trackings : EstablishmentTracking.none
 
     # Trackings considered "actifs" : en cours ou sous surveillance
     @in_progress_trackings = @establishment_trackings.in_progress

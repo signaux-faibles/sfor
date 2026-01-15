@@ -66,6 +66,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
   end
 
   def establishment_trackings_list_widget
+    # load_trackings uses policy_scope via load_trackings_by_state
     load_trackings
     render partial: "establishment_trackings_list_widget"
   end
@@ -87,13 +88,31 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
   end
 
   def load_trackings
+    # Custom authorization logic:
+    # 1. If the establishment is in user's departments, show all trackings
+    # 2. If the establishment is not in user's departments but user is referent/participant, show all trackings
+    # 3. Otherwise, show none
+    all_establishment_trackings = @establishment.establishment_trackings
+
+    can_see_trackings = false
+
+    # Check if establishment is in user's departments
+    can_see_trackings = true if current_user.department_ids.include?(@establishment.department&.id)
+
+    # Check if user is referent or participant in any tracking of the establishment
+    if !can_see_trackings && all_establishment_trackings.with_user_as_referent_or_participant(current_user).exists?
+      can_see_trackings = true
+    end
+
+    @authorized_trackings = can_see_trackings ? all_establishment_trackings : EstablishmentTracking.none
+
     @in_progress_trackings = load_trackings_by_state(:in_progress)
     @completed_trackings = load_trackings_by_state(:completed)
     @under_surveillance_trackings = load_trackings_by_state(:under_surveillance)
   end
 
   def load_trackings_by_state(state)
-    policy_scope(@establishment.establishment_trackings)
+    @authorized_trackings
       .includes(:creator, :criticality, :referents)
       .send(state)
       .order(start_date: :asc)
