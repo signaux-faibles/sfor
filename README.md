@@ -351,6 +351,14 @@ siren;libelle_list
 123456789;Septembre 2025
 ```
 
+# Import d'une liste (avec Dbeaver)
+
+Dbeaver ne supporte pas l'import de données directement en json :
+Créer d'abord une nouvelle connexion de base de données en choisissant le driver JSON.
+Sélectionner le dossier contenant la liste au format JSON.
+Dbeaver va alors créer une nouvelle base de données où chaque table sera un fichier json du dossier choisi.
+Sélectionner ensuite la table `company_score_entries` et importer les données de la table issue du json créée précédement (Attention au mapping, il faut l'ajuster colonne par colonne)
+
 # Tests
 L'application est testée grâce à un ensemble de tests d'intégration écrits à l'aide de la librairie `Minitest` fournie avec `Ruby on Rails`.
 Les tests sont lancés automatiquement lors de l'exécution du workflow GitHub `Publish rails container to ghcr.io`
