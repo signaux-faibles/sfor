@@ -239,7 +239,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "establishments_widget"
   end
 
-  def establishment_trackings_list_widget
+  def establishment_trackings_list_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     @company = Company.find_by!(siren: params[:siren])
     @establishments = @company.establishments
 
@@ -720,9 +720,13 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def forward_fill(array)
     # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
+    # But stop forward-filling after the last period with actual data (don't fill to current date)
     last_value = nil
-    array.map do |value|
-      if value.nil? && !last_value.nil?
+    last_actual_index = array.rindex { |v| !v.nil? } # Find the last index with actual data
+
+    array.map.with_index do |value, index|
+      # Only forward-fill if we haven't passed the last actual data point
+      if value.nil? && !last_value.nil? && (last_actual_index.nil? || index <= last_actual_index)
         last_value
       else
         last_value = value unless value.nil?
