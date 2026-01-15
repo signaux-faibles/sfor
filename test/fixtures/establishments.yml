@@ -33,12 +33,14 @@ establishment_paris6:
   siret: '12345678900015'
   departement: '75'
   siege: false
+  is_active: true
 
 establishment_paris_no_trackings:
   siren: '123456789'
   siret: '12345678900011'
   departement: '75'
   siege: false
+  is_active: true
 
 establishment_finistere:
   siren: '987654321'
