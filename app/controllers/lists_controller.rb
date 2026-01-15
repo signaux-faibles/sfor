@@ -22,9 +22,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
 
-    # Check if search query is a valid SIREN or SIRET and redirect if so
-    redirect_if_siren_or_siret(@search_params[:q])
-
     @page = @search_params[:page].to_i
     @page = 1 if @page < 1
     @per_page = @search_params[:per_page].to_i
