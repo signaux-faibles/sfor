@@ -26,16 +26,12 @@
   <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
     <div class="fr-container sf-fiche-title">
       <h1>Accompagnement <%= @establishment_tracking.establishment.raison_sociale %></h1>
-      <ul class="fr-badges-group fr-pt-1w">
-        <li>
-          <%= content_tag :p, @establishment_tracking.aasm.human_state, class: badge_class_for(@establishment_tracking.aasm.human_state), style: state_style_for(@establishment_tracking.aasm.human_state) %>
-        </li>
-        <li>
-          <% if @establishment_tracking.criticality.present? %>
-            <%= content_tag :p, @establishment_tracking.criticality.name, { class: badge_class_for(@establishment_tracking.criticality.name), style: criticality_style_for(@establishment_tracking.criticality.name) } %>
-          <% end %>
-        </li>
-      </ul>
+      <div class="fr-ml-3w">
+        <%= content_tag :p, @establishment_tracking.aasm.human_state, class: "#{badge_class_for(@establishment_tracking.aasm.human_state)} fr-ml-1w", style: state_style_for(@establishment_tracking.aasm.human_state) %>
+        <% if @establishment_tracking.criticality.present? %>
+          <%= content_tag :p, @establishment_tracking.criticality.name, { class: "#{badge_class_for(@establishment_tracking.criticality.name)} fr-ml-1w", style: criticality_style_for(@establishment_tracking.criticality.name) } %>
+        <% end %>
+      </div>
     </div>
   </div>
   <div class="fr-container">

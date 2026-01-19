@@ -21,24 +21,30 @@
   <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
     <div class="fr-container sf-fiche-title">
       <h1>Fiche entreprise <%= @company.raison_sociale %></h1>
-      <%# Niveau d'alerte %>
-      <% if @alert_level == "elevee" %>
-        <p class="fr-badge fr-badge--error fr-badge--no-icon fr-ml-3w">Alerte élevée</p>
-      <% end %>
+      <div class="fr-ml-3w">
+        <%# Accompagnement en cours %>
+        <% if @has_active_trackings %>
+          <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement en cours</p>
+        <% end %>
+        <%# Niveau d'alerte %>
+        <% if @alert_level == "elevee" %>
+          <p class="fr-badge fr-badge--error fr-badge--no-icon fr-ml-1w">Alerte élevée</p>
+        <% end %>
 
-      <% if @alert_level == "moderee" %>
-        <p class="fr-badge fr-badge--yellow-tournesol fr-ml-3w">Alerte modérée</p>
-      <% end %>
+        <% if @alert_level == "moderee" %>
+          <p class="fr-badge fr-badge--yellow-tournesol fr-ml-1w">Alerte modérée</p>
+        <% end %>
 
-      <%# Statut procédure collective (si différent de in bonis) %>
-      <% if @procol_status && @procol_status != "In Bonis" %>
-        <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
-      <% end %>
+        <%# Statut procédure collective (si différent de in bonis) %>
+        <% if @procol_status && @procol_status != "In Bonis" %>
+          <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
+        <% end %>
 
-      <%# Première alerte %>
-      <% if @is_first_alert %>
-        <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1ère alerte</p>
-      <% end %>
+        <%# Première alerte %>
+        <% if @is_first_alert %>
+          <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1ère alerte</p>
+        <% end %>
+      </div>
     </div>
   </div>
   </div>
