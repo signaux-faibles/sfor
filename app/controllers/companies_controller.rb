@@ -15,6 +15,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def show
     @establishments = @company.establishments_ordered
     load_company_badges
+    load_company_active_trackings
   end
 
   def insee_widget
@@ -791,5 +792,29 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     # If no other entries, it's a first alert
     !other_entries
+  end
+
+  def load_company_active_trackings
+    # Check if there are any active trackings (in_progress or under_surveillance) for any establishment of the company
+    # Custom authorization logic:
+    # 1. If one of the establishments of the company is in the user departments, show all trackings
+    # 2. If the user is referent or participant in one of the existing trackings, show all trackings
+    # 3. Otherwise, show none
+    all_company_trackings = EstablishmentTracking.where(establishment: @establishments)
+
+    can_see_trackings = false
+
+    # Check if any establishment is in user's departments
+    if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
+      can_see_trackings = true
+    end
+
+    # Check if user is referent or participant in any tracking of the company
+    if !can_see_trackings && all_company_trackings.with_user_as_referent_or_participant(current_user).exists?
+      can_see_trackings = true
+    end
+
+    authorized_trackings = can_see_trackings ? all_company_trackings : EstablishmentTracking.none
+    @has_active_trackings = authorized_trackings.exists?(state: %w[in_progress under_surveillance])
   end
 end
