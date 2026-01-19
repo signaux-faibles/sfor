@@ -292,14 +292,25 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       libelle_value = @search_params[:libelle_procol]
       current_date = Date.current
 
-      # Use EXISTS subquery with procol_at_date function to avoid materializing sirens in Ruby
-      companies = companies.where(
-        "EXISTS (
-          SELECT 1 FROM procol_at_date(?) AS procol
-          WHERE procol.siren = companies.siren
-          AND procol.libelle_procol = ?
-        )", current_date, libelle_value
-      )
+      companies = if libelle_value == "In bonis"
+                    # "In bonis" means companies NOT currently in procol
+                    # This includes companies that never had a procol and those that had one but are now out
+                    companies.where(
+                      "NOT EXISTS (
+            SELECT 1 FROM procol_at_date(?) AS procol
+            WHERE procol.siren = companies.siren
+          )", current_date
+                    )
+                  else
+                    # Use EXISTS subquery with procol_at_date function to avoid materializing sirens in Ruby
+                    companies.where(
+                      "EXISTS (
+            SELECT 1 FROM procol_at_date(?) AS procol
+            WHERE procol.siren = companies.siren
+            AND procol.libelle_procol = ?
+          )", current_date, libelle_value
+                    )
+                  end
     end
 
     # Filter by frequence_alerte (placeholder)
