@@ -214,7 +214,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     end
   end
 
-  def fetch_debits_data(start_date)
+  def fetch_debits_data(start_date) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
     # Normalize periode to beginning of month to match generated periods
     debits = OsfDebit
              .where(siret: @establishment.siret)
@@ -222,7 +222,17 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
              .order(:periode)
              .pluck(:periode, :part_ouvriere, :part_patronale)
 
-    debits.index_by { |row| row[0].beginning_of_month }
+    # Convert from centimes to euros (divide by 100)
+    debits.to_h do |row|
+      [
+        row[0].beginning_of_month,
+        [
+          row[0],
+          row[1] ? (row[1].to_f / 100.0) : nil,
+          row[2] ? (row[2].to_f / 100.0) : nil
+        ]
+      ]
+    end
   end
 
   def fetch_delais_data(start_date)
