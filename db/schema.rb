@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_21_100003) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_20_161457) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -520,6 +520,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_21_100003) do
     t.string "libelle_procol"
     t.index ["date_effet"], name: "index_osf_procols_on_date_effet"
     t.index ["siren"], name: "index_osf_procols_on_siren"
+  end
+
+  create_table "out_of_zone_accesses", force: :cascade do |t|
+    t.datetime "accessed_at", null: false
+    t.string "user_email", null: false
+    t.string "user_geo_zone", null: false
+    t.string "resource_department", null: false
+    t.string "user_segment", null: false
+    t.text "accessed_url", null: false
+    t.string "resource_type", null: false
+    t.string "resource_identifier", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["accessed_at"], name: "index_out_of_zone_accesses_on_accessed_at"
+    t.index ["resource_department"], name: "index_out_of_zone_accesses_on_resource_department"
+    t.index ["user_email"], name: "index_out_of_zone_accesses_on_user_email"
+    t.index ["user_segment"], name: "index_out_of_zone_accesses_on_user_segment"
   end
 
   create_table "rating_reasons", force: :cascade do |t|

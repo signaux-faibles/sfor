@@ -1,6 +1,7 @@
 class CompaniesController < ApplicationController # rubocop:disable Metrics/ClassLength
   include ProcolStatusable
   include DetectionWidgetable
+  include OutOfZoneTrackable
 
   before_action :set_company,
                 only: %i[show insee_widget financial_widget establishments_widget detection_widget
@@ -16,6 +17,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @establishments = @company.establishments_ordered
     load_company_badges
     load_company_active_trackings
+    track_out_of_zone_access(@company)
   end
 
   def insee_widget
