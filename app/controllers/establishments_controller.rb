@@ -1,5 +1,6 @@
 class EstablishmentsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include ProcolStatusable
+  include OutOfZoneTrackable
 
   before_action :set_establishment,
                 only: %i[show data_effectif_ap_widget data_urssaf_widget establishment_trackings_list_widget]
@@ -12,6 +13,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
   def show
     load_trackings
     @procol_status = calculate_procol_status
+    track_out_of_zone_access(@establishment)
   end
 
   def insee_widget
