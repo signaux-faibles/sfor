@@ -32,6 +32,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :level, presence: true
 
+  validate :password_complexity
+
   before_save :update_departments_based_on_geo_access, if: :will_save_change_to_geo_access_id?
 
   # Discarded users cannot authenticate (See https://github.com/jhawthorn/discard?tab=readme-ov-file#working-with-devise)
@@ -63,6 +65,14 @@ class User < ApplicationRecord
     return true if last_confidentiality_acknowledged_at.nil?
 
     last_confidentiality_acknowledged_at < 3.months.ago
+  end
+
+  def password_complexity
+    # Regexp extracted from https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
+    return if password.blank? || password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
+
+    errors.add :password,
+               "Le mot de passe doit contenir au moins 12 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial" # rubocop:disable Layout/LineLength
   end
 
   private

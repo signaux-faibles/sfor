@@ -15,7 +15,7 @@
                   <%= f.label :password, "Nouveau mot de passe", class: "fr-label" %>
                   <% if @minimum_password_length %>
                     <span class="fr-hint-text">
-                      <%= @minimum_password_length %> caractères minimum
+                      <%= @minimum_password_length %> Le mot de passe doit contenir au moins 12 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial
                     </span>
                   <% end %>
                   <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "fr-input", required: true %>
