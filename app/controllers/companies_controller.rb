@@ -593,14 +593,12 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
              .pluck(:periode, :part_ouvriere, :part_patronale)
 
     # Group by periode (normalized to beginning of month) and sum the values
-    # Convert from centimes to euros (divide by 100)
     debits_data = {}
     debits.each do |periode, part_ouvriere, part_patronale|
       # Normalize periode to beginning of month to match generated periods
       periode_normalized = periode.beginning_of_month
-      # Convert from centimes to euros
-      part_ouvriere_val = part_ouvriere ? (part_ouvriere.to_f / 100.0) : 0
-      part_patronale_val = part_patronale ? (part_patronale.to_f / 100.0) : 0
+      part_ouvriere_val = part_ouvriere ? part_ouvriere.to_f : 0
+      part_patronale_val = part_patronale ? part_patronale.to_f : 0
 
       debits_data[periode_normalized] = if debits_data[periode_normalized]
                                           [
