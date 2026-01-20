@@ -562,8 +562,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def effectif_ap_dataset_names
     [
       "Effectifs (salariés)",
-      "Consommation activité partielle (ETP)",
-      "Autorisation activité partielle (salariés)"
+      "Consommation d'activité partielle (ETP)",
+      "Autorisation d'activité partielle (ETP)"
     ]
   end
 
