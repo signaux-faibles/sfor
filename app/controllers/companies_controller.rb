@@ -794,7 +794,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     !other_entries
   end
 
-  def load_company_active_trackings
+  def load_company_active_trackings # rubocop:disable Metrics/MethodLength
     # Check if there are any active trackings (in_progress or under_surveillance) for any establishment of the company
     # Custom authorization logic:
     # 1. If one of the establishments of the company is in the user departments, show all trackings
@@ -815,6 +815,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     end
 
     authorized_trackings = can_see_trackings ? all_company_trackings : EstablishmentTracking.none
-    @has_active_trackings = authorized_trackings.exists?(state: %w[in_progress under_surveillance])
+    @in_progress_trackings = authorized_trackings.in_progress
+    @under_surveillance_trackings = authorized_trackings.under_surveillance
   end
 end
