@@ -330,16 +330,16 @@ If you encounter "Asset not declared to be precompiled" errors in Docker:
 # Import data from opensignauxfaibles
 
 ```
-bin/rails osf:sync_all[months_back]           # Sync all OSF data from OSF database to local Rails tables
-bin/rails osf:sync_ap[months_back]            # Sync OSF ap data from clean_ap materialized view to local Rails tables
-bin/rails osf:sync_cotisation[months_back]    # Sync OSF cotisation data using PostgreSQL cursors (high performance)
-bin/rails osf:sync_debit[24]                  # Sync OSF debit data using PostgreSQL cursors (high performance) ~ 30 mins
-bin/rails osf:sync_delai[months_back]         # Sync OSF delai data using PostgreSQL cursors (high performance) ~ quelques secondes
-bin/rails osf:sync_effectif[months_back]      # Sync OSF effectif data using PostgreSQL cursors (high performance) ~ 28 mins
-bin/rails osf:sync_effectif_ent[months_back]  # Sync OSF effectif_ent data using PostgreSQL cursors (high performance) ~ 13 mins
-bin/rails osf:sync_procol[months_back]        # Sync OSF procol data using PostgreSQL cursors (high performance) ~ quelques secondes
-bin/rails osf:sync_sirene                     # Sync establishments from SIRENE clean view (cursor-based) ~ 2 hours
-bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL clean view (cursor-based) ~ 1 hour
+bin/rails osf:sync_all[24]                    # Sync all OSF data from OSF database to local Rails tables
+bin/rails osf:sync_ap[24]                     # Sync OSF ap data from clean_ap materialized view to local Rails tables
+bin/rails osf:sync_cotisation[24]             # Sync OSF cotisation data using PostgreSQL cursors ~ 1 heure
+bin/rails osf:sync_debit[24]                  # Sync OSF debit data using PostgreSQL cursors ~ 30 mins
+bin/rails osf:sync_delai[24]                  # Sync OSF delai data using PostgreSQL cursors ~ quelques secondes
+bin/rails osf:sync_effectif[24]               # Sync OSF effectif data using PostgreSQL cursors ~ 28 mins
+bin/rails osf:sync_effectif_ent[24]           # Sync OSF effectif_ent data using PostgreSQL cursors ~ 13 mins
+bin/rails osf:sync_procol                     # Sync OSF procol data using PostgreSQL cursors ~ quelques secondes
+bin/rails osf:sync_sirene                     # Sync establishments from SIRENE clean view ~ 2 hours
+bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL clean view ~ 1 hour
 ```
 
 # Import sjcf companies
