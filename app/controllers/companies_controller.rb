@@ -192,8 +192,14 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     delais = fetch_delais_data(start_date)
 
     @cotisations = round_values(forward_fill(map_periodes_to_cotisations(periodes, cotisations_data)))
-    @parts_salariales = round_values(forward_fill(map_periodes_to_parts_salariales(periodes, debits_data)))
-    @parts_patronales = round_values(forward_fill(map_periodes_to_parts_patronales(periodes, debits_data)))
+    # For debits, forward-fill to the end since the last known debt value should persist until updated
+    debits_fill_to_end = debits_data.any?
+    @parts_salariales = round_values(
+      forward_fill(map_periodes_to_parts_salariales(periodes, debits_data), fill_to_end: debits_fill_to_end)
+    )
+    @parts_patronales = round_values(
+      forward_fill(map_periodes_to_parts_patronales(periodes, debits_data), fill_to_end: debits_fill_to_end)
+    )
     @montant_echeancier = round_values(forward_fill(map_periodes_to_montant_echeancier(periodes, delais)))
 
     # Set arrays to empty if they only contain nil values
@@ -719,14 +725,15 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     true
   end
 
-  def forward_fill(array)
+  def forward_fill(array, fill_to_end: false) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
-    # But stop forward-filling after the last period with actual data (don't fill to current date)
+    # By default, stop forward-filling after the last period with actual data (don't fill to current date)
+    # When fill_to_end is true (e.g., for debits), continue filling to the end
     last_value = nil
-    last_actual_index = array.rindex { |v| !v.nil? } # Find the last index with actual data
+    last_actual_index = fill_to_end ? array.length - 1 : array.rindex { |v| !v.nil? }
 
     array.map.with_index do |value, index|
-      # Only forward-fill if we haven't passed the last actual data point
+      # Only forward-fill if we haven't passed the last actual data point (or fill_to_end is true)
       if value.nil? && !last_value.nil? && (last_actual_index.nil? || index <= last_actual_index)
         last_value
       else
