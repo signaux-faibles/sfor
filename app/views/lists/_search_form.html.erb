@@ -86,7 +86,7 @@
                   <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
                   <span id="sf-score-defaillance-infobulle">
                     <button aria-describedby="tooltip-score-defaillance-min" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-                    <span class="fr-tooltip fr-placement" id="tooltip-score-defaillance-min" role="tooltip">Minimum du cumul de la dette sociale (part patronale et part salariale) sur le mois dernier.</span>
+                    <span class="fr-tooltip fr-placement" id="tooltip-score-defaillance-min" role="tooltip">Pourcentage minimum de probabilité de défaillance à 18 moins identifié par l'algorithme.</span>
                   </span>
                 </div>
 
@@ -179,7 +179,7 @@
                 <%= f.label :sans_entreprises_recentes, "Sans entreprises récentes", class: "fr-label" %>
                 <span id="sf-sans-entreprises-recentes-infobulle">
                   <button aria-describedby="tooltip-sans-entreprises-recentes" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-                  <span class="fr-tooltip fr-placement" id="tooltip-sans-entreprises-recentes" role="tooltip">Affiche uniquement les entreprises ne bénéficiant pas de délai de paiement Urssaf sur le dernier mois.</span>
+                  <span class="fr-tooltip fr-placement" id="tooltip-sans-entreprises-recentes" role="tooltip">Affiche uniquement les entreprises créées avant le 20 septembre 2023.</span>
                 </span>
               </div>
             </div>
@@ -195,7 +195,7 @@
                 <%= f.label :sans_delai_urssaf, "Sans délai de paiement URSSAF", class: "fr-label" %>
                 <span id="sf-sans-delai-paiement-urssaf-infobulle">
                   <button aria-describedby="tooltip-sans-delai-paiement-urssaf-infobulle" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-                  <span class="fr-tooltip fr-placement" id="tooltip-sans-delai-paiement-urssaf-infobulle" role="tooltip">Affiche uniquement les entreprises créées avant le 20 septembre 2023.</span>
+                  <span class="fr-tooltip fr-placement" id="tooltip-sans-delai-paiement-urssaf-infobulle" role="tooltip">Affiche uniquement les entreprises ne bénéficiant pas de délai de paiement Urssaf sur le dernier mois.</span>
                 </span>
               </div>
             </div>
