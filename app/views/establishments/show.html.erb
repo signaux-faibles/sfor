@@ -23,8 +23,12 @@
       <h1>Fiche établissement <%= @establishment.raison_sociale %></h1>
       <div class="fr-ml-3w">
         <%# Accompagnement en cours %>
-        <% if (@in_progress_trackings.present? || @under_surveillance_trackings.present?) %>
+        <% if @in_progress_trackings.present? %>
           <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement en cours</p>
+        <% end %>
+        <%# Sous surveillance %>
+        <% if @under_surveillance_trackings.present? %>
+          <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement sous surveillance</p>
         <% end %>
         <%# Statut procédure collective (si différent de in bonis) %>
         <% if @procol_status && @procol_status != "In Bonis" %>

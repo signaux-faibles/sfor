@@ -23,8 +23,12 @@
       <h1>Fiche entreprise <%= @company.raison_sociale %></h1>
       <div class="fr-ml-3w">
         <%# Accompagnement en cours %>
-        <% if @has_active_trackings %>
+        <% if @in_progress_trackings.present? %>
           <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement en cours</p>
+        <% end %>
+        <%# Sous surveillance %>
+        <% if @under_surveillance_trackings.present? %>
+          <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement sous surveillance</p>
         <% end %>
         <%# Niveau d'alerte %>
         <% if @alert_level == "elevee" %>
