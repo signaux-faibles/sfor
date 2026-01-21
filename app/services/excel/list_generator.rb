@@ -76,7 +76,9 @@ module Excel
         "Dernier effectif entreprise",
         "Montant de la dette sociale",
         "Code secteur d'activité",
+        "Libellé secteur d'activité",
         "Code NAF/APE",
+        "Libellé NAF/APE",
         "Niveau d'alerte",
         "Fréquence d'alerte",
         "Score de défaillance",
@@ -90,7 +92,7 @@ module Excel
         "Entreprises récentes",
         "Accompagnement"
       ]
-      sheet.add_row headers, style: Array.new(24) { header_style(sheet) }
+      sheet.add_row headers, style: Array.new(26) { header_style(sheet) }
     end
 
     def add_company_rows(sheet)
@@ -103,8 +105,8 @@ module Excel
 
       companies_with_data.each do |company|
         sheet.add_row prepare_company_row(company, sheet),
-                      style: Array.new(24, centered_style(sheet)),
-                      types: [:string] * 24
+                      style: Array.new(26, centered_style(sheet)),
+                      types: [:string] * 26
       end
     end
 
@@ -119,12 +121,14 @@ module Excel
         company.raison_sociale || "-",
         company.department&.code || "-",
         format_creation_year(company.creation),
-        format_statut_juridique(company.statut_juridique),
+        format_statut_juridique(company.libelle_categorie_juridique),
         format_procol_status(company.siren),
         format_last_effectif(company.siren),
         format_social_debt(company.siren, siege_establishment),
         format_insee_sector(company),
+        company.libelle_activite_principale || "-",
         format_naf_activity(company),
+        company.libelle_naf_section || "-",
         format_alert_level(score_entry),
         format_alert_frequency(company.siren),
         format_score(score_entry&.score),
