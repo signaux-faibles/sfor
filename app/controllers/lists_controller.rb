@@ -1,6 +1,7 @@
 class ListsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include SirenSiretRedirectable
   include ProcolStatusable
+  include ListExportTrackable
   def index
     @lists = List.order(label: :asc)
   end
@@ -188,6 +189,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def export_list(companies)
     all_companies = companies.includes(:establishments, :company_score_entries,
                                        establishments: %i[department establishment_trackings])
+    track_list_export(@list, @search_params, all_companies.size)
     response.headers["Cache-Control"] = "no-store"
     send_data generate_excel(all_companies),
               filename: "#{@list.label.parameterize}.xlsx",
