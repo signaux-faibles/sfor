@@ -65,17 +65,18 @@ module Excel
 
     def add_header_row(sheet) # rubocop:disable Metrics/MethodLength
       headers = [
-        "Campagne",
+        "Liste de détection",
         "Siren",
         "Siret",
         "Raison sociale",
+        "Code département",
         "Année de création de l'entreprise",
         "Forme juridique",
         "Statut de procédure collective",
         "Dernier effectif entreprise",
         "Montant de la dette sociale",
-        "Code + Libellé Secteurs INSEE",
-        "Code + Libellé activité code naf",
+        "Code secteur d'activité",
+        "Code NAF/APE",
         "Niveau d'alerte",
         "Fréquence d'alerte",
         "Score de défaillance",
@@ -83,12 +84,13 @@ module Excel
         "Détail du score santé financière",
         "Détail du score dettes sociales",
         "Détail du score activité partielle",
+        "SJCF",
         "Liste retraitée",
         "Délai de paiement Urssaf",
         "Entreprises récentes",
         "Accompagnement"
       ]
-      sheet.add_row headers, style: Array.new(22) { header_style(sheet) }
+      sheet.add_row headers, style: Array.new(24) { header_style(sheet) }
     end
 
     def add_company_rows(sheet)
@@ -101,8 +103,8 @@ module Excel
 
       companies_with_data.each do |company|
         sheet.add_row prepare_company_row(company, sheet),
-                      style: Array.new(22, centered_style(sheet)),
-                      types: [:string] * 22
+                      style: Array.new(24, centered_style(sheet)),
+                      types: [:string] * 24
       end
     end
 
@@ -115,6 +117,7 @@ module Excel
         company.siren,
         siege_establishment&.siret || "-",
         company.raison_sociale || "-",
+        company.department&.code || "-",
         format_creation_year(company.creation),
         format_statut_juridique(company.statut_juridique),
         format_procol_status(company.siren),
@@ -129,6 +132,7 @@ module Excel
         format_score_detail(score_entry, "Données-financières"),
         format_score_detail(score_entry, "Dettes-sociales"),
         format_score_detail(score_entry, "Recours-à-l'activité-partielle"),
+        format_sjcf(company.siren),
         format_liste_retraitee(company.siren),
         format_delai_urssaf(siege_establishment),
         format_entreprise_recente(company.creation),
@@ -219,6 +223,10 @@ module Excel
       return "-" unless value
 
       value.to_f.round
+    end
+
+    def format_sjcf(siren)
+      SjcfCompany.exists?(siren: siren, libelle_liste: @list.label) ? "Oui" : "Non"
     end
 
     def format_liste_retraitee(siren)
