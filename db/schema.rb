@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_21_132237) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_21_153743) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -125,6 +125,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_21_132237) do
     t.string "naf_code", limit: 6
     t.string "naf_section", limit: 1
     t.string "department", limit: 10, default: "", null: false
+    t.string "libelle_categorie_juridique"
+    t.string "libelle_activite_principale"
+    t.string "libelle_naf_section"
+    t.boolean "is_active"
     t.index ["department"], name: "index_companies_on_department"
     t.index ["naf_code"], name: "index_companies_on_naf_code"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
