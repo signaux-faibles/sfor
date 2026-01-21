@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_20_161457) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_21_132237) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -368,6 +368,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_20_161457) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_geo_accesses_on_name", unique: true
+  end
+
+  create_table "list_export_logs", force: :cascade do |t|
+    t.datetime "exported_at", null: false
+    t.string "user_email", null: false
+    t.string "user_geo_zone", null: false
+    t.string "user_segment", null: false
+    t.string "list_name", null: false
+    t.text "active_filters"
+    t.integer "results_count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exported_at"], name: "index_list_export_logs_on_exported_at"
+    t.index ["list_name"], name: "index_list_export_logs_on_list_name"
+    t.index ["user_email", "list_name", "exported_at"], name: "index_list_export_logs_unique_daily"
+    t.index ["user_email"], name: "index_list_export_logs_on_user_email"
   end
 
   create_table "lists", force: :cascade do |t|
