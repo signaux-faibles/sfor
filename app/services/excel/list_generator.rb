@@ -151,11 +151,11 @@ module Excel
     def format_procol_status(siren)
       current_date = Date.current
       sql = ActiveRecord::Base.sanitize_sql([
-                                              "SELECT action_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
+                                              "SELECT libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
                                               current_date, siren
                                             ])
       result = ActiveRecord::Base.connection.execute(sql).first
-      result ? result["action_procol"] : "In Bonis"
+      result ? result["libelle_procol"] : "In Bonis"
     rescue StandardError
       "-"
     end
