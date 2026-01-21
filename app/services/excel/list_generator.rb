@@ -110,7 +110,7 @@ module Excel
       end
     end
 
-    def prepare_company_row(company, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def prepare_company_row(company, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       siege_establishment = company.establishments.find_by(siege: true)
       score_entry = company.company_score_entries.find_by(list_name: @list.label)
 
