@@ -149,7 +149,7 @@ module Osf
       @stats[key] += count
     end
 
-    def build_company_attributes(distant_record) # rubocop:disable Metrics/MethodLength
+    def build_company_attributes(distant_record) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
       # Compute department, handling DOM/COM special case where source gives "97"
       source_department = distant_record["departement"].to_s.strip.upcase
       computed_department = source_department
@@ -161,7 +161,11 @@ module Osf
       {
         siren: distant_record["siren"],
         raison_sociale: distant_record["raison_sociale"],
-        statut_juridique: distant_record["statut_juridique"],
+        statut_juridique: distant_record["categorie_juridique"],
+        libelle_categorie_juridique: distant_record["libelle_categorie_juridique"],
+        libelle_activite_principale: distant_record["libelle_activite_principale"],
+        libelle_naf_section: distant_record["libelle_naf_section"],
+        is_active: safe_to_boolean(distant_record["est_actif"]),
         creation: parse_date(distant_record["creation"]),
         naf_code: distant_record["activite_principale"],
         naf_section: distant_record["naf_section"],
