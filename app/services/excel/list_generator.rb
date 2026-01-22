@@ -103,7 +103,9 @@ module Excel
         "Entreprises récentes",
         "Accompagnement"
       ]
-      sheet.add_row headers, style: Array.new(26) { header_style(sheet) }
+      # Reuse single style object instead of creating 26
+      header_style_obj = header_style(sheet)
+      sheet.add_row headers, style: Array.new(26, header_style_obj)
     end
 
     def add_company_rows(sheet) # rubocop:disable Metrics/MethodLength
@@ -157,20 +159,26 @@ module Excel
     end
 
     def preload_siege_establishments(companies_array)
+      # Build hash index for O(1) lookup instead of O(n) find
       companies_array.each do |company|
-        siege = company.establishments.find { |e| e.siege == true }
+        # Use find_by on preloaded association (more efficient than find block)
+        siege = company.establishments.find_by(siege: true)
         @siege_establishments[company.siren] = siege if siege
       end
     end
 
-    def preload_score_entries(companies_array, sirens)
+    def preload_score_entries(companies_array, sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
       # Load all score entries for all sirens
       all_entries = CompanyScoreEntry.where(siren: sirens).to_a
 
-      # Index by company id for current list entries
+      # Build hash index for current list entries by company id
+      current_list_entries = all_entries.select { |e| e.list_name == @list.label }
+      current_list_entries_by_siren = current_list_entries.group_by(&:siren)
+
+      # Index by company id for current list entries (O(1) lookup)
       companies_array.each do |company|
-        entry = company.company_score_entries.find { |e| e.list_name == @list.label }
-        @score_entries_by_company[company.id] = entry if entry
+        entries = current_list_entries_by_siren[company.siren]
+        @score_entries_by_company[company.id] = entries&.first if entries
       end
 
       # Index by siren for all entries (used for alert frequency and liste retraitée)
@@ -226,26 +234,27 @@ module Excel
         @effectifs[siren] = effectif&.to_i || "-"
       end
 
-      # For sirens without is_latest=true, get the latest by periode
+      # For sirens without is_latest=true, get the latest by periode using SQL window function
       missing_sirens = sirens - @effectifs.keys
       return if missing_sirens.empty?
 
-      # Get latest effectif per siren using a window function approach
+      # Use SQL window function to get only the latest effectif per siren (more efficient)
       # Process in batches to avoid very large IN clauses
       missing_sirens.each_slice(1000) do |siren_batch|
-        # Get all effectifs for these sirens, ordered by periode desc
-        all_effectifs = OsfEntEffectif
-                        .where(siren: siren_batch)
-                        .order(siren: :asc, periode: :desc)
-                        .pluck(:siren, :effectif)
+        placeholders = siren_batch.map { |_| "?" }.join(",")
+        sql = <<-SQL.squish
+          SELECT DISTINCT ON (siren) siren, effectif
+          FROM osf_ent_effectifs
+          WHERE siren IN (#{placeholders})
+          ORDER BY siren, periode DESC
+        SQL
 
-        # Take the first (latest) effectif for each siren
-        current_siren = nil
-        all_effectifs.each do |siren, effectif|
-          next if siren == current_siren # Skip duplicates, we already have the latest
+        results = ActiveRecord::Base.connection.execute(
+          ActiveRecord::Base.sanitize_sql([sql, *siren_batch])
+        )
 
-          @effectifs[siren] = effectif&.to_i || "-"
-          current_siren = siren
+        results.each do |row|
+          @effectifs[row["siren"]] = row["effectif"]&.to_i || "-"
         end
       end
     end
