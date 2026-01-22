@@ -57,7 +57,9 @@
                               data: { 
                                 geo_search_target: "input",
                                 action: "input->geo-search#search keydown->geo-search#handleKeydown"
-                              } %>
+                              },
+                              autocomplete: "off"
+              %>
             </div>
             <%= f.hidden_field :cp_dep_type, value: search_params[:cp_dep_type], data: { geo_search_target: "hiddenType" } %>
             <%= f.hidden_field :cp_dep, value: search_params[:cp_dep], data: { geo_search_target: "hiddenCode" } %>
