@@ -66,11 +66,11 @@
             <tbody>
             <% trackings.each do |tracking| %>
               <tr>
-                <td>
+                <th scope="row">
                     <span title="<%= tracking.establishment.raison_sociale %>" class="sf-truncate">
                       <%= tracking.establishment.raison_sociale %>
                     </span>
-                </td>
+                </th>
                 <td><%= tracking.establishment.siret %></td>
                 <td><%= content_tag :p, tracking.aasm.human_state, class: badge_class_for(tracking.aasm.human_state), style: state_style_for(tracking.aasm.human_state) %></td>
                 <td>
