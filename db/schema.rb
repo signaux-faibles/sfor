@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_22_000000) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_22_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -540,6 +540,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_22_000000) do
     t.string "siren", limit: 9
     t.string "libelle_procol"
     t.index ["date_effet"], name: "index_osf_procols_on_date_effet"
+    t.index ["siren", "date_effet"], name: "index_osf_procols_on_siren_and_date_effet"
     t.index ["siren"], name: "index_osf_procols_on_siren"
   end
 

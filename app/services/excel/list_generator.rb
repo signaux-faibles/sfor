@@ -183,14 +183,32 @@ module Excel
       return if sirens.empty?
 
       current_date = Date.current
-      sql = ActiveRecord::Base.sanitize_sql([
-                                              "SELECT siren, libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren IN (?)", # rubocop:disable Layout/LineLength
-                                              current_date, sirens
-                                            ])
-      results = ActiveRecord::Base.connection.execute(sql)
 
-      results.each do |row|
-        @procol_statuses[row["siren"]] = row["libelle_procol"]
+      # Process in batches to avoid very large IN clauses
+      # This query replicates procol_at_date logic but filters by siren FIRST for performance
+      sirens.each_slice(1000) do |siren_batch|
+        placeholders = siren_batch.map { |_| "?" }.join(",")
+        sql = <<-SQL.squish
+          WITH last_action_procol AS (
+            SELECT DISTINCT ON (siren, action_procol)
+              siren, date_effet, action_procol, stade_procol, libelle_procol
+            FROM osf_procols
+            WHERE siren IN (#{placeholders})
+              AND date_effet <= ?
+            ORDER BY siren, action_procol, date_effet DESC
+          )
+          SELECT siren, libelle_procol
+          FROM last_action_procol
+          WHERE stade_procol != 'fin_procedure'
+        SQL
+
+        results = ActiveRecord::Base.connection.execute(
+          ActiveRecord::Base.sanitize_sql([sql, *siren_batch, current_date])
+        )
+
+        results.each do |row|
+          @procol_statuses[row["siren"]] = row["libelle_procol"]
+        end
       end
     rescue StandardError
       # If query fails, all will default to "In Bonis" in format_procol_status
