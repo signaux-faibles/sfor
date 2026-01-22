@@ -156,7 +156,8 @@ export default class extends Controller {
           family: 'Marianne, Arial, sans-serif'
         },
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1.5,
         layout: {
           padding: {
             top: 30  // Ajoute le padding en haut

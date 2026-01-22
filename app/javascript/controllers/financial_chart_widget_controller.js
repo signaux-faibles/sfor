@@ -86,7 +86,8 @@ export default class extends Controller {
           family: 'Marianne, Arial, sans-serif'
         },
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1.5,
         plugins: {
           legend: {
             display: false // We use checkboxes instead

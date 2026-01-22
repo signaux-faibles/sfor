@@ -55,6 +55,7 @@
             data-financial-chart-widget-colors-dark-theme-value='<%= @dark_colors.to_json %>'
             data-financial-chart-widget-unit-value=""
             class="fr-grid-row fr-grid-row--gutters"
+            style="position: relative; max-width: 100%; aspect-ratio: 4.5/2;"
           >
             <div class="fr-col-12 fr-col-md-4">
               <fieldset class="fr-fieldset">
@@ -110,7 +111,12 @@
 
             <div class="fr-col-12 fr-col-md-8">
               <div class="chart-container">
-                <canvas data-financial-chart-widget-target="chart" class="sf-chart"></canvas>
+                <canvas
+                  data-financial-chart-widget-target="chart"
+                  class="sf-chart"
+                  role="img"
+                  aria-label="Graphique &quot;Ratios financiers INPI/BCE&quot; - voir les données dans la partie tableau"
+                ></canvas>
               </div>
             </div>
           </div>
