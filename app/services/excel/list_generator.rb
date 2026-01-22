@@ -36,11 +36,20 @@ module Excel
   class ListGenerator # rubocop:disable Metrics/ClassLength
     include Excel::Styles
 
-    def initialize(list, companies, search_params, user)
+    def initialize(list, companies, search_params, user) # rubocop:disable Metrics/MethodLength
       @list = list
       @companies = companies
       @search_params = search_params
       @user = user
+      # Initialize data caches for batch-loaded data
+      @procol_statuses = {}
+      @effectifs = {}
+      @social_debts = {}
+      @score_entries_by_siren = {}
+      @sjcf_companies = Set.new
+      @tracking_statuses = {}
+      @siege_establishments = {}
+      @score_entries_by_company = {}
     end
 
     def generate
@@ -58,6 +67,8 @@ module Excel
     def add_companies_sheet(workbook)
       workbook.add_worksheet(name: "Entreprises") do |sheet|
         add_header_row(sheet)
+        # Preload all data in batch before processing rows
+        preload_all_data
         add_company_rows(sheet)
         format_sheet(sheet)
       end
@@ -95,7 +106,7 @@ module Excel
       sheet.add_row headers, style: Array.new(26) { header_style(sheet) }
     end
 
-    def add_company_rows(sheet)
+    def add_company_rows(sheet) # rubocop:disable Metrics/MethodLength
       # Preload associations to avoid N+1 queries
       companies_with_data = @companies.includes(
         :establishments,
@@ -103,16 +114,199 @@ module Excel
         establishments: %i[department establishment_trackings]
       )
 
+      # Create style objects once and reuse
+      row_style = centered_style(sheet)
+      row_styles = Array.new(26, row_style)
+
       companies_with_data.each do |company|
         sheet.add_row prepare_company_row(company, sheet),
-                      style: Array.new(26, centered_style(sheet)),
+                      style: row_styles,
                       types: [:string] * 26
       end
     end
 
+    def preload_all_data # rubocop:disable Metrics/MethodLength
+      # Get all unique sirens and sirets from companies
+      companies_array = @companies.includes(:establishments).to_a
+      sirens = companies_array.filter_map(&:siren).uniq
+      return if sirens.empty?
+
+      # Preload siege establishments
+      preload_siege_establishments(companies_array)
+
+      # Preload score entries
+      preload_score_entries(companies_array, sirens)
+
+      # Preload procol statuses
+      preload_procol_statuses(sirens)
+
+      # Preload effectifs
+      preload_effectifs(sirens)
+
+      # Get all siege sirets for social debt queries
+      siege_sirets = @siege_establishments.values.compact.filter_map(&:siret).uniq
+
+      # Preload social debts
+      preload_social_debts(siege_sirets)
+
+      # Preload SJCF companies
+      preload_sjcf_companies(sirens)
+
+      # Preload tracking statuses
+      preload_tracking_statuses(sirens)
+    end
+
+    def preload_siege_establishments(companies_array)
+      companies_array.each do |company|
+        siege = company.establishments.find { |e| e.siege == true }
+        @siege_establishments[company.siren] = siege if siege
+      end
+    end
+
+    def preload_score_entries(companies_array, sirens)
+      # Load all score entries for all sirens
+      all_entries = CompanyScoreEntry.where(siren: sirens).to_a
+
+      # Index by company id for current list entries
+      companies_array.each do |company|
+        entry = company.company_score_entries.find { |e| e.list_name == @list.label }
+        @score_entries_by_company[company.id] = entry if entry
+      end
+
+      # Index by siren for all entries (used for alert frequency and liste retraitée)
+      all_entries.group_by(&:siren).each do |siren, entries|
+        @score_entries_by_siren[siren] = entries
+      end
+    end
+
+    def preload_procol_statuses(sirens) # rubocop:disable Metrics/MethodLength
+      return if sirens.empty?
+
+      current_date = Date.current
+      sql = ActiveRecord::Base.sanitize_sql([
+                                              "SELECT siren, libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren IN (?)", # rubocop:disable Layout/LineLength
+                                              current_date, sirens
+                                            ])
+      results = ActiveRecord::Base.connection.execute(sql)
+
+      results.each do |row|
+        @procol_statuses[row["siren"]] = row["libelle_procol"]
+      end
+    rescue StandardError
+      # If query fails, all will default to "In Bonis" in format_procol_status
+    end
+
+    def preload_effectifs(sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+      return if sirens.empty?
+
+      # Use is_latest flag if available, otherwise get latest by periode
+      latest_effectifs = OsfEntEffectif
+                         .where(siren: sirens, is_latest: true)
+                         .pluck(:siren, :effectif)
+
+      latest_effectifs.each do |siren, effectif|
+        @effectifs[siren] = effectif&.to_i || "-"
+      end
+
+      # For sirens without is_latest=true, get the latest by periode
+      missing_sirens = sirens - @effectifs.keys
+      return if missing_sirens.empty?
+
+      # Get latest effectif per siren using a window function approach
+      # Process in batches to avoid very large IN clauses
+      missing_sirens.each_slice(1000) do |siren_batch|
+        # Get all effectifs for these sirens, ordered by periode desc
+        all_effectifs = OsfEntEffectif
+                        .where(siren: siren_batch)
+                        .order(siren: :asc, periode: :desc)
+                        .pluck(:siren, :effectif)
+
+        # Take the first (latest) effectif for each siren
+        current_siren = nil
+        all_effectifs.each do |siren, effectif|
+          next if siren == current_siren # Skip duplicates, we already have the latest
+
+          @effectifs[siren] = effectif&.to_i || "-"
+          current_siren = siren
+        end
+      end
+    end
+
+    def preload_social_debts(sirets)
+      return if sirets.empty?
+
+      debits = OsfDebit
+               .where(siret: sirets, is_last: true)
+               .pluck(:siret, :part_ouvriere, :part_patronale)
+
+      debits.each do |siret, part_ouvriere, part_patronale|
+        @social_debts[siret] = {
+          part_ouvriere: part_ouvriere,
+          part_patronale: part_patronale
+        }
+      end
+    end
+
+    def preload_sjcf_companies(sirens)
+      return if sirens.empty?
+
+      sjcf_sirens = SjcfCompany
+                    .where(siren: sirens, libelle_liste: @list.label)
+                    .pluck(:siren)
+
+      @sjcf_companies = Set.new(sjcf_sirens)
+    end
+
+    def preload_tracking_statuses(sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+      return if sirens.empty?
+
+      # Get all establishments for these sirens
+      establishments = Establishment.where(siren: sirens).pluck(:siren, :siret)
+      return if establishments.empty?
+
+      sirets = establishments.filter_map(&:last).uniq
+      return if sirets.empty?
+
+      # Get all trackings for these establishments
+      trackings = EstablishmentTracking
+                  .where(establishment_siret: sirets)
+                  .kept
+                  .pluck(:establishment_siret, :state)
+
+      # Create a hash for quick lookup: siret => [states]
+      trackings_by_siret = trackings.group_by(&:first).transform_values { |v| v.map(&:last) }
+
+      # Group trackings by siren and calculate status
+      establishments_by_siren = establishments.group_by(&:first)
+      establishments_by_siren.each do |siren, siren_establishments|
+        states = []
+        siren_establishments.each do |_, siret| # rubocop:disable Style/HashEachMethods
+          states.concat(trackings_by_siret[siret] || [])
+        end
+
+        next if states.empty?
+
+        @tracking_statuses[siren] = if states.include?("in_progress")
+                                      "Accompagnement en cours"
+                                    elsif states.include?("under_surveillance")
+                                      "Accompagnement sous surveillance"
+                                    elsif states.include?("completed")
+                                      "Accompagnement terminé"
+                                    else
+                                      "Pas d'accompagnement"
+                                    end
+      end
+    end
+
     def prepare_company_row(company, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-      siege_establishment = company.establishments.find_by(siege: true)
-      score_entry = company.company_score_entries.find_by(list_name: @list.label)
+      # Use preloaded data instead of querying
+      siege_establishment = @siege_establishments[company.siren]
+      # Get score entry for current list specifically
+      score_entry = @score_entries_by_company[company.id]
+      if score_entry.nil?
+        entries = @score_entries_by_siren[company.siren] || []
+        score_entry = entries.find { |e| e.list_name == @list.label }
+      end
 
       [
         @list.label, # Campagne
@@ -153,29 +347,20 @@ module Excel
     end
 
     def format_procol_status(siren)
-      current_date = Date.current
-      sql = ActiveRecord::Base.sanitize_sql([
-                                              "SELECT libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
-                                              current_date, siren
-                                            ])
-      result = ActiveRecord::Base.connection.execute(sql).first
-      result ? result["libelle_procol"] : "In Bonis"
-    rescue StandardError
-      "-"
+      @procol_statuses[siren] || "In Bonis"
     end
 
     def format_last_effectif(siren)
-      latest = OsfEntEffectif.where(siren: siren).order(periode: :desc).first
-      latest&.effectif&.to_i || "-"
+      @effectifs[siren] || "-"
     end
 
     def format_social_debt(_siren, siege_establishment)
       return "-" unless siege_establishment
 
-      debit = OsfDebit.where(siret: siege_establishment.siret, is_last: true).first
-      return "-" unless debit
+      debt = @social_debts[siege_establishment.siret]
+      return "-" unless debt
 
-      total = (debit.part_ouvriere.to_f + debit.part_patronale.to_f)
+      total = (debt[:part_ouvriere].to_f + debt[:part_patronale].to_f)
       total.positive? ? total.round(2) : "-"
     end
 
@@ -201,14 +386,12 @@ module Excel
     end
 
     def format_alert_frequency(siren)
-      # Check if company appears in the current list
-      current_entry_exists = CompanyScoreEntry.exists?(siren: siren, list_name: @list.label)
-      return "-" unless current_entry_exists
+      # Use preloaded score entries data
+      entries = @score_entries_by_siren[siren] || []
+      return "-" if entries.empty?
 
-      # Check if company appears in other lists
-      other_entries_exist = CompanyScoreEntry.where(siren: siren)
-                                             .where.not(list_name: @list.label)
-                                             .exists?
+      # Check if company appears in other lists (excluding current list)
+      other_entries_exist = entries.any? { |entry| entry.list_name != @list.label }
 
       # If no other entries, it's a first alert; otherwise nothing
       other_entries_exist ? "-" : "1ère alerte"
@@ -230,21 +413,25 @@ module Excel
     end
 
     def format_sjcf(siren)
-      SjcfCompany.exists?(siren: siren, libelle_liste: @list.label) ? "Oui" : "Non"
+      @sjcf_companies.include?(siren) ? "Oui" : "Non"
     end
 
     def format_liste_retraitee(siren)
+      # Use preloaded score entries data
+      entries = @score_entries_by_siren[siren] || []
       # Check if company appears in previous lists (retraitée means it was in a previous list)
-      other_entries = CompanyScoreEntry.where(siren: siren)
-                                       .where.not(list_name: @list.label)
-                                       .exists?
+      other_entries = entries.any? { |entry| entry.list_name != @list.label }
       other_entries ? "Oui" : "Non"
     end
 
     def format_delai_urssaf(siege_establishment)
       return "-" unless siege_establishment
 
-      has_delai = OsfDelai.active_dette_urssaf?(siege_establishment.siret)
+      # Use preloaded social debt data (same logic as active_dette_urssaf)
+      debt = @social_debts[siege_establishment.siret]
+      return "Non" unless debt
+
+      has_delai = debt[:part_ouvriere].to_f.positive? || debt[:part_patronale].to_f.positive?
       has_delai ? "Oui" : "Non"
     end
 
@@ -255,25 +442,9 @@ module Excel
       creation_date >= three_years_ago ? "Oui" : "Non"
     end
 
-    def format_tracking_status(siren) # rubocop:disable Metrics/MethodLength
-      # Check if any establishment of this company has tracking
-      establishments = Establishment.where(siren: siren)
-      trackings = EstablishmentTracking
-                  .where(establishment_siret: establishments.pluck(:siret))
-                  .kept
-
-      return "Pas d'accompagnement" if trackings.empty?
-
-      in_progress = trackings.in_progress.exists?
-      return "Accompagnement en cours" if in_progress
-
-      under_surveillance = trackings.under_surveillance.exists?
-      return "Accompagnement sous surveillance" if under_surveillance
-
-      completed = trackings.completed.exists?
-      return "Accompagnement terminé" if completed
-
-      "Pas d'accompagnement"
+    def format_tracking_status(siren)
+      # Use preloaded tracking status
+      @tracking_statuses[siren] || "Pas d'accompagnement"
     end
 
     def format_sheet(sheet)
