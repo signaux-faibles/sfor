@@ -130,8 +130,7 @@
                     <td>
                       <%= link_to [tracking.establishment, tracking],
                                   class: 'fr-link',
-                                  title: "Consulter #{tracking.establishment.raison_sociale}",
-                                  :"aria-label" => "Consulter #{tracking.establishment.raison_sociale}" do %>
+                                  title: "Consulter #{tracking.establishment.raison_sociale}" do %>
                         <span class="fr-icon-eye-fill" aria-hidden="true"></span>
                         <span class="fr-sr-only">Consulter <%= tracking.establishment.raison_sociale %></span>
                       <% end %>
