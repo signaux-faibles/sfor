@@ -1,11 +1,11 @@
 <%= turbo_frame_tag "establishment_trackings_list_widget" do %>
   <h2>Accompagnements</h2>
-  <% if @in_progress_trackings.empty? && @under_surveillance_trackings.empty? && @completed_trackings.empty? %>
+  <% if !@has_any_trackings %>
     <div class="fr-notice fr-notice--info fr-mb-4w">
       <div class="fr-container">
         <div class="fr-notice__body">
           <p>
-            <span class="fr-notice__title">Cet établissement n’a jamais fait l’objet d’un accompagnement.</span>
+            <span class="fr-notice__title">L'établissement n'a jamais fait l'objet d'un accompagnement.</span>
           </p>
         </div>
       </div>
@@ -18,6 +18,16 @@
                   data: { turbo: false }
       %>
     <% end %>
+  <% elsif !@can_see_trackings %>
+    <div class="fr-notice fr-notice--info fr-mb-4w">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <p>
+            <span class="fr-notice__title">Vos accès géographiques ne vous permettent pas d'accéder aux accompagnements de cet établissement.</span>
+          </p>
+        </div>
+      </div>
+    </div>
   <% else %>
     <% if !@in_progress_trackings.present? && !@under_surveillance_trackings.present? %>
       <div class="fr-notice fr-notice--info">
@@ -84,7 +94,3 @@
     </div>
   <% end %>
 <% end %>
-
-
-
-

@@ -260,7 +260,6 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     # Check if any establishment is in user's departments
     if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
-      Rails.logger.info "Any establishment is in user's departments ==================================================="
       can_see_trackings = true
     end
 
@@ -269,7 +268,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       can_see_trackings = true
     end
 
-    Rails.logger.info "Can see trackings: #{can_see_trackings} ==================================================="
+    @can_see_trackings = can_see_trackings
+    @has_any_trackings = all_company_trackings.exists?
+
     @establishment_trackings = can_see_trackings ? all_company_trackings : EstablishmentTracking.none
 
     # Trackings considered "actifs" : en cours ou sous surveillance

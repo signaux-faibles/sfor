@@ -1,27 +1,21 @@
 <%= turbo_frame_tag "establishment_trackings_list_widget" do %>
-  <% if @active_trackings.empty? %>
+  <% if !@has_any_trackings %>
     <div class="fr-notice fr-notice--info">
       <div class="fr-container">
         <div class="fr-notice__body">
           <div>
-            <p class="fr-notice__title">L'entreprise n'a pas d'accompagnement en cours ou sous-surveillance.</p>
-            <p class="fr-mt-2w">Rappel : les accompagnements sont créés au niveau des fiches établissements.</p>
-            <ul>
-              <% if @siege.present? %>
-                <li>
-                  <%= link_to "Consultez la fiche de l'établissement siège",
-                              establishment_path(@siege),
-                              data: { turbo: false } %>
-                </li>
-              <% end %>
-              <li>
-                <%= link_to "Consultez  Liste des établissements - #{@company.raison_sociale}",
-                            company_path(@company),
-                            data: { turbo: false } %>
-              </li>
-            </ul>
+            <p class="fr-notice__title">L'entreprise n'a jamais fait l'objet d'un accompagnement.</p>
           </div>
-
+        </div>
+      </div>
+    </div>
+  <% elsif !@can_see_trackings %>
+    <div class="fr-notice fr-notice--info">
+      <div class="fr-container">
+        <div class="fr-notice__body">
+          <div>
+            <p class="fr-notice__title">Vos accès géographiques ne vous permettent pas d'accéder aux accompagnements de cette entreprise.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -38,20 +32,41 @@
           </div>
         </div>
       </div>
-    <% end %>
-  <% end %>
-  <% if @completed_trackings.present? %>
-    <div class="fr-card fr-mt-5w">
-      <div class="fr-card__body">
-        <div class="fr-card__content">
-          <h2>Historique des accompagnements de l’entreprise</h2>
-          <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
+    <% elsif @active_trackings.empty? %>
+      <div class="fr-notice fr-notice--info">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <div>
+              <p class="fr-notice__title">L'entreprise n'a pas d'accompagnement en cours ou sous-surveillance.</p>
+              <p class="fr-mt-2w">Rappel : les accompagnements sont créés au niveau des fiches établissements.</p>
+              <ul>
+                <% if @siege.present? %>
+                  <li>
+                    <%= link_to "Consultez la fiche de l'établissement siège",
+                                establishment_path(@siege),
+                                data: { turbo: false } %>
+                  </li>
+                <% end %>
+                <li>
+                  <%= link_to "Consultez  Liste des établissements - #{@company.raison_sociale}",
+                              company_path(@company),
+                              data: { turbo: false } %>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
+    <% if @completed_trackings.present? %>
+      <div class="fr-card fr-mt-5w">
+        <div class="fr-card__body">
+          <div class="fr-card__content">
+            <h2>Historique des accompagnements de l'entreprise</h2>
+            <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
+          </div>
+        </div>
+      </div>
+    <% end %>
   <% end %>
 <% end %>
-
-
-
-

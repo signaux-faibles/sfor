@@ -90,7 +90,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @establishment = Establishment.find_by!(siret: params[:siret])
   end
 
-  def load_trackings
+  def load_trackings # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     # Custom authorization logic:
     # 1. If the establishment is in user's departments, show all trackings
     # 2. If the establishment is not in user's departments but user is referent/participant, show all trackings
@@ -107,6 +107,8 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
       can_see_trackings = true
     end
 
+    @can_see_trackings = can_see_trackings
+    @has_any_trackings = all_establishment_trackings.exists?
     @authorized_trackings = can_see_trackings ? all_establishment_trackings : EstablishmentTracking.none
 
     @in_progress_trackings = load_trackings_by_state(:in_progress)
