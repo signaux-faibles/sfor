@@ -194,13 +194,12 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     delais = fetch_delais_data(start_date)
 
     @cotisations = round_values(forward_fill(map_periodes_to_cotisations(periodes, cotisations_data)))
-    # For debits, forward-fill to the end since the last known debt value should persist until updated
-    debits_fill_to_end = debits_data.any?
+    # For debits, always forward-fill to the end (last known debt persists until updated)
     @parts_salariales = round_values(
-      forward_fill(map_periodes_to_parts_salariales(periodes, debits_data), fill_to_end: debits_fill_to_end)
+      forward_fill(map_periodes_to_parts_salariales(periodes, debits_data), fill_to_end: true)
     )
     @parts_patronales = round_values(
-      forward_fill(map_periodes_to_parts_patronales(periodes, debits_data), fill_to_end: debits_fill_to_end)
+      forward_fill(map_periodes_to_parts_patronales(periodes, debits_data), fill_to_end: true)
     )
     @montant_echeancier = round_values(forward_fill(map_periodes_to_montant_echeancier(periodes, delais)))
 
@@ -601,10 +600,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
              .pluck(:periode, :part_ouvriere, :part_patronale)
 
     # Group by periode (normalized to beginning of month) and sum the values
+    # Convert to Date explicitly to ensure consistent hash keys
     debits_data = {}
     debits.each do |periode, part_ouvriere, part_patronale|
       # Normalize periode to beginning of month to match generated periods
-      periode_normalized = periode.beginning_of_month
+      periode_normalized = periode.to_date.beginning_of_month
       part_ouvriere_val = part_ouvriere ? part_ouvriere.to_f : 0
       part_patronale_val = part_patronale ? part_patronale.to_f : 0
 
@@ -649,17 +649,19 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def map_periodes_to_parts_salariales(periodes, debits_data)
     periodes.map do |periode_str|
-      periode_date = Date.parse(periode_str)
+      periode_date = Date.parse(periode_str).beginning_of_month
       debit_record = debits_data[periode_date]
-      debit_record && debit_record[1] ? debit_record[1].to_f : nil
+      # Use !nil? check to allow 0.0 values (0.0 is a valid debt amount meaning no debt)
+      debit_record && !debit_record[1].nil? ? debit_record[1].to_f : nil
     end
   end
 
   def map_periodes_to_parts_patronales(periodes, debits_data)
     periodes.map do |periode_str|
-      periode_date = Date.parse(periode_str)
+      periode_date = Date.parse(periode_str).beginning_of_month
       debit_record = debits_data[periode_date]
-      debit_record && debit_record[2] ? debit_record[2].to_f : nil
+      # Use !nil? check to allow 0.0 values (0.0 is a valid debt amount meaning no debt)
+      debit_record && !debit_record[2].nil? ? debit_record[2].to_f : nil
     end
   end
 
@@ -727,19 +729,20 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     true
   end
 
-  def forward_fill(array, fill_to_end: false) # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def forward_fill(array, fill_to_end: false)
     # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
     # By default, stop forward-filling after the last period with actual data (don't fill to current date)
-    # When fill_to_end is true (e.g., for debits), continue filling to the end
+    # When fill_to_end is true, continue filling to the end of the array
     last_value = nil
     last_actual_index = fill_to_end ? array.length - 1 : array.rindex { |v| !v.nil? }
 
     array.map.with_index do |value, index|
-      # Only forward-fill if we haven't passed the last actual data point (or fill_to_end is true)
-      if value.nil? && !last_value.nil? && (last_actual_index.nil? || index <= last_actual_index)
-        last_value
+      if value.nil?
+        # Forward-fill only if we have a previous value and haven't passed the fill boundary
+        last_value if !last_value.nil? && (last_actual_index.nil? || index <= last_actual_index)
       else
-        last_value = value unless value.nil?
+        # We have an actual value - update last_value and return this value
+        last_value = value
         value
       end
     end
