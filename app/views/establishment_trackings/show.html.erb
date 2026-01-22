@@ -25,7 +25,7 @@
 <div>
   <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
     <div class="fr-container sf-fiche-title">
-      <h1>Accompagnement <%= @establishment_tracking.establishment.raison_sociale %></h1>
+      <h1 id="title">Accompagnement <%= @establishment_tracking.establishment.raison_sociale %></h1>
       <div class="fr-ml-3w">
         <%= content_tag :p, @establishment_tracking.aasm.human_state, class: "#{badge_class_for(@establishment_tracking.aasm.human_state)} fr-ml-1w", style: state_style_for(@establishment_tracking.aasm.human_state) %>
         <% if @establishment_tracking.criticality.present? %>
