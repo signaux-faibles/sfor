@@ -96,7 +96,7 @@
                 </li>
               <% end %>
               <li>
-                <%= link_to "#{current_user&.full_name}", "#", class: 'fr-btn fr-icon-account-circle-fill' %>
+                <p class="fr-btn fr-icon-account-circle-fill sf-username"><%= current_user&.full_name %></p>
               </li>
               <li>
                 <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
@@ -130,7 +130,7 @@
             </li>
           <% end %>
           <li>
-            <%= link_to "#{current_user&.full_name}", "#", class: 'fr-btn fr-icon-account-circle-fill' %>
+            <p class="fr-btn fr-icon-account-circle-fill sf-username"><%= current_user&.full_name %></p>
           </li>
           <li>
             <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
