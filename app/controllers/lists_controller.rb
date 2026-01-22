@@ -29,9 +29,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @per_page = 10 if @per_page < 1
 
     # Start with companies in this list (from company_score_entries)
-    @companies = Company.joins(:company_score_entries)
-                        .where(company_score_entries: { list_name: @list.label })
-                        .distinct
+    # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
+    @companies = companies_in_list(@list)
 
     # Apply policy scope to restrict to user's departments
     @companies = policy_scope(@companies)
@@ -75,9 +74,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @per_page = 10
 
     # Start with companies in this list (from company_score_entries)
-    @companies = Company.joins(:company_score_entries)
-                        .where(company_score_entries: { list_name: @list.label })
-                        .distinct
+    # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
+    @companies = companies_in_list(@list)
 
     # Apply policy scope to restrict to user's departments
     @companies = policy_scope(@companies)
@@ -146,9 +144,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @search_params ||= {}
 
     # Start with companies in this list (from company_score_entries)
-    @companies = Company.joins(:company_score_entries)
-                        .where(company_score_entries: { list_name: @list.label })
-                        .distinct
+    # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
+    @companies = companies_in_list(@list)
 
     # Apply policy scope to restrict to user's departments
     @companies = policy_scope(@companies)
@@ -166,9 +163,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @search_params = {}
 
     # Start with companies in this list (from company_score_entries)
-    @companies = Company.joins(:company_score_entries)
-                        .where(company_score_entries: { list_name: @list.label })
-                        .distinct
+    # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
+    @companies = companies_in_list(@list)
 
     # Apply policy scope to restrict to user's departments
     @companies = policy_scope(@companies)
@@ -185,6 +181,21 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   private
+
+  # Build base query for companies in a list using EXISTS subquery instead of JOIN + DISTINCT
+  # This is more performant because:
+  # - No need for DISTINCT (stops on first match)
+  # - Better index usage (can use index_company_score_entries_on_list_name_and_siren)
+  # - Simpler query plan for pagination counts
+  def companies_in_list(list)
+    Company.where(
+      "EXISTS (
+        SELECT 1 FROM company_score_entries cse
+        WHERE cse.siren = companies.siren
+        AND cse.list_name = ?
+      )", list.label
+    )
+  end
 
   def export_list(companies)
     all_companies = companies.includes(:establishments, :company_score_entries,
