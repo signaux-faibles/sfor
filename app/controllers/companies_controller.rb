@@ -730,13 +730,16 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def map_periodes_to_montant_echeancier(periodes, delais) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     # For each periode, find all active delais (date_creation < periode < date_echeance)
+    # A delai is active for a periode if the periode falls within the delay period
     # Deduplicate by date_creation and date_echeance, then sort by date_creation descending (newest first)
     # Take the first one (most recent) - this matches the legacy JS: delais(p).sort(...)[0]
     periodes.map do |periode_str|
-      periode_date = Date.parse(periode_str)
+      periode_date = Date.parse(periode_str).beginning_of_month
 
       active_delais = delais.select do |delai|
-        delai.date_creation < periode_date && periode_date < delai.date_echeance
+        # A delai is active if the periode (beginning of month) is within the delay period
+        # Include the month where the delay is created and the month where it ends
+        delai.date_creation.beginning_of_month <= periode_date && periode_date <= delai.date_echeance
       end
 
       # Deduplicate by date_creation and date_echeance (keep only unique date ranges)
