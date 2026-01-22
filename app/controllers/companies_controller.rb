@@ -190,17 +190,14 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     periodes, @formatted_periodes = generate_formatted_periods(start_date)
 
     cotisations_data = fetch_cotisations_data(start_date)
-    debits_data = fetch_debits_data(start_date)
+    # Forward-fill per establishment first, then aggregate
+    debits_data = fetch_and_forward_fill_debits_data(start_date, periodes)
     delais = fetch_delais_data(start_date)
 
     @cotisations = round_values(forward_fill(map_periodes_to_cotisations(periodes, cotisations_data)))
-    # For debits, always forward-fill to the end (last known debt persists until updated)
-    @parts_salariales = round_values(
-      forward_fill(map_periodes_to_parts_salariales(periodes, debits_data), fill_to_end: true)
-    )
-    @parts_patronales = round_values(
-      forward_fill(map_periodes_to_parts_patronales(periodes, debits_data), fill_to_end: true)
-    )
+    # Debits are already forward-filled per establishment and aggregated
+    @parts_salariales = round_values(map_periodes_to_parts_salariales(periodes, debits_data))
+    @parts_patronales = round_values(map_periodes_to_parts_patronales(periodes, debits_data))
     @montant_echeancier = round_values(forward_fill(map_periodes_to_montant_echeancier(periodes, delais)))
 
     # Set arrays to empty if they only contain nil values
@@ -601,12 +598,15 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     # Group by periode (normalized to beginning of month) and sum the values
     # Convert to Date explicitly to ensure consistent hash keys
+    # Important: only sum non-nil values. If a value is nil, treat it as 0 for that establishment
+    # but preserve nil in the result if ALL establishments have nil for that period
     debits_data = {}
     debits.each do |periode, part_ouvriere, part_patronale|
       # Normalize periode to beginning of month to match generated periods
       periode_normalized = periode.to_date.beginning_of_month
-      part_ouvriere_val = part_ouvriere ? part_ouvriere.to_f : 0
-      part_patronale_val = part_patronale ? part_patronale.to_f : 0
+      # Convert nil to 0 for aggregation (nil means no data for this establishment)
+      part_ouvriere_val = part_ouvriere ? part_ouvriere.to_f : 0.0
+      part_patronale_val = part_patronale ? part_patronale.to_f : 0.0
 
       debits_data[periode_normalized] = if debits_data[periode_normalized]
                                           [
@@ -617,6 +617,68 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
                                         else
                                           [periode_normalized, part_ouvriere_val, part_patronale_val]
                                         end
+    end
+
+    debits_data
+  end
+
+  def fetch_and_forward_fill_debits_data(start_date, periodes) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    # Forward-fill per establishment first, then aggregate
+    # This ensures that if one establishment has data until April and another until May,
+    # we forward-fill each separately before aggregating
+    siret_list = @company.establishments.pluck(:siret)
+    return {} if siret_list.empty?
+
+    # Get data per establishment
+    establishments_data = {}
+    siret_list.each do |siret| # rubocop:disable Metrics/BlockLength
+      debits = OsfDebit
+               .where(siret: siret)
+               .where(periode: start_date..)
+               .order(:periode)
+               .pluck(:periode, :part_ouvriere, :part_patronale)
+
+      # Create hash indexed by normalized periode
+      debits_hash = {}
+      debits.each do |periode, part_ouvriere, part_patronale|
+        periode_normalized = periode.to_date.beginning_of_month
+        debits_hash[periode_normalized] = [
+          periode_normalized,
+          part_ouvriere ? part_ouvriere.to_f : nil,
+          part_patronale ? part_patronale.to_f : nil
+        ]
+      end
+
+      # Map to periodes array and forward-fill
+      parts_sal = periodes.map do |periode_str|
+        periode_date = Date.parse(periode_str).beginning_of_month
+        debit_record = debits_hash[periode_date]
+        debit_record && !debit_record[1].nil? ? debit_record[1].to_f : nil
+      end
+
+      parts_pat = periodes.map do |periode_str|
+        periode_date = Date.parse(periode_str).beginning_of_month
+        debit_record = debits_hash[periode_date]
+        debit_record && !debit_record[2].nil? ? debit_record[2].to_f : nil
+      end
+
+      # Forward-fill to the end for this establishment
+      parts_sal_filled = forward_fill(parts_sal, fill_to_end: true)
+      parts_pat_filled = forward_fill(parts_pat, fill_to_end: true)
+
+      establishments_data[siret] = {
+        parts_salariales: parts_sal_filled,
+        parts_patronales: parts_pat_filled
+      }
+    end
+
+    # Aggregate forward-filled data across all establishments
+    debits_data = {}
+    periodes.each_with_index do |periode_str, index|
+      periode_date = Date.parse(periode_str).beginning_of_month
+      part_sal_sum = establishments_data.values.sum { |data| data[:parts_salariales][index] || 0.0 }
+      part_pat_sum = establishments_data.values.sum { |data| data[:parts_patronales][index] || 0.0 }
+      debits_data[periode_date] = [periode_date, part_sal_sum, part_pat_sum]
     end
 
     debits_data
