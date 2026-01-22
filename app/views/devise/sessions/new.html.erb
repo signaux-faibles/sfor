@@ -6,8 +6,9 @@
           <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
               <h1>Connexion à Signaux Faibles</h1>
-              
+
               <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "fr-mt-4w" }) do |f| %>
+                <p class="fr-text--sm">Tous les champs sont obligatoires.</p>
                 <div class="fr-input-group fr-mb-3w">
                   <%= f.label :email, "Adresse électronique", class: "fr-label" %>
                   <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "fr-input", required: true %>
