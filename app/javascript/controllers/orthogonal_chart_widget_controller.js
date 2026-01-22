@@ -131,7 +131,8 @@ export default class extends Controller {
               color: axisColor
             },
             beginAtZero: true,
-            stacked: this.barModeValue === 'stacked',
+            // Don't set stacked on axis - use stack property on individual datasets instead
+            // This allows bars to stack while lines remain independent
           }
         },
         datasets: {
@@ -172,7 +173,8 @@ export default class extends Controller {
           type: 'line',
           fill: 1,
           borderDash: this.borderDashValue[index],
-          spanGaps: false, // Break line at null values
+          spanGaps: true, // Connect points across null values to maintain consistent scale
+          stack: undefined, // Explicitly don't stack lines - only bars should stack
         };
       }
 
