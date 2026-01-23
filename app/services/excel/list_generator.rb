@@ -246,9 +246,10 @@ module Excel
       SQL
 
       # Execute the query with all parameters
-      # Parameters: sirens (once for VALUES), list_label (twice), current_date, list_date (for delai check)
+      # Parameters order: sirens (VALUES), list_label (current_score_entries), current_date (procol),
+      #   list_label (sjcf_companies), list_date (delai_urssaf_companies), list_label (is_first_alert)
       list_date = @list.list_date || Date.current
-      all_params = sirens + [list_label, current_date, list_label, list_label, list_date]
+      all_params = sirens + [list_label, current_date, list_label, list_date, list_label]
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
       results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
