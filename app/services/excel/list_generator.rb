@@ -97,15 +97,14 @@ module Excel
         "Détail du score santé financière",
         "Détail du score dettes sociales",
         "Détail du score activité partielle",
-        "SJCF",
-        "Liste retraitée",
+        "Liste retraitée (Oui / Non)",
         "Délai de paiement Urssaf",
         "Entreprises récentes",
         "Accompagnement"
       ]
-      # Reuse single style object instead of creating 26
+      # Reuse single style object instead of creating 25
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(26, header_style_obj)
+      sheet.add_row headers, style: Array.new(25, header_style_obj)
     end
 
     def add_company_rows(sheet) # rubocop:disable Metrics/MethodLength
@@ -118,12 +117,12 @@ module Excel
 
       # Create style objects once and reuse
       row_style = centered_style(sheet)
-      row_styles = Array.new(26, row_style)
+      row_styles = Array.new(25, row_style)
 
       companies_with_data.each do |company|
         sheet.add_row prepare_company_row(company, sheet),
                       style: row_styles,
-                      types: [:string] * 26
+                      types: [:string] * 25
       end
     end
 
@@ -358,7 +357,6 @@ module Excel
         format_score_detail(score_entry, "Dettes-sociales"),
         format_score_detail(score_entry, "Recours-à-l'activité-partielle"),
         format_sjcf(company.siren),
-        format_liste_retraitee(company.siren),
         format_delai_urssaf(siege_establishment),
         format_entreprise_recente(company.creation),
         format_tracking_status(company.siren)
@@ -441,14 +439,6 @@ module Excel
 
     def format_sjcf(siren)
       @sjcf_companies.include?(siren) ? "Oui" : "Non"
-    end
-
-    def format_liste_retraitee(siren)
-      # Use preloaded score entries data
-      entries = @score_entries_by_siren[siren] || []
-      # Check if company appears in previous lists (retraitée means it was in a previous list)
-      other_entries = entries.any? { |entry| entry.list_name != @list.label }
-      other_entries ? "Oui" : "Non"
     end
 
     def format_delai_urssaf(siege_establishment)
