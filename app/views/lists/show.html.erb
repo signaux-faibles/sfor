@@ -60,7 +60,8 @@
         <div class="fr-grid-row fr-grid-row--center fr-mt-4w" id="load-more-container">
           <%= link_to "Charger plus de résultats",
                       load_more_list_path(@list, search: @search_params.merge(cursor: @next_cursor), format: :turbo_stream),
-                      class: "fr-btn fr-btn--secondary" %>
+                      class: "fr-btn fr-btn--secondary",
+                      data: { turbo_stream: true } %>
         </div>
       <% end %>
 
