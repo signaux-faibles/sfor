@@ -52,6 +52,7 @@ module Excel
       @siege_establishments = {}
       @score_entries_by_company = {}
       @has_delai_urssaf = Set.new
+      @company_data = {} # Cache for company metadata (raison_sociale, department, etc.)
     end
 
     def generate
@@ -109,20 +110,17 @@ module Excel
       sheet.add_row headers, style: Array.new(25, header_style_obj)
     end
 
-    def add_company_rows(sheet) # rubocop:disable Metrics/MethodLength
-      # Preload associations to avoid N+1 queries
-      companies_with_data = @companies.includes(
-        :establishments,
-        :company_score_entries,
-        establishments: %i[department establishment_trackings]
-      )
+    def add_company_rows(sheet)
+      # Get sirens in the same order as the companies query (if order matters)
+      # Otherwise just use the sirens from our cache
+      sirens = @companies.pluck(:siren).compact.uniq
 
       # Create style objects once and reuse
       row_style = centered_style(sheet)
       row_styles = Array.new(25, row_style)
 
-      companies_with_data.each do |company|
-        sheet.add_row prepare_company_row(company, sheet),
+      sirens.each do |siren|
+        sheet.add_row prepare_company_row(siren, sheet),
                       style: row_styles,
                       types: [:string] * 25
       end
@@ -224,8 +222,17 @@ module Excel
           FROM all_establishments ae
           INNER JOIN osf_delais od ON od.siret = ae.siret
           WHERE od.date_echeance > COALESCE(?, CURRENT_DATE)
+        ),
+        company_metadata AS (
+          SELECT c.siren, c.raison_sociale, c.department, c.creation,
+            c.libelle_categorie_juridique, c.naf_section, c.libelle_activite_principale,
+            c.naf_code, c.libelle_naf_section
+          FROM companies c
+          INNER JOIN target_sirens ts ON c.siren = ts.siren
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
+          cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
+          cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN EXISTS (SELECT 1 FROM company_score_entries ase WHERE ase.siren = ts.siren AND ase.list_name != ?) THEN false ELSE true END AS is_first_alert,
           COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
           COALESCE(ae.effectif, 0) AS effectif,
@@ -242,6 +249,7 @@ module Excel
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
+        LEFT JOIN company_metadata cm ON ts.siren = cm.siren
         ORDER BY ts.siren
       SQL
 
@@ -304,6 +312,21 @@ module Excel
 
         # Delai URSSAF
         @has_delai_urssaf.add(siren) if row["has_delai_urssaf"]
+
+        # Company metadata (convert date strings to Date objects)
+        creation_date = row["creation"]
+        creation_date = creation_date.to_date if creation_date.is_a?(String)
+
+        @company_data[siren] = {
+          raison_sociale: row["raison_sociale"],
+          department: row["department"],
+          creation: creation_date,
+          libelle_categorie_juridique: row["libelle_categorie_juridique"],
+          naf_section: row["naf_section"],
+          libelle_activite_principale: row["libelle_activite_principale"],
+          naf_code: row["naf_code"],
+          libelle_naf_section: row["libelle_naf_section"]
+        }
       end
 
       # Load all score entries for companies that don't have current list entries
@@ -316,45 +339,52 @@ module Excel
       end
     end
 
-    def prepare_company_row(company, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
       # Use preloaded data instead of querying
-      siege_siret = @siege_establishments[company.siren]
-      siege_establishment = siege_siret ? company.establishments.find_by(siret: siege_siret) : nil
+      siege_siret = @siege_establishments[siren]
+      company_data = @company_data[siren] || {}
 
       # Get score entry for current list specifically (always a hash from single query)
-      score_entry = @score_entries_by_company[company.siren]
+      score_entry = @score_entries_by_company[siren]
+
+      # Get department code - company_data[:department] is already the code string
+      department_code = company_data[:department] || "-"
 
       [
         @list.label, # Campagne
-        company.siren,
-        siege_establishment&.siret || "-",
-        company.raison_sociale || "-",
-        company.department&.code || "-",
-        format_creation_year(company.creation),
-        format_statut_juridique(company.libelle_categorie_juridique),
-        format_procol_status(company.siren),
-        format_last_effectif(company.siren),
-        format_social_debt(company.siren, siege_establishment),
-        format_insee_sector(company),
-        company.libelle_activite_principale || "-",
-        format_naf_activity(company),
-        company.libelle_naf_section || "-",
+        siren,
+        siege_siret || "-",
+        company_data[:raison_sociale] || "-",
+        department_code,
+        format_creation_year(company_data[:creation]),
+        format_statut_juridique(company_data[:libelle_categorie_juridique]),
+        format_procol_status(siren),
+        format_last_effectif(siren),
+        format_social_debt(siren, nil),
+        format_insee_sector(company_data),
+        company_data[:libelle_activite_principale] || "-",
+        format_naf_activity(company_data),
+        company_data[:libelle_naf_section] || "-",
         format_alert_level(score_entry),
-        format_alert_frequency(company.siren),
+        format_alert_frequency(siren),
         format_score(score_entry ? score_entry[:score] : nil),
         format_score_detail(score_entry, "Variation-de-l'effectif-de-l'entreprise"),
         format_score_detail(score_entry, "Données-financières"),
         format_score_detail(score_entry, "Dettes-sociales"),
         format_score_detail(score_entry, "Recours-à-l'activité-partielle"),
-        format_sjcf(company.siren),
-        format_delai_urssaf(company.siren),
-        format_entreprise_recente(company.creation),
-        format_tracking_status(company.siren)
+        format_sjcf(siren),
+        format_delai_urssaf(siren),
+        format_entreprise_recente(company_data[:creation]),
+        format_tracking_status(siren)
       ]
     end
 
     def format_creation_year(creation_date)
-      creation_date&.year || "-"
+      return "-" unless creation_date
+
+      # Convert string to Date if needed (exec_query returns dates as strings)
+      date = creation_date.is_a?(String) ? creation_date.to_date : creation_date
+      date.year || "-"
     end
 
     def format_statut_juridique(statut)
@@ -377,12 +407,12 @@ module Excel
       total.positive? ? total.round(2) : "-"
     end
 
-    def format_insee_sector(company)
-      company.naf_section || "-"
+    def format_insee_sector(company_data)
+      company_data[:naf_section] || "-"
     end
 
-    def format_naf_activity(company)
-      company.naf_code || "-"
+    def format_naf_activity(company_data)
+      company_data[:naf_code] || "-"
     end
 
     def format_alert_level(score_entry)
@@ -440,8 +470,10 @@ module Excel
     def format_entreprise_recente(creation_date)
       return "-" unless creation_date
 
+      # Convert string to Date if needed (exec_query returns dates as strings)
+      date = creation_date.is_a?(String) ? creation_date.to_date : creation_date
       three_years_ago = Date.current - 3.years
-      creation_date >= three_years_ago ? "Oui" : "Non"
+      date >= three_years_ago ? "Oui" : "Non"
     end
 
     def format_tracking_status(siren)
