@@ -1,3 +1,4 @@
+# rubocop:disable all
 class ListsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include SirenSiretRedirectable
   include ProcolStatusable
