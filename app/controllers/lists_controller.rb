@@ -42,9 +42,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Paginate (no includes needed - establishment counts loaded via Turbo Frame)
-        @companies = @companies.page(@page).per(@per_page)
-
+        # Load all results (no pagination for better performance - avoids expensive COUNT query)
         # Format results for display (establishment count loaded via Turbo Frame)
         @results = @companies.map do |company|
           {
@@ -52,13 +50,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
             "nom_complet" => company.raison_sociale || company.siren
           }
         end
-
-        @pagination = {
-          page: @page,
-          per_page: @per_page,
-          total_pages: @companies.total_pages,
-          total_results: @companies.total_count
-        }
 
         # Enrichment is done per-result via Turbo Frames for better performance
       end
@@ -87,9 +78,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Paginate
-        @companies = @companies.includes(:establishments).page(@page).per(@per_page)
-
+        # Load all results (no pagination for better performance - avoids expensive COUNT query)
         # Format results for display (establishment count loaded via Turbo Frame)
         @results = @companies.map do |company|
           {
@@ -97,13 +86,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
             "nom_complet" => company.raison_sociale || company.siren
           }
         end
-
-        @pagination = {
-          page: @page,
-          per_page: @per_page,
-          total_pages: @companies.total_pages,
-          total_results: @companies.total_count
-        }
 
         # Enrichment is done per-result via Turbo Frames for better performance
       end
