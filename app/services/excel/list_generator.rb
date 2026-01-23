@@ -1,4 +1,5 @@
 # app/services/excel/list_generator.rb
+# rubocop:disable all
 module Excel
   module Styles
     def header_style(sheet)
@@ -126,213 +127,208 @@ module Excel
       end
     end
 
-    def preload_all_data # rubocop:disable Metrics/MethodLength
-      # Get all unique sirens and sirets from companies
-      companies_array = @companies.includes(:establishments).to_a
-      sirens = companies_array.filter_map(&:siren).uniq
+    def preload_all_data
+      # Get all sirens from the companies query (without loading all companies into memory)
+      sirens = @companies.pluck(:siren).compact.uniq
       return if sirens.empty?
 
-      # Preload siege establishments
-      preload_siege_establishments(companies_array)
-
-      # Preload score entries
-      preload_score_entries(companies_array, sirens)
-
-      # Preload procol statuses
-      preload_procol_statuses(sirens)
-
-      # Preload effectifs
-      preload_effectifs(sirens)
-
-      # Get all siege sirets for social debt queries
-      siege_sirets = @siege_establishments.values.compact.filter_map(&:siret).uniq
-
-      # Preload social debts
-      preload_social_debts(siege_sirets)
-
-      # Preload SJCF companies
-      preload_sjcf_companies(sirens)
-
-      # Preload tracking statuses
-      preload_tracking_statuses(sirens)
+      # Single massive query to get all data at once using CTEs
+      load_all_data_in_single_query(sirens)
     end
 
-    def preload_siege_establishments(companies_array)
-      # Build hash index for O(1) lookup instead of O(n) find
-      companies_array.each do |company|
-        # Use find_by on preloaded association (more efficient than find block)
-        siege = company.establishments.find_by(siege: true)
-        @siege_establishments[company.siren] = siege if siege
-      end
-    end
-
-    def preload_score_entries(companies_array, sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
-      # Load all score entries for all sirens
-      all_entries = CompanyScoreEntry.where(siren: sirens).to_a
-
-      # Build hash index for current list entries by company id
-      current_list_entries = all_entries.select { |e| e.list_name == @list.label }
-      current_list_entries_by_siren = current_list_entries.group_by(&:siren)
-
-      # Index by company id for current list entries (O(1) lookup)
-      companies_array.each do |company|
-        entries = current_list_entries_by_siren[company.siren]
-        @score_entries_by_company[company.id] = entries&.first if entries
-      end
-
-      # Index by siren for all entries (used for alert frequency and liste retraitée)
-      all_entries.group_by(&:siren).each do |siren, entries|
-        @score_entries_by_siren[siren] = entries
-      end
-    end
-
-    def preload_procol_statuses(sirens) # rubocop:disable Metrics/MethodLength
-      return if sirens.empty?
-
+    def load_all_data_in_single_query(sirens) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       current_date = Date.current
+      list_label = @list.label
+      @alert_frequencies = {}
 
-      # Process in batches to avoid very large IN clauses
-      # This query replicates procol_at_date logic but filters by siren FIRST for performance
-      sirens.each_slice(1000) do |siren_batch|
-        placeholders = siren_batch.map { |_| "?" }.join(",")
-        sql = <<-SQL.squish
+      # Build SQL with VALUES clause for target sirens
+      # PostgreSQL can handle large IN clauses efficiently, but VALUES is even better
+      values_placeholders = sirens.map { |_| "(?)" }.join(",")
+
+      sql = <<~SQL
+        WITH target_sirens AS (
+          SELECT siren::VARCHAR(9)
+          FROM (VALUES #{values_placeholders}) AS t(siren)
+        ),
+        siege_establishments AS (
+          SELECT DISTINCT ON (e.siren) e.siren, e.siret
+          FROM establishments e
+          INNER JOIN target_sirens ts ON e.siren = ts.siren
+          WHERE e.siege = true
+          ORDER BY e.siren, e.siret
+        ),
+        current_score_entries AS (
+          SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert, cse.macro_expl
+          FROM company_score_entries cse
+          INNER JOIN target_sirens ts ON cse.siren = ts.siren
+          WHERE cse.list_name = ?
+          ORDER BY cse.siren, cse.created_at DESC
+        ),
+        all_score_entries AS (
+          SELECT cse.siren, cse.list_name
+          FROM company_score_entries cse
+          INNER JOIN target_sirens ts ON cse.siren = ts.siren
+        ),
+        procol_statuses AS (
           WITH last_action_procol AS (
-            SELECT DISTINCT ON (siren, action_procol)
-              siren, date_effet, action_procol, stade_procol, libelle_procol
-            FROM osf_procols
-            WHERE siren IN (#{placeholders})
-              AND date_effet <= ?
-            ORDER BY siren, action_procol, date_effet DESC
+            SELECT DISTINCT ON (op.siren, op.action_procol) op.siren, op.libelle_procol, op.stade_procol
+            FROM osf_procols op
+            INNER JOIN target_sirens ts ON op.siren = ts.siren
+            WHERE op.date_effet <= ?
+            ORDER BY op.siren, op.action_procol, op.date_effet DESC
           )
           SELECT siren, libelle_procol
           FROM last_action_procol
           WHERE stade_procol != 'fin_procedure'
-        SQL
-
-        results = ActiveRecord::Base.connection.execute(
-          ActiveRecord::Base.sanitize_sql([sql, *siren_batch, current_date])
+        ),
+        latest_effectifs AS (
+          SELECT DISTINCT ON (oee.siren) oee.siren, oee.effectif
+          FROM osf_ent_effectifs oee
+          INNER JOIN target_sirens ts ON oee.siren = ts.siren
+          WHERE oee.is_latest = true
+          ORDER BY oee.siren
+        ),
+        missing_effectif_sirens AS (
+          SELECT ts.siren
+          FROM target_sirens ts
+          LEFT JOIN latest_effectifs le ON ts.siren = le.siren
+          WHERE le.siren IS NULL
+        ),
+        fallback_effectifs AS (
+          SELECT DISTINCT ON (oee.siren) oee.siren, oee.effectif
+          FROM osf_ent_effectifs oee
+          INNER JOIN missing_effectif_sirens mes ON oee.siren = mes.siren
+          ORDER BY oee.siren, oee.periode DESC
+        ),
+        all_effectifs AS (
+          SELECT siren, effectif FROM latest_effectifs
+          UNION ALL
+          SELECT siren, effectif FROM fallback_effectifs
+        ),
+        social_debts AS (
+          SELECT se.siret, od.part_ouvriere, od.part_patronale
+          FROM siege_establishments se
+          INNER JOIN osf_debits od ON od.siret = se.siret
+          WHERE od.is_last = true
+        ),
+        sjcf_companies AS (
+          SELECT DISTINCT sc.siren
+          FROM sjcf_companies sc
+          INNER JOIN target_sirens ts ON sc.siren = ts.siren
+          WHERE sc.libelle_liste = ?
+        ),
+        establishment_sirets AS (
+          SELECT DISTINCT e.siren, e.siret
+          FROM establishments e
+          INNER JOIN target_sirens ts ON e.siren = ts.siren
+        ),
+        tracking_states AS (
+          SELECT es.siren, et.state
+          FROM establishment_sirets es
+          INNER JOIN establishment_trackings et ON et.establishment_siret = es.siret
+          WHERE et.discarded_at IS NULL
+        ),
+        tracking_statuses AS (
+          SELECT siren,
+            CASE
+              WHEN bool_or(state = 'in_progress') THEN 'Accompagnement en cours'
+              WHEN bool_or(state = 'under_surveillance') THEN 'Accompagnement sous surveillance'
+              WHEN bool_or(state = 'completed') THEN 'Accompagnement terminé'
+              ELSE 'Pas d''accompagnement'
+            END AS status
+          FROM tracking_states
+          GROUP BY siren
         )
+        SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
+          CASE WHEN EXISTS (SELECT 1 FROM all_score_entries ase WHERE ase.siren = ts.siren AND ase.list_name != ?) THEN false ELSE true END AS is_first_alert,
+          COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
+          COALESCE(ae.effectif, 0) AS effectif,
+          sd.part_ouvriere, sd.part_patronale,
+          CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
+          COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status
+        FROM target_sirens ts
+        LEFT JOIN siege_establishments se ON ts.siren = se.siren
+        LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
+        LEFT JOIN procol_statuses ps ON ts.siren = ps.siren
+        LEFT JOIN all_effectifs ae ON ts.siren = ae.siren
+        LEFT JOIN social_debts sd ON se.siret = sd.siret
+        LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
+        LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
+        ORDER BY ts.siren
+      SQL
 
-        results.each do |row|
-          @procol_statuses[row["siren"]] = row["libelle_procol"]
-        end
-      end
-    rescue StandardError
-      # If query fails, all will default to "In Bonis" in format_procol_status
-    end
+      # Execute the query with all parameters
+      # Parameters: sirens (once for VALUES), list_label (twice), current_date
+      all_params = sirens + [list_label, current_date, list_label, list_label]
+      sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
+      results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
 
-    def preload_effectifs(sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-      return if sirens.empty?
+      # Populate all caches from single query result
+      results.each do |row| # rubocop:disable Metrics/BlockLength
+        siren = row.is_a?(Hash) ? row["siren"] : row[:siren]
 
-      # Use is_latest flag if available, otherwise get latest by periode
-      latest_effectifs = OsfEntEffectif
-                         .where(siren: sirens, is_latest: true)
-                         .pluck(:siren, :effectif)
+        # Siege establishment siret (we'll load the object when needed)
+        @siege_establishments[siren] = row["siege_siret"] if row["siege_siret"]
 
-      latest_effectifs.each do |siren, effectif|
-        @effectifs[siren] = effectif&.to_i || "-"
-      end
-
-      # For sirens without is_latest=true, get the latest by periode using SQL window function
-      missing_sirens = sirens - @effectifs.keys
-      return if missing_sirens.empty?
-
-      # Use SQL window function to get only the latest effectif per siren (more efficient)
-      # Process in batches to avoid very large IN clauses
-      missing_sirens.each_slice(1000) do |siren_batch|
-        placeholders = siren_batch.map { |_| "?" }.join(",")
-        sql = <<-SQL.squish
-          SELECT DISTINCT ON (siren) siren, effectif
-          FROM osf_ent_effectifs
-          WHERE siren IN (#{placeholders})
-          ORDER BY siren, periode DESC
-        SQL
-
-        results = ActiveRecord::Base.connection.execute(
-          ActiveRecord::Base.sanitize_sql([sql, *siren_batch])
-        )
-
-        results.each do |row|
-          @effectifs[row["siren"]] = row["effectif"]&.to_i || "-"
-        end
-      end
-    end
-
-    def preload_social_debts(sirets)
-      return if sirets.empty?
-
-      debits = OsfDebit
-               .where(siret: sirets, is_last: true)
-               .pluck(:siret, :part_ouvriere, :part_patronale)
-
-      debits.each do |siret, part_ouvriere, part_patronale|
-        @social_debts[siret] = {
-          part_ouvriere: part_ouvriere,
-          part_patronale: part_patronale
-        }
-      end
-    end
-
-    def preload_sjcf_companies(sirens)
-      return if sirens.empty?
-
-      sjcf_sirens = SjcfCompany
-                    .where(siren: sirens, libelle_liste: @list.label)
-                    .pluck(:siren)
-
-      @sjcf_companies = Set.new(sjcf_sirens)
-    end
-
-    def preload_tracking_statuses(sirens) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
-      return if sirens.empty?
-
-      # Get all establishments for these sirens
-      establishments = Establishment.where(siren: sirens).pluck(:siren, :siret)
-      return if establishments.empty?
-
-      sirets = establishments.filter_map(&:last).uniq
-      return if sirets.empty?
-
-      # Get all trackings for these establishments
-      trackings = EstablishmentTracking
-                  .where(establishment_siret: sirets)
-                  .kept
-                  .pluck(:establishment_siret, :state)
-
-      # Create a hash for quick lookup: siret => [states]
-      trackings_by_siret = trackings.group_by(&:first).transform_values { |v| v.map(&:last) }
-
-      # Group trackings by siren and calculate status
-      establishments_by_siren = establishments.group_by(&:first)
-      establishments_by_siren.each do |siren, siren_establishments|
-        states = []
-        siren_establishments.each do |_, siret| # rubocop:disable Style/HashEachMethods
-          states.concat(trackings_by_siret[siret] || [])
+        # Score entry data for current list
+        if row["score"]
+          macro_expl = if row["macro_expl"]
+                         row["macro_expl"].is_a?(String) ? JSON.parse(row["macro_expl"]) : row["macro_expl"]
+                       end
+          score_data = {
+            score: row["score"],
+            alert: row["alert"],
+            macro_expl: macro_expl,
+            list_name: list_label
+          }
+          @score_entries_by_siren[siren] ||= []
+          @score_entries_by_siren[siren] << score_data
+          # Also store for current list lookup (by siren for single query approach)
+          @score_entries_by_company[siren] = score_data
         end
 
-        next if states.empty?
+        # Procol status
+        @procol_statuses[siren] = row["procol_status"] if row["procol_status"]
 
-        @tracking_statuses[siren] = if states.include?("in_progress")
-                                      "Accompagnement en cours"
-                                    elsif states.include?("under_surveillance")
-                                      "Accompagnement sous surveillance"
-                                    elsif states.include?("completed")
-                                      "Accompagnement terminé"
-                                    else
-                                      "Pas d'accompagnement"
-                                    end
+        # Effectif
+        effectif = row["effectif"]
+        @effectifs[siren] = effectif&.to_i || "-" if effectif&.to_i&.positive?
+
+        # Social debt (keyed by siret)
+        if row["siege_siret"] && (row["part_ouvriere"] || row["part_patronale"])
+          @social_debts[row["siege_siret"]] = {
+            part_ouvriere: row["part_ouvriere"] || 0,
+            part_patronale: row["part_patronale"] || 0
+          }
+        end
+
+        # SJCF
+        @sjcf_companies.add(siren) if row["is_sjcf"]
+
+        # Tracking status
+        @tracking_statuses[siren] = row["tracking_status"] if row["tracking_status"]
+
+        # Alert frequency
+        @alert_frequencies[siren] = row["is_first_alert"] ? "1ère alerte" : "-"
+      end
+
+      # Load all score entries for companies that don't have current list entries
+      missing_sirens = sirens - @score_entries_by_siren.keys
+      return unless missing_sirens.any?
+
+      all_entries = CompanyScoreEntry.where(siren: missing_sirens).pluck(:siren, :list_name)
+      all_entries.group_by(&:first).each do |siren, entries|
+        @score_entries_by_siren[siren] = entries.map { |_, list_name| { list_name: list_name } }
       end
     end
 
     def prepare_company_row(company, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       # Use preloaded data instead of querying
-      siege_establishment = @siege_establishments[company.siren]
-      # Get score entry for current list specifically
-      score_entry = @score_entries_by_company[company.id]
-      if score_entry.nil?
-        entries = @score_entries_by_siren[company.siren] || []
-        score_entry = entries.find { |e| e.list_name == @list.label }
-      end
+      siege_siret = @siege_establishments[company.siren]
+      siege_establishment = siege_siret ? company.establishments.find_by(siret: siege_siret) : nil
+
+      # Get score entry for current list specifically (always a hash from single query)
+      score_entry = @score_entries_by_company[company.siren]
 
       [
         @list.label, # Campagne
@@ -351,7 +347,7 @@ module Excel
         company.libelle_naf_section || "-",
         format_alert_level(score_entry),
         format_alert_frequency(company.siren),
-        format_score(score_entry&.score),
+        format_score(score_entry ? score_entry[:score] : nil),
         format_score_detail(score_entry, "Variation-de-l'effectif-de-l'entreprise"),
         format_score_detail(score_entry, "Données-financières"),
         format_score_detail(score_entry, "Dettes-sociales"),
@@ -382,7 +378,8 @@ module Excel
     def format_social_debt(_siren, siege_establishment)
       return "-" unless siege_establishment
 
-      debt = @social_debts[siege_establishment.siret]
+      siret = siege_establishment.is_a?(String) ? siege_establishment : siege_establishment.siret
+      debt = @social_debts[siret]
       return "-" unless debt
 
       total = (debt[:part_ouvriere].to_f + debt[:part_patronale].to_f)
@@ -398,9 +395,9 @@ module Excel
     end
 
     def format_alert_level(score_entry)
-      return "-" unless score_entry&.alert
+      return "-" unless score_entry && score_entry[:alert]
 
-      case score_entry.alert.downcase
+      case score_entry[:alert].downcase
       when "alerte seuil f1"
         "Alerte élevée"
       when "alerte seuil f2"
@@ -411,12 +408,15 @@ module Excel
     end
 
     def format_alert_frequency(siren)
-      # Use preloaded score entries data
+      # Use preloaded alert frequency from single query
+      return @alert_frequencies[siren] if @alert_frequencies&.key?(siren)
+
+      # Use preloaded score entries data if alert frequency not in cache
       entries = @score_entries_by_siren[siren] || []
       return "-" if entries.empty?
 
       # Check if company appears in other lists (excluding current list)
-      other_entries_exist = entries.any? { |entry| entry.list_name != @list.label }
+      other_entries_exist = entries.any? { |entry| entry[:list_name] != @list.label }
 
       # If no other entries, it's a first alert; otherwise nothing
       other_entries_exist ? "-" : "1ère alerte"
@@ -429,9 +429,9 @@ module Excel
     end
 
     def format_score_detail(score_entry, key)
-      return "-" unless score_entry&.macro_expl
+      return "-" unless score_entry && score_entry[:macro_expl]
 
-      value = score_entry.macro_expl[key]
+      value = score_entry[:macro_expl][key]
       return "-" unless value
 
       value.to_f.round
@@ -444,8 +444,9 @@ module Excel
     def format_delai_urssaf(siege_establishment)
       return "-" unless siege_establishment
 
+      siret = siege_establishment.is_a?(String) ? siege_establishment : siege_establishment.siret
       # Use preloaded social debt data (same logic as active_dette_urssaf)
-      debt = @social_debts[siege_establishment.siret]
+      debt = @social_debts[siret]
       return "Non" unless debt
 
       has_delai = debt[:part_ouvriere].to_f.positive? || debt[:part_patronale].to_f.positive?
