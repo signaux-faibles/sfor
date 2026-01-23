@@ -36,13 +36,13 @@
                       class: 'fr-link--download fr-link',
                       data: { controller: 'download', action: 'click->download#disable', download_target: 'button' },
                       id: 'download-button' do %>
-            Télécharger les <%= @results.size %> résultats de la recherche
+            Télécharger les résultats de la recherche
             <span class="fr-link__detail">XLS</span>
           <% end %>
         </div>
       </div>
       <p class="fr-mt-2w">
-        <%= pluralize(@results.size, "entreprise", "entreprises") %>
+        <%= pluralize(@results.size, "entreprise", "entreprises") %> affichée<%= "s" if @results.size > 1 %>
         <%= turbo_frame_tag "alert_breakdown", 
             src: alert_breakdown_list_path(@list, search: @search_params),
             loading: "lazy" do %>
@@ -51,41 +51,18 @@
       </p>
 
       <div class="fr-mt-3w">
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <% @results.each do |company| %>
-            <div class="fr-col-12">
-              <div class="fr-card fr-card--sm">
-                <div class="fr-card__body">
-                  <div class="fr-card__content">
-                    <h3 class="fr-card__title">
-                      <%= link_to company["nom_complet"], company_path(company["siren"]) %>
-                    </h3>
-                    <p class="fr-card__desc">
-                      SIREN : <%= company["siren"] %>
-                    </p>
-                    <div class="fr-card__start">
-                      <%= turbo_frame_tag "company_badges_#{company["siren"]}", 
-                          src: enrich_company_list_path(@list, siren: company["siren"]),
-                          loading: "lazy" do %>
-                        <ul class="fr-badges-group">
-                          <!-- Loading badges... -->
-                        </ul>
-                      <% end %>
-                    </div>
-                    <div class="fr-card__end">
-                      <%= turbo_frame_tag "company_establishments_#{company["siren"]}", 
-                          src: enrich_company_list_path(@list, siren: company["siren"]),
-                          loading: "lazy" do %>
-                        <!-- Loading establishment count... -->
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          <% end %>
+        <div class="fr-grid-row fr-grid-row--gutters" id="companies-container">
+          <%= render partial: "company_card", collection: @results, as: :company, locals: { list: @list } %>
         </div>
       </div>
+
+      <% if @has_next_page && @next_cursor %>
+        <div class="fr-grid-row fr-grid-row--center fr-mt-4w" id="load-more-container">
+          <%= link_to "Charger plus de résultats",
+                      load_more_list_path(@list, search: @search_params.merge(cursor: @next_cursor), format: :turbo_stream),
+                      class: "fr-btn fr-btn--secondary" %>
+        </div>
+      <% end %>
 
     <% else %>
       <div class="fr-alert fr-alert--info fr-mt-3w">

@@ -17,16 +17,17 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     :premieres_alertes, :sans_entreprises_recentes,
                                                     :sans_delai_urssaf, :liste_retraitee,
                                                     :filters_open,
-                                                    :page, :per_page,
+                                                    :cursor, :per_page,
                                                     departement_in: [],
                                                     forme_juridique: [],
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
 
-    @page = @search_params[:page].to_i
-    @page = 1 if @page < 1
+    @cursor = @search_params[:cursor].to_i
+    @cursor = 0 if @cursor < 1
     @per_page = @search_params[:per_page].to_i
-    @per_page = 10 if @per_page < 1
+    @per_page = 20 if @per_page < 1
+    @per_page = 100 if @per_page > 100 # Cap at 100 for performance
 
     # Start with companies in this list (from company_score_entries)
     # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
@@ -42,14 +43,34 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Load all results (no pagination for better performance - avoids expensive COUNT query)
+        # Cursor-based pagination: order by id and use cursor to fetch next page
+        # This avoids expensive COUNT queries and is more efficient than OFFSET
+        @companies = @companies.order(id: :asc)
+        @companies = @companies.where("companies.id > ?", @cursor) if @cursor > 0
+
+        # Load one extra to check if there's a next page
+        companies_with_extra = @companies.limit(@per_page + 1).to_a
+
+        # Check if there's a next page
+        @has_next_page = companies_with_extra.size > @per_page
+
+        # Remove the extra item if present
+        companies_page = companies_with_extra.first(@per_page)
+
         # Format results for display (establishment count loaded via Turbo Frame)
-        @results = @companies.map do |company|
+        @results = companies_page.map do |company|
           {
             "siren" => company.siren,
-            "nom_complet" => company.raison_sociale || company.siren
+            "nom_complet" => company.raison_sociale || company.siren,
+            "id" => company.id
           }
         end
+
+        # Set next cursor (id of last item) if there's a next page
+        @next_cursor = @results.last["id"] if @has_next_page && @results.any?
+
+        # Store first cursor for "previous" navigation
+        @first_cursor = @results.first["id"] if @results.any?
 
         # Enrichment is done per-result via Turbo Frames for better performance
       end
@@ -61,8 +82,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
     @search_params = {}
-    @page = 1
-    @per_page = 10
+    @cursor = 0
+    @per_page = 20
 
     # Start with companies in this list (from company_score_entries)
     # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
@@ -78,20 +99,90 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Load all results (no pagination for better performance - avoids expensive COUNT query)
+        # Cursor-based pagination: order by id and use cursor to fetch next page
+        # This avoids expensive COUNT queries and is more efficient than OFFSET
+        @companies = @companies.order(id: :asc)
+
+        # Load one extra to check if there's a next page
+        companies_with_extra = @companies.limit(@per_page + 1).to_a
+
+        # Check if there's a next page
+        @has_next_page = companies_with_extra.size > @per_page
+
+        # Remove the extra item if present
+        companies_page = companies_with_extra.first(@per_page)
+
         # Format results for display (establishment count loaded via Turbo Frame)
-        @results = @companies.map do |company|
+        @results = companies_page.map do |company|
           {
             "siren" => company.siren,
-            "nom_complet" => company.raison_sociale || company.siren
+            "nom_complet" => company.raison_sociale || company.siren,
+            "id" => company.id
           }
         end
+
+        # Set next cursor (id of last item) if there's a next page
+        @next_cursor = @results.last["id"] if @has_next_page && @results.any?
 
         # Enrichment is done per-result via Turbo Frames for better performance
       end
       format.xlsx do
         export_list(@companies)
       end
+    end
+  end
+
+  def load_more
+    @list = List.find(params[:id])
+
+    # Get search params (same as show action)
+    @search_params = params.require(:search).permit(:q,
+                                                    :effectif_min, :score_min,
+                                                    :dette_sociale_min, :libelle_procol,
+                                                    :frequence_alerte, :niveau_alerte,
+                                                    :premieres_alertes, :sans_entreprises_recentes,
+                                                    :sans_delai_urssaf, :liste_retraitee,
+                                                    :filters_open,
+                                                    :cursor, :per_page,
+                                                    departement_in: [],
+                                                    forme_juridique: [],
+                                                    section_activite_principale: []) if params[:search].present?
+    @search_params ||= {}
+
+    @cursor = @search_params[:cursor].to_i
+    @cursor = 0 if @cursor < 1
+    @per_page = @search_params[:per_page].to_i
+    @per_page = 20 if @per_page < 1
+    @per_page = 100 if @per_page > 100
+
+    # Start with companies in this list
+    @companies = companies_in_list(@list)
+    @companies = policy_scope(@companies)
+    @companies = apply_database_filters(@companies)
+
+    # Cursor-based pagination
+    @companies = @companies.order(id: :asc)
+    @companies = @companies.where("companies.id > ?", @cursor) if @cursor > 0
+
+    # Load one extra to check if there's a next page
+    companies_with_extra = @companies.limit(@per_page + 1).to_a
+    @has_next_page = companies_with_extra.size > @per_page
+    companies_page = companies_with_extra.first(@per_page)
+
+    # Format results
+    @results = companies_page.map do |company|
+      {
+        "siren" => company.siren,
+        "nom_complet" => company.raison_sociale || company.siren,
+        "id" => company.id
+      }
+    end
+
+    @next_cursor = @results.last["id"] if @has_next_page && @results.any?
+
+    respond_to do |format|
+      format.turbo_stream # Renders load_more.turbo_stream.erb
+      format.html # Fallback
     end
   end
 
