@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_22_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_23_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -363,6 +363,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_22_000001) do
     t.text "address"
     t.index ["departement", "siege"], name: "index_establishments_on_departement_siege"
     t.index ["departement"], name: "index_establishments_on_departement"
+    t.index ["siren", "siege"], name: "index_establishments_on_siren_and_siege", where: "(siege = true)"
     t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siren"], name: "index_establishments_on_siren"
     t.index ["siret"], name: "index_establishments_on_siret", unique: true

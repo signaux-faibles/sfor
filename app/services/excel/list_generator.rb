@@ -164,11 +164,6 @@ module Excel
           WHERE cse.list_name = ?
           ORDER BY cse.siren, cse.created_at DESC
         ),
-        all_score_entries AS (
-          SELECT cse.siren, cse.list_name
-          FROM company_score_entries cse
-          INNER JOIN target_sirens ts ON cse.siren = ts.siren
-        ),
         procol_statuses AS (
           WITH last_action_procol AS (
             SELECT DISTINCT ON (op.siren, op.action_procol) op.siren, op.libelle_procol, op.stade_procol
@@ -181,35 +176,24 @@ module Excel
           FROM last_action_procol
           WHERE stade_procol != 'fin_procedure'
         ),
-        latest_effectifs AS (
+        all_effectifs AS (
           SELECT DISTINCT ON (oee.siren) oee.siren, oee.effectif
           FROM osf_ent_effectifs oee
           INNER JOIN target_sirens ts ON oee.siren = ts.siren
-          WHERE oee.is_latest = true
-          ORDER BY oee.siren
+          ORDER BY oee.siren, oee.is_latest DESC NULLS LAST, oee.periode DESC
         ),
-        missing_effectif_sirens AS (
-          SELECT ts.siren
-          FROM target_sirens ts
-          LEFT JOIN latest_effectifs le ON ts.siren = le.siren
-          WHERE le.siren IS NULL
-        ),
-        fallback_effectifs AS (
-          SELECT DISTINCT ON (oee.siren) oee.siren, oee.effectif
-          FROM osf_ent_effectifs oee
-          INNER JOIN missing_effectif_sirens mes ON oee.siren = mes.siren
-          ORDER BY oee.siren, oee.periode DESC
-        ),
-        all_effectifs AS (
-          SELECT siren, effectif FROM latest_effectifs
-          UNION ALL
-          SELECT siren, effectif FROM fallback_effectifs
+        all_establishments AS (
+          SELECT DISTINCT e.siren, e.siret
+          FROM establishments e
+          INNER JOIN target_sirens ts ON e.siren = ts.siren
         ),
         social_debts AS (
-          SELECT se.siret, od.part_ouvriere, od.part_patronale
-          FROM siege_establishments se
-          INNER JOIN osf_debits od ON od.siret = se.siret
-          WHERE od.is_last = true
+          SELECT ae.siren, 
+            COALESCE(SUM(od.part_ouvriere), 0) AS part_ouvriere, 
+            COALESCE(SUM(od.part_patronale), 0) AS part_patronale
+          FROM all_establishments ae
+          LEFT JOIN osf_debits od ON od.siret = ae.siret AND od.is_last = true
+          GROUP BY ae.siren
         ),
         sjcf_companies AS (
           SELECT DISTINCT sc.siren
@@ -217,15 +201,10 @@ module Excel
           INNER JOIN target_sirens ts ON sc.siren = ts.siren
           WHERE sc.libelle_liste = ?
         ),
-        establishment_sirets AS (
-          SELECT DISTINCT e.siren, e.siret
-          FROM establishments e
-          INNER JOIN target_sirens ts ON e.siren = ts.siren
-        ),
         tracking_states AS (
-          SELECT es.siren, et.state
-          FROM establishment_sirets es
-          INNER JOIN establishment_trackings et ON et.establishment_siret = es.siret
+          SELECT ae.siren, et.state
+          FROM all_establishments ae
+          INNER JOIN establishment_trackings et ON et.establishment_siret = ae.siret
           WHERE et.discarded_at IS NULL
         ),
         tracking_statuses AS (
@@ -240,7 +219,7 @@ module Excel
           GROUP BY siren
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
-          CASE WHEN EXISTS (SELECT 1 FROM all_score_entries ase WHERE ase.siren = ts.siren AND ase.list_name != ?) THEN false ELSE true END AS is_first_alert,
+          CASE WHEN EXISTS (SELECT 1 FROM company_score_entries ase WHERE ase.siren = ts.siren AND ase.list_name != ?) THEN false ELSE true END AS is_first_alert,
           COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
           COALESCE(ae.effectif, 0) AS effectif,
           sd.part_ouvriere, sd.part_patronale,
@@ -251,7 +230,7 @@ module Excel
         LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
         LEFT JOIN procol_statuses ps ON ts.siren = ps.siren
         LEFT JOIN all_effectifs ae ON ts.siren = ae.siren
-        LEFT JOIN social_debts sd ON se.siret = sd.siret
+        LEFT JOIN social_debts sd ON ts.siren = sd.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         ORDER BY ts.siren
@@ -261,6 +240,7 @@ module Excel
       # Parameters: sirens (once for VALUES), list_label (twice), current_date
       all_params = sirens + [list_label, current_date, list_label, list_label]
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
+      Rails.logger.debug "SQL Query: #{sanitized_sql}"
       results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
 
       # Populate all caches from single query result
@@ -294,9 +274,9 @@ module Excel
         effectif = row["effectif"]
         @effectifs[siren] = effectif&.to_i || "-" if effectif&.to_i&.positive?
 
-        # Social debt (keyed by siret)
-        if row["siege_siret"] && (row["part_ouvriere"] || row["part_patronale"])
-          @social_debts[row["siege_siret"]] = {
+        # Social debt (keyed by siren - sum of all establishments)
+        if row["part_ouvriere"] || row["part_patronale"]
+          @social_debts[siren] = {
             part_ouvriere: row["part_ouvriere"] || 0,
             part_patronale: row["part_patronale"] || 0
           }
@@ -353,7 +333,7 @@ module Excel
         format_score_detail(score_entry, "Dettes-sociales"),
         format_score_detail(score_entry, "Recours-à-l'activité-partielle"),
         format_sjcf(company.siren),
-        format_delai_urssaf(siege_establishment),
+        format_delai_urssaf(company.siren),
         format_entreprise_recente(company.creation),
         format_tracking_status(company.siren)
       ]
@@ -375,11 +355,8 @@ module Excel
       @effectifs[siren] || "-"
     end
 
-    def format_social_debt(_siren, siege_establishment)
-      return "-" unless siege_establishment
-
-      siret = siege_establishment.is_a?(String) ? siege_establishment : siege_establishment.siret
-      debt = @social_debts[siret]
+    def format_social_debt(siren, _siege_establishment)
+      debt = @social_debts[siren]
       return "-" unless debt
 
       total = (debt[:part_ouvriere].to_f + debt[:part_patronale].to_f)
@@ -441,12 +418,9 @@ module Excel
       @sjcf_companies.include?(siren) ? "Oui" : "Non"
     end
 
-    def format_delai_urssaf(siege_establishment)
-      return "-" unless siege_establishment
-
-      siret = siege_establishment.is_a?(String) ? siege_establishment : siege_establishment.siret
-      # Use preloaded social debt data (same logic as active_dette_urssaf)
-      debt = @social_debts[siret]
+    def format_delai_urssaf(siren)
+      # Use preloaded social debt data (sum of all establishments for the company)
+      debt = @social_debts[siren]
       return "Non" unless debt
 
       has_delai = debt[:part_ouvriere].to_f.positive? || debt[:part_patronale].to_f.positive?
