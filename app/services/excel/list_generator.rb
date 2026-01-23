@@ -51,6 +51,7 @@ module Excel
       @tracking_statuses = {}
       @siege_establishments = {}
       @score_entries_by_company = {}
+      @has_delai_urssaf = Set.new
     end
 
     def generate
@@ -217,6 +218,12 @@ module Excel
             END AS status
           FROM tracking_states
           GROUP BY siren
+        ),
+        delai_urssaf_companies AS (
+          SELECT DISTINCT ae.siren
+          FROM all_establishments ae
+          INNER JOIN osf_delais od ON od.siret = ae.siret
+          WHERE od.date_echeance > COALESCE(?, CURRENT_DATE)
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
           CASE WHEN EXISTS (SELECT 1 FROM company_score_entries ase WHERE ase.siren = ts.siren AND ase.list_name != ?) THEN false ELSE true END AS is_first_alert,
@@ -224,7 +231,8 @@ module Excel
           COALESCE(ae.effectif, 0) AS effectif,
           sd.part_ouvriere, sd.part_patronale,
           CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
-          COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status
+          COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status,
+          CASE WHEN du.siren IS NOT NULL THEN true ELSE false END AS has_delai_urssaf
         FROM target_sirens ts
         LEFT JOIN siege_establishments se ON ts.siren = se.siren
         LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
@@ -233,12 +241,14 @@ module Excel
         LEFT JOIN social_debts sd ON ts.siren = sd.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
+        LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
         ORDER BY ts.siren
       SQL
 
       # Execute the query with all parameters
-      # Parameters: sirens (once for VALUES), list_label (twice), current_date
-      all_params = sirens + [list_label, current_date, list_label, list_label]
+      # Parameters: sirens (once for VALUES), list_label (twice), current_date, list_date (for delai check)
+      list_date = @list.list_date || Date.current
+      all_params = sirens + [list_label, current_date, list_label, list_label, list_date]
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
       results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
@@ -290,6 +300,9 @@ module Excel
 
         # Alert frequency
         @alert_frequencies[siren] = row["is_first_alert"] ? "1ère alerte" : "-"
+
+        # Delai URSSAF
+        @has_delai_urssaf.add(siren) if row["has_delai_urssaf"]
       end
 
       # Load all score entries for companies that don't have current list entries
@@ -419,12 +432,8 @@ module Excel
     end
 
     def format_delai_urssaf(siren)
-      # Use preloaded social debt data (sum of all establishments for the company)
-      debt = @social_debts[siren]
-      return "Non" unless debt
-
-      has_delai = debt[:part_ouvriere].to_f.positive? || debt[:part_patronale].to_f.positive?
-      has_delai ? "Oui" : "Non"
+      # Check if company has any establishment with OsfDelai where date_echeance > list_date
+      @has_delai_urssaf.include?(siren) ? "Oui" : "Non"
     end
 
     def format_entreprise_recente(creation_date)
