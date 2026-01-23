@@ -1,0 +1,30 @@
+<div class="fr-col-12" data-company-id="<%= company["id"] %>">
+  <div class="fr-card fr-card--sm">
+    <div class="fr-card__body">
+      <div class="fr-card__content">
+        <h3 class="fr-card__title">
+          <%= link_to company["nom_complet"], company_path(company["siren"]) %>
+        </h3>
+        <p class="fr-card__desc">
+          SIREN : <%= company["siren"] %>
+        </p>
+        <div class="fr-card__start">
+          <%= turbo_frame_tag "company_badges_#{company["siren"]}", 
+              src: enrich_company_list_path(list, siren: company["siren"]),
+              loading: "lazy" do %>
+            <ul class="fr-badges-group">
+              <!-- Loading badges... -->
+            </ul>
+          <% end %>
+        </div>
+        <div class="fr-card__end">
+          <%= turbo_frame_tag "company_establishments_#{company["siren"]}", 
+              src: enrich_company_list_path(list, siren: company["siren"]),
+              loading: "lazy" do %>
+            <!-- Loading establishment count... -->
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

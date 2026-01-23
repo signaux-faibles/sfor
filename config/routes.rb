@@ -87,6 +87,7 @@ Rails.application.routes.draw do
     member do
       get :enrich_company
       get :alert_breakdown
+      get :load_more
     end
   end
 

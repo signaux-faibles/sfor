@@ -1,0 +1,20 @@
+<%# This turbo_stream appends new companies and updates the load more button %>
+<%= turbo_stream.append "companies-container" do %>
+  <%= render partial: "company_card", collection: @results, as: :company, locals: { list: @list } %>
+<% end %>
+
+<% if @has_next_page && @next_cursor %>
+  <%= turbo_stream.replace "load-more-container" do %>
+    <div class="fr-grid-row fr-grid-row--center fr-mt-4w" id="load-more-container">
+      <%= link_to "Charger plus de résultats",
+                  load_more_list_path(@list, search: @search_params.merge(cursor: @next_cursor), format: :turbo_stream),
+                  class: "fr-btn fr-btn--secondary" %>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "load-more-container" do %>
+    <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
+      <p class="fr-text--sm fr-text--center">Tous les résultats ont été chargés</p>
+    </div>
+  <% end %>
+<% end %>
