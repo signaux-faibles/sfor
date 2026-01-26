@@ -177,18 +177,18 @@ module Excel
           FROM last_action_procol
           WHERE stade_procol != 'fin_procedure'
         ),
-        all_effectifs AS (
-          SELECT DISTINCT ON (oee.siren) oee.siren, oee.effectif
+        all_effectifs AS MATERIALIZED (
+          SELECT oee.siren, oee.effectif
           FROM osf_ent_effectifs oee
           WHERE oee.siren = ANY(ARRAY[#{siren_placeholders}])
-          ORDER BY oee.siren, oee.is_latest DESC NULLS LAST, oee.periode DESC
+            AND oee.is_latest = true
         ),
-        all_establishments AS (
+        all_establishments AS MATERIALIZED (
           SELECT DISTINCT e.siren, e.siret
           FROM establishments e
           WHERE e.siren = ANY(ARRAY[#{siren_placeholders}])
         ),
-        social_debts AS (
+        social_debts AS MATERIALIZED (
           SELECT ae.siren, 
             COALESCE(SUM(od.part_ouvriere), 0) AS part_ouvriere, 
             COALESCE(SUM(od.part_patronale), 0) AS part_patronale
@@ -287,11 +287,16 @@ module Excel
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
 
-      # Set work_mem for better performance on large queries with CTEs, sorts, and hash joins
-      # This increases memory available for query operations (sorts, hash joins, etc.)
+      # Set PostgreSQL settings for better performance on large queries
+      # - work_mem: increases memory for sorts, hash joins, etc. (helps with the external merge sort we see)
+      # - enable_hashjoin: ensure hash joins are enabled (they're usually better for large datasets)
+      # - random_page_cost: if using SSD, lower this (default 4.0, SSD typically 1.1-1.5)
       # Using SET LOCAL so it only affects this transaction
       results = ActiveRecord::Base.transaction do
         ActiveRecord::Base.connection.execute("SET LOCAL work_mem = '512MB'")
+        # Lower random_page_cost if using SSD (helps planner choose index scans over seq scans)
+        # You may want to adjust this based on your storage type
+        ActiveRecord::Base.connection.execute("SET LOCAL random_page_cost = 1.5")
         ActiveRecord::Base.connection.exec_query(sanitized_sql)
       end
 
