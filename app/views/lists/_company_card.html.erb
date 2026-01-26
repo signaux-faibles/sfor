@@ -9,6 +9,7 @@
           SIREN : <%= company["siren"] %>
         </p>
         <div class="fr-card__start">
+          <%= company["score"] %>
           <%= turbo_frame_tag "company_badges_#{company["siren"]}", 
               src: enrich_company_list_path(list, siren: company["siren"]),
               loading: "lazy" do %>
