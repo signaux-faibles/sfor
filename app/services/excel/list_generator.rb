@@ -286,7 +286,14 @@ module Excel
                    [list_label] # is_first_alert
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
-      results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
+
+      # Set work_mem for better performance on large queries with CTEs, sorts, and hash joins
+      # This increases memory available for query operations (sorts, hash joins, etc.)
+      # Using SET LOCAL so it only affects this transaction
+      results = ActiveRecord::Base.transaction do
+        ActiveRecord::Base.connection.execute("SET LOCAL work_mem = '512MB'")
+        ActiveRecord::Base.connection.exec_query(sanitized_sql)
+      end
 
       # Populate all caches from single query result
       results.each do |row| # rubocop:disable Metrics/BlockLength
