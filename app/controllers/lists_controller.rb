@@ -24,8 +24,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
 
-    @cursor = @search_params[:cursor].to_i
-    @cursor = 0 if @cursor < 1
+    # Parse cursor: format is "score:id" or just "id" for backward compatibility
+    cursor_str = @search_params[:cursor].to_s
+    if cursor_str.include?(":")
+      @cursor_score, @cursor_id = cursor_str.split(":").map(&:to_f)
+      @cursor_id = @cursor_id.to_i
+    else
+      @cursor_id = cursor_str.to_i
+      @cursor_score = nil
+    end
+    @cursor_id = 0 if @cursor_id < 1
     @per_page = @search_params[:per_page].to_i
     @per_page = 20 if @per_page < 1
     @per_page = 100 if @per_page > 100 # Cap at 100 for performance
@@ -44,10 +52,33 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Cursor-based pagination: order by id and use cursor to fetch next page
-        # This avoids expensive COUNT queries and is more efficient than OFFSET
-        @companies = @companies.order(id: :asc)
-        @companies = @companies.where("companies.id > ?", @cursor) if @cursor > 0
+        # Join with company_score_entries to get score and order by score DESC
+        # Use a subquery to get the latest score for each company in this list
+        subquery_sql = ActiveRecord::Base.sanitize_sql_array([
+          "(SELECT DISTINCT ON (siren) siren, score
+            FROM company_score_entries
+            WHERE list_name = ?
+            ORDER BY siren, created_at DESC) AS latest_scores",
+          @list.label
+        ])
+        @companies = @companies.joins("INNER JOIN #{subquery_sql} ON latest_scores.siren = companies.siren")
+        @companies = @companies.select("companies.*, latest_scores.score")
+
+        # Order by score DESC, then id ASC for stable pagination
+        @companies = @companies.order("latest_scores.score DESC NULLS LAST, companies.id ASC")
+
+        # Apply cursor-based pagination: (score < cursor_score) OR (score = cursor_score AND id > cursor_id)
+        if @cursor_id > 0
+          if @cursor_score
+            @companies = @companies.where(
+              "(latest_scores.score < ?) OR (latest_scores.score = ? AND companies.id > ?)",
+              @cursor_score, @cursor_score, @cursor_id
+            )
+          else
+            # Backward compatibility: if no score in cursor, just use id
+            @companies = @companies.where("companies.id > ?", @cursor_id)
+          end
+        end
 
         # Load one extra to check if there's a next page
         companies_with_extra = @companies.limit(@per_page + 1).to_a
@@ -63,15 +94,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           {
             "siren" => company.siren,
             "nom_complet" => company.raison_sociale || company.siren,
-            "id" => company.id
+            "id" => company.id,
+            "score" => company.score
           }
         end
 
-        # Set next cursor (id of last item) if there's a next page
-        @next_cursor = @results.last["id"] if @has_next_page && @results.any?
-
-        # Store first cursor for "previous" navigation
-        @first_cursor = @results.first["id"] if @results.any?
+        # Set next cursor (score:id format) if there's a next page
+        if @has_next_page && @results.any?
+          last_result = @results.last
+          @next_cursor = "#{last_result['score']}:#{last_result['id']}"
+        end
 
         # Enrichment is done per-result via Turbo Frames for better performance
       end
@@ -83,7 +115,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     redirect_to lists_path, alert: "Liste introuvable" # rubocop:disable Rails/I18nLocaleTexts
   rescue ActionController::ParameterMissing
     @search_params = {}
-    @cursor = 0
+    @cursor_id = 0
+    @cursor_score = nil
     @per_page = 20
 
     # Start with companies in this list (from company_score_entries)
@@ -100,9 +133,20 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # Cursor-based pagination: order by id and use cursor to fetch next page
-        # This avoids expensive COUNT queries and is more efficient than OFFSET
-        @companies = @companies.order(id: :asc)
+        # Join with company_score_entries to get score and order by score DESC
+        # Use a subquery to get the latest score for each company in this list
+        subquery_sql = ActiveRecord::Base.sanitize_sql_array([
+          "(SELECT DISTINCT ON (siren) siren, score
+            FROM company_score_entries
+            WHERE list_name = ?
+            ORDER BY siren, created_at DESC) AS latest_scores",
+          @list.label
+        ])
+        @companies = @companies.joins("INNER JOIN #{subquery_sql} ON latest_scores.siren = companies.siren")
+        @companies = @companies.select("companies.*, latest_scores.score")
+
+        # Order by score DESC, then id ASC for stable pagination
+        @companies = @companies.order("latest_scores.score DESC NULLS LAST, companies.id ASC")
 
         # Load one extra to check if there's a next page
         companies_with_extra = @companies.limit(@per_page + 1).to_a
@@ -118,12 +162,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           {
             "siren" => company.siren,
             "nom_complet" => company.raison_sociale || company.siren,
-            "id" => company.id
+            "id" => company.id,
+            "score" => company.score
           }
         end
 
-        # Set next cursor (id of last item) if there's a next page
-        @next_cursor = @results.last["id"] if @has_next_page && @results.any?
+        # Set next cursor (score:id format) if there's a next page
+        if @has_next_page && @results.any?
+          last_result = @results.last
+          @next_cursor = "#{last_result['score']}:#{last_result['id']}"
+        end
 
         # Enrichment is done per-result via Turbo Frames for better performance
       end
@@ -150,8 +198,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
 
-    @cursor = @search_params[:cursor].to_i
-    @cursor = 0 if @cursor < 1
+    # Parse cursor: format is "score:id" or just "id" for backward compatibility
+    cursor_str = @search_params[:cursor].to_s
+    if cursor_str.include?(":")
+      @cursor_score, @cursor_id = cursor_str.split(":").map(&:to_f)
+      @cursor_id = @cursor_id.to_i
+    else
+      @cursor_id = cursor_str.to_i
+      @cursor_score = nil
+    end
+    @cursor_id = 0 if @cursor_id < 1
     @per_page = @search_params[:per_page].to_i
     @per_page = 20 if @per_page < 1
     @per_page = 100 if @per_page > 100
@@ -161,9 +217,33 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @companies = policy_scope(@companies)
     @companies = apply_database_filters(@companies)
 
-    # Cursor-based pagination
-    @companies = @companies.order(id: :asc)
-    @companies = @companies.where("companies.id > ?", @cursor) if @cursor > 0
+    # Join with company_score_entries to get score and order by score DESC
+    # Use a subquery to get the latest score for each company in this list
+    subquery_sql = ActiveRecord::Base.sanitize_sql_array([
+      "(SELECT DISTINCT ON (siren) siren, score
+        FROM company_score_entries
+        WHERE list_name = ?
+        ORDER BY siren, created_at DESC) AS latest_scores",
+      @list.label
+    ])
+    @companies = @companies.joins("INNER JOIN #{subquery_sql} ON latest_scores.siren = companies.siren")
+    @companies = @companies.select("companies.*, latest_scores.score")
+
+    # Order by score DESC, then id ASC for stable pagination
+    @companies = @companies.order("latest_scores.score DESC NULLS LAST, companies.id ASC")
+
+    # Apply cursor-based pagination: (score < cursor_score) OR (score = cursor_score AND id > cursor_id)
+    if @cursor_id > 0
+      if @cursor_score
+        @companies = @companies.where(
+          "(latest_scores.score < ?) OR (latest_scores.score = ? AND companies.id > ?)",
+          @cursor_score, @cursor_score, @cursor_id
+        )
+      else
+        # Backward compatibility: if no score in cursor, just use id
+        @companies = @companies.where("companies.id > ?", @cursor_id)
+      end
+    end
 
     # Load one extra to check if there's a next page
     companies_with_extra = @companies.limit(@per_page + 1).to_a
@@ -175,11 +255,16 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       {
         "siren" => company.siren,
         "nom_complet" => company.raison_sociale || company.siren,
-        "id" => company.id
+        "id" => company.id,
+        "score" => company.read_attribute(:score)
       }
     end
 
-    @next_cursor = @results.last["id"] if @has_next_page && @results.any?
+    # Set next cursor (score:id format) if there's a next page
+    if @has_next_page && @results.any?
+      last_result = @results.last
+      @next_cursor = "#{last_result['score']}:#{last_result['id']}"
+    end
 
     respond_to do |format|
       format.turbo_stream # Renders load_more.turbo_stream.erb
