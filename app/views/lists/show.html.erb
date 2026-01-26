@@ -42,11 +42,10 @@
         </div>
       </div>
       <p class="fr-mt-2w">
-        <%= pluralize(@results.size, "entreprise", "entreprises") %> affichée<%= "s" if @results.size > 1 %>
         <%= turbo_frame_tag "alert_breakdown", 
             src: alert_breakdown_list_path(@list, search: @search_params),
             loading: "lazy" do %>
-          <!-- Loading alert breakdown... -->
+          <!-- Loading total count and alert breakdown... -->
         <% end %>
       </p>
 

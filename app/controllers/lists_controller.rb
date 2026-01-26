@@ -227,6 +227,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Apply all database filters
     @companies = apply_database_filters(@companies)
 
+    # Calculate total count of filtered companies
+    @total_count = @companies.count
+
     # Calculate alert breakdown from filtered results
     @alert_breakdown = calculate_alert_breakdown(@companies)
 
@@ -245,6 +248,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Apply all database filters
     @companies = apply_database_filters(@companies)
+
+    # Calculate total count of filtered companies
+    @total_count = @companies.count
 
     # Calculate alert breakdown from filtered results
     @alert_breakdown = calculate_alert_breakdown(@companies)

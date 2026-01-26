@@ -1,4 +1,5 @@
 <%= turbo_frame_tag "alert_breakdown" do %>
+  <%= pluralize(@total_count, "entreprise", "entreprises") %> résultat<%= "s" if @total_count > 1 %>
   <% if @alert_breakdown %>
     • 
     <span class="fr-badge fr-badge--error fr-badge--no-icon">
