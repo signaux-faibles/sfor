@@ -70,8 +70,8 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
   end
 
   def establishment_has_no_active_tracking?
-    active_trackings = record.establishment.establishment_trackings.where(state: %w[in_progress under_surveillance])
-    active_trackings = active_trackings.where.not(id: record.id) if record.persisted?
-    active_trackings.none?
+    # Count all active trackings: when authorizing create?, we must not allow creating
+    # a new tracking if the establishment already has one (including when we're viewing it).
+    record.establishment.establishment_trackings.where(state: %w[in_progress under_surveillance]).none?
   end
 end
