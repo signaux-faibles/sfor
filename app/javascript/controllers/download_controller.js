@@ -10,7 +10,7 @@ export default class extends Controller {
         const parent = this.buttonTarget.parentNode;
         const originalHTML = parent.innerHTML;
 
-        parent.innerHTML = `<span class="disabled">Téléchargement en cours...</span>`;
+        parent.innerHTML = `<p class="disabled">Téléchargement en cours...</p>`;
 
         try {
             const response = await fetch(this.buttonTarget.getAttribute("href"));
