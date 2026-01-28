@@ -52,19 +52,19 @@
               <% data = @insee_data["data"] %>
               <dl class="fr-grid-row">
                 <% if data["type"] %>
-                  <dt class="fr-col-4"><strong>Type:</strong></dt>
+                  <dt class="fr-col-4"><strong>Type :</strong></dt>
                   <dd class="fr-col-8">
                     <%= data["type"] == "personne_morale" ? "Personne morale" : "Personne physique" %>
                   </dd>
                 <% end %>
                 
                 <% if data["categorie_entreprise"] %>
-                  <dt class="fr-col-4"><strong>Catégorie:</strong></dt>
+                  <dt class="fr-col-4"><strong>Catégorie :</strong></dt>
                   <dd class="fr-col-8"><%= data["categorie_entreprise"] %></dd>
                 <% end %>
                 
                 <% if data["forme_juridique"] %>
-                  <dt class="fr-col-4"><strong>Forme juridique:</strong></dt>
+                  <dt class="fr-col-4"><strong>Forme juridique :</strong></dt>
                   <dd class="fr-col-8">
                     <%= data["forme_juridique"]["libelle"] %>
                     <small class="fr-text--xs">(<%= data["forme_juridique"]["code"] %>)</small>
@@ -72,7 +72,7 @@
                 <% end %>
                 
                 <% if data["activite_principale"] %>
-                  <dt class="fr-col-4"><strong>Activité principale:</strong></dt>
+                  <dt class="fr-col-4"><strong>Activité principale :</strong></dt>
                   <dd class="fr-col-8">
                     <%= data["activite_principale"]["libelle"] %>
                     <small class="fr-text--xs">(<%= data["activite_principale"]["code"] %>)</small>
@@ -80,7 +80,7 @@
                 <% end %>
                 
                 <% if data["tranche_effectif_salarie"] %>
-                  <dt class="fr-col-4"><strong>Tranche effectif:</strong></dt>
+                  <dt class="fr-col-4"><strong>Tranche effectif :</strong></dt>
                   <dd class="fr-col-8">
                     <%= data["tranche_effectif_salarie"]["intitule"] %>
                     <% if data["tranche_effectif_salarie"]["date_reference"] %>
@@ -90,7 +90,7 @@
                 <% end %>
                 
                 <% if data["etat_administratif"] %>
-                  <dt class="fr-col-4"><strong>État:</strong></dt>
+                  <dt class="fr-col-4"><strong>État :</strong></dt>
                   <dd class="fr-col-8">
                     <% if data["etat_administratif"] == "A" %>
                       <span class="fr-badge fr-badge--success fr-badge--no-icon">Actif</span>
@@ -101,14 +101,14 @@
                 <% end %>
                 
                 <% if data["date_creation"] %>
-                  <dt class="fr-col-4"><strong>Date création:</strong></dt>
+                  <dt class="fr-col-4"><strong>Date création :</strong></dt>
                   <dd class="fr-col-8">
                     <%= Time.zone.at(data["date_creation"]).strftime("%d/%m/%Y") rescue "Date invalide" %>
                   </dd>
                 <% end %>
                 
                 <% if data["economie_sociale_et_solidaire"] %>
-                  <dt class="fr-col-4"><strong>ESS:</strong></dt>
+                  <dt class="fr-col-4"><strong>ESS :</strong></dt>
                   <dd class="fr-col-8">
                     <span class="fr-badge fr-badge--info fr-badge--no-icon">Oui</span>
                   </dd>

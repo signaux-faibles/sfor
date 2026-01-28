@@ -59,15 +59,15 @@
                     aria-controls="tabpanel-<%= network.name.parameterize %>-panel">
               <%= network.name %>
               <% if network.name == 'CODEFI' %>
-              <span class="fr-tooltip fr-placement" id="tooltip-codefi" role="tooltip" aria-hidden="true">
+              <span class="fr-tooltip fr-placement" id="tooltip-codefi" role="tooltip">
                 L'onglet CODEFI est accessible à tous les agents Signaux Faibles de la zone géographique concernée. Des agents d'autres départements peuvent être ajoutés dans le cas d'un accompagnement à portée nationale.
               </span>
               <% elsif network.name == 'CRP' %>
-              <span class="fr-tooltip fr-placement" id="tooltip-crp" role="tooltip" aria-hidden="true">
+              <span class="fr-tooltip fr-placement" id="tooltip-crp" role="tooltip">
                 L'onglet CRP est accessible à tous les agents CRP, leurs appuis, certains chargés de mission sectoriels de la région concernée. Des agents d'autres régions peuvent être ajoutés dans le cas d'un accompagnement à portée nationale. Les agents MRE et DIRE ont un accès national.
               </span>
               <% elsif network.name == 'DGFiP' %>
-              <span class="fr-tooltip fr-placement" id="tooltip-dgfip" role="tooltip" aria-hidden="true">
+              <span class="fr-tooltip fr-placement" id="tooltip-dgfip" role="tooltip">
                 L'onglet DGFiP est accessible à tous les agents SP CODEFI et CDED du département concerné. Des agents d'autres départements peuvent être ajoutés dans le cas d'un accompagnement à portée nationale.Les agents MCCE ont un accès national.
               </span>
               <% end %>
@@ -103,7 +103,7 @@
                             <span class="fr-icon-information-line" aria-hidden="true"></span>
                             <span class="fr-sr-only">Information sur la synthèse</span>
                           </button>
-                          <span class="fr-tooltip fr-placement" id="button-summary-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
+                          <span class="fr-tooltip fr-placement" id="button-summary-<%= network.name.parameterize %>" role="tooltip">
                           La "synthèse" permet de comprendre rapidement et simplement les grands enjeux du dossier.<br/><br/>
                           Pour une meilleure homogénéisation, elle s'articule en trois paragraphes : présentation de l’entreprise, description des difficultés ou problématiques, actions engagées et calendrier de suivi. La mise en forme de ce champ s’effectue en Markdown (cf guide utilisateur).
                         </span>
@@ -122,7 +122,7 @@
                     <span class="fr-icon-information-line" aria-hidden="true"></span>
                     <span class="fr-sr-only">Information sur les commentaires</span>
                   </button>
-                  <span class="fr-tooltip fr-placement" id="button-comments-<%= network.name.parameterize %>" role="tooltip" aria-hidden="true">
+                  <span class="fr-tooltip fr-placement" id="button-comments-<%= network.name.parameterize %>" role="tooltip">
                   Les "commentaires" informent sur les récentes actualités du dossier et la situation de l’entreprise.
                 </span>
                 </h4>

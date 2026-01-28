@@ -19,7 +19,7 @@
                 <span class="fr-icon-information-line" aria-hidden="true"></span>
                 <span class="fr-sr-only">Information sur le statut</span>
               </button>
-              <span class="fr-tooltip fr-placement" id="button-edit-tracking-state" role="tooltip" aria-hidden="true">
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-state" role="tooltip">
                 Le "statut" indique l'état d'avancement de l'accompagnement :
                 <ul>
                   <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
@@ -46,7 +46,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur la criticité</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-criticality" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-criticality" role="tooltip">
               La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier :
               <ul>
                 <li>La criticité "élevée" indique que l’entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
@@ -72,7 +72,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les étiquettes</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-labels" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-labels" role="tooltip">
               Le champ "étiquettes" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
             </span>
             <%= form.select :tracking_label_ids,
@@ -90,7 +90,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les instances concernées</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-supporting-service" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-supporting-service" role="tooltip">
               Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
             </span>
             <%= form.collection_select :supporting_service_ids, SupportingService.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
@@ -105,7 +105,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les difficultés</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-difficulty" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-difficulty" role="tooltip">
               Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
             </span>
             <%= form.collection_select :difficulty_ids, Difficulty.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
@@ -120,7 +120,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les actions réalisées</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-user-action" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-user-action" role="tooltip">
               Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
             </span>
             <%= form.collection_select :user_action_ids, UserAction.kept.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select", tom_select_options: { sortField: { field: "position", direction: "asc" } } } } %>
@@ -135,7 +135,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur la réorientation hors CODEFI</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-codefi-redirect" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-codefi-redirect" role="tooltip">
               Ce champ précise les acteurs ne relevant pas du CODEFI, internes ou externes à l'administration, vers lesquels l'entreprise a été redirigée.
             </span>
             <%= form.collection_select :codefi_redirect_ids, CodefiRedirect.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
@@ -162,7 +162,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les filières</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-sector" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="button-edit-tracking-sector" role="tooltip">
               La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
             </span>
             <%= form.collection_select :sector_ids, Sector.ordered_by_name, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
