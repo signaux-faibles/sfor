@@ -22,6 +22,11 @@
     <div class="fr-container sf-fiche-title">
       <h1>Fiche entreprise <%= @company.raison_sociale %></h1>
       <div class="fr-ml-3w">
+        <%# Entreprise fermée %>
+        <% if @company.is_active == false %>
+          <p class="fr-badge fr-badge--pink-macaron fr-ml-1w">Fermé</p>
+        <% end %>
+
         <%# Accompagnement en cours %>
         <% if @in_progress_trackings.present? %>
           <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement en cours</p>
