@@ -44,7 +44,7 @@
                       <th scope="row">
                         Liste de détection - <%= list.label %>
                       </th>
-                      <td><%= list.company_score_entries.select(:siren).distinct.count %></td>
+                      <td><%= filtered_company_count(list) %></td>
                       <td>
                         <%= link_to list_path(list),
                                     class: "fr-link",
