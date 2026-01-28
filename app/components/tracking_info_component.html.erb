@@ -10,116 +10,129 @@
     </h3>
   </div>
 
-  <% unless confirmation_mode? %>
-    <p>
-      <strong>Statut :</strong> <%= establishment_tracking.aasm.human_state %>
-      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-statuts" aria-describedby="button-tracking-info-statuts">
-        <span class="fr-icon-information-line" aria-hidden="true"></span>
-        <span class="fr-sr-only">Information sur les statuts</span>
-      </button>
-    </p>
-
-    <span class="fr-tooltip fr-placement" id="button-tracking-info-statuts" role="tooltip" aria-hidden="true">
-      Le "statut" indique l'état d'avancement de l'accompagnement :
-      <ul>
-        <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
-        <li>Il est "terminé" lorsque l'agent a proposé une solution ou une orientation, sans besoin d'actions complémentaires de sa part, ou que les solutions proposées ont été épuisées (pas de solution possible pour aider la société, ou société fermée).</li>
-        <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
-      </ul>
-    </span>
-
-    <p>
-      <strong>Date de début :</strong> <%= format_date(establishment_tracking.start_date) %>
-      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-start-date" aria-describedby="button-tracking-info-start-date">
-        <span class="fr-icon-information-line" aria-hidden="true"></span>
-        <span class="fr-sr-only">Information sur la date de début de l'accompagnement</span>
-      </button>
-    </p>
-    <span class="fr-tooltip fr-placement" id="button-tracking-info-start-date" role="tooltip" aria-hidden="true">
-      Date à laquelle l'accompagnement a été ouvert. 
-    </span>
-
-    <% if establishment_tracking.state == 'completed' %>
-      <p>
-        <strong>Date de fin :</strong> <%= format_date(establishment_tracking.end_date) %>
-        <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-end-date" aria-describedby="button-tracking-info-end-date">
+  <dl class="sf-keyvalue-list">
+    <% unless confirmation_mode? %>
+      <dt class="sf-keyvalue-list__key">Statut : </dt>
+      <dd class="sf-keyvalue-list__value">
+        <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-statuts" aria-describedby="button-tracking-info-statuts">
           <span class="fr-icon-information-line" aria-hidden="true"></span>
-          <span class="fr-sr-only">Information sur la date de fin de l'accompagnement</span>
+          <span class="fr-sr-only">Information sur les statuts</span>
         </button>
-      </p>
-      <span class="fr-tooltip fr-placement" id="button-tracking-info-end-date" role="tooltip" aria-hidden="true">
-        Date à laquelle l'accompagnement a été clôturé.
-      </span>
-    <% end %>
-  <% end %>
+        <span class="fr-tooltip fr-placement" id="button-tracking-info-statuts" role="tooltip">
+          Le "statut" indique l'état d'avancement de l'accompagnement :
+          <ul>
+            <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
+            <li>Il est "terminé" lorsque l'agent a proposé une solution ou une orientation, sans besoin d'actions complémentaires de sa part, ou que les solutions proposées ont été épuisées (pas de solution possible pour aider la société, ou société fermée).</li>
+            <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
+          </ul>
+        </span>
 
-  <p>
-    <strong>Criticité :</strong> <%= establishment_tracking.criticality&.name || 'Non renseigné' %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-criticality" aria-describedby="button-tracking-info-criticality">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur la criticité</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-criticality" role="tooltip" aria-hidden="true">
-    La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier : 
-    <ul>
-      <li>La criticité "élevée" indique que l'entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
-      <li>La criticité "modérée" indique que l'entreprise rencontre une difficulté avérée qui n'entraîne pas un péril à court terme. Les difficultés sont néanmoins sérieuses et requièrent une attention particulière des membres du CODEFI.</li>
-      <li>Par défaut, les dossiers n'ont "pas de criticité". Cela indique une difficulté avérée de l'entreprise obligeant à son suivi régulier au sein du CODEFI, mais ne remettant pas en cause la pérennité de l'entreprise et des emplois.</li>
-    </ul>
-    L'agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l'entreprise pour le CODEFI.
-  </span>
-  <p>
-    <strong>Etiquettes :</strong>
-    <%= format_tags(establishment_tracking.tracking_labels.kept) %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-labels" aria-describedby="button-tracking-info-labels">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur les étiquettes</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-labels" role="tooltip" aria-hidden="true">
-    Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier. Certaines étiquettes non sélectionnables peuvent s'afficher : elles correspondent à d'anciens dispositifs aujourd'hui inactifs.
-  </span>
-  <p>
-    <strong>Instances concernées :</strong>
-    <%= format_tags(establishment_tracking.supporting_services) %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-supporting-services" aria-describedby="button-tracking-info-supporting-services">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur les suivis</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-supporting-services" role="tooltip" aria-hidden="true">
-    Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
-  </span>
-  <p><strong>Difficultés :</strong>
-    <%= format_tags(establishment_tracking.difficulties) %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-difficulties" aria-describedby="button-tracking-info-difficulties">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur les difficultés</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-difficulties" role="tooltip" aria-hidden="true">
-    Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
-  </span>
-  <p>
-    <strong>Actions réalisées :</strong>
-    <%= format_tags(establishment_tracking.user_actions.kept.ordered) %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-user-actions" aria-describedby="button-tracking-info-user-actions">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur les actions réalisées</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-user-actions" role="tooltip" aria-hidden="true">
-    Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
-  </span>
-  <p><strong>Réorientations hors CODEFI :</strong>
-    <%= format_tags(establishment_tracking.codefi_redirects.ordered) %>
-    <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-codefi-redirects" aria-describedby="button-tracking-info-codefi-redirects">
-      <span class="fr-icon-information-line" aria-hidden="true"></span>
-      <span class="fr-sr-only">Information sur les réorientations hors CODEFI</span>
-    </button>
-  </p>
-  <span class="fr-tooltip fr-placement" id="button-tracking-info-codefi-redirects" role="tooltip" aria-hidden="true">
-    Ce champ précise les acteurs ne relevant pas du CODEFI, internes ou externes à l'administration, vers lesquels l'entreprise a été redirigée. 
-  </span>
+        <%= establishment_tracking.aasm.human_state %>
+      </dd>
+      <dt class="sf-keyvalue-list__key">Date de début : </dt>
+      <dd class="sf-keyvalue-list__value">
+        <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-start-date" aria-describedby="button-tracking-info-start-date">
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-sr-only">Information sur la date de début de l'accompagnement</span>
+        </button>
+        <span class="fr-tooltip fr-placement" id="button-tracking-info-start-date" role="tooltip">
+          Date à laquelle l'accompagnement a été ouvert.
+        </span>
+        <%= format_date(establishment_tracking.start_date) %>
+      </dd>
+
+      <% if establishment_tracking.state == 'completed' %>
+        <dt class="sf-keyvalue-list__key">Date de fin : </dt>
+        <dd class="sf-keyvalue-list__value">
+          <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-end-date" aria-describedby="button-tracking-info-end-date">
+            <span class="fr-icon-information-line" aria-hidden="true"></span>
+            <span class="fr-sr-only">Information sur la date de fin de l'accompagnement</span>
+          </button>
+          <span class="fr-tooltip fr-placement" id="button-tracking-info-end-date" role="tooltip">
+            Date à laquelle l'accompagnement a été clôturé.
+          </span>
+          <%= format_date(establishment_tracking.end_date) %>
+        </dd>
+      <% end %>
+    <% end %>
+
+    <dt class="sf-keyvalue-list__key">Criticité : </dt>
+    <dd class="sf-keyvalue-list__value">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-criticality" aria-describedby="button-tracking-info-criticality">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur la criticité</span>
+      </button>
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-criticality" role="tooltip" >
+        La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier :
+        <ul>
+          <li>La criticité "élevée" indique que l'entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
+          <li>La criticité "modérée" indique que l'entreprise rencontre une difficulté avérée qui n'entraîne pas un péril à court terme. Les difficultés sont néanmoins sérieuses et requièrent une attention particulière des membres du CODEFI.</li>
+          <li>Par défaut, les dossiers n'ont "pas de criticité". Cela indique une difficulté avérée de l'entreprise obligeant à son suivi régulier au sein du CODEFI, mais ne remettant pas en cause la pérennité de l'entreprise et des emplois.</li>
+        </ul>
+        L'agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l'entreprise pour le CODEFI.
+      </span>
+      <%= establishment_tracking.criticality&.name || 'Non renseigné' %>
+    </dd>
+
+    <dt class="sf-keyvalue-list__key">Étiquettes : </dt>
+    <dd class="sf-keyvalue-list__value">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-labels" aria-describedby="button-tracking-info-labels">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les étiquettes</span>
+      </button>
+
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-labels" role="tooltip">
+        Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier. Certaines étiquettes non sélectionnables peuvent s'afficher : elles correspondent à d'anciens dispositifs aujourd'hui inactifs.
+      </span>
+      <%= format_tags(establishment_tracking.tracking_labels.kept) %>
+    </dd>
+
+    <dt class="sf-keyvalue-list__key">Instances concernées : </dt>
+    <dd class="sf-keyvalue-list__value">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-supporting-services" aria-describedby="button-tracking-info-supporting-services">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les suivis</span>
+      </button>
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-supporting-services" role="tooltip">
+        Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
+      </span>
+      <%= format_tags(establishment_tracking.supporting_services) %>
+    </dd>
+
+    <dt class="sf-keyvalue-list__key">Difficultés : </dt>
+    <dd class="sf-keyvalue-list__value">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-difficulties" aria-describedby="button-tracking-info-difficulties">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les difficultés</span>
+      </button>
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-difficulties" role="tooltip">
+        Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
+      </span>
+      <%= format_tags(establishment_tracking.difficulties) %>
+    </dd>
+
+    <dt class="sf-keyvalue-list__key">Actions réalisées : </dt>
+    <dd class="sf-keyvalue-list__value">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-user-actions" aria-describedby="button-tracking-info-user-actions">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les actions réalisées</span>
+      </button>
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-user-actions" role="tooltip">
+        Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
+      </span>
+      <%= format_tags(establishment_tracking.user_actions.kept.ordered) %>
+    </dd>
+
+    <dt class="sf-keyvalue-list__key">Réorientations hors CODEFI : </dt>
+    <dd class="sf-keyvalue-list__value">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-codefi-redirects" aria-describedby="button-tracking-info-codefi-redirects">
+        <span class="fr-icon-information-line" aria-hidden="true"></span>
+        <span class="fr-sr-only">Information sur les réorientations hors CODEFI</span>
+      </button>
+      <span class="fr-tooltip fr-placement" id="button-tracking-info-codefi-redirects" role="tooltip">
+        Ce champ précise les acteurs ne relevant pas du CODEFI, internes ou externes à l'administration, vers lesquels l'entreprise a été redirigée.
+      </span>
+      <%= format_tags(establishment_tracking.codefi_redirects.ordered) %>
+    </dd>
+  </dl>
 </div>

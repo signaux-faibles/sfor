@@ -29,7 +29,7 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les statuts</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="tooltip-statuts" role="tooltip" aria-hidden="true">
+            <span class="fr-tooltip fr-placement" id="tooltip-statuts" role="tooltip">
               Le "statut" indique l'état d'avancement de l'accompagnement :
               <ul>
                 <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
@@ -58,7 +58,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur les statuts</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-labels" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-labels" role="tooltip">
                   Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
                 </span>
                 <%= f.select :tracking_labels_id_in,
@@ -74,7 +74,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur les instances concernées</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-supporting-services" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-supporting-services" role="tooltip">
                   Le champ "instances concernées" indique les acteurs en charge du suivi de l'entreprise.
                 </span>
                 <%= f.select :supporting_services_id_in,
@@ -90,7 +90,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur les filières</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-sectors" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-sectors" role="tooltip">
                   La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national. 
                 </span>
                 <%= f.select :sectors_id_in,
@@ -106,7 +106,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la taille</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-size" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-size" role="tooltip">
                   La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
                 </span>
                 <%= f.select :size_id_eq,
@@ -122,7 +122,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la criticité</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-criticality" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-criticality" role="tooltip">
                   La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier : 
                   <ul>
                     <li>La criticité "élevée" indique que l’entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
@@ -147,7 +147,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la date de modification</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-modified-at-gteq" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-modified-at-gteq" role="tooltip">
                   Retrouvez les accompagnements modifiés entre deux dates : pour lesquels au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité. 
                 </span>
                 <%= f.date_field :modified_at_gteq, class: "fr-input" %>
@@ -161,7 +161,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la date de modification</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-modified-at-lteq" role="tooltip" aria-hidden="true">
+                <span class="fr-tooltip fr-placement" id="tooltip-modified-at-lteq" role="tooltip">
                   Retrouvez les accompagnements modifiés entre deux dates : pour lesquels au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité. 
                 </span>
                 <%= f.date_field :modified_at_lteq, class: "fr-input" %>
@@ -180,7 +180,7 @@
                            class="fr-radio" <%= params.dig(:q, :my_tracking) == "1" ? "checked" : "" %>>
                     <label class="fr-label" for="radio-inline-1" aria-describedby="tooltip-my-tracking">
                       Mes accompagnements
-                      <span class="fr-tooltip fr-placement" id="tooltip-my-tracking" role="tooltip" aria-hidden="true">
+                      <span class="fr-tooltip fr-placement" id="tooltip-my-tracking" role="tooltip">
                         Tous les accompagnements pour lesquels vous êtes "référent" ou "participant".
                       </span>
                     </label>
@@ -192,7 +192,7 @@
                            class="fr-radio" <%= params.dig(:q, :my_tracking) != "1" ? "checked" : "" %>>
                     <label class="fr-label" for="radio-inline-2" aria-describedby="tooltip-all-trackings">
                       Tous les accompagnements
-                      <span class="fr-tooltip fr-placement" id="tooltip-all-trackings" role="tooltip" aria-hidden="true">
+                      <span class="fr-tooltip fr-placement" id="tooltip-all-trackings" role="tooltip">
                         Tous les accompagnements de votre zone géographique.
                       </span>
                     </label>
@@ -204,7 +204,7 @@
                            class="fr-radio" <%= params.dig(:q, :my_tracking) == "network" ? "checked" : "" %>>
                     <label class="fr-label" for="radio-inline-3" aria-describedby="tooltip-my-network">
                       Les accompagnements de mon administration
-                      <span class="fr-tooltip fr-placement" id="tooltip-my-network" role="tooltip" aria-hidden="true">
+                      <span class="fr-tooltip fr-placement" id="tooltip-my-network" role="tooltip">
                         Tous les accompagnements pour lesquels au moins une personne de votre administration est référente ou participante, dans votre zone géographique.
                       </span>
                     </label>
