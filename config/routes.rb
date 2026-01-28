@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get "recherche", to: "pages#search", as: :search
   get "statistiques", to: "statistics#index"
   get "accessibilite", to: "pages#accessibilite", as: :accessibilite
+  get "support", to: "pages#support", as: :support
 
   namespace :admin do
     resources :users do
