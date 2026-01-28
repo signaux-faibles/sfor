@@ -31,7 +31,7 @@
 
     <% if @results && @results.any? %>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-        <div class="fr-col-12">
+        <div class="fr-col-12" role="status">
           <%= link_to list_path(@list, search: @search_params, format: :xlsx),
                       class: 'fr-link--download fr-link',
                       data: { controller: 'download', action: 'click->download#disable', download_target: 'button' },
