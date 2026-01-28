@@ -1,7 +1,7 @@
 <% if @paginated_establishment_trackings.any? %>
   <h4>Résultats de la recherche (<%= @paginated_establishment_trackings.total_count %>)</h4>
   <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-    <div class="fr-col-6">
+    <div class="fr-col-6" role="status">
       <%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!),
                   class: 'fr-link--download fr-link',
                   data: { controller: 'download', action: 'click->download#disable', download_target: 'button' },
