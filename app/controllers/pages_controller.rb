@@ -91,6 +91,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   def unauthorized; end
 
   def accessibilite; end
+  def support; end
 
   private
 
