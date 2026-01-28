@@ -79,6 +79,8 @@ export default class extends Controller {
       this.handleEnter()
     } else if (event.key === 'Escape') {
       this.handleEscape()
+    } else if (event.key === 'Tab') {
+      this.handleTab(event)
     } else if (event.key === 'ArrowRight') {
       this.handleArrowRight()
     } else if (event.key === 'ArrowLeft') {
@@ -180,6 +182,14 @@ export default class extends Controller {
       this.clearResults()
     } else {
       this.clearSelection()
+    }
+  }
+
+  handleTab(event) {
+    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
+
+    if (isListboxDisplayed) {
+      this.clearResults()
     }
   }
 
