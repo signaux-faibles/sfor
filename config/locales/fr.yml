@@ -43,8 +43,9 @@ fr:
         entity: Entité
         geo_access: Accès géographique
         networks: Réseaux
-        password: le mot de passe
-        password_confirmation: la confirmation du mot de passe
+        password: "\"Nouveau mot de passe\""
+        password_confirmation: "\"Confirmer le nouveau mot de passe\""
+        reset_password_token: "\"Jeton de réinitialisation du mot de passe\""
       network:
         name: Nom
         users: Utilisateurs
