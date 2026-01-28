@@ -4,7 +4,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   include ProcolStatusable
   include ListExportTrackable
   def index
-    @lists = List.order(label: :asc)
+    @lists = List.order(list_date: :desc)
   end
 
   def show # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
