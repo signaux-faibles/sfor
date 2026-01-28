@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   impersonates :user
   around_action :set_time_zone
+  before_action :check_maintenance_mode
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :check_user_segment
   before_action :set_sentry_user
@@ -13,6 +14,19 @@ class ApplicationController < ActionController::Base
   layout :layout_by_resource
 
   private
+
+  def check_maintenance_mode
+    # Allow health check, Devise flows (login, password reset, etc.) and admin
+    return if devise_controller?
+    return if request.path.start_with?("/admin")
+    return if request.path == "/up"
+
+    return unless AppSetting.first&.maintenance_mode?
+
+    render file: Rails.public_path.join("maintenance.html"),
+           layout: false,
+           status: :service_unavailable
+  end
 
   def layout_by_resource
     if devise_controller?

@@ -359,6 +359,40 @@ Sélectionner le dossier contenant la liste au format JSON.
 Dbeaver va alors créer une nouvelle base de données où chaque table sera un fichier json du dossier choisi.
 Sélectionner ensuite la table `company_score_entries` et importer les données de la table issue du json créée précédement (Attention au mapping, il faut l'ajuster colonne par colonne)
 
+# Maintenance mode
+
+The application includes a simple controller-based maintenance mode, backed by the `AppSetting` model and the static `public/maintenance.html` page.
+
+- **What it does**: when enabled, all non-admin, non-Devise, non-health-check requests are answered with the maintenance page and HTTP status `503 Service Unavailable`.
+- **What is excluded**:
+  - `/up` health check (`rails/health#show`)
+  - Devise controllers (login, password reset, etc.)
+  - All routes under the `/admin` namespace
+
+## Enabling maintenance mode
+
+From a Rails console (in the running container or locally):
+
+```bash
+docker compose exec web rails console
+```
+
+Then, in the console:
+
+```ruby
+AppSetting.first_or_create.update!(maintenance_mode: true)
+```
+
+## Disabling maintenance mode
+
+In the Rails console:
+
+```ruby
+AppSetting.first&.update!(maintenance_mode: false)
+```
+
+If there is no `AppSetting` record yet, `first_or_create` will create one with default values (including `maintenance_mode: false`).
+
 # Tests
 L'application est testée grâce à un ensemble de tests d'intégration écrits à l'aide de la librairie `Minitest` fournie avec `Ruby on Rails`.
 Les tests sont lancés automatiquement lors de l'exécution du workflow GitHub `Publish rails container to ghcr.io`
