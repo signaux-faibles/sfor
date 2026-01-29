@@ -351,6 +351,28 @@ siren;libelle_list
 123456789;Septembre 2025
 ```
 
+## Activating the "Liste retraitée" filter
+
+Once the SJCF data has been imported and the list exists in the application, you can enable the "Liste retraitée" filter on the list search form. When enabled, users will see a checkbox that filters companies to only those from the list transmitted to the CDED before the CODEFI meeting.
+
+From a Rails console:
+
+```bash
+docker compose exec web rails console
+```
+
+Then set `sjcf_filter_active` to `true` for the desired list (by label or id):
+
+```ruby
+# By list label (e.g. the libelle_list value from your CSV)
+List.find_by(label: "Septembre 2025").update!(sjcf_filter_active: true)
+
+# Or by list id
+List.find(123).update!(sjcf_filter_active: true)
+```
+
+The filter is hidden by default (`sjcf_filter_active` is `false`) for all lists.
+
 # Import d'une liste (avec Dbeaver)
 
 Dbeaver ne supporte pas l'import de données directement en json :

@@ -199,27 +199,29 @@
                 </span>
               </div>
             </div>
-            <div class="fr-col-12">
-              <div class="fr-checkbox-group sf-checkbox-group--tooltip">
-                <%=
-                  f.check_box :liste_retraitee,
-                                { checked: search_params[:liste_retraitee] == "1",
-                                  aria: { describedby: "sf-liste-retraitee-infobulle" }},
-                                "1",
-                                "0"
-                %>
+            <% if list.sjcf_filter_active? %>
+              <div class="fr-col-12">
+                <div class="fr-checkbox-group sf-checkbox-group--tooltip">
+                  <%=
+                    f.check_box :liste_retraitee,
+                                  { checked: search_params[:liste_retraitee] == "1",
+                                    aria: { describedby: "sf-liste-retraitee-infobulle" }},
+                                  "1",
+                                  "0"
+                  %>
 
-                <%= f.label :liste_retraitee, class: "fr-label" do %>
-                  Liste retraitée
-                <% end %>
+                  <%= f.label :liste_retraitee, class: "fr-label" do %>
+                    Liste retraitée
+                  <% end %>
 
-                <span id="sf-liste-retraitee-infobulle">
-                  <button aria-describedby="tooltip-liste-retraitee" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-                  <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip">Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI</span>
-                </span>
+                  <span id="sf-liste-retraitee-infobulle">
+                    <button aria-describedby="tooltip-liste-retraitee" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip-liste-retraitee" role="tooltip">Affiche uniquement la liste transmise au CDED en amont de la réunion du CODEFI</span>
+                  </span>
 
+                </div>
               </div>
-            </div>
+            <% end %>
           </div>
 
         </div>
