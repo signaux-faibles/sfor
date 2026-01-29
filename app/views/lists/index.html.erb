@@ -44,7 +44,13 @@
                       <th scope="row">
                         Liste de détection - <%= list.label %>
                       </th>
-                      <td><%= filtered_company_count(list) %></td>
+                      <td>
+                        <%= turbo_frame_tag "list_company_count_#{list.id}",
+                            src: company_count_list_path(list),
+                            loading: "lazy" do %>
+                          —
+                        <% end %>
+                      </td>
                       <td>
                         <%= link_to list_path(list),
                                     class: "fr-link",
@@ -57,7 +63,7 @@
                   <% end %>
                 <% else %>
                   <tr>
-                    <td colspan="4" class="fr-text--center">
+                    <td colspan="3" class="fr-text--center">
                       <p class="fr-mt-2w">Aucune liste disponible</p>
                     </td>
                   </tr>
