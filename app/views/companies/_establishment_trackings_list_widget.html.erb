@@ -39,7 +39,7 @@
       <div class="fr-card">
         <div class="fr-card__body">
           <div class="fr-card__content">
-            <h2>Accompagnement en cours de l'entreprise</h2>
+            <h3 class="fr-h2">Accompagnement en cours de l'entreprise</h3>
             <%= render partial: 'establishment_trackings_list_table',
                        locals: { trackings: @active_trackings,
                                  title: 'Accompagnement en cours de l\'entreprise',
@@ -62,7 +62,7 @@
       <div class="fr-card fr-mt-5w">
         <div class="fr-card__body">
           <div class="fr-card__content">
-            <h2>Historique des accompagnements de l'entreprise</h2>
+            <h3 class="fr-h2">Historique des accompagnements de l'entreprise</h3>
             <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
           </div>
         </div>

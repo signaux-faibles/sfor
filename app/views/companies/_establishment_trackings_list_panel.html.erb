@@ -4,12 +4,13 @@
      aria-labelledby="tabpanel-informations"
      tabindex="0">
   <div>
+    <h2 class="fr-sr-only">Accompagnements</h2>
     <!-- Current helps Widget with Turbo Frame -->
     <div class="fr-col-12">
       <%= turbo_frame_tag "establishment_trackings_list_widget",
           src: establishment_trackings_list_widget_company_path(@company),
           loading: :lazy do %>
-        <h2>Accompagnements</h2>
+        <h3 class="fr-h2">Accompagnements</h3>
         <p class="fr-mt-2w">Récupération des données...</p>
       <% end %>
     </div>
