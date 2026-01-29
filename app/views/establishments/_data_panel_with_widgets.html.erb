@@ -3,6 +3,7 @@
      role="tabpanel"
      aria-labelledby="tabpanel-data"
      tabindex="0">
+  <h2 class="fr-sr-only">Données de l'établissement</h2>
   <div class="fr-grid-row fr-grid-row--gutters">
     <!-- Effectif / AP Widget with Turbo Frame -->
     <div class="fr-col-12">
@@ -12,7 +13,7 @@
             <%= turbo_frame_tag "data_effectif_ap_widget",
                                 src: data_effectif_ap_widget_establishment_path(@establishment),
                                 loading: :lazy do %>
-              <h2>Effectifs / Activité partielle</h2>
+              <h3 class="fr-h2">Effectifs / Activité partielle</h3>
               <p class="fr-mt-2w">Récupération des données...</p>
             <% end %>
           </div>
@@ -28,7 +29,7 @@
             <%= turbo_frame_tag "data_urssaf_widget",
                                 src: data_urssaf_widget_establishment_path(@establishment),
                                 loading: :lazy do %>
-              <h2>Cotisations, impayés et délais de paiement URSSAF</h2>
+              <h3 class="fr-h2">Cotisations, impayés et délais de paiement URSSAF</h3>
               <p class="fr-mt-2w">Récupération des données...</p>
             <% end %>
           </div>
