@@ -4,7 +4,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   include ProcolStatusable
   include ListExportTrackable
 
-  helper_method :filtered_company_count
   def index
     @lists = List.order(list_date: :desc)
   end
@@ -285,6 +284,14 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html # Renders enrich_company.html.erb for turbo_frame
+    end
+  end
+
+  def company_count
+    @list = List.find(params[:id])
+    @count = filtered_company_count(@list)
+    respond_to do |format|
+      format.html # Renders company_count.html.erb for turbo_frame
     end
   end
 

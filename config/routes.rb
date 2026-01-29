@@ -88,6 +88,7 @@ Rails.application.routes.draw do
       get :enrich_company
       get :alert_breakdown
       get :load_more
+      get :company_count
     end
   end
 
