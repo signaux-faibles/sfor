@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+# rubocop:disable Naming/VariableNumber
 require "test_helper"
 
-class ListsControllerTest < ActionDispatch::IntegrationTest
+class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Metrics/ClassLength
   setup do
     @user = users(:user_crp_paris)
     @list_2025 = lists(:list_test_2025)
@@ -381,3 +382,4 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "Company Paris"
   end
 end
+# rubocop:enable Naming/VariableNumber
