@@ -1,11 +1,14 @@
+# department must match a department code so CompanyPolicy::Scope includes the company for users with that geo_access.
 company_paris:
   siren: '123456789'
   raison_sociale: 'Company Paris'
   statut_juridique: '5710'
   creation: '2020-01-01'
+  department: '75'
 
 company_finistere:
   siren: '987654321'
   raison_sociale: 'Company Finistere'
   statut_juridique: '5499'
-  creation: '2019-06-15' 
+  creation: '2019-06-15'
+  department: '29' 

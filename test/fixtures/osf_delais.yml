@@ -1,0 +1,11 @@
+# Used by lists_controller filter sans_delai_urssaf: excludes companies with establishment where date_echeance > list_date.
+# For a company to remain in results when filter is ON, either no row here or date_echeance <= list.list_date.
+# list_test_2025 has list_date 2025-01-15, so use date_echeance <= 2025-01-15 to avoid excluding.
+osf_delai_paris:
+  siret: "12345678900001"
+  date_echeance: 2025-01-10
+  date_creation: 2024-06-01
+  duree_delai: 180
+  montant_echeancier: 5000.00
+  stade: "en_cours"
+  action: "accord"

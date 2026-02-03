@@ -1,0 +1,15 @@
+# Used by lists_controller filter dette_sociale_min (establishments + osf_debits, is_last = true, sum part_ouvriere + part_patronale).
+# siret must match an establishment. One row per siret with is_last so dette_sociale_min can include the company.
+osf_debit_paris:
+  siret: "12345678900001"
+  periode: 2025-01-01
+  part_ouvriere: 1000.50
+  part_patronale: 2000.00
+  is_last: true
+
+osf_debit_finistere:
+  siret: "98765432100002"
+  periode: 2025-01-01
+  part_ouvriere: 500.00
+  part_patronale: 800.00
+  is_last: true

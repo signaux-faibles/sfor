@@ -1,0 +1,21 @@
+# Company score entries for list show/pagination. list_name must match lists.label.
+# Controller uses DISTINCT ON (siren) ... ORDER BY siren, created_at DESC for "latest" score.
+one_paris_list_test_2025:
+  siren: "123456789"
+  list_name: "Liste test 2025"
+  score: 75.5
+  periode: "2025-01"
+  alert: "Alerte seuil F1"
+
+one_finistere_list_test_2025:
+  siren: "987654321"
+  list_name: "Liste test 2025"
+  score: 62.0
+  periode: "2025-01"
+  alert: "Alerte seuil F2"
+
+one_paris_list_test_2024:
+  siren: "123456789"
+  list_name: "Liste test 2024"
+  score: 80.0
+  periode: "2024-06"

@@ -482,7 +482,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                     # This includes companies that never had a procol and those that had one but are now out
                     companies.where(
                       "NOT EXISTS (
-            SELECT 1 FROM procol_at_date(?) AS procol
+            SELECT 1 FROM procol_at_date(?::date) AS procol
             WHERE procol.siren = companies.siren
           )", current_date
                     )
@@ -490,7 +490,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                     # Use EXISTS subquery with procol_at_date function to avoid materializing sirens in Ruby
                     companies.where(
                       "EXISTS (
-            SELECT 1 FROM procol_at_date(?) AS procol
+            SELECT 1 FROM procol_at_date(?::date) AS procol
             WHERE procol.siren = companies.siren
             AND procol.libelle_procol = ?
           )", current_date, libelle_value

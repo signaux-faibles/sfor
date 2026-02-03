@@ -381,50 +381,47 @@ Sélectionner le dossier contenant la liste au format JSON.
 Dbeaver va alors créer une nouvelle base de données où chaque table sera un fichier json du dossier choisi.
 Sélectionner ensuite la table `company_score_entries` et importer les données de la table issue du json créée précédement (Attention au mapping, il faut l'ajuster colonne par colonne)
 
-# Maintenance mode
+# Tests
 
-The application includes a simple controller-based maintenance mode, backed by the `AppSetting` model and the static `public/maintenance.html` page.
+L'application est testée grâce à un ensemble de tests d'intégration écrits à l'aide de la librairie `Minitest` fournie avec `Ruby on Rails`. Les tests sont lancés automatiquement lors de l'exécution du workflow GitHub `Publish rails container to ghcr.io`.
 
-- **What it does**: when enabled, all non-admin, non-Devise, non-health-check requests are answered with the maintenance page and HTTP status `503 Service Unavailable`.
-- **What is excluded**:
-  - `/up` health check (`rails/health#show`)
-  - Devise controllers (login, password reset, etc.)
-  - All routes under the `/admin` namespace
+Pour lancer les tests en local :
 
-## Enabling maintenance mode
-
-From a Rails console (in the running container or locally):
+**Une fois** (créer la base de test et exécuter les migrations, y compris celle qui crée la fonction SQL `procol_at_date`) :
 
 ```bash
-docker compose exec web rails console
+docker compose run test_web rails db:create db:migrate RAILS_ENV=test
 ```
 
-Then, in the console:
-
-```ruby
-AppSetting.first_or_create.update!(maintenance_mode: true)
-```
-
-## Disabling maintenance mode
-
-In the Rails console:
-
-```ruby
-AppSetting.first&.update!(maintenance_mode: false)
-```
-
-If there is no `AppSetting` record yet, `first_or_create` will create one with default values (including `maintenance_mode: false`).
-
-# Tests
-L'application est testée grâce à un ensemble de tests d'intégration écrits à l'aide de la librairie `Minitest` fournie avec `Ruby on Rails`.
-Les tests sont lancés automatiquement lors de l'exécution du workflow GitHub `Publish rails container to ghcr.io`
-Pour lancer les tests en local, utiliser la commande :
+**Ensuite, à chaque fois :**
 
 ```bash
 docker compose run test_web rails test
 ```
 
-La couverture des tests est calculée par la gem `simplecov` et sera affichée à la fin des tests. Un fichier récapitulatif est disponible dans le dossier `coverage`
+### Réinitialiser la base de test (drop impossible : "database is being accessed by other users")
+
+Si `db:drop` échoue parce que la base de test est encore utilisée (connexions ouvertes), utilisez la tâche qui coupe les connexions puis supprime toutes les bases de test (y compris les clones parallèles) :
+
+```bash
+docker compose run test_web rails db:test:drop_force RAILS_ENV=test
+```
+
+Puis recréez et migrez :
+
+```bash
+docker compose run test_web rails db:create db:migrate RAILS_ENV=test
+```
+
+En une seule commande :
+
+```bash
+docker compose run test_web rails db:test:drop_force db:create db:migrate RAILS_ENV=test
+```
+
+
+
+La couverture des tests est calculée par la gem `simplecov` et sera affichée à la fin des tests. Un fichier récapitulatif est disponible dans le dossier `coverage`.
 
 
 
