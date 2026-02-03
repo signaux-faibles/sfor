@@ -1,0 +1,13 @@
+# Used by lists_controller filter effectif_min (EXISTS on siren, is_latest = true, effectif >= ?).
+# One row per siren with is_latest so effectif_min filter can include the company when tested.
+osf_ent_effectif_paris:
+  siren: "123456789"
+  periode: 2025-01-01
+  effectif: 50
+  is_latest: true
+
+osf_ent_effectif_finistere:
+  siren: "987654321"
+  periode: 2025-01-01
+  effectif: 12
+  is_latest: true

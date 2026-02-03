@@ -1,0 +1,5 @@
+# Used by lists_controller filter liste_retraitee (only companies in SjcfCompany for this list).
+# libelle_liste must match lists.label.
+sjcf_company_paris_list_test_2025:
+  siren: "123456789"
+  libelle_liste: "Liste test 2025"

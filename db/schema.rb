@@ -574,7 +574,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_29_000000) do
     t.text "libelle", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "date_add", limit: 50
     t.index ["code"], name: "index_rating_reasons_on_code", unique: true
   end
 

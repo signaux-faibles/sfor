@@ -98,7 +98,7 @@ jobs:
 
       - name: Set up the database
         run: |
-          bundle exec rails db:create db:schema:load RAILS_ENV=test
+          bundle exec rails db:create db:migrate RAILS_ENV=test
 
       - name: Run Tests
         run: |

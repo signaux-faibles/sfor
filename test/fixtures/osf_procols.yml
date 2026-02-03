@@ -1,0 +1,9 @@
+# Used by lists_controller filter libelle_procol via SQL function procol_at_date(date).
+# Function returns rows where date_effet <= date_param and stade_procol != 'fin_procedure'.
+# So use stade_procol other than 'fin_procedure' so the company appears "in procol" for that libelle.
+osf_procol_paris:
+  siren: "123456789"
+  date_effet: 2024-06-01
+  action_procol: "Ouverture"
+  stade_procol: "en_cours"
+  libelle_procol: "Redressement judiciaire"
