@@ -13,7 +13,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Get search params
     @search_params = params.require(:search).permit(:q,
-                                                    :effectif_min, :score_min,
+                                                    :effectif_min,
                                                     :dette_sociale_min, :libelle_procol,
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
@@ -187,7 +187,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Get search params (same as show action)
     @search_params = params.require(:search).permit(:q,
-                                                    :effectif_min, :score_min,
+                                                    :effectif_min,
                                                     :dette_sociale_min, :libelle_procol,
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
@@ -300,7 +300,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Get search params (same as show action)
     @search_params = params.require(:search).permit(:q,
-                                                    :effectif_min, :score_min,
+                                                    :effectif_min,
                                                     :dette_sociale_min, :libelle_procol,
                                                     :frequence_alerte, :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
@@ -438,20 +438,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           AND oee.is_latest = true
           AND oee.effectif >= ?
         )", effectif_min
-      )
-    end
-
-    # Filter by minimum score
-    if @search_params[:score_min].present?
-      score_min = @search_params[:score_min].to_f
-      # Use EXISTS subquery to avoid materializing sirens in Ruby
-      companies = companies.where(
-        "EXISTS (
-          SELECT 1 FROM company_score_entries cse
-          WHERE cse.siren = companies.siren
-          AND cse.list_name = ?
-          AND cse.score >= ?
-        )", @list.label, score_min
       )
     end
 

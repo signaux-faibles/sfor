@@ -183,15 +183,6 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_includes @response.body, "Company Paris"
   end
 
-  test "show filter score_min excludes company below threshold" do
-    sign_in @user
-
-    get list_path(@list_2025), params: { search: { score_min: 80 } }
-
-    assert_response :success
-    assert_includes @response.body, "Aucun résultat trouvé"
-  end
-
   test "show filter dette_sociale_min includes company above threshold" do
     sign_in @user
 
@@ -349,7 +340,6 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
       search: {
         q: "123",
         effectif_min: 10,
-        score_min: 70,
         niveau_alerte: "Alerte seuil F1"
       }
     }
@@ -364,7 +354,7 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     get list_path(@list_2025), params: {
       search: {
         q: "123",
-        score_min: 80
+        effectif_min: 60
       }
     }
 
@@ -380,6 +370,62 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
     assert_response :success
     assert_includes @response.body, "Company Paris"
+  end
+
+  # --- enrich_company (uses enrich_single_company) ---
+
+  test "enrich_company redirects when not authenticated" do
+    get enrich_company_list_path(@list_2025), params: { siren: "123456789" }
+
+    assert_redirected_to new_user_session_path
+  end
+
+  test "enrich_company returns bad request when siren is blank" do
+    sign_in @user
+
+    get enrich_company_list_path(@list_2025), params: { siren: "" }
+
+    assert_response :bad_request
+  end
+
+  test "enrich_company returns success and shows alert badge for company with F1 alert" do
+    sign_in @user
+
+    # company_paris (123456789) has CompanyScoreEntry with alert "Alerte seuil F1" in list_test_2025
+    get enrich_company_list_path(@list_2025), params: { siren: "123456789" }
+
+    assert_response :success
+    assert_select "p.fr-badge", text: "Alerte élevée"
+  end
+
+  test "enrich_company shows first alert badge when siren only in this list" do
+    sign_in @user
+
+    # company_finistere (987654321) is only in list_test_2025, so is_first_alert is true
+    get enrich_company_list_path(@list_2025), params: { siren: "987654321" }
+
+    assert_response :success
+    assert_select "p.fr-badge", text: "1ère alerte"
+  end
+
+  test "enrich_company shows establishment count when company has active establishments" do
+    sign_in @user
+
+    # company_paris has establishments with is_active: true (establishment_paris6, establishment_paris_no_trackings)
+    get enrich_company_list_path(@list_2025), params: { siren: "123456789" }
+
+    assert_response :success
+    assert_includes @response.body, "établissements en activité"
+  end
+
+  test "enrich_company renders turbo frames for badges and establishments" do
+    sign_in @user
+
+    get enrich_company_list_path(@list_2025), params: { siren: "123456789" }
+
+    assert_response :success
+    assert_select "turbo-frame#company_badges_123456789", count: 1
+    assert_select "turbo-frame#company_establishments_123456789", count: 1
   end
 end
 # rubocop:enable Naming/VariableNumber
