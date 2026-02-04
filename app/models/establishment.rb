@@ -25,7 +25,7 @@ class Establishment < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[establishment_trackings contacts osf_aps osf_cotisations osf_delais osf_debits]
+    %w[company department establishment_trackings contacts osf_aps osf_cotisations osf_delais osf_debits]
   end
 
   def to_param
