@@ -5,6 +5,21 @@
         <div class="fr-notice__body">
           <div>
             <p class="fr-notice__title">L'entreprise n'a jamais fait l'objet d'un accompagnement.</p>
+            <p class="fr-mt-2w">Rappel : les accompagnements sont créés au niveau des fiches établissements.</p>
+              <ul>
+                <% if @siege.present? %>
+                  <li>
+                    <%= link_to "Consultez la fiche de l'établissement siège",
+                                establishment_path(@siege),
+                                data: { turbo: false } %>
+                  </li>
+                <% end %>
+                <li>
+                  <%= link_to "Consultez  Liste des établissements - #{@company.raison_sociale}",
+                              company_path(@company),
+                              data: { turbo: false } %>
+                </li>
+              </ul>
           </div>
         </div>
       </div>
@@ -38,21 +53,6 @@
           <div class="fr-notice__body">
             <div>
               <p class="fr-notice__title">L'entreprise n'a pas d'accompagnement en cours ou sous-surveillance.</p>
-              <p class="fr-mt-2w">Rappel : les accompagnements sont créés au niveau des fiches établissements.</p>
-              <ul>
-                <% if @siege.present? %>
-                  <li>
-                    <%= link_to "Consultez la fiche de l'établissement siège",
-                                establishment_path(@siege),
-                                data: { turbo: false } %>
-                  </li>
-                <% end %>
-                <li>
-                  <%= link_to "Consultez  Liste des établissements - #{@company.raison_sociale}",
-                              company_path(@company),
-                              data: { turbo: false } %>
-                </li>
-              </ul>
             </div>
           </div>
         </div>
