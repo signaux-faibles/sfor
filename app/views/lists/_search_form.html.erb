@@ -78,21 +78,6 @@
                              { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
               </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4">
-              <div class="fr-input-group">
-
-
-                <div class="sf-label--tooltip">
-                  <%= f.label :score_min, "Score de défaillance min.", class: "fr-label" %>
-                  <span id="sf-score-defaillance-infobulle">
-                    <button aria-describedby="tooltip-score-defaillance-min" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-                    <span class="fr-tooltip fr-placement" id="tooltip-score-defaillance-min" role="tooltip">Pourcentage minimum de probabilité de défaillance à 18 moins identifié par l'algorithme.</span>
-                  </span>
-                </div>
-
-                <%= f.number_field :score_min, value: search_params[:score_min], class: "fr-input", placeholder: "Score minimum", min: 0, step: 5, aria: { describedby: "sf-score-defaillance-infobulle" } %>
-              </div>
-            </div>
           </div>
 
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
