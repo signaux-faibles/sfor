@@ -95,7 +95,6 @@ module Excel
         "Libellé NAF/APE",
         "Niveau d'alerte",
         "Fréquence d'alerte",
-        "Score de défaillance",
         "Détail du score effectif",
         "Détail du score santé financière",
         "Détail du score dettes sociales",
@@ -105,9 +104,9 @@ module Excel
         "Entreprises récentes",
         "Accompagnement"
       ]
-      # Reuse single style object instead of creating 25
+      # Reuse single style object instead of creating 24
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(25, header_style_obj)
+      sheet.add_row headers, style: Array.new(24, header_style_obj)
     end
 
     def add_company_rows(sheet)
@@ -117,12 +116,12 @@ module Excel
 
       # Create style objects once and reuse
       row_style = centered_style(sheet)
-      row_styles = Array.new(25, row_style)
+      row_styles = Array.new(24, row_style)
 
       sirens.each do |siren|
         sheet.add_row prepare_company_row(siren, sheet),
                       style: row_styles,
-                      types: [:string] * 25
+                      types: [:string] * 24
       end
     end
 
@@ -377,7 +376,7 @@ module Excel
       end
     end
 
-    def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+    def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       # Use preloaded data instead of querying
       siege_siret = @siege_establishments[siren]
       company_data = @company_data[siren] || {}
@@ -405,7 +404,6 @@ module Excel
         company_data[:libelle_activite_principale] || "-",
         format_alert_level(score_entry),
         format_alert_frequency(siren),
-        format_score(score_entry ? score_entry[:score] : nil),
         format_score_detail(score_entry, "Variation-de-l'effectif-de-l'entreprise"),
         format_score_detail(score_entry, "Données-financières"),
         format_score_detail(score_entry, "Dettes-sociales"),
@@ -479,12 +477,6 @@ module Excel
 
       # If no other entries, it's a first alert; otherwise nothing
       other_entries_exist ? "-" : "1ère alerte"
-    end
-
-    def format_score(score)
-      return "-" unless score
-
-      score.to_f.round
     end
 
     def format_score_detail(score_entry, key)
@@ -567,7 +559,6 @@ module Excel
         "q" => "Recherche",
         "ca_min" => "CA minimum",
         "effectif_min" => "Effectif minimum",
-        "score_min" => "Score minimum",
         "dette_sociale_min" => "Dette sociale minimum",
         "action_procol" => "Action procédure collective",
         "frequence_alerte" => "Fréquence d'alerte",
