@@ -73,7 +73,7 @@ class User < ApplicationRecord
 
     errors.add :password,
                "doit contenir au moins 12 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
-               "doit contenir au moins 12 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial" # rubocop:disable Layout/LineLength
+    "doit contenir au moins 12 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial"
   end
 
   private
