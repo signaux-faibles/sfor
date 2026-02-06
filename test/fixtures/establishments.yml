@@ -35,6 +35,13 @@ establishment_paris6:
   siege: false
   is_active: true
 
+establishment_paris7:
+  siren: '123456789'
+  siret: '12345678900017'
+  departement: '75'
+  siege: false
+  is_active: true
+
 establishment_paris_no_trackings:
   siren: '123456789'
   siret: '12345678900011'
@@ -47,3 +54,10 @@ establishment_finistere:
   siret: '98765432100002'
   departement: '29'
   siege: true
+
+# Only establishment for company_no_siege; no siege so widget shows no "fiche siège" link when no trackings
+establishment_no_siege:
+  siren: '111111111'
+  siret: '11111111100001'
+  departement: '75'
+  siege: false

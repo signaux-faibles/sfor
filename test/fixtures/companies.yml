@@ -11,4 +11,12 @@ company_finistere:
   raison_sociale: 'Company Finistere'
   statut_juridique: '5499'
   creation: '2019-06-15'
-  department: '29' 
+  department: '29'
+
+# Company with no siege establishment (for testing widget when !@has_any_trackings and @siege.blank?)
+company_no_siege:
+  siren: '111111111'
+  raison_sociale: 'Company No Siege'
+  statut_juridique: '5710'
+  creation: '2020-01-01'
+  department: '75' 

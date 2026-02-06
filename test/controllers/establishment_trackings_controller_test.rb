@@ -29,6 +29,7 @@ class EstablishmentTrackingsControllerTest < ActionDispatch::IntegrationTest
     @establishment_paris = establishments(:establishment_paris)
     @establishment_paris2 = establishments(:establishment_paris2)
     @establishment_paris6 = establishments(:establishment_paris6)
+    @establishment_paris7 = establishments(:establishment_paris7)
     @user_crp_paris = users(:user_crp_paris)
     @user_urssaf_paris = users(:user_urssaf_paris)
     @user_crp_paris2 = users(:user_crp_paris2)
@@ -94,7 +95,7 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
 
   test "should create establishment_tracking" do
     assert_difference("EstablishmentTracking.count") do
-      post establishment_establishment_trackings_url(@establishment_paris6), params: {
+      post establishment_establishment_trackings_url(@establishment_paris7), params: {
         establishment_tracking: {
           state: "in_progress",
           start_date: Time.zone.today,
@@ -111,7 +112,7 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
 
     tracking = EstablishmentTracking.last
 
-    assert_redirected_to [@establishment_paris6, tracking]
+    assert_redirected_to [@establishment_paris7, tracking]
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
   end
 

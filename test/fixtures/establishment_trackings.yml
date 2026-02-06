@@ -45,3 +45,22 @@ establishment_tracking_finistere:
   creator: user_crp_finistere
   tracking_labels: tracking_label1
   referents: [ user_crp_finistere ]
+
+# Completed tracking for company_paris (enables testing "active + history" and "only completed" with fixtures)
+establishment_tracking_paris_completed:
+  state: 'completed'
+  establishment_siret: '12345678900011'
+  start_date: 2022-06-01
+  end_date: 2023-01-15
+  creator: user_crp_paris
+  tracking_labels: tracking_label1
+  referents: [ user_crp_paris ]
+
+# Under surveillance for company_paris (establishment_paris6 has no other tracking)
+establishment_tracking_paris_under_surveillance:
+  state: 'under_surveillance'
+  establishment_siret: '12345678900015'
+  start_date: 2023-03-01
+  creator: user_crp_paris
+  tracking_labels: tracking_label1
+  referents: [ user_crp_paris ]
