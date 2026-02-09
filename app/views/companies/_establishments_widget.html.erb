@@ -47,7 +47,6 @@
                   <th scope="col">Département</th>
                   <th scope="col"><abbr title="Effectif établissement">Eff. établissement</abbr></th>
                   <th scope="col">Dette sociale</th>
-                  <th scope="col">Activité partielle</th>
                   <th scope="col">État</th>
                   <th scope="col">Actions</th>
                 </tr>
@@ -95,15 +94,6 @@
                         <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">Non</p>
                       <% end %>
                     </td>
-                    
-                    <td>
-                      <% if enriched_establishment[:active_activite_partielle] == true %>
-                        <p class="fr-badge fr-badge--sm fr-badge--error fr-badge--no-icon">Oui</p>
-                      <% else %>
-                        <p class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon">Non</p>
-                      <% end %>
-                    </td>
-
                     <td>
                       <% if enriched_establishment[:etat_administratif] == "F" && enriched_establishment[:date_fermeture_formatted].present? %>
                         <p class="fr-badge fr-badge--pink-macaron fr-badge--sm">Fermé le <%= enriched_establishment[:date_fermeture_formatted] %></p>

@@ -458,7 +458,6 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         last_effectif: OsfEffectif.last_effectif_for_siret_in_freshness_month(establishment.siret,
                                                                               osf_effectif_data_freshness),
         active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
-        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret),
         etat_administratif: etat_administratif,
         date_fermeture_formatted: date_fermeture_formatted
       }
@@ -473,7 +472,6 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         last_effectif: OsfEffectif.last_effectif_for_siret_in_freshness_month(establishment.siret,
                                                                               osf_effectif_data_freshness),
         active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
-        active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret),
         etat_administratif: nil,
         date_fermeture_formatted: nil
       }
