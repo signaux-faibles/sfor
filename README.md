@@ -342,6 +342,8 @@ bin/rails osf:sync_sirene                     # Sync establishments from SIRENE 
 bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL clean view ~ 1 hour
 ```
 
+> For `osf_effectif` don't forget to update the `data_freshness` attribute of the corresponding line of the `import.rb` model. You can do this using the app admin panel. You can get the value by doing `select Max(oe.periode) from osf_effectifs oe `. This will be hopefully automaticaly done at import time one day.
+
 # Import sjcf companies
 
 Just import the data of an sjcf csv file with a `siren` column and a `libelle_list` column. The headers labels don't mater as long as you have one list of sirens and the name of the current list (e.g. "Septembre 2025").
