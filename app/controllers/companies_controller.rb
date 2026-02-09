@@ -414,7 +414,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
          .gsub("Caf", "CAF")
   end
 
-  def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+  def fetch_establishments_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     if @company.siren.blank?
       @enriched_establishments = []
       @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
@@ -433,6 +433,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     # Enrichir chaque établissement avec les données INSEE (seulement ceux de la page courante)
     @enriched_establishments = []
+    osf_effectif_data_freshness = Import.find_by(name: "osf_effectif")&.data_freshness
 
     @paginated_establishments.each do |establishment| # rubocop:disable Metrics/BlockLength
       service = Api::InseeApiService.new(siret: establishment.siret, siren: nil)
@@ -454,7 +455,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         rails_data: establishment,
         insee_data: insee_data,
         has_api_data: insee_data.present?,
-        last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret),
+        last_effectif: OsfEffectif.last_effectif_for_siret_in_freshness_month(establishment.siret,
+                                                                              osf_effectif_data_freshness),
         active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
         active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret),
         etat_administratif: etat_administratif,
@@ -468,7 +470,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         rails_data: establishment,
         insee_data: nil,
         has_api_data: false,
-        last_effectif: OsfEffectif.last_effectif_for_siret(establishment.siret),
+        last_effectif: OsfEffectif.last_effectif_for_siret_in_freshness_month(establishment.siret,
+                                                                              osf_effectif_data_freshness),
         active_dette_urssaf: OsfDelai.active_dette_urssaf?(establishment.siret),
         active_activite_partielle: OsfAp.active_activite_partielle?(establishment.siret),
         etat_administratif: nil,
