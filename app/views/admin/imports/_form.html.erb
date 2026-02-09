@@ -1,0 +1,32 @@
+<%= form_with model: [:admin, @import], local: true, class: "fr-mb-3w" do |form| %>
+  <% if @import.errors.any? %>
+    <div class="fr-alert fr-alert--error fr-mb-2w">
+      <p class="fr-alert__title"><%= pluralize(@import.errors.count, "erreur") %> ont empêché l'enregistrement :</p>
+      <ul>
+        <% @import.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :name, "Nom de l'import", class: "fr-label" %>
+    <%= form.text_field :name, class: "fr-input", placeholder: "Nom de l'import" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :import_date, "Date de l'import", class: "fr-label" %>
+    <%= form.date_field :import_date, class: "fr-input" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :data_freshness, "Fraîcheur des données", class: "fr-label" %>
+    <%= form.date_field :data_freshness, class: "fr-input" %>
+  </div>
+
+  <div class="fr-btns-group">
+    <%= form.submit class: "fr-btn" %>
+    <%= link_to "Annuler", admin_imports_path, class: "fr-btn fr-btn--secondary" %>
+  </div>
+<% end %>

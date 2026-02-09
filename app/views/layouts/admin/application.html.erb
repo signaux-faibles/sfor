@@ -22,11 +22,13 @@
           <%= link_to "Retour au site", root_path, class: "fr-btn fr-btn--sm fr-btn--secondary" %>
         </div>
         
-        <nav class="fr-mb-2w">
+        <nav class="fr-mb-2w" style="display: flex; flex-direction: column; gap: 0.5rem;">
           <%= link_to admin_users_path, class: "fr-link #{'fr-link--active' if controller_name == 'users'}" do %>
             👥 Utilisateurs
           <% end %>
-          <!-- Add more menu items here as needed -->
+          <%= link_to admin_imports_path, class: "fr-link #{'fr-link--active' if controller_name == 'imports'}" do %>
+            📥 Imports
+          <% end %>
         </nav>
       </nav>
 

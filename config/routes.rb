@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         post :reset_password
       end
     end
+    resources :imports
 
     root to: "users#index"
   end

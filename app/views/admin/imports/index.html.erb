@@ -1,0 +1,48 @@
+<div class="fr-mb-3w">
+  <h1 class="fr-h1 fr-mb-2w">Imports</h1>
+  <%= link_to "Nouvel import", new_admin_import_path, class: "fr-btn fr-btn--primary" %>
+</div>
+
+<div class="fr-table">
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Nom de l'import</th>
+        <th scope="col">Date de l'import</th>
+        <th scope="col">Fraîcheur des données</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @imports.any? %>
+        <% @imports.each do |import| %>
+          <tr>
+            <td><%= import.name %></td>
+            <td><%= import.import_date ? l(import.import_date) : "—" %></td>
+            <td><%= import.data_freshness ? l(import.data_freshness) : "—" %></td>
+            <td>
+              <div class="fr-btns-group fr-btns-group--inline">
+                <%= link_to "Modifier", edit_admin_import_path(import), class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+                <%= button_to "Supprimer",
+                    admin_import_path(import),
+                    method: :delete,
+                    class: "fr-btn fr-btn--sm fr-btn--secondary",
+                    data: { confirm: "Êtes-vous sûr de vouloir supprimer cet import ?" } %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="3" class="fr-text--sm">Aucun import enregistré.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if @imports.respond_to?(:current_page) %>
+  <div class="fr-mt-2w">
+    <%= paginate @imports %>
+  </div>
+<% end %>
