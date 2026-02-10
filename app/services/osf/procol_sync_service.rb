@@ -5,9 +5,8 @@ module Osf
   class ProcolSyncService < BaseOsfSyncService
     BATCH_SIZE = 1000
 
-    def initialize(months_back: nil)
-      super()
-      @months_back = months_back
+    def initialize
+      super
       @schema = ENV.fetch("OSF_DATABASE_SCHEMA", "sfdata")
       @source_relation = "#{@schema}.clean_procol"
     end
@@ -18,22 +17,14 @@ module Osf
       "osf_procol_sync.log"
     end
 
-    def sync_data # rubocop:disable Metrics/MethodLength
+    def sync_data
       @logger.info "Starting procol data synchronization from #{@source_relation} using PostgreSQL cursor"
 
       @logger.info "Clearing existing osf_procols table"
       OsfProcol.delete_all
 
-      # Build base date filter if months_back is specified
-      base_date_filter = ""
-      if @months_back
-        cutoff_date = @months_back.months.ago.beginning_of_month
-        base_date_filter = "WHERE date_effet >= '#{cutoff_date.strftime('%Y-%m-%d')}'"
-        @logger.info "Filtering data from #{cutoff_date.strftime('%Y-%m-%d')} onwards (#{@months_back} months back)"
-      end
-
       # Use PostgreSQL cursor for efficient processing
-      process_with_cursor(base_date_filter)
+      process_with_cursor
 
       @logger.info "Procol sync completed.
       Final stats: Created: #{@stats[:created]},
@@ -42,7 +33,7 @@ module Osf
 
     private
 
-    def process_with_cursor(base_date_filter) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_with_cursor # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       cursor_name = "procol_cursor_#{Process.pid}_#{Time.current.to_i}"
 
       begin
@@ -52,7 +43,7 @@ module Osf
 
         # Declare cursor with the query
         declare_sql =
-          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_date_filter} ORDER BY siren, date_effet" # rubocop:disable Layout/LineLength
+          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} ORDER BY siren, date_effet"
         @db_service.execute_query(declare_sql)
         @logger.debug "Declared cursor with query: #{declare_sql}"
 
