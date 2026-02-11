@@ -21,6 +21,8 @@
     <% if @effectifs.present? || @consommation_ap.present? || @autorisation_ap.present? %>
       <p class="fr-mb-0">Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
       <p>Les informations ne doivent pas être partagées en dehors du CODEFI ou des agents habilités à l’outil.</p>
+      <p>Dates : Pour ces données, la donnée est celle du 1er jour du mois.<br />
+      <i>Exemple : La donnée d'effectif de novembre 2025 désigne le nombre de salariés au 1er novembre 2025.</i></p>
 
       <div
         data-controller="segmented-control-widget"

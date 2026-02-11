@@ -23,6 +23,15 @@
     <% if @cotisations.present? || @parts_salariales.present? || @parts_patronales.present? || @montant_echeancier.present? %>
       <p class="fr-mb-0">Les données ci-dessous sont mobilisées dans le calcul de la probabilité de défaillance de l'entreprise.</p>
       <p>Les informations ne doivent pas être partagées en dehors du CODEFI ou des agents habilités à l’outil.</p>
+            <p>Dates : Pour les cotisations appelées et le montant de l'échéancier du délai de paiement, la donnée est celle du 1er jour du mois.<br />
+      <i>Exemple : La donnée de cotisations renseignée sur le mois de novembre indique le montant des cotisations appelées au 1er novembre.</i></p>
+      <p>Dates : Pour la dette restante (part salariale et part patronale),
+        <ul>
+          <li>La donnée sur le dernier mois commence au 20 du mois précédent et va jusqu’au 7 du mois ;</li>
+          <li>La donnée pour tous les autres mois commence au 20 du mois précédent et se termine au 20 du mois inscrit.</li>
+        </ul>
+        <i>Exemple : La donnée de dette restante renseignée sur le mois de novembre indique le montant du dernier évènement d'impayé survenu entre le 20 octobre et le 20 novembre.</i>
+        <i>Si le dernier mois dans le graphique est janvier 2026, alors il est indiqué le montant du dernier évènement d'impayé survenu entre le 20 décembre et le 7 janvier</i></p>
 
       <div
         data-controller="segmented-control-widget"
