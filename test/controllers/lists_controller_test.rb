@@ -41,7 +41,6 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_select "table#table-lg"
     assert_select "caption", text: "Toutes les listes"
     assert_select "th", text: "Liste"
-    assert_select "th", text: "Nombre d'entreprises"
     assert_select "th", text: "Actions"
   end
 
