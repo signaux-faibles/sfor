@@ -33,7 +33,6 @@
               <thead>
                 <tr>
                   <th scope="col">Liste</th>
-                  <th scope="col">Nombre d'entreprises</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
@@ -44,13 +43,6 @@
                       <th scope="row">
                         Liste de détection - <%= list.label %>
                       </th>
-                      <td>
-                        <%= turbo_frame_tag "list_company_count_#{list.id}",
-                            src: company_count_list_path(list),
-                            loading: "lazy" do %>
-                          <span class="sf-loading-dots" aria-hidden="true">Chargement<span class="sf-loading-dots__dot">.</span><span class="sf-loading-dots__dot">.</span><span class="sf-loading-dots__dot">.</span></span>
-                        <% end %>
-                      </td>
                       <td>
                         <%= link_to list_path(list),
                                     class: "fr-link",
