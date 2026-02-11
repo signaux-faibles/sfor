@@ -2,6 +2,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   include ProcolStatusable
   include DetectionWidgetable
   include OutOfZoneTrackable
+  include DebitFreshnessable
 
   before_action :set_company,
                 only: %i[show insee_widget financial_widget establishments_widget detection_widget
@@ -191,7 +192,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     cotisations_data = fetch_cotisations_data(start_date)
     # Forward-fill per establishment first, then aggregate
-    debits_data = fetch_and_forward_fill_debits_data(start_date, periodes)
+    debits_fill_until_index = debit_freshness_index(periodes)
+    debits_data = fetch_and_forward_fill_debits_data(start_date, periodes, fill_until_index: debits_fill_until_index)
     delais = fetch_delais_data(start_date)
 
     @cotisations = round_values(forward_fill(map_periodes_to_cotisations(periodes, cotisations_data)))
@@ -624,7 +626,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     debits_data
   end
 
-  def fetch_and_forward_fill_debits_data(start_date, periodes) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def fetch_and_forward_fill_debits_data(start_date, periodes, fill_until_index: nil) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # Forward-fill per establishment first, then aggregate
     # This ensures that if one establishment has data until April and another until May,
     # we forward-fill each separately before aggregating
@@ -664,9 +666,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
         debit_record && !debit_record[2].nil? ? debit_record[2].to_f : nil
       end
 
-      # Forward-fill to the end for this establishment
-      parts_sal_filled = forward_fill(parts_sal, fill_to_end: true)
-      parts_pat_filled = forward_fill(parts_pat, fill_to_end: true)
+      # Forward-fill only up to data freshness for this establishment
+      parts_sal_filled = forward_fill(parts_sal, fill_to_end: true, fill_until_index: fill_until_index)
+      parts_pat_filled = forward_fill(parts_pat, fill_to_end: true, fill_until_index: fill_until_index)
 
       establishments_data[siret] = {
         parts_salariales: parts_sal_filled,
@@ -796,12 +798,13 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     true
   end
 
-  def forward_fill(array, fill_to_end: false)
+  def forward_fill(array, fill_to_end: false, fill_until_index: nil) # rubocop:disable Metrics/MethodLength
     # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
     # By default, stop forward-filling after the last period with actual data (don't fill to current date)
     # When fill_to_end is true, continue filling to the end of the array
     last_value = nil
     last_actual_index = fill_to_end ? array.length - 1 : array.rindex { |v| !v.nil? }
+    last_actual_index = [last_actual_index, fill_until_index].compact.min
 
     array.map.with_index do |value, index|
       if value.nil?

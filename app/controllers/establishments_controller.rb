@@ -1,6 +1,7 @@
 class EstablishmentsController < ApplicationController # rubocop:disable Metrics/ClassLength
   include ProcolStatusable
   include OutOfZoneTrackable
+  include DebitFreshnessable
 
   before_action :set_establishment,
                 only: %i[show data_effectif_ap_widget data_urssaf_widget establishment_trackings_list_widget]
@@ -31,9 +32,14 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     delais = fetch_delais_data(start_date)
 
     @cotisations = forward_fill(map_periodes_to_cotisations(periodes, cotisations_data))
-    # For debits, always forward-fill to the end (last known debt persists until updated)
-    @parts_salariales = forward_fill(map_periodes_to_parts_salariales(periodes, debits_data), fill_to_end: true)
-    @parts_patronales = forward_fill(map_periodes_to_parts_patronales(periodes, debits_data), fill_to_end: true)
+    # For debits, forward-fill only up to data freshness
+    debits_fill_until_index = debit_freshness_index(periodes)
+    @parts_salariales = forward_fill(map_periodes_to_parts_salariales(periodes, debits_data),
+                                     fill_to_end: true,
+                                     fill_until_index: debits_fill_until_index)
+    @parts_patronales = forward_fill(map_periodes_to_parts_patronales(periodes, debits_data),
+                                     fill_to_end: true,
+                                     fill_until_index: debits_fill_until_index)
     @montant_echeancier = forward_fill(map_periodes_to_montant_echeancier(periodes, delais))
 
     # Set arrays to empty if they only contain nil values
@@ -293,12 +299,13 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     end
   end
 
-  def forward_fill(array, fill_to_end: false)
+  def forward_fill(array, fill_to_end: false, fill_until_index: nil) # rubocop:disable Metrics/MethodLength
     # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
     # By default, stop forward-filling after the last period with actual data (don't fill to current date)
     # When fill_to_end is true, continue filling to the end of the array
     last_value = nil
     last_actual_index = fill_to_end ? array.length - 1 : array.rindex { |v| !v.nil? }
+    last_actual_index = [last_actual_index, fill_until_index].compact.min
 
     array.map.with_index do |value, index|
       if value.nil?
