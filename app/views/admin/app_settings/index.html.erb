@@ -1,0 +1,40 @@
+<h1 class="fr-h4 fr-mb-3w">Paramètres</h1>
+
+<% unless @app_settings.any? %>
+  <div class="fr-mb-3w">
+    <%= link_to "Nouveau paramètre", new_admin_app_setting_path, class: "fr-btn" %>
+  </div>
+<% end %>
+
+<% if @app_settings.any? %>
+  <div class="fr-table fr-table--bordered">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Date limite entreprises récentes</th>
+          <th>Mis à jour le</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @app_settings.each do |app_setting| %>
+          <tr>
+            <td><%= app_setting.id %></td>
+            <td><%= app_setting.entreprises_recentes_filter_date ? l(app_setting.entreprises_recentes_filter_date) : "-" %></td>
+            <td><%= l(app_setting.updated_at.to_date) %></td>
+            <td>
+              <%= link_to "Voir", admin_app_setting_path(app_setting), class: "fr-link" %>
+              <%= link_to "Modifier", edit_admin_app_setting_path(app_setting), class: "fr-link fr-ml-1w" %>
+              <%= link_to "Supprimer", admin_app_setting_path(app_setting),
+                          data: { turbo_method: :delete, turbo_confirm: "Supprimer ces paramètres ?" },
+                          class: "fr-link fr-ml-1w" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p>Aucun paramètre disponible.</p>
+<% end %>

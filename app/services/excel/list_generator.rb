@@ -502,8 +502,11 @@ module Excel
 
       # Convert string to Date if needed (exec_query returns dates as strings)
       date = creation_date.is_a?(String) ? creation_date.to_date : creation_date
-      three_years_ago = Date.current - 3.years
-      date >= three_years_ago ? "Oui" : "Non"
+      date >= entreprises_recentes_filter_date ? "Oui" : "Non"
+    end
+
+    def entreprises_recentes_filter_date
+      @entreprises_recentes_filter_date ||= AppSetting.current&.entreprises_recentes_filter_date || (Date.current - 3.years)
     end
 
     def format_tracking_status(siren)

@@ -21,7 +21,7 @@ class ApplicationController < ActionController::Base
     return if request.path.start_with?("/admin")
     return if request.path == "/up"
 
-    return unless AppSetting.first&.maintenance_mode?
+    return unless AppSetting.current&.maintenance_mode?
 
     render file: Rails.public_path.join("maintenance.html"),
            layout: false,

@@ -518,11 +518,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       )
     end
 
-    # Filter by sans_entreprises_recentes (exclude companies created within last 3 years)
+    # Filter by sans_entreprises_recentes (exclude companies created after threshold date)
     if @search_params[:sans_entreprises_recentes].present? && @search_params[:sans_entreprises_recentes] == "1"
-      three_years_ago = Date.current - 3.years
-      # Exclude companies created within last 3 years, but include companies with NULL creation date
-      companies = companies.where("creation IS NULL OR creation < ?", three_years_ago)
+      filter_date = AppSetting.current&.entreprises_recentes_filter_date || (Date.current - 3.years)
+      # Exclude companies created after filter_date, but include companies with NULL creation date
+      companies = companies.where("creation IS NULL OR creation <= ?", filter_date)
     end
 
     # Filter by sans_delai_urssaf (exclude companies with establishments having OsfDelai date_echeance > list_date)

@@ -1,0 +1,11 @@
+<h1 class="fr-h4 fr-mb-3w">Paramètres</h1>
+
+<div class="fr-mb-3w">
+  <%= link_to "Modifier", edit_admin_app_setting_path(@app_setting), class: "fr-btn" %>
+  <%= link_to "Retour", admin_app_settings_path, class: "fr-btn fr-btn--secondary" %>
+</div>
+
+<dl class="fr-mb-3w">
+  <dt class="fr-text--bold">Date limite des entreprises récentes</dt>
+  <dd><%= @app_setting.entreprises_recentes_filter_date ? l(@app_setting.entreprises_recentes_filter_date) : "-" %></dd>
+</dl>

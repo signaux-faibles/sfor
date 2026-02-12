@@ -1,0 +1,23 @@
+<%= form_with model: [:admin, @app_setting], local: true, class: "fr-mb-3w" do |form| %>
+  <% if @app_setting.errors.any? %>
+    <div class="fr-alert fr-alert--error fr-mb-2w">
+      <p class="fr-alert__title"><%= pluralize(@app_setting.errors.count, "erreur") %> ont empêché l'enregistrement :</p>
+      <ul>
+        <% @app_setting.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :entreprises_recentes_filter_date, "Date limite des entreprises récentes", class: "fr-label" %>
+    <%= form.date_field :entreprises_recentes_filter_date, class: "fr-input" %>
+    <p class="fr-hint-text">Les entreprises créées après cette date seront exclues avec le filtre "Sans entreprises récentes".</p>
+  </div>
+
+  <div class="fr-btns-group">
+    <%= form.submit class: "fr-btn" %>
+    <%= link_to "Annuler", admin_app_settings_path, class: "fr-btn fr-btn--secondary" %>
+  </div>
+<% end %>

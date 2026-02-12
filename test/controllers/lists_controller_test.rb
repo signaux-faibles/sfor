@@ -295,6 +295,8 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
   test "show filter sans_entreprises_recentes keeps company created over 3 years ago" do
     sign_in @user
 
+    AppSetting.create!(entreprises_recentes_filter_date: Date.new(2023, 1, 1))
+
     # company_paris creation 2020-01-01
     get list_path(@list_2025), params: { search: { sans_entreprises_recentes: "1" } }
 

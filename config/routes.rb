@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       end
     end
     resources :imports
+    resources :app_settings
 
     root to: "users#index"
   end
