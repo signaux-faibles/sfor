@@ -1,3 +1,15 @@
+<div class="fr-notice fr-notice--info fr-mb-3w">
+    <div class="fr-container">
+        <div class="fr-notice__body">
+            <p>
+                <span class="fr-notice__title">Consulation de données hors de votre zone géographique :</span>
+                <span class="fr-notice__desc">La consultation de données hors de votre zone géographique est autorisée uniquement dans le cadre de votre mission d’accompagnement des entreprises en difficulté. Toutes les consultations hors de votre zone géographique sont tracées et font l’objet de vérifications.</span>
+            </p>
+            <button title="Masquer le message" onclick="const notice = this.parentNode.parentNode.parentNode; notice.parentNode.removeChild(notice)" type="button" class="fr-btn--close fr-btn">Masquer le message</button>
+        </div>
+    </div>
+</div>
+
 <div class="fr-card sf-establishment-search">
   <%= form_with url: search_path, method: :get, scope: :search, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
     <div class="fr-container--fluid fr-m-2w">
