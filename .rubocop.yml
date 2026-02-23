@@ -35,6 +35,12 @@ Metrics/MethodLength:
 Layout/LineLength:
   Enabled: false
 
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
