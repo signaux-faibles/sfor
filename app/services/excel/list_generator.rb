@@ -113,6 +113,11 @@ module Excel
       # Get sirens in the same order as the companies query (if order matters)
       # Otherwise just use the sirens from our cache
       sirens = @companies.pluck(:siren).compact.uniq
+      # Sort by score descending (nil scores last)
+      sirens.sort_by! do |siren|
+        score_value = @score_entries_by_company.dig(siren, :score)&.to_f
+        [-(score_value || -Float::INFINITY), siren]
+      end
 
       # Create style objects once and reuse
       row_style = centered_style(sheet)
