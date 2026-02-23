@@ -37,7 +37,7 @@ module Excel
   class ListGenerator # rubocop:disable Metrics/ClassLength
     include Excel::Styles
 
-    def initialize(list, companies, search_params, user) # rubocop:disable Metrics/MethodLength
+    def initialize(list, companies, search_params, user)
       @list = list
       @companies = companies
       @search_params = search_params
@@ -546,7 +546,7 @@ module Excel
       end
     end
 
-    def add_filter_details_sheet(workbook) # rubocop:disable Metrics/MethodLength
+    def add_filter_details_sheet(workbook)
       workbook.add_worksheet(name: "Filtres") do |sheet|
         sheet.add_row %w[Filtre Valeur]
         @search_params.each do |key, value|
@@ -562,7 +562,7 @@ module Excel
       end
     end
 
-    def format_filter_label(key) # rubocop:disable Metrics/MethodLength
+    def format_filter_label(key)
       {
         "q" => "Recherche",
         "ca_min" => "CA minimum",

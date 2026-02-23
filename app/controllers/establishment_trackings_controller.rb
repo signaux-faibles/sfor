@@ -55,7 +55,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def confirm; end
 
-  def create # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def create # rubocop:disable Metrics/AbcSize
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
     @establishment_tracking.modifier = current_user
@@ -136,7 +136,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     )
   end
 
-  def handle_completed_state_update(old_supporting_services) # rubocop:disable Metrics/MethodLength
+  def handle_completed_state_update(old_supporting_services)
     if @establishment_tracking.completed? && @establishment_tracking.update(prepare_label_params(tracking_params))
       track_supporting_services_changes_if_any(old_supporting_services)
       redirect_to(

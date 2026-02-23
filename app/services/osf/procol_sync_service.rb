@@ -93,7 +93,7 @@ module Osf
       end
     end
 
-    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize
       records_to_create = distant_records.map do |record|
         build_procol_attributes(record)
       end

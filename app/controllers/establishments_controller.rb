@@ -24,7 +24,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     render partial: "insee_widget"
   end
 
-  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     start_date = 24.months.ago.beginning_of_month.to_date
     periodes, @formatted_periodes = generate_formatted_periods(start_date)
 
@@ -54,7 +54,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     render partial: "data_urssaf_widget"
   end
 
-  def data_effectif_ap_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def data_effectif_ap_widget # rubocop:disable Metrics/AbcSize
     start_date = 24.months.ago.beginning_of_month.to_date
     periodes, @formatted_periodes = generate_formatted_periods(start_date)
 
@@ -97,7 +97,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @establishment = Establishment.find_by!(siret: params[:siret])
   end
 
-  def load_trackings # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def load_trackings # rubocop:disable Metrics/AbcSize
     # Custom authorization logic:
     # 1. If the establishment is in user's departments, show all trackings
     # 2. If the establishment is not in user's departments but user is referent/participant, show all trackings
@@ -110,9 +110,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     can_see_trackings = true if current_user.department_ids.include?(@establishment.department&.id)
 
     # Check if user is referent or participant in any tracking of the establishment
-    if !can_see_trackings && all_establishment_trackings.with_user_as_referent_or_participant(current_user).exists?
-      can_see_trackings = true
-    end
+    can_see_trackings = true if !can_see_trackings && all_establishment_trackings.with_user_as_referent_or_participant(current_user).exists?
 
     @can_see_trackings = can_see_trackings
     @has_any_trackings = all_establishment_trackings.exists?
@@ -145,7 +143,7 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @insee_data = nil
   end
 
-  def generate_formatted_periods(start_date) # rubocop:disable Metrics/MethodLength
+  def generate_formatted_periods(start_date)
     end_date = Date.current.end_of_month
     current_date = start_date
     periodes = []

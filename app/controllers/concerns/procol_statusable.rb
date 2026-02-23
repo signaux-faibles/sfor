@@ -12,7 +12,7 @@ module ProcolStatusable
   def procol_status_for_siren(siren)
     current_date = Date.current
     sql = ActiveRecord::Base.sanitize_sql([
-                                            "SELECT libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?", # rubocop:disable Layout/LineLength
+                                            "SELECT libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren = ?",
                                             current_date, siren
                                           ])
     result = ActiveRecord::Base.connection.execute(sql).first
@@ -25,7 +25,7 @@ module ProcolStatusable
   # Expects results to be an array of hashes with a "siren" key
   # Adds a "procol_status" key to each result
   # @param results [Array<Hash>] Array of result hashes with "siren" key
-  def enrich_results_with_procol_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+  def enrich_results_with_procol_status(results) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     return if results.blank?
 
     sirens = results.pluck("siren").compact.uniq
@@ -35,7 +35,7 @@ module ProcolStatusable
     procol_statuses = {}
 
     sql = ActiveRecord::Base.sanitize_sql([
-                                            "SELECT siren, libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren IN (?)", # rubocop:disable Layout/LineLength
+                                            "SELECT siren, libelle_procol FROM procol_at_date(?) AS procol WHERE procol.siren IN (?)",
                                             current_date, sirens
                                           ])
     procol_results = ActiveRecord::Base.connection.execute(sql)

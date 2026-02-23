@@ -18,7 +18,7 @@ module ApplicationHelper
     end
   end
 
-  def markdown(text) # rubocop:disable Metrics/MethodLength
+  def markdown(text)
     options = {
       filter_html: true,
       hard_wrap: true,

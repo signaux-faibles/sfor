@@ -45,7 +45,7 @@ module ListExportTrackable
                              })
   end
 
-  def normalize_filters(search_params) # rubocop:disable Metrics/MethodLength
+  def normalize_filters(search_params)
     return nil if search_params.blank?
 
     # Remove pagination and UI-only params, keep only actual filters

@@ -6,7 +6,7 @@ module SirenSiretRedirectable
 
   private
 
-  def redirect_if_siren_or_siret(query) # rubocop:disable Metrics/MethodLength
+  def redirect_if_siren_or_siret(query)
     return if query.blank?
 
     cleaned_query = query.to_s.gsub(/\D/, "")

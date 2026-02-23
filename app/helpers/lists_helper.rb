@@ -39,7 +39,7 @@ module ListsHelper # rubocop:disable Metrics/ModuleLength
       "5308" => "Société en commandite par actions",
       "5309" => "Société en commandite par actions coopérative",
       "5310" => "Société en libre partenariat (SLP)",
-      "5370" => "Société de Participations Financières de Profession Libérale Société en commandite par actions (SPFPL SCA)", # rubocop:disable Layout/LineLength
+      "5370" => "Société de Participations Financières de Profession Libérale Société en commandite par actions (SPFPL SCA)",
       "5385" => "Société d'exercice libéral en commandite par actions",
       "5410" => "SARL nationale",
       "5415" => "SARL d'économie mixte",
@@ -57,7 +57,7 @@ module ListsHelper # rubocop:disable Metrics/ModuleLength
       "5458" => "SARL coopérative de production (SCOP)",
       "5459" => "SARL union de sociétés coopérative",
       "5460" => "Autre SARL coopérative",
-      "5470" => "Société de Participations Financières de Profession Libérale Société à responsabilité limitée (SPFPL SARL)", # rubocop:disable Layout/LineLength
+      "5470" => "Société de Participations Financières de Profession Libérale Société à responsabilité limitée (SPFPL SARL)",
       "5485" => "Société d'exercice libéral à responsabilité limitée",
       "5499" => "Société à responsabilité limitée (sans autre indication)",
       "5505" => "SA à participation ouvrière à conseil d'administration",
@@ -82,7 +82,7 @@ module ListsHelper # rubocop:disable Metrics/ModuleLength
       "5558" => "SA coopérative de production  (SCOP) à conseil d'administration",
       "5559" => "SA union de sociétés coopérative à conseil d'administration",
       "5560" => "Autre SA coopérative à conseil d'administration",
-      "5570" => "Société de Participations Financières de Profession Libérale Société anonyme à conseil d'administration (SPFPL SA à conseil d'administration)", # rubocop:disable Layout/LineLength
+      "5570" => "Société de Participations Financières de Profession Libérale Société anonyme à conseil d'administration (SPFPL SA à conseil d'administration)",
       "5585" => "Société d'exercice libéral à forme anonyme à conseil d'administration",
       "5599" => "SA à conseil d'administration (s.a.i.)",
       "5605" => "SA à participation ouvrière à directoire",
@@ -107,11 +107,11 @@ module ListsHelper # rubocop:disable Metrics/ModuleLength
       "5658" => "SA coopérative de production (SCOP) à directoire",
       "5659" => "SA union de sociétés coopérative à directoire",
       "5660" => "Autre SA coopérative à directoire",
-      "5670" => "Société de Participations Financières de Profession Libérale Société anonyme à Directoire (SPFPL SA à directoire)", # rubocop:disable Layout/LineLength
+      "5670" => "Société de Participations Financières de Profession Libérale Société anonyme à Directoire (SPFPL SA à directoire)",
       "5685" => "Société d'exercice libéral à forme anonyme à directoire",
       "5699" => "SA à directoire (s.a.i.)",
       "5710" => "SAS, société par actions simplifiée",
-      "5770" => "Société de Participations Financières de Profession Libérale Société par actions simplifiée (SPFPL SAS)", # rubocop:disable Layout/LineLength
+      "5770" => "Société de Participations Financières de Profession Libérale Société par actions simplifiée (SPFPL SAS)",
       "5785" => "Société d'exercice libéral par action simplifiée",
       "5800" => "Société européenne",
       "6100" => "Caisse d'Épargne et de Prévoyance",

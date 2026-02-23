@@ -28,7 +28,7 @@ module Api
 
     private
 
-    def make_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def make_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize
       params = params.to_h if params.respond_to?(:to_h)
       # Remove blank values
       params = params.reject { |_k, v| v.blank? || (v.is_a?(Array) && v.compact_blank.empty?) }

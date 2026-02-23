@@ -12,7 +12,7 @@ module Osf
       @logger = Rails.logger
     end
 
-    def establish_connection # rubocop:disable Metrics/MethodLength
+    def establish_connection
       return @connection if @connection&.active?
 
       # Create a new connection without affecting Rails' default connection

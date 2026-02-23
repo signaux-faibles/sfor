@@ -149,7 +149,7 @@ module Osf
       @stats[key] += count
     end
 
-    def build_establishment_attributes(distant_record) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def build_establishment_attributes(distant_record) # rubocop:disable Metrics/AbcSize
       # Compute departement, handling DOM/COM special case where source gives "97"
       source_departement = distant_record["departement"].to_s.strip.upcase
       computed_departement = source_departement

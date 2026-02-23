@@ -410,7 +410,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
 
     # Filter by section_activite_principale using company.naf_section (1-letter)
-    if @search_params[:section_activite_principale].present? && @search_params[:section_activite_principale].is_a?(Array) # rubocop:disable Layout/LineLength
+    if @search_params[:section_activite_principale].present? && @search_params[:section_activite_principale].is_a?(Array)
       sections = @search_params[:section_activite_principale].compact_blank
       companies = companies.where(naf_section: sections) if sections.any?
     end
@@ -526,7 +526,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
 
     # Filter by sans_delai_urssaf (exclude companies with establishments having OsfDelai date_echeance > list_date)
-    if @search_params[:sans_delai_urssaf].present? && @search_params[:sans_delai_urssaf] == "1" && @list.list_date.present? # rubocop:disable Layout/LineLength
+    if @search_params[:sans_delai_urssaf].present? && @search_params[:sans_delai_urssaf] == "1" && @list.list_date.present?
       # Use NOT EXISTS subquery to avoid materializing sirens/sirets in Ruby
       # Exclude companies that have at least one establishment with OsfDelai where date_echeance > list_date
       companies = companies.where(
@@ -650,7 +650,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def enrich_results_with_first_alert_flag(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def enrich_results_with_first_alert_flag(results) # rubocop:disable Metrics/AbcSize
     return if results.blank?
 
     sirens = results.pluck("siren").compact.uniq
@@ -671,7 +671,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def calculate_alert_breakdown(companies_query) # rubocop:disable Metrics/MethodLength
+  def calculate_alert_breakdown(companies_query)
     # Use a single aggregated query with conditional aggregation to count both alert types
     # This avoids materializing all SIRENs in Ruby and reduces from 3 queries to 1
     counts = CompanyScoreEntry

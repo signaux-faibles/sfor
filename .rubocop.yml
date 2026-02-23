@@ -29,8 +29,11 @@ Metrics/BlockLength:
     - 'spec/**/*'
     - 'config/**/*'
 
+Metrics/MethodLength:
+  Max: 20
+
 Layout/LineLength:
-  Max: 120
+  Enabled: false
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

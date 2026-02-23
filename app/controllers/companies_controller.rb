@@ -40,7 +40,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "detection_widget"
   end
 
-  def feedback_detection_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def feedback_detection_widget # rubocop:disable Metrics/AbcSize
     last_list = List.order(code: :desc).first
     return render partial: "feedback_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
 
@@ -185,7 +185,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "waterfall_detection_widget"
   end
 
-  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def data_urssaf_widget # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     @company = Company.find_by!(siren: params[:siren])
 
     start_date = 24.months.ago.beginning_of_month.to_date
@@ -214,7 +214,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "data_urssaf_widget"
   end
 
-  def data_effectif_ap_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def data_effectif_ap_widget # rubocop:disable Metrics/AbcSize
     @company = Company.find_by!(siren: params[:siren])
 
     start_date = 24.months.ago.beginning_of_month.to_date
@@ -247,7 +247,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     render partial: "establishments_widget"
   end
 
-  def establishment_trackings_list_widget # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def establishment_trackings_list_widget # rubocop:disable Metrics/AbcSize
     @company = Company.find_by!(siren: params[:siren])
     @establishments = @company.establishments
 
@@ -262,14 +262,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     can_see_trackings = false
 
     # Check if any establishment is in user's departments
-    if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
-      can_see_trackings = true
-    end
+    can_see_trackings = true if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
 
     # Check if user is referent or participant in any tracking of the company
-    if !can_see_trackings && all_company_trackings.with_user_as_referent_or_participant(current_user).exists?
-      can_see_trackings = true
-    end
+    can_see_trackings = true if !can_see_trackings && all_company_trackings.with_user_as_referent_or_participant(current_user).exists?
 
     @can_see_trackings = can_see_trackings
     @has_any_trackings = all_company_trackings.exists?
@@ -316,7 +312,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     redirect_back(fallback_location: home_path)
   end
 
-  def fetch_insee_data # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength
+  def fetch_insee_data # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
     return if @company.siren.blank?
 
     service = Api::InseeApiService.new
@@ -449,9 +445,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
       # Formater la date de fermeture si elle existe
       date_fermeture_formatted = nil
-      if date_fermeture_timestamp.present?
-        date_fermeture_formatted = Time.zone.at(date_fermeture_timestamp).strftime("%d/%m/%Y")
-      end
+      date_fermeture_formatted = Time.zone.at(date_fermeture_timestamp).strftime("%d/%m/%Y") if date_fermeture_timestamp.present?
 
       # Combiner les données Rails avec les données API
       enriched_establishment = {
@@ -484,7 +478,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @paginated_establishments = Kaminari.paginate_array([]).page(1).per(15)
   end
 
-  def generate_formatted_periods(start_date) # rubocop:disable Metrics/MethodLength
+  def generate_formatted_periods(start_date)
     end_date = Date.current.end_of_month
     current_date = start_date
     periodes = []
@@ -511,7 +505,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       .to_h
   end
 
-  def fetch_ap_data(start_date) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+  def fetch_ap_data(start_date) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
     # Aggregate AP data across all establishments of the company
     ap_records = OsfAp
                  .where(siren: @company.siren)
@@ -568,7 +562,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     ]
   end
 
-  def fetch_cotisations_data(start_date) # rubocop:disable Metrics/MethodLength
+  def fetch_cotisations_data(start_date)
     # Aggregate cotisations across all establishments of the company
     siret_list = @company.establishments.pluck(:siret)
     return {} if siret_list.empty?
@@ -756,7 +750,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     end
   end
 
-  def fetch_alert_history # rubocop:disable Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/AbcSize
+  def fetch_alert_history # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity,Metrics/AbcSize
     return if @company.siren.blank?
 
     lists = List.order(code: :desc)
@@ -857,7 +851,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     !other_entries
   end
 
-  def load_company_active_trackings # rubocop:disable Metrics/MethodLength
+  def load_company_active_trackings
     # Check if there are any active trackings (in_progress or under_surveillance) for any establishment of the company
     # Custom authorization logic:
     # 1. If one of the establishments of the company is in the user departments, show all trackings
@@ -868,14 +862,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     can_see_trackings = false
 
     # Check if any establishment is in user's departments
-    if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
-      can_see_trackings = true
-    end
+    can_see_trackings = true if @establishments.joins(:department).exists?(departments: { id: current_user.department_ids })
 
     # Check if user is referent or participant in any tracking of the company
-    if !can_see_trackings && all_company_trackings.with_user_as_referent_or_participant(current_user).exists?
-      can_see_trackings = true
-    end
+    can_see_trackings = true if !can_see_trackings && all_company_trackings.with_user_as_referent_or_participant(current_user).exists?
 
     authorized_trackings = can_see_trackings ? all_company_trackings : EstablishmentTracking.none
     @in_progress_trackings = authorized_trackings.in_progress

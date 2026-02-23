@@ -34,7 +34,7 @@ module Excel
   end
 
   module FilterHelpers
-    def filter_label(attribute) # rubocop:disable Metrics/MethodLength
+    def filter_label(attribute)
       {
         "establishment_siret" => "SIRET",
         "establishment_departement_eq" => "Départements",
@@ -48,7 +48,7 @@ module Excel
       }[attribute] || attribute
     end
 
-    def extract_filters # rubocop:disable Metrics/MethodLength
+    def extract_filters
       @filters.conditions.map do |condition|
         attribute = condition.attributes.map(&:name).join(", ")
         predicate = condition.predicate.name
@@ -140,7 +140,7 @@ module Excel
       end
     end
 
-    def add_header_row(sheet) # rubocop:disable Metrics/MethodLength
+    def add_header_row(sheet)
       headers = [
         "Siret",
         "Département",
@@ -171,7 +171,7 @@ module Excel
       end
     end
 
-    def prepare_tracking_row(tracking, _sheet) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    def prepare_tracking_row(tracking, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       [
         tracking.establishment.siret.to_s,
         tracking.establishment&.department&.name,

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ForwardFillable
-  def forward_fill(array, fill_to_end: false, fill_until_index: nil) # rubocop:disable Metrics/MethodLength
+  def forward_fill(array, fill_to_end: false, fill_until_index: nil)
     # Forward-fill: if a period has a value and the next period doesn't, keep the value from the previous period
     # By default, stop forward-filling after the last period with actual data (don't fill to current date)
     # When fill_to_end is true, continue filling to the end of the array

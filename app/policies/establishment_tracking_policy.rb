@@ -11,7 +11,7 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
   end
 
   def create?
-    (user.department_ids.include?(record.establishment.department&.id) || user_is_referent_or_participant?) && record.establishment.is_active && establishment_has_no_active_tracking? # rubocop:disable Layout/LineLength
+    (user.department_ids.include?(record.establishment.department&.id) || user_is_referent_or_participant?) && record.establishment.is_active && establishment_has_no_active_tracking?
   end
 
   # Users must be able to view the record AND be a referent or participant to edit it

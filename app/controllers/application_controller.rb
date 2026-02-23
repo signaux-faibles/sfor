@@ -36,10 +36,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def user_not_authorized # rubocop:disable Metrics/MethodLength
+  def user_not_authorized
     respond_to do |format|
       format.turbo_stream do
-        flash_html = "<div class='fr-alert fr-alert--error' aria-live='polite'>#{t('unauthorized.access_denied')}</div>".html_safe # rubocop:disable Layout/LineLength
+        flash_html = "<div class='fr-alert fr-alert--error' aria-live='polite'>#{t('unauthorized.access_denied')}</div>".html_safe
         render turbo_stream: turbo_stream.replace("flash", html: flash_html),
                status: :forbidden
       end
@@ -53,9 +53,7 @@ class ApplicationController < ActionController::Base
   def check_user_segment
     return if devise_controller? || request.path == unauthorized_path
 
-    if current_user && current_user.segment.name == "sf"
-      redirect_to unauthorized_path, alert: t("unauthorized.section_not_allowed")
-    end
+    redirect_to unauthorized_path, alert: t("unauthorized.section_not_allowed") if current_user && current_user.segment.name == "sf"
   end
 
   def set_time_zone(&)

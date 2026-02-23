@@ -24,7 +24,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     end
   end
 
-  def remove_referent # rubocop:disable Metrics/MethodLength
+  def remove_referent
     authorize @establishment_tracking, :manage_contributors?
     @establishment_tracking.modifier = current_user
 
@@ -43,7 +43,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     end
   end
 
-  def remove_participant # rubocop:disable Metrics/MethodLength
+  def remove_participant
     authorize @establishment_tracking, :manage_contributors?
     @establishment_tracking.modifier = current_user
 
@@ -87,7 +87,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     render :manage_contributors, status: :unprocessable_entity
   end
 
-  def contributor_params # rubocop:disable Metrics/MethodLength
+  def contributor_params
     establishment_tracking_params = params.require(:establishment_tracking).permit(
       referent_ids: [],
       discarded_referent_ids: [],
@@ -116,7 +116,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
   def tracking_participant_error_message
     return t("establishments.tracking.contributors.remove_participant.error") unless @tracking_participant
 
-    @tracking_participant.errors.full_messages.first || t("establishments.tracking.contributors.remove_participant.error") # rubocop:disable Layout/LineLength
+    @tracking_participant.errors.full_messages.first || t("establishments.tracking.contributors.remove_participant.error")
   end
 
   def render_error_turbo_stream(message)
@@ -136,7 +136,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     create_contributors_snapshot_if_changed(old_participants, new_participants, "participants_change", "participant")
   end
 
-  def create_contributors_snapshot_if_changed(old_users, new_users, event_type, role_name) # rubocop:disable Metrics/MethodLength
+  def create_contributors_snapshot_if_changed(old_users, new_users, event_type, role_name)
     return if old_users.map(&:id).sort == new_users.map(&:id).sort
 
     added = new_users - old_users
@@ -153,7 +153,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     )
   end
 
-  def build_change_data(added, removed, role_name) # rubocop:disable Metrics/MethodLength
+  def build_change_data(added, removed, role_name)
     description_parts = []
     changes_summary = {}
 

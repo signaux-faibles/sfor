@@ -138,7 +138,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_not_includes @response.body, "établissement siège"
   end
 
-  test "establishment_trackings_list_widget shows out of zone message when user has no geo access and is not referent or participant" do # rubocop:disable Layout/LineLength
+  test "establishment_trackings_list_widget shows out of zone message when user has no geo access and is not referent or participant" do
     user_finistere = users(:user_crp_finistere)
     sign_in user_finistere
 
@@ -162,7 +162,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "Accompagnement en cours de l'entreprise"
   end
 
-  test "establishment_trackings_list_widget shows both active and history when company has active and completed trackings" do # rubocop:disable Layout/LineLength
+  test "establishment_trackings_list_widget shows both active and history when company has active and completed trackings" do
     sign_in @user
 
     # Fixtures: company_paris has in_progress, under_surveillance and establishment_tracking_paris_completed
@@ -186,7 +186,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "Sous surveillance", "Active section should include under_surveillance trackings"
   end
 
-  test "establishment_trackings_list_widget shows trackings when user is referent on company tracking but out of zone" do # rubocop:disable Layout/LineLength
+  test "establishment_trackings_list_widget shows trackings when user is referent on company tracking but out of zone" do
     user_finistere = users(:user_crp_finistere)
     tracking_paris = establishment_trackings(:establishment_tracking_paris)
 
@@ -202,7 +202,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "Accompagnement en cours de l'entreprise"
   end
 
-  test "establishment_trackings_list_widget shows trackings when user is participant on company tracking but out of zone" do # rubocop:disable Layout/LineLength
+  test "establishment_trackings_list_widget shows trackings when user is participant on company tracking but out of zone" do
     user_finistere = users(:user_crp_finistere)
     # establishment_tracking_paris3 has participant user_crp_paris3 (Paris). Add user_finistere as participant.
     tracking = establishment_trackings(:establishment_tracking_paris3)

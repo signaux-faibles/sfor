@@ -149,13 +149,11 @@ module NetworkManager
     user.geo_access = geo_access
   end
 
-  def assign_networks(user, segment_name) # rubocop:disable Metrics/MethodLength
+  def assign_networks(user, segment_name)
     user.networks.clear
 
     excluded_segments = %w[dreets_reseaucrp centrale-dge dreets finances]
-    unless excluded_segments.include?(segment_name.downcase) || user.networks.include?(@codefi_network)
-      user.networks << @codefi_network
-    end
+    user.networks << @codefi_network unless excluded_segments.include?(segment_name.downcase) || user.networks.include?(@codefi_network)
 
     network = determine_network_for_segment(segment_name)
     if network
@@ -169,7 +167,7 @@ module NetworkManager
     network_mapping[segment_name.downcase]
   end
 
-  def network_mapping # rubocop:disable Metrics/MethodLength
+  def network_mapping
     {
       # Signaux Faibles segments
       "sf" => @signaux_faibles_network,

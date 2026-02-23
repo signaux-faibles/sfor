@@ -10,7 +10,7 @@ class BaseOsfSyncService
     @logger.info "Starting #{self.class.name} at #{Time.current}"
   end
 
-  def perform # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def perform # rubocop:disable Metrics/AbcSize
     Osf::DatabaseConnectionService.with_connection do |db_service|
       @db_service = db_service
       sync_data

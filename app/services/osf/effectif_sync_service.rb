@@ -18,7 +18,7 @@ module Osf
       "osf_effectif_sync.log"
     end
 
-    def sync_data # rubocop:disable Metrics/MethodLength
+    def sync_data
       @logger.info "Starting effectif data synchronization from #{@source_relation} using PostgreSQL cursor"
 
       @logger.info "Clearing existing osf_effectifs table"
@@ -52,7 +52,7 @@ module Osf
 
         # Declare cursor with the query
         declare_sql =
-          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_date_filter} ORDER BY siret, periode" # rubocop:disable Layout/LineLength
+          "DECLARE #{cursor_name} NO SCROLL CURSOR FOR SELECT * FROM #{@source_relation} #{base_date_filter} ORDER BY siret, periode"
         @db_service.execute_query(declare_sql)
         @logger.debug "Declared cursor with query: #{declare_sql}"
 
@@ -102,7 +102,7 @@ module Osf
       end
     end
 
-    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize
       records_to_create = distant_records.map do |record|
         build_effectif_attributes(record)
       end
