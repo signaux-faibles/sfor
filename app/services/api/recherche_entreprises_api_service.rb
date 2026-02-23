@@ -28,15 +28,47 @@ module Api
 
     private
 
-    def make_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize
-      params = params.to_h if params.respond_to?(:to_h)
-      # Remove blank values
-      params = params.reject { |_k, v| v.blank? || (v.is_a?(Array) && v.compact_blank.empty?) }
+    def make_request(endpoint, params = {})
+      uri = build_uri(endpoint, normalize_params(params))
+      response = perform_get(uri)
+      handle_response(response)
+    rescue StandardError => e
+      add_error("Erreur de connexion à l'API Recherche Entreprises: #{e.message}")
+      nil
+    end
 
+    def handle_response(response)
+      body = normalized_body(response.body)
+
+      case response.code.to_i
+      when 200..299
+        JSON.parse(body)
+      when 404
+        handle_error_response(body, "Entreprise non trouvée")
+      when 429
+        handle_error_response(body, "Limite de taux d'appels dépassée")
+      when 500..599
+        handle_error_response(body, "Erreur du serveur API")
+      else
+        handle_error_response(body, "Erreur API inattendue")
+      end
+    rescue JSON::ParserError
+      add_error("Réponse API invalide")
+      nil
+    end
+
+    def normalize_params(params)
+      params = params.to_h if params.respond_to?(:to_h)
+      params.reject { |_k, v| v.blank? || (v.is_a?(Array) && v.compact_blank.empty?) }
+    end
+
+    def build_uri(endpoint, params)
       uri = URI("#{BASE_URL}#{endpoint}")
       uri.query = URI.encode_www_form(params) if params.any?
+      uri
+    end
 
-      # Configuration de la requête HTTP
+    def perform_get(uri)
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -47,42 +79,18 @@ module Api
       request["User-Agent"] = "SignauxFaibles/#{Rails.env} (Ruby/#{RUBY_VERSION}; Rails/#{Rails.version})"
       request["Accept"] = "application/json"
 
-      # Exécution de la requête
-      response = http.request(request)
-
-      handle_response(response)
-    rescue StandardError => e
-      add_error("Erreur de connexion à l'API Recherche Entreprises: #{e.message}")
-      nil
+      http.request(request)
     end
 
-    def handle_response(response) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
-      # Ensure response body is UTF-8 encoded
-      body_utf8 = response.body.force_encoding("UTF-8")
-      body_utf8 = body_utf8.encode("UTF-8", invalid: :replace, undef: :replace) unless body_utf8.valid_encoding?
+    def normalized_body(body)
+      body_utf8 = body.to_s.force_encoding("UTF-8")
+      return body_utf8 if body_utf8.valid_encoding?
 
-      case response.code.to_i
-      when 200..299
-        JSON.parse(body_utf8)
-      when 404
-        error_message = extract_error_message(body_utf8) || "Entreprise non trouvée"
-        add_error(error_message)
-        nil
-      when 429
-        error_message = extract_error_message(body_utf8) || "Limite de taux d'appels dépassée"
-        add_error(error_message)
-        nil
-      when 500..599
-        error_message = extract_error_message(body_utf8) || "Erreur du serveur API"
-        add_error(error_message)
-        nil
-      else
-        error_message = extract_error_message(body_utf8) || "Erreur API inattendue"
-        add_error(error_message)
-        nil
-      end
-    rescue JSON::ParserError
-      add_error("Réponse API invalide")
+      body_utf8.encode("UTF-8", invalid: :replace, undef: :replace)
+    end
+
+    def handle_error_response(body, fallback_message)
+      add_error(extract_error_message(body) || fallback_message)
       nil
     end
 
