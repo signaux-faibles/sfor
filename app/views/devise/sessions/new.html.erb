@@ -5,6 +5,17 @@
         <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
           <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <div class="fr-notice fr-notice--info fr-mb-3w">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p>
+                            <span class="fr-notice__title"></span>
+                            <span class="fr-notice__desc">Suite à des évolutions de l'application, nous vous invitons à <%= link_to "réinitialiser votre mot de passe", new_password_path(resource_name), class: "fr-notice__link" %> </span>
+                        </p>
+                        <button title="Masquer le message" onclick="const notice = this.parentNode.parentNode.parentNode; notice.parentNode.removeChild(notice)" type="button" class="fr-btn--close fr-btn">Masquer le message</button>
+                    </div>
+                </div>
+              </div>
               <h1>Connexion à Signaux Faibles</h1>
 
               <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "fr-mt-4w" }) do |f| %>
