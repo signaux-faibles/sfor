@@ -66,7 +66,7 @@ module Excel
       end
     end
 
-    def format_value(attribute, value) # rubocop:disable Metrics/CyclomaticComplexity
+    def format_value(attribute, value)
       case attribute
       when "state" then format_state_value(value)
       when "establishment_departement_eq", "establishment_departement_in" then format_department_value(value)
@@ -171,7 +171,7 @@ module Excel
       end
     end
 
-    def prepare_tracking_row(tracking, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    def prepare_tracking_row(tracking, _sheet)
       [
         tracking.establishment.siret.to_s,
         tracking.establishment&.department&.name,

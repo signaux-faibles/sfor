@@ -46,7 +46,7 @@ module Osf
 
     private
 
-    def process_with_cursor(base_filter) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_with_cursor(base_filter) # rubocop:disable Metrics/MethodLength
       cursor_name = "sirene_cursor_#{Process.pid}_#{Time.current.to_i}"
 
       begin
@@ -100,7 +100,7 @@ module Osf
       end
     end
 
-    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_cursor_batch(distant_records) # rubocop:disable Metrics/MethodLength
       records_to_create = []
       processed_count = 0
 
@@ -149,7 +149,7 @@ module Osf
       @stats[key] += count
     end
 
-    def build_establishment_attributes(distant_record) # rubocop:disable Metrics/AbcSize
+    def build_establishment_attributes(distant_record)
       # Compute departement, handling DOM/COM special case where source gives "97"
       source_departement = distant_record["departement"].to_s.strip.upcase
       computed_departement = source_departement

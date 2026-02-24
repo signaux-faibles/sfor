@@ -33,7 +33,7 @@ module Api
       end
     end
 
-    def make_api_request(endpoint, params = {}) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def make_api_request(endpoint, params = {}) # rubocop:disable Metrics/MethodLength
       return nil unless valid_configuration? && valid_token?
 
       # Construction de l'URL avec les paramètres

@@ -55,7 +55,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def confirm; end
 
-  def create # rubocop:disable Metrics/AbcSize
+  def create
     @establishment_tracking = @establishment.establishment_trackings.new(tracking_params)
     @establishment_tracking.creator = current_user
     @establishment_tracking.modifier = current_user

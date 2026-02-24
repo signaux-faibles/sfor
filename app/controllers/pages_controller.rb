@@ -6,7 +6,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   def home; end
 
-  def search # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+  def search # rubocop:disable Metrics/MethodLength
     @search_params = params.require(:search).permit(:q, :tranche_effectif_salarie,
                                                     :page, :per_page, :cp_dep,
                                                     :cp_dep_type, :cp_dep_label,
@@ -95,7 +95,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   private
 
-  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/MethodLength
     return if results.blank?
 
     # Extract all sirens from results
@@ -144,7 +144,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def enrich_results_with_alert_levels(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def enrich_results_with_alert_levels(results) # rubocop:disable Metrics/MethodLength
     return if results.blank?
 
     # Get the last list

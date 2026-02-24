@@ -3,7 +3,7 @@ module OutOfZoneTrackable
 
   private
 
-  def track_out_of_zone_access(resource) # rubocop:disable Metrics/AbcSize
+  def track_out_of_zone_access(resource)
     return unless current_user
     return if user_has_access_to_resource?(resource)
 

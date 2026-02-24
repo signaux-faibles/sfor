@@ -14,7 +14,7 @@ class OsfEffectif < ApplicationRecord
   # Returns the effectif value if the latest row for this siret is in the same month as
   # data_freshness_date; otherwise nil (caller typically displays "-").
   # Latest row: prefer is_latest = true, else most recent by periode.
-  def self.last_effectif_for_siret_in_freshness_month(siret, data_freshness_date) # rubocop:disable Metrics/AbcSize
+  def self.last_effectif_for_siret_in_freshness_month(siret, data_freshness_date)
     return nil if data_freshness_date.blank?
 
     latest = where(siret: siret).where(is_latest: true).limit(1).first

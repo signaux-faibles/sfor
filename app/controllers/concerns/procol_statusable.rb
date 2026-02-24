@@ -25,7 +25,7 @@ module ProcolStatusable
   # Expects results to be an array of hashes with a "siren" key
   # Adds a "procol_status" key to each result
   # @param results [Array<Hash>] Array of result hashes with "siren" key
-  def enrich_results_with_procol_status(results) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity
+  def enrich_results_with_procol_status(results)
     return if results.blank?
 
     sirens = results.pluck("siren").compact.uniq

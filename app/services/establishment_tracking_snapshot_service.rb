@@ -20,7 +20,7 @@ class EstablishmentTrackingSnapshotService
 
   private
 
-  def snapshot_attributes(event) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def snapshot_attributes(event) # rubocop:disable Metrics/MethodLength
     {
       original_tracking: @tracking,
       tracking_event: event,
@@ -44,7 +44,7 @@ class EstablishmentTrackingSnapshotService
     }.merge(user_snapshot_attributes)
   end
 
-  def user_snapshot_attributes # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def user_snapshot_attributes
     {
       referent_emails: @tracking.referents.kept.pluck(:email),
       participant_emails: @tracking.participants.kept.pluck(:email),

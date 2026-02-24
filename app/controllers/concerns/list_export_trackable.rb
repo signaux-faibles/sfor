@@ -3,7 +3,7 @@ module ListExportTrackable
 
   private
 
-  def track_list_export(list, search_params, results_count) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def track_list_export(list, search_params, results_count) # rubocop:disable Metrics/MethodLength
     return unless current_user
 
     filters_hash = normalize_filters(search_params)

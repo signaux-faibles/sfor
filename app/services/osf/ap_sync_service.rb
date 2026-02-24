@@ -18,7 +18,7 @@ module Osf
       "osf_ap_sync.log"
     end
 
-    def sync_data # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def sync_data # rubocop:disable Metrics/MethodLength
       @logger.info "Starting optimized ap data synchronization from clean_ap"
 
       @logger.info "Clearing existing osf_aps table"
@@ -69,7 +69,7 @@ module Osf
 
     private
 
-    def process_batch(offset) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_batch(offset) # rubocop:disable Metrics/MethodLength
       # Build date filter if months_back is specified
       date_filter = ""
       if @months_back

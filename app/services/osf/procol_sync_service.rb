@@ -33,7 +33,7 @@ module Osf
 
     private
 
-    def process_with_cursor # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def process_with_cursor # rubocop:disable Metrics/MethodLength
       cursor_name = "procol_cursor_#{Process.pid}_#{Time.current.to_i}"
 
       begin
@@ -93,7 +93,7 @@ module Osf
       end
     end
 
-    def process_cursor_batch(distant_records) # rubocop:disable Metrics/AbcSize
+    def process_cursor_batch(distant_records)
       records_to_create = distant_records.map do |record|
         build_procol_attributes(record)
       end

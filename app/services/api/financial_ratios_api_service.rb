@@ -10,7 +10,7 @@ module Api
       @siren = siren.to_s.gsub(/\D/, "") # Remove non-digits
     end
 
-    def fetch_financial_ratios # rubocop:disable Metrics/AbcSize
+    def fetch_financial_ratios
       return nil unless valid_siren?
 
       uri = URI(BASE_URL)

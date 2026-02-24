@@ -287,7 +287,7 @@ class ImportHelper # rubocop:disable Metrics/ClassLength
     worksheet.sheet_data[0].cells.map { |cell| cell&.value }
   end
 
-  def import_users(worksheet, header) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def import_users(worksheet, header) # rubocop:disable Metrics/MethodLength
     issue_rows = []
 
     worksheet.sheet_data.rows[1..].each_with_index do |row, index|
@@ -331,7 +331,7 @@ class ImportHelper # rubocop:disable Metrics/ClassLength
     header.zip(row.cells.map { |cell| cell && cell.value }).to_h
   end
 
-  def discard_users_from_worksheet(worksheet, header) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def discard_users_from_worksheet(worksheet, header) # rubocop:disable Metrics/MethodLength
     issue_rows = []
 
     worksheet.sheet_data.rows[1..].each_with_index do |row, index|

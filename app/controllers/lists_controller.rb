@@ -8,7 +8,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @lists = List.order(list_date: :desc)
   end
 
-  def show # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/MethodLength,Metrics/PerceivedComplexity
+  def show # rubocop:disable Metrics/MethodLength
     @list = List.find(params[:id])
 
     # Get search params
@@ -295,7 +295,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def alert_breakdown # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+  def alert_breakdown # rubocop:disable Metrics/MethodLength
     @list = List.find(params[:id])
 
     # Get search params (same as show action)
@@ -393,7 +393,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     Excel::ListGenerator.new(@list, companies, @search_params, current_user).generate
   end
 
-  def apply_database_filters(companies) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+  def apply_database_filters(companies) # rubocop:disable Metrics/MethodLength
     # NOTE: All filters below are combined (AND logic) - each filter narrows down the results
     # from the previous filters. The `companies` query is progressively refined.
 
@@ -569,7 +569,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     companies.where("naf_code IS NULL OR naf_code NOT IN (?)", excluded_naf_codes)
   end
 
-  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+  def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/MethodLength
     return if results.blank?
 
     # Extract all sirens from results
@@ -617,7 +617,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def enrich_results_with_alert_levels(results) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+  def enrich_results_with_alert_levels(results) # rubocop:disable Metrics/MethodLength
     return if results.blank?
 
     # Extract all sirens from results
@@ -650,7 +650,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
   end
 
-  def enrich_results_with_first_alert_flag(results) # rubocop:disable Metrics/AbcSize
+  def enrich_results_with_first_alert_flag(results)
     return if results.blank?
 
     sirens = results.pluck("siren").compact.uniq
@@ -689,7 +689,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     }
   end
 
-  def enrich_single_company(siren) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity
+  def enrich_single_company(siren) # rubocop:disable Metrics/MethodLength
     enrichment = {
       is_first_alert: false,
       alert_level: nil,

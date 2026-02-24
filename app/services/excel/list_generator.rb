@@ -139,7 +139,7 @@ module Excel
       load_all_data_in_single_query(sirens)
     end
 
-    def load_all_data_in_single_query(sirens) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
+    def load_all_data_in_single_query(sirens) # rubocop:disable Metrics/MethodLength
       current_date = Date.current
       list_label = @list.label
       @alert_frequencies = {}
@@ -381,7 +381,7 @@ module Excel
       end
     end
 
-    def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/MethodLength
       # Use preloaded data instead of querying
       siege_siret = @siege_establishments[siren]
       company_data = @company_data[siren] || {}
