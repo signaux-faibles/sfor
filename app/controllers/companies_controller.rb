@@ -29,10 +29,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def detection_widget
     last_list, entry = fetch_last_list_and_entry
-    return render partial: "detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
-
-    return render partial: "detection_widget",
-                  locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
+    return head :no_content unless last_list && entry
 
     @criticite = calculate_criticite(entry)
     @data_date = format_data_date(last_list, entry)

@@ -40,10 +40,4 @@
       <p class="fr-mt-2w">Récupération des données de la détection</p>
     <% end %>
 
-    <%= turbo_frame_tag "history_detection_widget",
-                        src: history_detection_widget_company_path(@company),
-                        loading: :lazy do %>
-      <h3>Historique des alertes</h3>
-      <p class="fr-mt-2w">Récupération des données de la détection</p>
-    <% end %>
   <% end %>

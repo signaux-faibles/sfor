@@ -98,6 +98,26 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "Fermé le 01/02/2025"
   end
 
+  test "history_detection_widget shows history button when current list has no alert but past alert exists" do
+    sign_in @user
+
+    List.create!(
+      label: "Liste test 2026",
+      code: "LIST_TEST_2026",
+      list_date: Date.new(2026, 1, 15),
+      sjcf_filter_active: false
+    )
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Alerte seuil F2") # rubocop:disable Naming/VariableNumber
+
+    get history_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, "Historique des alertes"
+    assert_includes @response.body, "Liste test 2024"
+    assert_includes @response.body, "sf-moderated-alert"
+    assert_includes @response.body, "sf-no-alert"
+  end
+
   test "show displays Accompagnements tab" do
     sign_in @user
 

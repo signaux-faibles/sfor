@@ -79,6 +79,18 @@
     </div>
   <% end %>
 
+  <!-- History Detection Widget with Turbo Frame -->
+  <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+    <div class="fr-col-12">
+      <%= turbo_frame_tag "history_detection_widget",
+                          src: history_detection_widget_company_path(@company),
+                          loading: :lazy do %>
+        <h3>Historique des alertes</h3>
+        <p class="fr-mt-2w">Récupération des données de l'historique</p>
+      <% end %>
+    </div>
+  </div>
+
 
   <!-- Establishments Widget with Turbo Frame -->
   <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">

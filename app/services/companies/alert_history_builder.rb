@@ -43,7 +43,12 @@ module Companies
       return false if alert_history.blank?
       return false unless CompanyScoreEntry.exists?(siren: @company.siren)
 
-      alert_history_alert_count(alert_history) > 1
+      alert_count = alert_history_alert_count(alert_history)
+      current_alert = alert_history.first[:alert_level]
+
+      return alert_count > 1 if alert_level_alert?(current_alert)
+
+      alert_count.positive?
     end
 
     def alert_history_alert_count(alert_history)
