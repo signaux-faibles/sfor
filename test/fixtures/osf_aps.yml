@@ -1,0 +1,7 @@
+osf_ap_paris:
+  siret: "12345678900001"
+  siren: "123456789"
+  periode: 2025-01-01
+  etp_autorise: 12.7
+  etp_consomme: 10.2
+  is_last: true

@@ -58,4 +58,43 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test "data_urssaf_widget renders chart data attributes" do
+    sign_in @user
+
+    travel_to Date.new(2025, 2, 15) do
+      get data_urssaf_widget_establishment_path(@establishment_paris.siret), headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Cotisations, impayés et délais de paiement URSSAF"
+    assert_includes @response.body, "data-orthogonal-chart-widget-dataset-names-value="
+    assert_includes @response.body, "Cotisations appelées"
+    assert_includes @response.body, "Dette restante (part salariale)"
+    assert_includes @response.body, "Dette restante (part patronale)"
+    assert_includes @response.body, "Montant de l&#39;échéancier du délai de paiement"
+    assert_includes @response.body, "1201"
+    assert_includes @response.body, "1001"
+    assert_includes @response.body, "2000"
+    assert_includes @response.body, "5000"
+  end
+
+  test "data_effectif_ap_widget renders chart data attributes" do
+    sign_in @user
+
+    travel_to Date.new(2025, 2, 15) do
+      get data_effectif_ap_widget_establishment_path(@establishment_paris.siret),
+          headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Effectifs / Activité partielle"
+    assert_includes @response.body, "data-orthogonal-chart-widget-dataset-names-value="
+    assert_includes @response.body, "Effectifs (salariés)"
+    assert_includes @response.body, "Consommation d&#39;activité partielle (ETP)"
+    assert_includes @response.body, "Autorisation d&#39;activité partielle (ETP)"
+    assert_includes @response.body, "42"
+    assert_includes @response.body, "10"
+    assert_includes @response.body, "13"
+  end
 end
