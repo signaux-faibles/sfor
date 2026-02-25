@@ -38,6 +38,9 @@ Layout/LineLength:
 Metrics/AbcSize:
   Enabled: false
 
+Naming/VariableNumber:
+  Enabled: false
+
 Metrics/CyclomaticComplexity:
   Enabled: false
 

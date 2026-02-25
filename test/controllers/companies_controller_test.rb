@@ -107,7 +107,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
       list_date: Date.new(2026, 1, 15),
       sjcf_filter_active: false
     )
-    company_score_entries(:one_paris_list_test_2024).update!(alert: "Alerte seuil F2") # rubocop:disable Naming/VariableNumber
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Alerte seuil F2")
 
     get history_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
 
@@ -116,6 +116,77 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "Liste test 2024"
     assert_includes @response.body, "sf-moderated-alert"
     assert_includes @response.body, "sf-no-alert"
+  end
+
+  test "feedback_detection_widget creates useful rating" do
+    sign_in @user
+
+    list = lists(:list_test_2025)
+
+    assert_difference("CompanyListRating.count", 1) do
+      post feedback_detection_widget_company_path(@company_paris.siren),
+           params: { useful: "true", precisions: "RAS" },
+           headers: { "Accept" => "text/html" }
+    end
+
+    rating = CompanyListRating.find_by!(siren: @company_paris.siren,
+                                        list_name: list.label,
+                                        user_email: @user.email)
+    assert_equal true, rating.useful
+    assert_response :success
+  end
+
+  test "feedback_detection_widget blocks non-useful rating without reasons" do
+    sign_in @user
+
+    assert_no_difference("CompanyListRating.count") do
+      post feedback_detection_widget_company_path(@company_paris.siren),
+           params: { useful: "false" },
+           headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes @response.body, "Vous devez cocher au moins une raison."
+  end
+
+  test "feedback_detection_widget creates non-useful rating with reasons" do
+    sign_in @user
+
+    reason = RatingReason.create!(code: "R1", libelle: "Raison 1")
+
+    assert_difference("CompanyListRating.count", 1) do
+      assert_difference("RatingReasonsRating.count", 1) do
+        post feedback_detection_widget_company_path(@company_paris.siren),
+             params: { useful: "false", raisons: [reason.code], precisions: "Commentaire" },
+             headers: { "Accept" => "text/html" }
+      end
+    end
+
+    rating = CompanyListRating.find_by!(siren: @company_paris.siren, user_email: @user.email)
+    assert_equal false, rating.useful
+    assert_response :success
+  end
+
+  test "feedback_detection_widget blocks duplicate rating" do
+    sign_in @user
+
+    list = lists(:list_test_2025)
+    CompanyListRating.create!(
+      siren: @company_paris.siren,
+      list_name: list.label,
+      user_email: @user.email,
+      user_segment: @user.segment.name,
+      useful: true,
+      comment: "Premier avis"
+    )
+
+    assert_no_difference("CompanyListRating.count") do
+      post feedback_detection_widget_company_path(@company_paris.siren),
+           params: { useful: "true" },
+           headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :unprocessable_entity
   end
 
   test "show displays Accompagnements tab" do

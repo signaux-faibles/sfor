@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable Naming/VariableNumber
 require "test_helper"
 
 class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Metrics/ClassLength
