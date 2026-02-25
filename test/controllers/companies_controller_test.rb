@@ -209,6 +209,19 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "5000"
   end
 
+  test "data_urssaf_widget shows empty state when no data" do
+    sign_in @user
+
+    Establishment.where(siren: @company_no_siege.siren).delete_all
+
+    travel_to Date.new(2025, 2, 15) do
+      get data_urssaf_widget_company_path(@company_no_siege.siren), headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Aucune donnée disponible pour cette entreprise."
+  end
+
   test "data_effectif_ap_widget renders chart data attributes" do
     sign_in @user
 
@@ -225,6 +238,103 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "50"
     assert_includes @response.body, "10"
     assert_includes @response.body, "13"
+  end
+
+  test "data_effectif_ap_widget shows empty state when no data" do
+    sign_in @user
+
+    Establishment.where(siren: @company_no_siege.siren).delete_all
+
+    travel_to Date.new(2025, 2, 15) do
+      get data_effectif_ap_widget_company_path(@company_no_siege.siren), headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Aucune donnée disponible pour cette entreprise."
+  end
+
+  test "waterfall_detection_widget renders chart data when entry exists" do
+    sign_in @user
+
+    get waterfall_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, "data-waterfall-chart-widget-values-value="
+    assert_includes @response.body, "Risque de défaillance"
+  end
+
+  test "waterfall_detection_widget renders empty when entry missing" do
+    sign_in @user
+
+    get waterfall_detection_widget_company_path(@company_no_siege.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_not_includes @response.body, "data-waterfall-chart-widget-values-value="
+  end
+
+  test "history_detection_widget hides button when no history" do
+    sign_in @user
+
+    get history_detection_widget_company_path(@company_no_siege.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_not_includes @response.body, "Historique des alertes"
+  end
+
+  test "history_detection_widget hides button when only current alert exists" do
+    sign_in @user
+
+    get history_detection_widget_company_path(@company_finistere.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_not_includes @response.body, "Historique des alertes"
+  end
+
+  test "history_detection_widget shows button when current and past alerts exist" do
+    sign_in @user
+
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Alerte seuil F2")
+
+    get history_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, "Historique des alertes"
+    assert_includes @response.body, "Liste test 2024"
+  end
+
+  test "establishments_widget shows error notice when enrichment fails" do
+    sign_in @user
+
+    fake_builder = Struct.new(:build) do
+      def build
+        raise StandardError, "boom"
+      end
+    end.new
+
+    Companies::EstablishmentEnrichmentBuilder.stub(:new, fake_builder) do
+      get establishments_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Erreur lors de la récupération des établissements"
+  end
+
+  test "establishments_widget shows pagination when more than 10 establishments" do
+    sign_in @user
+
+    4.times do |index|
+      Establishment.create!(
+        siren: @company_paris.siren,
+        siret: format("123456789001%02d", index + 20),
+        departement: "75",
+        siege: false
+      )
+    end
+
+    get establishments_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, "pagination"
   end
 
   test "show displays Accompagnements tab" do

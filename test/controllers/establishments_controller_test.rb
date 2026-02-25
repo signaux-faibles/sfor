@@ -7,6 +7,7 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
     @user = users(:user_crp_paris)
     @establishment_paris = establishments(:establishment_paris)
     @establishment_finistere = establishments(:establishment_finistere)
+    @establishment_no_siege = establishments(:establishment_no_siege)
   end
 
   test "show redirects to sign in when not authenticated" do
@@ -57,6 +58,42 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
         headers: { "Accept" => "text/html" }
 
     assert_response :success
+  end
+
+  test "establishment_trackings_list_widget shows out of zone message when user has no geo access" do
+    user_finistere = users(:user_crp_finistere)
+    sign_in user_finistere
+
+    get establishment_trackings_list_widget_establishment_path(@establishment_paris.siret),
+        headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body,
+                    "Vos accès géographiques ne vous permettent pas d'accéder aux accompagnements de cet établissement."
+  end
+
+  test "data_urssaf_widget shows empty state when no data" do
+    sign_in @user
+
+    travel_to Date.new(2025, 2, 15) do
+      get data_urssaf_widget_establishment_path(@establishment_no_siege.siret),
+          headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "data-orthogonal-chart-widget-datasets-value='[[],[0"
+  end
+
+  test "data_effectif_ap_widget shows empty state when no data" do
+    sign_in @user
+
+    travel_to Date.new(2025, 2, 15) do
+      get data_effectif_ap_widget_establishment_path(@establishment_no_siege.siret),
+          headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Aucune donnée disponible pour cette entreprise."
   end
 
   test "data_urssaf_widget renders chart data attributes" do
