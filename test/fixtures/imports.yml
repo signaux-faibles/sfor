@@ -1,0 +1,5 @@
+osf_effectif_import:
+  name: "osf_effectif"
+  import_date: 2025-01-20
+  data_freshness: 2025-01-15
+

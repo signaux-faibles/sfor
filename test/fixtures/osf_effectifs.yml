@@ -1,0 +1,12 @@
+osf_effectif_paris_latest:
+  siret: "12345678900001"
+  periode: 2025-01-01
+  effectif: 42
+  is_latest: true
+
+osf_effectif_paris_not_fresh:
+  siret: "12345678900010"
+  periode: 2024-12-01
+  effectif: 99
+  is_latest: true
+

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "minitest/mock"
 
 class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Metrics/ClassLength
   setup do
@@ -65,6 +66,36 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     get establishments_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
 
     assert_response :success
+  end
+
+  test "establishments_widget renders labels and data for enriched establishments" do
+    sign_in @user
+
+    closed_date = Time.zone.local(2025, 2, 1).to_i
+    insee_responses = {
+      "12345678900001" => { "data" => { "etat_administratif" => "A" } },
+      "12345678900010" => { "data" => { "etat_administratif" => "F", "date_fermeture" => closed_date } }
+    }
+    fake_service = Struct.new(:responses) do
+      def fetch_establishment_by_siret(siret)
+        responses[siret]
+      end
+    end.new(insee_responses)
+
+    Api::InseeApiService.stub(:new, fake_service) do
+      get establishments_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Cette structure possède 8 établissements dont 3 sont en activité."
+    assert_includes @response.body, "Siège social"
+    assert_includes @response.body, "42"
+    assert_includes @response.body, "12345678900010"
+    assert_not_includes @response.body, "99"
+    assert_includes @response.body, "Oui"
+    assert_includes @response.body, "Non"
+    assert_includes @response.body, "En activité"
+    assert_includes @response.body, "Fermé le 01/02/2025"
   end
 
   test "show displays Accompagnements tab" do
