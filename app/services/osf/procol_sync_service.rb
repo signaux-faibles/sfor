@@ -6,7 +6,7 @@ module Osf
     BATCH_SIZE = 1000
 
     def initialize
-      super()
+      super
       @schema = ENV.fetch("OSF_DATABASE_SCHEMA", "sfdata")
       @source_relation = "#{@schema}.clean_procol"
     end
