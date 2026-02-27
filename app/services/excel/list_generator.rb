@@ -170,16 +170,9 @@ module Excel
           ORDER BY cse.siren, cse.created_at DESC
         ),
         procol_statuses AS (
-          WITH last_action_procol AS (
-            SELECT DISTINCT ON (op.siren, op.action_procol) op.siren, op.libelle_procol, op.stade_procol
-            FROM osf_procols op
-            WHERE op.siren = ANY(ARRAY[#{siren_placeholders}])
-              AND op.date_effet <= ?
-            ORDER BY op.siren, op.action_procol, op.date_effet DESC
-          )
-          SELECT siren, libelle_procol
-          FROM last_action_procol
-          WHERE stade_procol != 'fin_procedure'
+          SELECT procol.siren, procol.libelle_procol
+          FROM procol_at_date(?) AS procol
+          WHERE procol.siren = ANY(ARRAY[#{siren_placeholders}])
         ),
         all_effectifs AS MATERIALIZED (
           SELECT oee.siren, oee.effectif
@@ -265,8 +258,8 @@ module Excel
       #   2. sirens (siege_establishments ANY) - N parameters
       #   3. sirens (current_score_entries ANY) - N parameters
       #   4. list_label (current_score_entries WHERE clause)
-      #   5. sirens (procol_statuses ANY) - N parameters
-      #   6. current_date (procol_statuses WHERE clause)
+      #   5. current_date (procol_statuses WHERE clause)
+      #   6. sirens (procol_statuses ANY) - N parameters
       #   7. sirens (all_effectifs ANY) - N parameters
       #   8. sirens (all_establishments ANY) - N parameters
       #   9. sirens (sjcf_companies ANY) - N parameters
@@ -279,8 +272,8 @@ module Excel
                    sirens + # siege_establishments
                    sirens + # current_score_entries
                    [list_label] + # current_score_entries WHERE
-                   sirens + # procol_statuses
                    [current_date] + # procol_statuses WHERE
+                   sirens + # procol_statuses
                    sirens + # all_effectifs
                    sirens + # all_establishments
                    sirens + # sjcf_companies
