@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_26_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_27_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -590,8 +590,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_26_120000) do
   create_table "rating_reasons_ratings", force: :cascade do |t|
     t.bigint "rating_id", null: false
     t.bigint "reason_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["rating_id", "reason_id"], name: "idx_rating_reasons_ratings_unique", unique: true
     t.index ["rating_id"], name: "index_rating_reasons_ratings_on_rating_id"
     t.index ["reason_id"], name: "index_rating_reasons_ratings_on_reason_id"
