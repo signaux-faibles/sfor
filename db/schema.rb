@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_27_131000) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_27_132000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -245,7 +245,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_131000) do
     t.index ["name"], name: "index_difficulties_on_name", unique: true
   end
 
-  create_table "difficulties_establishment_trackings", id: false, force: :cascade do |t|
+  create_table "difficulties_establishment_trackings", force: :cascade do |t|
     t.bigint "establishment_tracking_id", null: false
     t.bigint "difficulty_id", null: false
     t.index ["difficulty_id", "establishment_tracking_id"], name: "idx_on_difficulty_id_establishment_tracking_id_777c1bd376", unique: true
