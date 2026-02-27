@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_27_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_27_131000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -102,7 +102,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_27_120000) do
     t.integer "position", default: 0, null: false
   end
 
-  create_table "codefi_redirects_establishment_trackings", id: false, force: :cascade do |t|
+  create_table "codefi_redirects_establishment_trackings", force: :cascade do |t|
     t.bigint "establishment_tracking_id", null: false
     t.bigint "codefi_redirect_id", null: false
     t.index ["codefi_redirect_id", "establishment_tracking_id"], name: "idx_on_codefi_redirect_id_establishment_tracking_id_fd377a9600", unique: true
