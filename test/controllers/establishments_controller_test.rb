@@ -81,7 +81,7 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_includes @response.body, "data-orthogonal-chart-widget-datasets-value='[[],[0"
+    assert_includes @response.body, "Aucune donnée disponible pour cette entreprise."
   end
 
   test "data_effectif_ap_widget shows empty state when no data" do
