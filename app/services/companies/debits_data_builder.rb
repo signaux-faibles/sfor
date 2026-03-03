@@ -75,8 +75,20 @@ module Companies
     def self.aggregate_forward_filled_debits(establishments_data, periodes)
       periodes.each_with_index.with_object({}) do |(periode_str, index), debits_data|
         periode_date = Date.parse(periode_str).beginning_of_month
-        part_sal_sum = establishments_data.values.sum { |data| data[:parts_salariales][index] || 0.0 }
-        part_pat_sum = establishments_data.values.sum { |data| data[:parts_patronales][index] || 0.0 }
+        parts_salariales_values = establishments_data.values.map { |data| data[:parts_salariales][index] }
+        parts_patronales_values = establishments_data.values.map { |data| data[:parts_patronales][index] }
+
+        part_sal_sum = if parts_salariales_values.all?(&:nil?)
+                         nil
+                       else
+                         parts_salariales_values.compact.sum
+                       end
+        part_pat_sum = if parts_patronales_values.all?(&:nil?)
+                         nil
+                       else
+                         parts_patronales_values.compact.sum
+                       end
+
         debits_data[periode_date] = [periode_date, part_sal_sum, part_pat_sum]
       end
     end
