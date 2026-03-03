@@ -142,6 +142,7 @@ module Excel
 
     def add_header_row(sheet)
       headers = [
+        "Raison sociale",
         "Siret",
         "Département",
         "Participants",
@@ -159,20 +160,21 @@ module Excel
         "Synthèse de mon administration",
         "Synthèse CODEFI"
       ]
-      sheet.add_row headers, style: Array.new(16) { header_style(sheet) }
+      sheet.add_row headers, style: Array.new(17) { header_style(sheet) }
     end
 
     def add_tracking_rows(sheet)
       @establishment_trackings.each do |tracking|
         sheet.add_row prepare_tracking_row(tracking, sheet),
-                      style: Array.new(14, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
-                      types: [:string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+                      style: Array.new(15, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
+                      types: [:string, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
                               :string, :string]
       end
     end
 
     def prepare_tracking_row(tracking, _sheet)
       [
+        tracking.establishment&.raison_sociale.to_s,
         tracking.establishment.siret.to_s,
         tracking.establishment&.department&.name,
         tracking.participants.map(&:full_name).uniq.join(", "),
@@ -243,8 +245,8 @@ module Excel
     end
 
     def column_widths(sheet)
-      sheet.column_info[3].width = 30
       sheet.column_info[4].width = 30
+      sheet.column_info[5].width = 30
     end
 
     def apply_wrap_text_styles(sheet)
@@ -256,8 +258,8 @@ module Excel
     end
 
     def apply_wrap_text_style(row, sheet)
-      row.cells[3]&.style = wrap_text_style(sheet)
       row.cells[4]&.style = wrap_text_style(sheet)
+      row.cells[5]&.style = wrap_text_style(sheet)
     end
 
     def add_filter_details_sheet(workbook)
