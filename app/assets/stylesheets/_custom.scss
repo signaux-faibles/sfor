@@ -128,6 +128,12 @@
     mask-image: url("../../../icons/business/shake-hands-line.svg");
 }
 
+.fr-icon-file-copy-line::before,
+.fr-icon-file-copy-line::after {
+    -webkit-mask-image: url("../../../icons/document/file-copy-line.svg");
+    mask-image: url("../../../icons/document/file-copy-line.svg");
+}
+
 /* Filter form alignment */
 .establishment_trackings .fr-input-group {
     line-height: 2.5rem;

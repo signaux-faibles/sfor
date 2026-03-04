@@ -7,6 +7,12 @@
       <% if show_create_button? %>
         <%= link_to 'Créer un nouvel accompagnement', new_establishment_establishment_tracking_path(@establishment), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line' %>
       <% end %>
+      <% if show_duplicate_button? %>
+        <%= link_to 'Dupliquer cet accompagnement',
+                    duplicate_establishment_establishment_tracking_path(establishment, establishment_tracking),
+                    class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-file-copy-line',
+                    data: { turbo_method: :post } %>
+      <% end %>
     </h3>
   </div>
 

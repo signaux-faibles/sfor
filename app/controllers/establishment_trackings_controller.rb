@@ -12,7 +12,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   before_action :set_establishment, except: %i[new_by_siret index]
   before_action :set_tracking, # rubocop:disable Rails/LexicallyScopedActionFilter
                 only: %i[show destroy edit update manage_contributors update_contributors remove_referent
-                         remove_participant confirm complete]
+                         remove_participant confirm complete duplicate]
   before_action :set_system_labels, only: %i[index new new_by_siret edit update create confirm]
 
   def index
@@ -104,6 +104,20 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     end
   end
 
+  def duplicate
+    authorize @establishment_tracking, :duplicate?
+
+    duplicated_tracking = build_duplicate_tracking(@establishment_tracking)
+
+    if duplicated_tracking.save
+      flash[:success] = t("establishments.tracking.duplicate.success")
+      redirect_to [@establishment, duplicated_tracking]
+    else
+      flash[:alert] = duplicated_tracking.errors.full_messages.to_sentence
+      redirect_to [@establishment, @establishment_tracking]
+    end
+  end
+
   private
 
   def set_establishment
@@ -134,6 +148,26 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
       participant_ids: [], referent_ids: [], difficulty_ids: [],
       codefi_redirect_ids: [], supporting_service_ids: []
     )
+  end
+
+  def build_duplicate_tracking(original_tracking)
+    duplicated_tracking = original_tracking.dup
+    duplicated_tracking.creator = current_user
+    duplicated_tracking.modifier = current_user
+    duplicated_tracking.state = "in_progress"
+    duplicated_tracking.start_date = Time.zone.today
+    duplicated_tracking.end_date = nil
+
+    duplicated_tracking.referent_ids = (original_tracking.referents.kept.ids + [current_user.id]).uniq
+    duplicated_tracking.participant_ids = original_tracking.participants.kept.ids
+    duplicated_tracking.tracking_label_ids = original_tracking.tracking_labels.kept.ids
+    duplicated_tracking.user_action_ids = original_tracking.user_actions.kept.ids
+    duplicated_tracking.sector_ids = original_tracking.sector_ids
+    duplicated_tracking.difficulty_ids = original_tracking.difficulty_ids
+    duplicated_tracking.codefi_redirect_ids = original_tracking.codefi_redirect_ids
+    duplicated_tracking.supporting_service_ids = original_tracking.supporting_service_ids
+
+    duplicated_tracking
   end
 
   def handle_completed_state_update(old_supporting_services)

@@ -397,6 +397,8 @@ fr:
         success: "L'accompagnement a été supprimé avec succès."
       complete:
         success: "L'accompagnement a bien été marqué comme terminé."
+      duplicate:
+        success: "Accompagnement dupliqué avec succès."
       contributors:
         update:
           success: "Contributeurs de l'accompagnement mis à jour avec succès."

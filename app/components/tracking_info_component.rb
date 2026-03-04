@@ -30,6 +30,10 @@ class TrackingInfoComponent < ViewComponent::Base
     show_edit_button && can_edit?
   end
 
+  def show_duplicate_button?
+    establishment_tracking.completed? && policy(establishment_tracking).duplicate?
+  end
+
   def confirmation_mode?
     confirmation_mode
   end

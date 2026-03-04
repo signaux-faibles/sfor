@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       member do
         get :confirm
         patch :complete
+        post :duplicate
         get :manage_contributors
         patch :update_contributors
         delete :remove_referent

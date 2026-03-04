@@ -205,6 +205,51 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
     assert_redirected_to @establishment_paris
     assert_equal "L'accompagnement a été supprimé avec succès.", flash[:success]
   end
+
+  test "should duplicate completed establishment_tracking with relations" do # rubocop:disable Metrics/BlockLength
+    completed_tracking = establishment_trackings(:establishment_tracking_paris_completed)
+    participant = users(:user_crp_paris2)
+    other_referent = users(:user_urssaf_paris)
+    user_action = user_actions(:first_contact)
+    sector = sectors(:industry)
+    difficulty = difficulties(:financial)
+    codefi_redirect = codefi_redirects(:cci_cma)
+    supporting_service = supporting_services(:urssaf)
+
+    completed_tracking.referents = [other_referent]
+    completed_tracking.participants << participant
+    completed_tracking.user_actions << user_action
+    completed_tracking.sectors << sector
+    completed_tracking.difficulties << difficulty
+    completed_tracking.codefi_redirects << codefi_redirect
+    completed_tracking.supporting_services << supporting_service
+
+    assert_difference("EstablishmentTracking.count", 1) do
+      post duplicate_establishment_establishment_tracking_url(
+        completed_tracking.establishment,
+        completed_tracking
+      )
+    end
+
+    duplicated_tracking = EstablishmentTracking.order(:id).last
+
+    assert_redirected_to [completed_tracking.establishment, duplicated_tracking]
+    assert_equal "Accompagnement dupliqué avec succès.", flash[:success]
+    assert_equal "in_progress", duplicated_tracking.state
+    assert_equal Time.zone.today, duplicated_tracking.start_date
+    assert_nil duplicated_tracking.end_date
+    assert_equal completed_tracking.establishment_siret, duplicated_tracking.establishment_siret
+
+    assert_equal (completed_tracking.referent_ids + [@user_crp_paris.id]).uniq.sort,
+                 duplicated_tracking.referent_ids.sort
+    assert_equal completed_tracking.participant_ids.sort, duplicated_tracking.participant_ids.sort
+    assert_equal completed_tracking.tracking_label_ids.sort, duplicated_tracking.tracking_label_ids.sort
+    assert_equal completed_tracking.user_action_ids.sort, duplicated_tracking.user_action_ids.sort
+    assert_equal completed_tracking.sector_ids.sort, duplicated_tracking.sector_ids.sort
+    assert_equal completed_tracking.difficulty_ids.sort, duplicated_tracking.difficulty_ids.sort
+    assert_equal completed_tracking.codefi_redirect_ids.sort, duplicated_tracking.codefi_redirect_ids.sort
+    assert_equal completed_tracking.supporting_service_ids.sort, duplicated_tracking.supporting_service_ids.sort
+  end
 end
 
 class EstablishmentTrackingsContributorsTest < EstablishmentTrackingsControllerTest

@@ -55,6 +55,10 @@ class EstablishmentTrackingPolicy < ApplicationPolicy
     user_is_referent?
   end
 
+  def duplicate?
+    create? && record.completed?
+  end
+
   private
 
   def user_is_referent_or_participant?
