@@ -344,6 +344,50 @@ bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL cl
 
 > For `osf_effectif` don't forget to update the `data_freshness` attribute of the corresponding line of the `import.rb` model. You can do this using the app admin panel. You can get the value by doing `select Max(oe.periode) from osf_effectifs oe `. This will be hopefully automaticaly done at import time one day.
 
+# Data freshness and forward fill (URSSAF + Effectif/AP widgets)
+
+This section documents how time-series data is prepared for the URSSAF and Effectif/AP widgets.
+
+Definitions:
+- **Forward fill**: If a period is missing but a previous value exists, the previous value is repeated until the fill boundary.
+- **Data freshness**: A cutoff month stored in `imports.data_freshness`. Values after this month are hidden (set to `nil`).
+
+## Data types overview
+
+| Data type (widget) | Forward filled | Data freshness used | Import name |
+| --- | --- | --- | --- |
+| Cotisations (URSSAF) | Yes | Yes | `osf_cotisation` |
+| Dette restante - part salariale (URSSAF) | Yes | Yes | `osf_debit` |
+| Dette restante - part patronale (URSSAF) | Yes | Yes | `osf_debit` |
+| Délai de paiement - montant de l'échéancier (URSSAF) | Yes | Yes | `osf_delai` |
+| Effectifs (Effectif/AP) | No | Yes | `osf_effectif` (establishment), `osf_effectif_ent` (company) |
+| AP - consommation (Effectif/AP) | No | Yes | `osf_ap` |
+| AP - autorisation (Effectif/AP) | No | Yes | `osf_ap` |
+
+## Examples (what is displayed)
+
+Assume the chart shows periods **Jan → Apr 2025** and the `data_freshness` month is **Mar 2025**.
+
+- **Cotisations (forward fill + freshness)**  
+  Raw values: `[Jan: 1000, Feb: nil, Mar: 1200, Apr: nil]`  
+  Displayed: `[Jan: 1000, Feb: 1000, Mar: 1200, Apr: nil]`
+
+- **Dettes (forward fill + freshness)**  
+  Raw values: `[Jan: 500, Feb: 600, Mar: nil, Apr: nil]`  
+  Displayed: `[Jan: 500, Feb: 600, Mar: 600, Apr: nil]`
+
+- **Délai de paiement (forward fill + freshness)**  
+  Raw values: `[Jan: 2000, Feb: nil, Mar: nil, Apr: 3000]`  
+  Displayed: `[Jan: 2000, Feb: 2000, Mar: 2000, Apr: nil]`
+
+- **Effectifs (freshness only, no forward fill)**  
+  Raw values: `[Jan: 42, Feb: nil, Mar: 40, Apr: 41]`  
+  Displayed: `[Jan: 42, Feb: nil, Mar: 40, Apr: nil]`
+
+- **AP consommation / autorisation (freshness only, no forward fill)**  
+  Raw values: `[Jan: 10, Feb: 12, Mar: nil, Apr: 9]`  
+  Displayed: `[Jan: 10, Feb: 12, Mar: nil, Apr: nil]`
+
 # Import sjcf companies
 
 Just import the data of an sjcf csv file with a `siren` column and a `libelle_list` column. The headers labels don't mater as long as you have one list of sirens and the name of the current list (e.g. "Septembre 2025").
