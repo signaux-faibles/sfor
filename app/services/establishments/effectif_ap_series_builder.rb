@@ -1,18 +1,20 @@
 module Establishments
   class EffectifApSeriesBuilder
-    def initialize(establishment:, start_date:, periodes:)
+    def initialize(establishment:, start_date:, periodes:, effectif_freshness_index: nil, ap_freshness_index: nil)
       @establishment = establishment
       @start_date = start_date
       @periodes = periodes
+      @effectif_freshness_index = effectif_freshness_index
+      @ap_freshness_index = ap_freshness_index
     end
 
     def build
       effectifs_data = fetch_effectifs_data
       ap_data = fetch_ap_data
 
-      effectifs = map_periodes_to_effectifs(effectifs_data)
-      consommation_ap = map_periodes_to_consommation(ap_data)
-      autorisation_ap = map_periodes_to_autorisation(ap_data)
+      effectifs = apply_freshness_limit(map_periodes_to_effectifs(effectifs_data), @effectif_freshness_index)
+      consommation_ap = apply_freshness_limit(map_periodes_to_consommation(ap_data), @ap_freshness_index)
+      autorisation_ap = apply_freshness_limit(map_periodes_to_autorisation(ap_data), @ap_freshness_index)
 
       {
         effectifs: clear_nil_series(effectifs),
@@ -69,6 +71,14 @@ module Establishments
       return [] if values.all?(&:nil?)
 
       values
+    end
+
+    def apply_freshness_limit(values, fill_until_index)
+      return values if fill_until_index.nil?
+
+      values.map.with_index do |value, index|
+        index <= fill_until_index ? value : nil
+      end
     end
   end
 end

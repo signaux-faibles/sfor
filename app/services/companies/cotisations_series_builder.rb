@@ -1,17 +1,19 @@
 module Companies
   class CotisationsSeriesBuilder
-    def initialize(start_date:, periodes:, forward_fill:, company: nil, siret_list: nil)
+    def initialize(start_date:, periodes:, forward_fill:, fill_until_index: nil, company: nil, siret_list: nil) # rubocop:disable Metrics/ParameterLists
       @company = company
       @siret_list = siret_list
       @start_date = start_date
       @periodes = periodes
       @forward_fill = forward_fill
+      @fill_until_index = fill_until_index
     end
 
     def build
       cotisations_data = fetch_cotisations_data
       values = map_periodes_to_cotisations(cotisations_data)
-      values = @forward_fill.call(values)
+      values = @forward_fill.call(values, fill_until_index: @fill_until_index)
+      values = apply_freshness_limit(values, @fill_until_index)
       clear_nil_series(round_values(values))
     end
 
@@ -48,6 +50,14 @@ module Companies
       return [] if values.all?(&:nil?)
 
       values
+    end
+
+    def apply_freshness_limit(values, fill_until_index)
+      return values if fill_until_index.nil?
+
+      values.map.with_index do |value, index|
+        index <= fill_until_index ? value : nil
+      end
     end
   end
 end

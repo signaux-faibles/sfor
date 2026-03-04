@@ -105,6 +105,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
       start_date: start_date,
       periodes: periodes,
       debit_freshness_index: method(:debit_freshness_index),
+      cotisation_freshness_index: cotisation_freshness_index(periodes),
+      delai_freshness_index: delai_freshness_index(periodes),
       forward_fill: method(:forward_fill)
     ).build
 
@@ -125,7 +127,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     data = Companies::EffectifApSeriesBuilder.new(
       company: @company,
       start_date: start_date,
-      periodes: periodes
+      periodes: periodes,
+      effectif_freshness_index: effectif_ent_freshness_index(periodes),
+      ap_freshness_index: ap_freshness_index(periodes)
     ).build
 
     @effectifs = data[:effectifs]

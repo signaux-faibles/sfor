@@ -36,6 +36,8 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
       start_date: start_date,
       periodes: periodes,
       debit_freshness_index: method(:debit_freshness_index),
+      cotisation_freshness_index: cotisation_freshness_index(periodes),
+      delai_freshness_index: delai_freshness_index(periodes),
       forward_fill: method(:forward_fill)
     ).build
 
@@ -56,7 +58,9 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     data = Establishments::EffectifApSeriesBuilder.new(
       establishment: @establishment,
       start_date: start_date,
-      periodes: periodes
+      periodes: periodes,
+      effectif_freshness_index: effectif_freshness_index(periodes),
+      ap_freshness_index: ap_freshness_index(periodes)
     ).build
 
     @effectifs = data[:effectifs]
