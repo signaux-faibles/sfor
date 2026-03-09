@@ -45,7 +45,26 @@ module UserImporter
   end
 
   def setup_user_password(user)
-    user.password = Devise.friendly_token[0, 20] if user.new_record?
+    return unless user.new_record?
+
+    user.password = generate_compliant_password
+  end
+
+  def generate_compliant_password
+    # Ensure at least one of each required character class.
+    required = [
+      ("A".."Z").to_a.sample,
+      ("a".."z").to_a.sample,
+      ("0".."9").to_a.sample,
+      %w[# ? ! @ $ % ^ & * -].sample
+    ]
+
+    # Fill the rest with a mix of all classes.
+    pool = (("A".."Z").to_a + ("a".."z").to_a + ("0".."9").to_a + %w[# ? ! @ $ % ^ & * -])
+    remaining = 16
+    chars = required + Array.new(remaining) { pool.sample }
+
+    chars.shuffle.join
   end
 
   def save_user(user)
