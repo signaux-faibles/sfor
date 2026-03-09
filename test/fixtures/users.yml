@@ -5,6 +5,8 @@ user_crp_paris:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  ambassador: false
+  trained: false
   networks:
     - network_crp
     - network_codefi
@@ -16,6 +18,8 @@ user_crp_paris2:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  ambassador: false
+  trained: false
   networks:
     - network_crp
     - network_codefi
@@ -27,6 +31,8 @@ user_crp_paris3:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  ambassador: false
+  trained: false
   networks:
     - network_crp
     - network_codefi
@@ -38,6 +44,8 @@ user_crp_finistere:
   entity: entity_dreets
   geo_access: geo_access_finistere
   departments: department_finistere
+  ambassador: false
+  trained: false
   networks:
     - network_crp
     - network_codefi
@@ -49,6 +57,8 @@ user_urssaf_paris:
   entity: entity_dreets
   geo_access: geo_access_paris
   departments: department_paris
+  ambassador: false
+  trained: false
   networks:
     - network_urssaf
     - network_codefi
@@ -60,6 +70,20 @@ user_urssaf_finistere:
   entity: entity_dreets
   geo_access: geo_access_finistere
   departments: department_finistere
+  ambassador: false
+  trained: false
   networks:
     - network_urssaf
     - network_codefi
+
+user_admin_sf:
+  email: admin@sf.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  segment: segment_sf
+  entity: entity_dreets
+  geo_access: geo_access_paris
+  departments: department_paris
+  ambassador: false
+  trained: false
+  networks:
+    - network_sf

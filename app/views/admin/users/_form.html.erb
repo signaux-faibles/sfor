@@ -1,0 +1,76 @@
+<%= form_with model: [:admin, @user], local: true, class: "fr-mb-3w" do |form| %>
+  <% if @user.errors.any? %>
+    <div class="fr-alert fr-alert--error fr-mb-2w">
+      <p class="fr-alert__title"><%= pluralize(@user.errors.count, "erreur") %> ont empêché l'enregistrement :</p>
+      <ul>
+        <% @user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :email, "Email", class: "fr-label" %>
+    <%= form.email_field :email, class: "fr-input", autocomplete: "off" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :first_name, "Prénom", class: "fr-label" %>
+    <%= form.text_field :first_name, class: "fr-input" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :last_name, "Nom", class: "fr-label" %>
+    <%= form.text_field :last_name, class: "fr-input" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :entity_id, "Entité", class: "fr-label" %>
+    <%= form.collection_select :entity_id, @entities, :id, :name, {}, class: "fr-select" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :segment_id, "Segment", class: "fr-label" %>
+    <%= form.collection_select :segment_id, @segments, :id, :name, {}, class: "fr-select" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :geo_access_id, "Accès géographique", class: "fr-label" %>
+    <%= form.collection_select :geo_access_id, @geo_accesses, :id, :name, {}, class: "fr-select" %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :description, "Description", class: "fr-label" %>
+    <%= form.text_area :description, class: "fr-input", rows: 4 %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <div class="fr-checkbox-group">
+      <%= form.check_box :ambassador %>
+      <%= form.label :ambassador, "Ambassadeur", class: "fr-label" %>
+    </div>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <div class="fr-checkbox-group">
+      <%= form.check_box :trained %>
+      <%= form.label :trained, "Formé", class: "fr-label" %>
+    </div>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :feedbacks, "Retours", class: "fr-label" %>
+    <%= form.text_area :feedbacks, class: "fr-input", rows: 4 %>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :last_contact, "Dernier contact", class: "fr-label" %>
+    <%= form.date_field :last_contact, class: "fr-input" %>
+  </div>
+
+  <div class="fr-btns-group">
+    <%= form.submit class: "fr-btn" %>
+    <%= link_to "Annuler", admin_users_path, class: "fr-btn fr-btn--secondary" %>
+  </div>
+<% end %>

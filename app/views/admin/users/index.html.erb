@@ -1,9 +1,11 @@
 <div class="fr-mb-3w">
   <h1 class="fr-h1 fr-mb-2w">Gestion des utilisateurs</h1>
-  
-  <!-- Search Form -->
-  <%= form_with url: admin_users_path, method: :get, local: true, class: "fr-mb-2w" do |form| %>
-    <div style="max-width: 400px;">
+
+  <div class="fr-grid-row fr-grid-row--gutters fr-align-items-center fr-mb-2w">
+    <div class="fr-col-8">
+      <!-- Search Form -->
+      <%= form_with url: admin_users_path, method: :get, local: true do |form| %>
+        <div style="max-width: 400px;">
       <div class="fr-search-bar" role="search">
         <label class="fr-label" for="search-input">
           Rechercher
@@ -23,8 +25,17 @@
           <%= link_to "Effacer la recherche", admin_users_path, class: "fr-btn fr-btn--secondary fr-btn--sm" %>
         </div>
       <% end %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
+
+    <div class="fr-col-4">
+      <div class="fr-btns-group fr-btns-group--right">
+        <%= link_to "Nouvel utilisateur", new_admin_user_path, class: "fr-btn fr-btn--primary" %>
+        <%= link_to "Importer un CSV", import_admin_users_path, class: "fr-btn fr-btn--secondary" %>
+      </div>
+    </div>
+  </div>
 </div>
 
 <% if params[:search].present? %>
@@ -88,15 +99,28 @@
           </td>
           <td>
             <div class="fr-btns-group fr-btns-group--inline">
-              <%= link_to "Voir", 
-                  [:admin, user], 
+              <%= link_to "Voir",
+                  [:admin, user],
                   class: "fr-btn fr-btn--sm fr-btn--secondary" %>
-              <%= link_to "Imiter", 
-                  [:impersonate, :admin, user], 
+              <%= link_to "Modifier",
+                  edit_admin_user_path(user),
+                  class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+              <%= link_to "Dupliquer",
+                  duplicate_admin_user_path(user),
+                  class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+              <%= button_to "Archiver",
+                  discard_admin_user_path(user),
+                  method: :delete,
+                  class: "fr-btn fr-btn--sm fr-btn--secondary",
+                  data: {
+                    confirm: "Êtes-vous sûr de vouloir archiver #{user.email} ?"
+                  } %>
+              <%= link_to "Imiter",
+                  [:impersonate, :admin, user],
                   method: :get,
                   class: "fr-btn fr-btn--sm",
-                  data: { 
-                    confirm: "Êtes-vous sûr de vouloir vous connecter en tant que #{user.email} ?" 
+                  data: {
+                    confirm: "Êtes-vous sûr de vouloir vous connecter en tant que #{user.email} ?"
                   } %>
             </div>
           </td>

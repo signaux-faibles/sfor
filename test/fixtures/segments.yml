@@ -6,3 +6,7 @@ segment_urssaf:
   name: "urssaf"
   network: network_urssaf
 
+segment_sf:
+  name: "sf"
+  network: network_sf
+

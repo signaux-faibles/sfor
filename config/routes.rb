@@ -21,6 +21,13 @@ Rails.application.routes.draw do
       member do
         get :impersonate
         post :reset_password
+        get :duplicate
+        delete :discard, action: :destroy
+      end
+      collection do
+        get :import
+        post :import, action: :import_create
+        get :template
       end
     end
     resources :imports

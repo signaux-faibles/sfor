@@ -1,0 +1,78 @@
+<div class="fr-mb-3w">
+  <div class="fr-mb-2w">
+    <%= link_to "← Retour à la liste", admin_users_path, class: "fr-link" %>
+  </div>
+  <h1 class="fr-h1 fr-mb-2w">Import d'utilisateurs</h1>
+</div>
+
+<div class="fr-btns-group fr-mb-2w">
+  <%= link_to "Télécharger le modèle CSV", template_admin_users_path, class: "fr-btn fr-btn--secondary" %>
+</div>
+
+<%= form_with url: import_admin_users_path,
+              method: :post,
+              local: true,
+              multipart: true,
+              data: { turbo: false },
+              class: "fr-mb-3w" do |form| %>
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :csv_file, "Fichier CSV", class: "fr-label" %>
+    <%= form.file_field :csv_file, class: "fr-input", accept: ".csv,text/csv" %>
+  </div>
+
+  <div class="fr-btns-group">
+    <%= form.submit "Importer", class: "fr-btn" %>
+  </div>
+<% end %>
+
+<% if defined?(@total_rows) %>
+  <div class="fr-card fr-mb-3w">
+    <div class="fr-card__body">
+      <div class="fr-card__content">
+        <h2 class="fr-h3 fr-mb-2w">Résultats de l'import</h2>
+
+        <div class="fr-mb-2w">
+          <p><strong>Lignes traitées :</strong> <%= @total_rows %></p>
+          <p><strong>Utilisateurs créés :</strong> <%= @created_users.count %></p>
+          <% if @created_users.any? %>
+            <ul class="fr-mt-1w">
+              <% @created_users.each do |user| %>
+                <li><%= user.email %> (<%= user.display_name %>)</li>
+              <% end %>
+            </ul>
+          <% end %>
+        </div>
+
+        <div class="fr-mb-2w">
+          <p><strong>Utilisateurs non créés :</strong> <%= @failed_rows.count %></p>
+          <% if @failed_rows.any? %>
+            <ul class="fr-mt-1w">
+              <% @failed_rows.each do |failure| %>
+                <li>
+                  Ligne <%= failure[:row_number] %> — <%= failure[:email] || "Email manquant" %> :
+                  <%= Array(failure[:errors]).join(", ") %>
+                  <% if failure[:data].present? %>
+                    <div class="fr-text--xs fr-mt-1v">
+                      <%= failure[:data].compact.map { |key, value| "#{key}: #{value}" }.join(" | ") %>
+                    </div>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </div>
+
+        <div>
+          <p><strong>Emails d'invitation non envoyés :</strong> <%= @mail_errors&.count.to_i %></p>
+          <% if @mail_errors&.any? %>
+            <ul class="fr-mt-1w">
+              <% @mail_errors.each do |error| %>
+                <li><%= error[:email] %> — <%= error[:error] %></li>
+              <% end %>
+            </ul>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

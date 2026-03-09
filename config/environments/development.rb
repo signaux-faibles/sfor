@@ -46,11 +46,10 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Configure email delivery
-  # By default, use letter_opener to preview emails in browser (recommended for development)
-  # To use real SMTP instead, comment out letter_opener and uncomment SMTP configuration below
-  config.action_mailer.delivery_method = :letter_opener
+  # Use :test in development and log email contents (see MailLoggerInterceptor)
+  config.action_mailer.delivery_method = :test
   config.action_mailer.perform_deliveries = true
-  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.raise_delivery_errors = false
 
   # Uncomment below to use SMTP in development instead of letter_opener:
   # config.action_mailer.delivery_method = :smtp

@@ -9,3 +9,7 @@ network_urssaf:
 network_codefi:
   name: "CODEFI"
   active: true
+
+network_sf:
+  name: "SIGNAUX FAIBLES"
+  active: true

@@ -67,6 +67,26 @@ class User < ApplicationRecord
     last_confidentiality_acknowledged_at < 3.months.ago
   end
 
+  def self.generate_admin_password
+    special_chars = %w[# ? ! @ $ % ^ & * -]
+    letters = ("a".."z").to_a + ("A".."Z").to_a
+    digits = ("0".."9").to_a
+    pool = letters + digits
+
+    loop do
+      password_chars = [
+        ("A".."Z").to_a.sample,
+        ("a".."z").to_a.sample,
+        digits.sample,
+        special_chars.sample
+      ]
+
+      password_chars += Array.new(8) { pool.sample }
+      password = password_chars.shuffle.join
+      return password if password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
+    end
+  end
+
   def password_complexity
     # Regexp extracted from https://stackoverflow.com/questions/19605150/regex-for-password-must-contain-at-least-eight-characters-at-least-one-number-a
     return if password.blank? || password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
