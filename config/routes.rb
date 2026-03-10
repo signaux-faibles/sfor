@@ -23,6 +23,7 @@ Rails.application.routes.draw do
         post :reset_password
         get :duplicate
         delete :discard, action: :destroy
+        patch :restore
       end
       collection do
         get :import

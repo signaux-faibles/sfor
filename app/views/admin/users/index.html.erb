@@ -6,25 +6,33 @@
       <!-- Search Form -->
       <%= form_with url: admin_users_path, method: :get, local: true do |form| %>
         <div style="max-width: 400px;">
-      <div class="fr-search-bar" role="search">
-        <label class="fr-label" for="search-input">
-          Rechercher
-        </label>
-        <%= form.search_field :search, 
-            value: params[:search], 
-            placeholder: "Rechercher par email...", 
-            class: "fr-input",
-            id: "search-input",
-            "aria-describedby": "search-input-messages" %>
-        <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+          <div class="fr-search-bar" role="search">
+            <label class="fr-label" for="search-input">
+              Rechercher
+            </label>
+            <%= form.search_field :search,
+                                  value: params[:search],
+                                  placeholder: "Rechercher par email...",
+                                  class: "fr-input",
+                                  id: "search-input",
+                                  "aria-describedby": "search-input-messages" %>
+            <div class="fr-messages-group" id="search-input-messages" aria-live="polite">
+            </div>
+            <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
+          </div>
+          <% if params[:search].present? %>
+            <div class="fr-mt-1w">
+              <%= link_to "Effacer la recherche", admin_users_path, class: "fr-btn fr-btn--secondary fr-btn--sm" %>
+            </div>
+          <% end %>
         </div>
-        <button title="Rechercher" type="submit" class="fr-btn">Rechercher</button>
-      </div>
-      <% if params[:search].present? %>
-        <div class="fr-mt-1w">
-          <%= link_to "Effacer la recherche", admin_users_path, class: "fr-btn fr-btn--secondary fr-btn--sm" %>
-        </div>
-      <% end %>
+        <div class="fr-checkbox-group fr-mt-1w">
+          <%= check_box_tag :include_discarded,
+                            "1",
+                            params[:include_discarded] == "1",
+                            id: "include-discarded",
+                            class: "fr-checkbox" %>
+          <%= label_tag "include-discarded", "Inclure les utilisateurs archivés", class: "fr-label" %>
         </div>
       <% end %>
     </div>
@@ -57,6 +65,7 @@
         <th scope="col">Réseaux</th>
         <th scope="col">Accès géographique</th>
         <th scope="col">Dernière connexion</th>
+        <th scope="col">Statut</th>
         <th scope="col">Actions</th>
       </tr>
     </thead>
@@ -98,6 +107,13 @@
             <%= user.last_sign_in_at ? l(user.last_sign_in_at, format: :short) : "Jamais" %>
           </td>
           <td>
+            <% if user.discarded? %>
+              <span class="fr-badge fr-badge--sm fr-badge--warning">Archivé</span>
+            <% else %>
+              <span class="fr-badge fr-badge--sm fr-badge--success">Actif</span>
+            <% end %>
+          </td>
+          <td>
             <div class="fr-btns-group fr-btns-group--inline">
               <%= link_to "Voir",
                   [:admin, user],
@@ -108,13 +124,20 @@
               <%= link_to "Dupliquer",
                   duplicate_admin_user_path(user),
                   class: "fr-btn fr-btn--sm fr-btn--secondary" %>
-              <%= button_to "Archiver",
-                  discard_admin_user_path(user),
-                  method: :delete,
-                  class: "fr-btn fr-btn--sm fr-btn--secondary",
-                  data: {
-                    confirm: "Êtes-vous sûr de vouloir archiver #{user.email} ?"
-                  } %>
+              <% if user.discarded? %>
+                <%= button_to "Réactiver",
+                    restore_admin_user_path(user),
+                    method: :patch,
+                    class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+              <% else %>
+                <%= button_to "Archiver",
+                    discard_admin_user_path(user),
+                    method: :delete,
+                    class: "fr-btn fr-btn--sm fr-btn--secondary",
+                    data: {
+                      confirm: "Êtes-vous sûr de vouloir archiver #{user.email} ?"
+                    } %>
+              <% end %>
               <%= link_to "Imiter",
                   [:impersonate, :admin, user],
                   method: :get,

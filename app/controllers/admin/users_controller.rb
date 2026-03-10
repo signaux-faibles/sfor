@@ -1,10 +1,15 @@
 require "csv"
 
 class Admin::UsersController < Admin::ApplicationController
-  before_action :set_user, only: %i[show impersonate reset_password edit update destroy duplicate]
+  before_action :set_user, only: %i[show impersonate reset_password edit update destroy duplicate restore]
 
   def index
-    @users = User.kept.includes(:entity, :segment, :geo_access, :networks)
+    @users = if params[:include_discarded] == "1"
+               User.with_discarded
+             else
+               User.kept
+             end
+    @users = @users.includes(:entity, :segment, :geo_access, :networks)
     @users = @users.where("email ILIKE ?", "%#{params[:search].strip}%") if params[:search].present?
     @users = @users.order(:email)
 
@@ -59,6 +64,11 @@ class Admin::UsersController < Admin::ApplicationController
 
     @user.discard
     redirect_to admin_users_path, notice: "Utilisateur archivé avec succès." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  def restore
+    @user.undiscard
+    redirect_to admin_user_path(@user), notice: "Utilisateur réactivé avec succès." # rubocop:disable Rails/I18nLocaleTexts
   end
 
   def duplicate
@@ -157,7 +167,7 @@ class Admin::UsersController < Admin::ApplicationController
   private
 
   def set_user
-    @user = User.find(params[:id])
+    @user = User.with_discarded.find(params[:id])
   end
 
   def load_form_collections

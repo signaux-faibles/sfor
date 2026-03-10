@@ -77,6 +77,16 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     assert_predicate @target_user.reload, :discarded?
   end
 
+  test "restore user" do
+    sign_in @admin
+
+    @target_user.discard
+    patch restore_admin_user_path(@target_user)
+
+    assert_redirected_to admin_user_path(@target_user)
+    assert_not @target_user.reload.discarded?
+  end
+
   test "duplicate renders prefilled form without identity" do
     sign_in @admin
 
