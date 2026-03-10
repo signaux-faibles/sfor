@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
+class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Metrics/ClassLength
   setup do
     @admin = users(:user_admin_sf)
     @non_admin = users(:user_crp_paris)
@@ -119,8 +119,8 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
-    assert_includes @response.body, "Utilisateurs créés : 1"
-    assert_includes @response.body, "Utilisateurs non créés : 1"
+    assert_includes @response.body, "Utilisateurs créés :</strong> 1"
+    assert_includes @response.body, "Utilisateurs non créés :</strong> 1"
   ensure
     file.close
     file.unlink

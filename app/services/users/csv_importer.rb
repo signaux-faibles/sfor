@@ -1,14 +1,14 @@
 require "csv"
 
 module Users
-  class CsvImporter
+  class CsvImporter # rubocop:disable Metrics/ClassLength
     Result = Struct.new(:created_users, :failed_rows, :mail_errors, :total_rows, keyword_init: true)
 
     def initialize(csv_content)
       @csv_content = csv_content
     end
 
-    def call
+    def call # rubocop:disable Metrics/MethodLength
       created_users = []
       failed_rows = []
       mail_errors = []
@@ -59,7 +59,7 @@ module Users
          end
     end
 
-    def build_attributes(attributes)
+    def build_attributes(attributes) # rubocop:disable Metrics/MethodLength
       errors = []
 
       email = attributes["email"]
@@ -119,7 +119,7 @@ module Users
       return nil if value.blank?
 
       Date.parse(value)
-    rescue Date::Error, ArgumentError
+    rescue Date::Error, ArgumentError # rubocop:disable Lint/ShadowedException
       nil
     end
 

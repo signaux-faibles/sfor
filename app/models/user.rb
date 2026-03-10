@@ -83,7 +83,7 @@ class User < ApplicationRecord
 
       password_chars += Array.new(8) { pool.sample }
       password = password_chars.shuffle.join
-      return password if password =~ /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/
+      return password if /(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])/.match?(password)
     end
   end
 

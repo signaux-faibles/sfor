@@ -1,6 +1,6 @@
 require "csv"
 
-class Admin::UsersController < Admin::ApplicationController
+class Admin::UsersController < Admin::ApplicationController # rubocop:disable Metrics/ClassLength
   before_action :set_user, only: %i[show impersonate reset_password edit update destroy duplicate restore]
 
   def index
@@ -25,6 +25,10 @@ class Admin::UsersController < Admin::ApplicationController
     load_form_collections
   end
 
+  def edit
+    load_form_collections
+  end
+
   def create
     @user = User.new(user_params)
     @user.password = User.generate_admin_password if @user.password.blank?
@@ -34,17 +38,13 @@ class Admin::UsersController < Admin::ApplicationController
       begin
         @user.send_reset_password_instructions
       rescue StandardError => e
-        flash[:alert] = "Utilisateur créé, mais l'envoi de l'email a échoué : #{e.message}" # rubocop:disable Rails/I18nLocaleTexts
+        flash[:alert] = "Utilisateur créé, mais l'envoi de l'email a échoué : #{e.message}"
       end
       redirect_to admin_user_path(@user), notice: "Utilisateur créé avec succès." # rubocop:disable Rails/I18nLocaleTexts
     else
       load_form_collections
       render :new, status: :unprocessable_entity
     end
-  end
-
-  def edit
-    load_form_collections
   end
 
   def update
@@ -126,10 +126,10 @@ class Admin::UsersController < Admin::ApplicationController
 
     render :import, formats: :html
   rescue CSV::MalformedCSVError => e
-    redirect_to import_admin_users_path, alert: "CSV invalide : #{e.message}" # rubocop:disable Rails/I18nLocaleTexts
+    redirect_to import_admin_users_path, alert: "CSV invalide : #{e.message}"
   end
 
-  def template
+  def template # rubocop:disable Metrics/MethodLength
     headers = %w[
       email
       first_name
