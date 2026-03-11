@@ -31,17 +31,11 @@ class TrackingInfoComponent < ViewComponent::Base
   end
 
   def show_duplicate_button?
-    return false if sentry_production?
-
     establishment_tracking.completed? && policy(establishment_tracking).duplicate?
   end
 
   def confirmation_mode?
     confirmation_mode
-  end
-
-  def sentry_production?
-    ENV.fetch("SENTRY_ENV", "").downcase == "production"
   end
 
   def format_date(date)
