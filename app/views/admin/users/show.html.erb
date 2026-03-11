@@ -4,19 +4,19 @@
   </div>
   
   <h1 class="fr-h1 fr-mb-2w">Utilisateur : <%= @user.email %></h1>
-  <div class="fr-btns-group fr-mb-2w">
-    <%= link_to "Modifier", edit_admin_user_path(@user), class: "fr-btn fr-btn--secondary" %>
-    <%= link_to "Dupliquer", duplicate_admin_user_path(@user), class: "fr-btn fr-btn--secondary" %>
+  <div class="fr-btns-group fr-btns-group--inline fr-mb-2w">
+    <%= link_to "Modifier", edit_admin_user_path(@user), class: "fr-btn fr-btn--sm fr-btn--secondary" %>
+    <%= link_to "Dupliquer", duplicate_admin_user_path(@user), class: "fr-btn fr-btn--sm fr-btn--secondary" %>
     <% if @user.discarded? %>
       <%= button_to "Réactiver",
           restore_admin_user_path(@user),
           method: :patch,
-          class: "fr-btn fr-btn--secondary" %>
+          class: "fr-btn fr-btn--sm fr-btn--secondary" %>
     <% else %>
       <%= button_to "Archiver",
           discard_admin_user_path(@user),
           method: :delete,
-          class: "fr-btn fr-btn--secondary",
+          class: "fr-btn fr-btn--sm fr-btn--secondary",
           data: { confirm: "Êtes-vous sûr de vouloir archiver #{@user.email} ?" } %>
     <% end %>
   </div>
@@ -39,6 +39,9 @@
         
         <dt class="fr-text--sm fr-text--bold">Nom</dt>
         <dd class="fr-mb-2w"><%= @user.last_name || "Non renseigné" %></dd>
+
+        <dt class="fr-text--sm fr-text--bold">Description</dt>
+        <dd class="fr-mb-2w"><%= @user.description.presence || "Non renseigné" %></dd>
         
         <dt class="fr-text--sm fr-text--bold">Entité</dt>
         <dd class="fr-mb-2w"><%= @user.entity&.name || "Non renseigné" %></dd>
@@ -192,11 +195,11 @@
   </div>
 </div>
 
-<div class="fr-btns-group">
+<div class="fr-btns-group fr-btns-group--inline">
   <%= link_to "Imiter cet utilisateur",
       [:impersonate, :admin, @user],
       method: :get,
-      class: "fr-btn fr-btn--secondary",
+      class: "fr-btn fr-btn--sm fr-btn--secondary",
       data: {
         confirm: "Êtes-vous sûr de vouloir vous connecter en tant que #{@user.email} ?"
       } %>

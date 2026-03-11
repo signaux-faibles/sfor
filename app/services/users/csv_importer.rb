@@ -29,11 +29,12 @@ module Users
         user.password = User.generate_admin_password
 
         if user.save
-          begin
-            user.send_reset_password_instructions
-          rescue StandardError => e
-            mail_errors << { email: user.email, error: e.message }
-          end
+          # Invitation email sending is disabled for now; colleagues will send manually.
+          # begin
+          #   user.send_reset_password_instructions
+          # rescue StandardError => e
+          #   mail_errors << { email: user.email, error: e.message }
+          # end
           created_users << user
         else
           failed_rows << failure_entry(row_number, attributes, user.errors.full_messages)
@@ -102,7 +103,9 @@ module Users
     def find_by_name(model, name, label)
       return { record: nil, errors: ["#{label.capitalize} manquante"] } if name.blank?
 
+      normalized_input = normalize_name(name)
       record = model.where("lower(name) = ?", name.downcase).first
+      record ||= model.all.find { |item| normalize_name(item.name) == normalized_input }
       return { record: record, errors: [] } if record
 
       { record: nil, errors: ["#{label.capitalize} inconnue : #{name}"] }
@@ -125,6 +128,10 @@ module Users
 
     def force_utf8(value)
       value.encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+    end
+
+    def normalize_name(value)
+      I18n.transliterate(value.to_s).downcase.strip
     end
 
     def failure_entry(row_number, attributes, errors)

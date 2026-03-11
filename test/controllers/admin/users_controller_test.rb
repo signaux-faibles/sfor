@@ -90,12 +90,19 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
   test "duplicate renders prefilled form without identity" do
     sign_in @admin
 
-    @target_user.update!(description: "Description test", ambassador: true, trained: true)
+    @target_user.update!(
+      description: "Description test",
+      ambassador: true,
+      trained: true,
+      feedbacks: "Retour test",
+      last_contact: Date.new(2026, 2, 1)
+    )
 
     get duplicate_admin_user_path(@target_user)
 
     assert_response :success
-    assert_includes @response.body, "Description test"
+    assert_not_includes @response.body, "Description test"
+    assert_not_includes @response.body, "Retour test"
     assert_not_includes @response.body, @target_user.email
   end
 
@@ -134,5 +141,25 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
     assert_response :success
     assert_equal "text/csv", @response.media_type
     assert_includes @response.body, "email,first_name,last_name,segment_name,geo_access,entity,description,ambassador,trained,feedbacks,last_contact"
+  end
+
+  test "export downloads csv" do
+    sign_in @admin
+
+    get export_admin_users_path
+
+    assert_response :success
+    assert_equal "text/csv", @response.media_type
+    assert_includes @response.body, "email"
+    assert_includes @response.body, "entity_name"
+    assert_includes @response.body, "segment_name"
+    assert_includes @response.body, "geo_access_name"
+    assert_not_includes @response.body, "encrypted_password"
+    assert_not_includes @response.body, "reset_password_token"
+    assert_not_includes @response.body, "wekan_document_id"
+    assert_not_includes @response.body, "entity_id"
+    assert_not_includes @response.body, "segment_id"
+    assert_not_includes @response.body, "level"
+    assert_not_includes @response.body, "geo_access_id"
   end
 end

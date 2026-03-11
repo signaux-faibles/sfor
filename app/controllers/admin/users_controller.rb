@@ -35,11 +35,12 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     @user.level ||= "A"
 
     if @user.save
-      begin
-        @user.send_reset_password_instructions
-      rescue StandardError => e
-        flash[:alert] = "Utilisateur créé, mais l'envoi de l'email a échoué : #{e.message}"
-      end
+      # Invitation email sending is disabled for now; colleagues will send manually.
+      # begin
+      #   @user.send_reset_password_instructions
+      # rescue StandardError => e
+      #   flash[:alert] = "Utilisateur créé, mais l'envoi de l'email a échoué : #{e.message}"
+      # end
       redirect_to admin_user_path(@user), notice: "Utilisateur créé avec succès." # rubocop:disable Rails/I18nLocaleTexts
     else
       load_form_collections
@@ -77,11 +78,6 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
       entity_id: source_user.entity_id,
       segment_id: source_user.segment_id,
       geo_access_id: source_user.geo_access_id,
-      description: source_user.description,
-      ambassador: source_user.ambassador,
-      trained: source_user.trained,
-      feedbacks: source_user.feedbacks,
-      last_contact: source_user.last_contact,
       level: source_user.level
     )
 
@@ -162,6 +158,51 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     end
 
     send_data csv_content, filename: "utilisateurs_template.csv", type: "text/csv"
+  end
+
+  def export # rubocop:disable Metrics/MethodLength
+    users = User.with_discarded.order(:email)
+    columns = %w[
+      id
+      email
+      first_name
+      last_name
+      description
+      ambassador
+      entity_name
+      segment_name
+      geo_access_name
+      trained
+      feedbacks
+      last_contact
+      sign_in_count
+      time_zone
+      created_at
+      updated_at
+      last_sign_in_at
+      current_sign_in_at
+      discarded_at
+    ]
+
+    csv_content = CSV.generate do |csv|
+      csv << columns
+      users.find_each do |user|
+        csv << columns.map do |column|
+          case column
+          when "entity_name"
+            user.entity&.name
+          when "segment_name"
+            user.segment&.name
+          when "geo_access_name"
+            user.geo_access&.name
+          else
+            user.public_send(column)
+          end
+        end
+      end
+    end
+
+    send_data csv_content, filename: "utilisateurs_export.csv", type: "text/csv"
   end
 
   private

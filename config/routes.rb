@@ -29,6 +29,7 @@ Rails.application.routes.draw do
         get :import
         post :import, action: :import_create
         get :template
+        get :export
       end
     end
     resources :imports
