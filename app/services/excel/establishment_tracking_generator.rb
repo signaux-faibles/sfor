@@ -199,7 +199,7 @@ module Excel
     end
 
     def default_summary_text(network)
-      if network.name == "CODEFI"
+      if network&.name == "CODEFI"
         "Aucune synthèse CODEFI rédigée"
       else
         "Aucune synthèse rédigée par mon administration"
