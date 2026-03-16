@@ -14,10 +14,15 @@ namespace :osf do
 
     start_time = Time.current
 
-    # Run the new unified ap sync task
     Rake::Task["osf:sync_ap"].invoke(months_back)
-    # Then effectif
+    Rake::Task["osf:sync_cotisation"].invoke(months_back)
+    Rake::Task["osf:sync_debit"].invoke(months_back)
+    Rake::Task["osf:sync_delai"].invoke(months_back)
     Rake::Task["osf:sync_effectif"].invoke(months_back)
+    Rake::Task["osf:sync_effectif_ent"].invoke(months_back)
+    Rake::Task["osf:sync_procol"].invoke
+    Rake::Task["osf:sync_sirene"].invoke
+    Rake::Task["osf:sync_sirene_ul"].invoke
 
     end_time = Time.current
     duration = (end_time - start_time).round(2)
