@@ -93,6 +93,16 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   def accessibilite; end
   def support; end
 
+  def not_found_redirect
+    flash[:alert] = t("errors.page_not_found")
+    redirect_to root_path
+  end
+
+  def establishment_trackings_not_found
+    flash[:alert] = t("errors.page_not_found")
+    redirect_to establishment_path(params[:siret])
+  end
+
   private
 
   def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/MethodLength

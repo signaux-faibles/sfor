@@ -37,6 +37,11 @@ Rails.application.routes.draw do
     end
   end
 
+  get "entreprises", to: "pages#not_found_redirect"
+  get "etablissements", to: "pages#not_found_redirect"
+  get "etablissements/:siret/accompagnements", to: "pages#establishment_trackings_not_found",
+                                               as: :establishment_trackings_not_found
+
   resources :establishments, only: [:show], path: "etablissements", param: :siret do
     member do
       get :insee_widget

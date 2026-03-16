@@ -29,3 +29,5 @@
 
 en:
   hello: "Hello world"
+  errors:
+    page_not_found: "Page not found"

@@ -121,6 +121,7 @@ fr:
           user_id:
             taken: "est déjà membre de ce réseau"
     errors:
+      page_not_found: "La page recherchée n'existe pas"
       models:
         establishment_tracking:
           attributes:
