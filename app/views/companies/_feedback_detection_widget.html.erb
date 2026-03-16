@@ -2,6 +2,15 @@
   <h3>Donnez votre avis à l'équipe de Signaux Faibles</h3>
 
   <div class="fr-col-12 fr-col-lg-8 fr-mb-5w">
+      <div class="fr-notice fr-notice--info fr-mb-5w">
+    <div class="fr-container">
+      <div class="fr-notice__body">
+        <p>
+          <span class="fr-notice__title">Cette fonctionnalité est de nouveau disponible. Partagez votre avis</span>
+        </p>
+      </div>
+    </div>
+  </div>
     <% if local_assigns[:error].present? || @error.present? %>
       <div class="fr-alert fr-alert--error fr-alert--sm fr-mb-3w">
         <p><%= local_assigns[:error] || @error %></p>
