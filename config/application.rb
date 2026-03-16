@@ -29,6 +29,6 @@ module SignauxFaiblesV2
     config.i18n.available_locales = %i[fr en]
 
     # Route 404s through the app so we can redirect with a flash.
-    config.exceptions_app = self.routes
+    config.exceptions_app = routes
   end
 end
