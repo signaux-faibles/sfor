@@ -94,12 +94,12 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   def support; end
 
   def not_found_redirect
-    flash[:alert] = t("errors.page_not_found")
+    flash[:alert] = I18n.t("errors.page_not_found", default: "La page recherchée n'existe pas")
     redirect_to root_path
   end
 
   def establishment_trackings_not_found
-    flash[:alert] = t("errors.page_not_found")
+    flash[:alert] = I18n.t("errors.page_not_found", default: "La page recherchée n'existe pas")
     redirect_to establishment_path(params[:siret])
   end
 

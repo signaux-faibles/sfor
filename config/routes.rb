@@ -102,4 +102,6 @@ Rails.application.routes.draw do
   end
 
   root "pages#home"
+
+  match "*unmatched", to: "pages#not_found_redirect", via: :all
 end
