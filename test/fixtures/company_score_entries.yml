@@ -19,3 +19,16 @@ one_paris_list_test_2024:
   list_name: "Liste test 2024"
   score: 80.0
   periode: "2024-06"
+
+one_ancien_list_test_2025:
+  siren: "222222222"
+  list_name: "Liste test 2025"
+  score: 70.0
+  periode: "2025-01"
+  alert: "Alerte seuil F2"
+
+one_ancien_list_test_2023:
+  siren: "222222222"
+  list_name: "Liste test 2023"
+  score: 65.0
+  periode: "2023-06"

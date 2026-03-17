@@ -11,3 +11,9 @@ list_test_2024:
   code: "LIST_TEST_2024"
   list_date: 2024-06-01
   sjcf_filter_active: false
+
+list_test_2023:
+  label: "Liste test 2023"
+  code: "LIST_TEST_2023"
+  list_date: 2023-06-01
+  sjcf_filter_active: false
