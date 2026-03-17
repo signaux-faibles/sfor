@@ -48,13 +48,16 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
     get lists_path
 
-    # list_test_2025 has list_date 2025-01-15, list_test_2024 has 2024-06-01 → 2025 first
-    assert_select "tbody tr", count: 2
+    # list_test_2025 has list_date 2025-01-15, list_test_2024 has 2024-06-01, list_test_2023 has 2023-06-01
+    assert_select "tbody tr", count: 3
     assert_includes @response.body, "Liste test 2025"
     assert_includes @response.body, "Liste test 2024"
+    assert_includes @response.body, "Liste test 2023"
     # 2025 must appear before 2024 in the body (order list_date desc)
     assert @response.body.index("Liste test 2025") < @response.body.index("Liste test 2024"),
            "Liste test 2025 should appear before Liste test 2024"
+    assert @response.body.index("Liste test 2024") < @response.body.index("Liste test 2023"),
+           "Liste test 2024 should appear before Liste test 2023"
   end
 
   test "index shows link to each list show page" do
@@ -259,7 +262,8 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     get list_path(@list_2025), params: { search: { libelle_procol: "In bonis" } }
 
     assert_response :success
-    assert_includes @response.body, "Aucun résultat trouvé"
+    assert_not_includes @response.body, "Company Paris"
+    assert_includes @response.body, "Company Ancien"
   end
 
   test "show filter niveau_alerte includes company with matching alert" do
@@ -278,17 +282,20 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     get list_path(@list_2025), params: { search: { niveau_alerte: "Alerte seuil F2" } }
 
     assert_response :success
-    assert_includes @response.body, "Aucun résultat trouvé"
+    assert_not_includes @response.body, "Company Paris"
+    assert_includes @response.body, "Company Ancien"
   end
 
-  test "show filter premieres_alertes excludes company in multiple lists" do
+  test "show filter premieres_alertes keeps company only detected over 18 months ago" do
     sign_in @user
 
-    # company_paris appears in list 2025 and list 2024 → not "première alerte"
+    # company_paris appears in list 2025 and list 2024 (within 18 months) → not "première alerte"
+    # company_ancien appears in list 2025 and list 2023 (older than 18 months) → "première alerte"
     get list_path(@list_2025), params: { search: { premieres_alertes: "1" } }
 
     assert_response :success
-    assert_includes @response.body, "Aucun résultat trouvé"
+    assert_includes @response.body, "Company Ancien"
+    assert_not_includes @response.body, "Company Paris"
   end
 
   test "show filter sans_entreprises_recentes keeps company created over 3 years ago" do
@@ -403,6 +410,16 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
     # company_finistere (987654321) is only in list_test_2025, so is_first_alert is true
     get enrich_company_list_path(@list_2025), params: { siren: "987654321" }
+
+    assert_response :success
+    assert_select "p.fr-badge", text: "1ère alerte"
+  end
+
+  test "enrich_company shows first alert badge when last detection is over 18 months ago" do
+    sign_in @user
+
+    # company_ancien (222222222) is in list_test_2023 and list_test_2025 only
+    get enrich_company_list_path(@list_2025), params: { siren: "222222222" }
 
     assert_response :success
     assert_select "p.fr-badge", text: "1ère alerte"

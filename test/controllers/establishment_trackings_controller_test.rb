@@ -88,6 +88,15 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
     assert_tracking_included(@establishment_tracking_paris)
   end
 
+  test "show displays closed establishment banner" do
+    @establishment_tracking_paris.establishment.update!(is_active: false)
+
+    get establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
+    assert_response :success
+    assert_includes response.body,
+                    "Il n'est pas possible de créer un nouvel accompagnement ou de le dupliquer car l'établissement concerné est fermé."
+  end
+
   test "should get new" do
     get new_establishment_establishment_tracking_url(@establishment_paris)
     assert_response :success

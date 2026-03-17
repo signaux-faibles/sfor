@@ -20,3 +20,10 @@ company_no_siege:
   statut_juridique: '5710'
   creation: '2020-01-01'
   department: '75' 
+
+company_ancien:
+  siren: '222222222'
+  raison_sociale: 'Company Ancien'
+  statut_juridique: '5710'
+  creation: '2018-05-10'
+  department: '75'

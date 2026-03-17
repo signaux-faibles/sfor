@@ -503,18 +503,23 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       )
     end
 
-    # Filter by premieres_alertes (first time appearing in CompanyScoreEntry)
+    # Filter by premieres_alertes (no detection in the last 18 months before this list)
     if @search_params[:premieres_alertes].present? && @search_params[:premieres_alertes] == "1"
-      # A company is a "première alerte" if it ONLY appears in the current list
-      # Use NOT EXISTS to avoid materializing sirens in Ruby
-      # Since the base query already filters to companies in the current list,
-      # we just need to ensure they don't appear in any other list
+      cutoff_date = (@list.list_date || Date.current) - 18.months
+      current_list_date = @list.list_date || Date.current
+
+      # A company is a "première alerte" if it has NOT appeared in any other list
+      # within the last 18 months before the current list date.
+      # Use NOT EXISTS with a join on lists to compare list_date.
       companies = companies.where(
         "NOT EXISTS (
           SELECT 1 FROM company_score_entries cse
+          INNER JOIN lists l ON l.label = cse.list_name
           WHERE cse.siren = companies.siren
           AND cse.list_name != ?
-        )", @list.label
+          AND l.list_date > ?
+          AND l.list_date < ?
+        )", @list.label, cutoff_date, current_list_date
       )
     end
 
@@ -656,15 +661,21 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     sirens = results.pluck("siren").compact.uniq
     return if sirens.blank?
 
-    # A company is a "première alerte" if it ONLY appears in the current list
-    sirens_in_other_lists = CompanyScoreEntry
-                            .where(siren: sirens)
-                            .where.not(list_name: @list.label)
-                            .distinct
-                            .pluck(:siren)
-                            .to_set
+    cutoff_date = (@list.list_date || Date.current) - 18.months
+    current_list_date = @list.list_date || Date.current
 
-    first_time_sirens = sirens.to_set - sirens_in_other_lists
+    # A company is a "première alerte" if it has NOT appeared in any other list
+    # within the last 18 months before the current list date.
+    sirens_in_recent_lists = CompanyScoreEntry
+                             .joins(:list)
+                             .where(siren: sirens)
+                             .where.not(list_name: @list.label)
+                             .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
+                             .distinct
+                             .pluck(:siren)
+                             .to_set
+
+    first_time_sirens = sirens.to_set - sirens_in_recent_lists
 
     results.each do |result|
       result["is_first_alert"] = first_time_sirens.include?(result["siren"])
@@ -735,13 +746,17 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       end
     end
 
-    # Get first alert flag
-    sirens_in_other_lists = CompanyScoreEntry
+    # Get first alert flag (no detection in the last 18 months before this list)
+    cutoff_date = (@list.list_date || Date.current) - 18.months
+    current_list_date = @list.list_date || Date.current
+    siren_in_recent_lists = CompanyScoreEntry
+                            .joins(:list)
                             .where(siren: siren)
                             .where.not(list_name: @list.label)
+                            .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
                             .exists?
 
-    enrichment[:is_first_alert] = !sirens_in_other_lists
+    enrichment[:is_first_alert] = !siren_in_recent_lists
 
     # Get establishment count
     enrichment[:nombre_etablissements_ouverts] = Establishment
