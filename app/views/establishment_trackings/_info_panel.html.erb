@@ -5,6 +5,13 @@
      aria-labelledby="tabpanel-informations"
      tabindex="0">
   <h2 class="fr-sr-only">Informations</h2>
+  <% unless @establishment_tracking.establishment.is_active %>
+    <div class="fr-alert fr-alert--info fr-mb-3w">
+      <p class="fr-alert__title">
+        Il n'est pas possible de créer un nouvel accompagnement ou de le dupliquer car l'établissement concerné est fermé.
+      </p>
+    </div>
+  <% end %>
   <div>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-6">
