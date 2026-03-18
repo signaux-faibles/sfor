@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     end
     resources :imports
     resources :app_settings
+    resources :notifications
 
     root to: "users#index"
   end
@@ -45,6 +46,8 @@ Rails.application.routes.draw do
       post :acknowledge_confidentiality
     end
   end
+
+  resources :notifications, only: %i[index show]
 
   get "entreprises", to: "pages#not_found_redirect"
   get "etablissements", to: "pages#not_found_redirect"

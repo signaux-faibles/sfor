@@ -26,6 +26,9 @@
           <%= link_to admin_users_path, class: "fr-link #{'fr-link--active' if controller_name == 'users'}" do %>
             👥 Utilisateurs
           <% end %>
+          <%= link_to admin_notifications_path, class: "fr-link #{'fr-link--active' if controller_name == 'notifications'}" do %>
+            🔔 Notifications
+          <% end %>
           <%= link_to admin_imports_path, class: "fr-link #{'fr-link--active' if controller_name == 'imports'}" do %>
             📥 Configuration imports opensignauxfaibles
           <% end %>

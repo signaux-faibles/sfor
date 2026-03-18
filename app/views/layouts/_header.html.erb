@@ -95,8 +95,13 @@
                   <% end %>
                 </li>
               <% end %>
-              <li>
-                <p class="fr-btn fr-icon-account-circle-fill sf-username"><%= current_user&.full_name %></p>
+              <li class="sf-user-menu">
+                <%= link_to notifications_path, class: "fr-btn fr-icon-account-circle-fill sf-username sf-user-menu-button" do %>
+                  <span class="sf-username"><%= current_user&.full_name %></span>
+                  <% if unread_notifications_count.positive? %>
+                    <span class="fr-badge sf-user-menu-badge"><%= unread_notifications_count %></span>
+                  <% end %>
+                <% end %>
               </li>
               <li>
                 <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>
@@ -129,8 +134,13 @@
               <% end %>
             </li>
           <% end %>
-          <li>
-            <p class="fr-btn fr-icon-account-circle-fill sf-username"><%= current_user&.full_name %></p>
+          <li class="sf-user-menu">
+            <%= link_to notifications_path, class: "fr-btn fr-icon-account-circle-fill sf-username sf-user-menu-button" do %>
+              <span class="sf-username"><%= current_user&.full_name %></span>
+              <% if unread_notifications_count.positive? %>
+                <span class="fr-badge fr-badge--new sf-user-menu-badge"><%= unread_notifications_count %></span>
+              <% end %>
+            <% end %>
           </li>
           <li>
             <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false } do %>

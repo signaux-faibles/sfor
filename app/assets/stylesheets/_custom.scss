@@ -194,6 +194,29 @@
     overflow: hidden;
 }
 
+.sf-user-menu-button {
+  position: relative;
+  padding-right: 2rem;
+}
+
+.sf-user-menu-badge {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.5rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: 0.75rem;
+  line-height: 1;
+  color:#ffffff !important;
+  background-color:#e32121 !important;
+}
+
 .sf-keyvalue-list {
   padding-inline-start: 0;
 }
@@ -388,10 +411,6 @@
   position: relative;
   display: flex;
   align-items: center;
-}
-
-.sf-username {
-  color: var(--text-default-grey) !important;
 }
 
 /* Loading text with animated dots */

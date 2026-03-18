@@ -12,6 +12,7 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   layout :layout_by_resource
+  helper_method :unread_notifications_count
 
   private
 
@@ -54,6 +55,12 @@ class ApplicationController < ActionController::Base
     return if devise_controller? || request.path == unauthorized_path
 
     redirect_to unauthorized_path, alert: t("unauthorized.section_not_allowed") if current_user && current_user.segment.name == "sf"
+  end
+
+  def unread_notifications_count
+    return 0 unless current_user
+
+    @unread_notifications_count ||= current_user.unread_notifications_count
   end
 
   def set_time_zone(&)

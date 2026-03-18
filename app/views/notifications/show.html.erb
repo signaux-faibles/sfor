@@ -1,0 +1,20 @@
+<% content_for :title, "Notification" %>
+
+<div class="fr-container fr-mt-2w fr-mb-5w">
+  <div class="grid-row">
+    <h1><%= @notification.title %></h1>
+  </div>
+
+  <p class="fr-text--sm fr-mb-2w">
+    Créée le <%= l(@notification.created_at.to_date) %>
+    <% if @notification_read&.read_at.present? %>
+      · Lue le <%= l(@notification_read.read_at.to_date) %>
+    <% end %>
+  </p>
+
+  <div class="fr-mb-3w">
+    <%= simple_format(@notification.body) %>
+  </div>
+
+  <%= link_to "Retour à la liste", notifications_path, class: "fr-btn fr-btn--secondary" %>
+</div>

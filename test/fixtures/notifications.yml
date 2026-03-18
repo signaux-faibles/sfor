@@ -1,0 +1,11 @@
+notification_crp:
+  title: "Information CRP"
+  body: "Contenu pour CRP."
+  created_by: user_admin_sf
+  segments: segment_crp
+
+notification_urssaf:
+  title: "Information URSSAF"
+  body: "Contenu pour URSSAF."
+  created_by: user_admin_sf
+  segments: segment_urssaf

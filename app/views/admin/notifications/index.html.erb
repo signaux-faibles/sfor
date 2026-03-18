@@ -1,0 +1,40 @@
+<h1 class="fr-h4 fr-mb-3w">Notifications</h1>
+
+<div class="fr-mb-3w">
+  <%= link_to "Nouvelle notification", new_admin_notification_path, class: "fr-btn" %>
+</div>
+
+<% if @notifications.any? %>
+  <div class="fr-table fr-table--bordered">
+    <table>
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Segments</th>
+          <th>Créée par</th>
+          <th>Mis à jour le</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @notifications.each do |notification| %>
+          <tr>
+            <td><%= notification.title %></td>
+            <td><%= notification.segments.map(&:name).join(", ") %></td>
+            <td><%= notification.created_by&.email || "-" %></td>
+            <td><%= l(notification.updated_at.to_date) %></td>
+            <td>
+              <%= link_to "Voir", admin_notification_path(notification), class: "fr-link" %>
+              <%= link_to "Modifier", edit_admin_notification_path(notification), class: "fr-link fr-ml-1w" %>
+              <%= link_to "Supprimer", admin_notification_path(notification),
+                          data: { turbo_method: :delete, turbo_confirm: "Supprimer cette notification ?" },
+                          class: "fr-link fr-ml-1w" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p>Aucune notification disponible.</p>
+<% end %>

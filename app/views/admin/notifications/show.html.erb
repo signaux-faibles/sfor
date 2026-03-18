@@ -1,0 +1,17 @@
+<h1 class="fr-h4 fr-mb-3w">Notification</h1>
+
+<div class="fr-mb-3w">
+  <%= link_to "Modifier", edit_admin_notification_path(@notification), class: "fr-btn" %>
+  <%= link_to "Retour", admin_notifications_path, class: "fr-btn fr-btn--secondary" %>
+</div>
+
+<dl class="fr-mb-3w">
+  <dt class="fr-text--bold">Titre</dt>
+  <dd><%= @notification.title %></dd>
+  <dt class="fr-text--bold fr-mt-2w">Segments</dt>
+  <dd><%= @notification.segments.map(&:name).join(", ") %></dd>
+  <dt class="fr-text--bold fr-mt-2w">Contenu</dt>
+  <dd><%= simple_format(@notification.body) %></dd>
+  <dt class="fr-text--bold fr-mt-2w">Créée par</dt>
+  <dd><%= @notification.created_by&.email || "-" %></dd>
+</dl>

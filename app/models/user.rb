@@ -27,6 +27,8 @@ class User < ApplicationRecord
   has_many :user_departments, dependent: :destroy
   has_many :departments, through: :user_departments
   has_many :company_list_ratings, foreign_key: :user_email, primary_key: :email, dependent: :destroy
+  has_many :notification_reads, dependent: :destroy
+  has_many :read_notifications, through: :notification_reads, source: :notification
 
   validates :time_zone, inclusion: { in: ActiveSupport::TimeZone.all.map(&:name), allow_nil: true }
   validates :email, presence: true, uniqueness: true
@@ -65,6 +67,12 @@ class User < ApplicationRecord
     return true if last_confidentiality_acknowledged_at.nil?
 
     last_confidentiality_acknowledged_at < 3.months.ago
+  end
+
+  def unread_notifications_count
+    Notification.for_user(self)
+                .where.not(id: notification_reads.where.not(read_at: nil).select(:notification_id))
+                .count
   end
 
   def self.generate_admin_password
