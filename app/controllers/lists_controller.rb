@@ -379,11 +379,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def export_list(companies)
-    all_companies = companies.includes(:establishments, :company_score_entries,
-                                       establishments: %i[department establishment_trackings])
-    track_list_export(@list, @search_params, all_companies.size)
+    track_list_export(@list, @search_params, companies.count)
     response.headers["Cache-Control"] = "no-store"
-    send_data generate_excel(all_companies),
+    send_data generate_excel(companies),
               filename: "#{@list.label.parameterize}.xlsx",
               type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
               disposition: "attachment"
