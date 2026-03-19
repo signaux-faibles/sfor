@@ -144,10 +144,10 @@ module Excel
       list_label = @list.label
       @alert_frequencies = {}
 
-      # Build SQL with VALUES clause for target sirens
-      # Use ANY(ARRAY[...]) for better index usage - PostgreSQL can optimize this better than VALUES join
-      # Each ARRAY needs N placeholders for N sirens
-      siren_placeholders = sirens.map { "?" }.join(",")
+      # Build SQL with a single VALUES clause for target sirens.
+      # All downstream CTEs join against target_sirens instead of repeating the siren array.
+      # This keeps the total bind parameter count at N + 5 (vs the old 8N + 3), which avoids
+      # PostgreSQL's hard limit of 65,535 parameters (~8k-company exports would crash otherwise).
       values_placeholders = sirens.map { |_| "(?)" }.join(",")
 
       sql = <<~SQL
@@ -158,36 +158,36 @@ module Excel
         siege_establishments AS (
           SELECT DISTINCT ON (e.siren) e.siren, e.siret
           FROM establishments e
-          WHERE e.siren = ANY(ARRAY[#{siren_placeholders}])
-            AND e.siege = true
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
+          WHERE e.siege = true
           ORDER BY e.siren, e.siret
         ),
         current_score_entries AS (
           SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert, cse.macro_expl
           FROM company_score_entries cse
-          WHERE cse.siren = ANY(ARRAY[#{siren_placeholders}])
-            AND cse.list_name = ?
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = cse.siren
+          WHERE cse.list_name = ?
           ORDER BY cse.siren, cse.created_at DESC
         ),
         procol_statuses AS (
           SELECT procol.siren, procol.libelle_procol
           FROM procol_at_date(?) AS procol
-          WHERE procol.siren = ANY(ARRAY[#{siren_placeholders}])
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = procol.siren
         ),
         all_effectifs AS MATERIALIZED (
           SELECT oee.siren, oee.effectif
           FROM osf_ent_effectifs oee
-          WHERE oee.siren = ANY(ARRAY[#{siren_placeholders}])
-            AND oee.is_latest = true
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = oee.siren
+          WHERE oee.is_latest = true
         ),
         all_establishments AS MATERIALIZED (
           SELECT DISTINCT e.siren, e.siret
           FROM establishments e
-          WHERE e.siren = ANY(ARRAY[#{siren_placeholders}])
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
         ),
         social_debts AS MATERIALIZED (
-          SELECT ae.siren, 
-            COALESCE(SUM(od.part_ouvriere), 0) AS part_ouvriere, 
+          SELECT ae.siren,
+            COALESCE(SUM(od.part_ouvriere), 0) AS part_ouvriere,
             COALESCE(SUM(od.part_patronale), 0) AS part_patronale
           FROM all_establishments ae
           LEFT JOIN osf_debits od ON od.siret = ae.siret AND od.is_last = true
@@ -196,8 +196,8 @@ module Excel
         sjcf_companies AS (
           SELECT DISTINCT sc.siren
           FROM sjcf_companies sc
-          WHERE sc.siren = ANY(ARRAY[#{siren_placeholders}])
-            AND sc.libelle_liste = ?
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = sc.siren
+          WHERE sc.libelle_liste = ?
         ),
         tracking_states AS (
           SELECT ae.siren, et.state
@@ -227,7 +227,7 @@ module Excel
             c.libelle_categorie_juridique, c.naf_section, c.libelle_activite_principale,
             c.naf_code, c.libelle_naf_section
           FROM companies c
-          WHERE c.siren = ANY(ARRAY[#{siren_placeholders}])
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = c.siren
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
@@ -252,35 +252,21 @@ module Excel
         ORDER BY ts.siren
       SQL
 
-      # Execute the query with all parameters
       # Parameters order (matching SQL placeholders in order):
-      #   1. sirens (VALUES clause) - N parameters
-      #   2. sirens (siege_establishments ANY) - N parameters
-      #   3. sirens (current_score_entries ANY) - N parameters
-      #   4. list_label (current_score_entries WHERE clause)
-      #   5. current_date (procol_statuses WHERE clause)
-      #   6. sirens (procol_statuses ANY) - N parameters
-      #   7. sirens (all_effectifs ANY) - N parameters
-      #   8. sirens (all_establishments ANY) - N parameters
-      #   9. sirens (sjcf_companies ANY) - N parameters
-      #   10. list_label (sjcf_companies WHERE clause)
-      #   11. list_date (delai_urssaf_companies WHERE clause)
-      #   12. sirens (company_metadata ANY) - N parameters
-      #   13. list_label (is_first_alert EXISTS subquery)
+      #   1. sirens (VALUES clause) - N parameters  [only occurrence of sirens]
+      #   2. list_label (current_score_entries WHERE clause)
+      #   3. current_date (procol_statuses function argument)
+      #   4. list_label (sjcf_companies WHERE clause)
+      #   5. list_date (delai_urssaf_companies WHERE clause)
+      #   6. list_label (is_first_alert EXISTS subquery)
+      # Total: N + 5 parameters (was 8N + 3, which broke at ~8k companies)
       list_date = @list.list_date || Date.current
-      all_params = sirens + # VALUES
-                   sirens + # siege_establishments
-                   sirens + # current_score_entries
-                   [list_label] + # current_score_entries WHERE
-                   [current_date] + # procol_statuses WHERE
-                   sirens + # procol_statuses
-                   sirens + # all_effectifs
-                   sirens + # all_establishments
-                   sirens + # sjcf_companies
-                   [list_label] + # sjcf_companies WHERE
-                   [list_date] + # delai_urssaf_companies WHERE
-                   sirens + # company_metadata
-                   [list_label] # is_first_alert
+      all_params = sirens +        # VALUES (sirens bound only once)
+                   [list_label] +  # current_score_entries WHERE
+                   [current_date] + # procol_statuses function argument
+                   [list_label] +  # sjcf_companies WHERE
+                   [list_date] +   # delai_urssaf_companies WHERE
+                   [list_label]    # is_first_alert EXISTS subquery
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
 
