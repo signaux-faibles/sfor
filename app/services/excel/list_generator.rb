@@ -169,10 +169,19 @@ module Excel
           WHERE cse.list_name = ?
           ORDER BY cse.siren, cse.created_at DESC
         ),
+        procol_last_actions AS (
+          SELECT DISTINCT ON (op.siren, op.action_procol)
+            op.siren, op.date_effet, op.action_procol, op.libelle_procol
+          FROM osf_procols op
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = op.siren
+          WHERE op.date_effet <= ?
+          ORDER BY op.siren, op.action_procol, op.date_effet DESC
+        ),
         procol_statuses AS (
-          SELECT procol.siren, procol.libelle_procol
-          FROM procol_at_date(?) AS procol
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = procol.siren
+          SELECT DISTINCT ON (siren) siren, libelle_procol
+          FROM procol_last_actions
+          WHERE action_procol != 'fin_procedure' AND action_procol != 'inclusion_autre_procedure'
+          ORDER BY siren, action_procol
         ),
         all_effectifs AS MATERIALIZED (
           SELECT oee.siren, oee.effectif
@@ -265,7 +274,7 @@ module Excel
       # Parameters order (matching SQL placeholders in order):
       #   1. sirens (VALUES clause) - N parameters  [only occurrence of sirens]
       #   2. list_label (current_score_entries WHERE clause)
-      #   3. current_date (procol_statuses function argument)
+      #   3. current_date (procol_last_actions date filter)
       #   4. list_label (sjcf_companies WHERE clause)
       #   5. list_date (delai_urssaf_companies WHERE clause)
       #   6. list_label (first_alert_sirens NOT EXISTS subquery)
