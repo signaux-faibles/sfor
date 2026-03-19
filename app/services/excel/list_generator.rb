@@ -61,7 +61,10 @@ module Excel
       add_companies_sheet(workbook)
       add_filter_details_sheet(workbook) if @search_params.present?
 
-      package.to_stream.read
+      t = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result = package.to_stream.read
+      Rails.logger.info "[ListGenerator] to_stream.read: #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t).round(2)}s"
+      result
     end
 
     private
@@ -69,9 +72,14 @@ module Excel
     def add_companies_sheet(workbook)
       workbook.add_worksheet(name: "Entreprises") do |sheet|
         add_header_row(sheet)
-        # Preload all data in batch before processing rows
+
+        t = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         preload_all_data
+        Rails.logger.info "[ListGenerator] preload_all_data (#{@company_data.size} companies): #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t).round(2)}s"
+
+        t = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         add_company_rows(sheet)
+        Rails.logger.info "[ListGenerator] add_company_rows: #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t).round(2)}s"
       end
     end
 
@@ -116,15 +124,8 @@ module Excel
         [-(score_value || -Float::INFINITY), siren]
       end
 
-      # Create style/type arrays once and reuse across all rows
-      row_style = centered_style(sheet)
-      row_styles = Array.new(24, row_style)
-      row_types = Array.new(24, :string)
-
       sirens.each do |siren|
-        sheet.add_row prepare_company_row(siren, sheet),
-                      style: row_styles,
-                      types: row_types
+        sheet.add_row prepare_company_row(siren, sheet)
       end
     end
 
