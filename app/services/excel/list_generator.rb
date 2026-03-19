@@ -270,18 +270,7 @@ module Excel
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
 
-      # Set PostgreSQL settings for better performance on large queries
-      # - work_mem: increases memory for sorts, hash joins, etc. (helps with the external merge sort we see)
-      # - enable_hashjoin: ensure hash joins are enabled (they're usually better for large datasets)
-      # - random_page_cost: if using SSD, lower this (default 4.0, SSD typically 1.1-1.5)
-      # Using SET LOCAL so it only affects this transaction
-      results = ActiveRecord::Base.transaction do
-        ActiveRecord::Base.connection.execute("SET LOCAL work_mem = '512MB'")
-        # Lower random_page_cost if using SSD (helps planner choose index scans over seq scans)
-        # You may want to adjust this based on your storage type
-        ActiveRecord::Base.connection.execute("SET LOCAL random_page_cost = 1.5")
-        ActiveRecord::Base.connection.exec_query(sanitized_sql)
-      end
+      results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
 
       # Populate all caches from single query result
       results.each do |row| # rubocop:disable Metrics/BlockLength
