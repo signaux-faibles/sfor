@@ -192,7 +192,7 @@ module Excel
           WHERE oee.is_latest = true
         ),
         all_establishments AS MATERIALIZED (
-          SELECT DISTINCT e.siren, e.siret
+          SELECT e.siren, e.siret
           FROM establishments e
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
         ),
@@ -243,10 +243,9 @@ module Excel
         first_alert_sirens AS (
           SELECT ts_filter.siren
           FROM target_sirens ts_filter
-          WHERE NOT EXISTS (
-            SELECT 1 FROM company_score_entries cse_other
-            WHERE cse_other.siren = ts_filter.siren
-              AND cse_other.list_name != ?
+          WHERE ts_filter.siren NOT IN (
+            SELECT cse_other.siren FROM company_score_entries cse_other
+            WHERE cse_other.list_name != ?
           )
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert,
@@ -288,10 +287,12 @@ module Excel
                     list_date,     # delai_urssaf_companies WHERE
                     list_label]    # first_alert_sirens NOT EXISTS subquery
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
-      Rails.logger.debug "SQL Query: #{sanitized_sql}"
 
+      t_db = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       results = ActiveRecord::Base.connection.exec_query(sanitized_sql)
+      Rails.logger.info "[ListGenerator] exec_query: #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t_db).round(2)}s (#{results.length} rows)"
 
+      t_iter = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       # Populate all caches from single query result
       results.each do |row| # rubocop:disable Metrics/BlockLength
         siren = row.is_a?(Hash) ? row["siren"] : row[:siren]
@@ -353,7 +354,7 @@ module Excel
           libelle_naf_section: row["libelle_naf_section"]
         }
       end
-
+      Rails.logger.info "[ListGenerator] results.each: #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t_iter).round(2)}s"
     end
 
     def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/MethodLength
