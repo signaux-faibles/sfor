@@ -228,11 +228,20 @@ module Excel
             c.naf_code, c.libelle_naf_section
           FROM companies c
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = c.siren
+        ),
+        first_alert_sirens AS (
+          SELECT ts_filter.siren
+          FROM target_sirens ts_filter
+          WHERE NOT EXISTS (
+            SELECT 1 FROM company_score_entries cse_other
+            WHERE cse_other.siren = ts_filter.siren
+              AND cse_other.list_name != ?
+          )
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
-          CASE WHEN EXISTS (SELECT 1 FROM company_score_entries ase WHERE ase.siren = ts.siren AND ase.list_name != ?) THEN false ELSE true END AS is_first_alert,
+          CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
           COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
           COALESCE(ae.effectif, 0) AS effectif,
           sd.part_ouvriere, sd.part_patronale,
@@ -249,6 +258,7 @@ module Excel
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
         LEFT JOIN company_metadata cm ON ts.siren = cm.siren
+        LEFT JOIN first_alert_sirens fa ON ts.siren = fa.siren
         ORDER BY ts.siren
       SQL
 
@@ -258,7 +268,7 @@ module Excel
       #   3. current_date (procol_statuses function argument)
       #   4. list_label (sjcf_companies WHERE clause)
       #   5. list_date (delai_urssaf_companies WHERE clause)
-      #   6. list_label (is_first_alert EXISTS subquery)
+      #   6. list_label (first_alert_sirens NOT EXISTS subquery)
       # Total: N + 5 parameters (was 8N + 3, which broke at ~8k companies)
       list_date = @list.list_date || Date.current
       all_params = sirens +        # VALUES (sirens bound only once)
