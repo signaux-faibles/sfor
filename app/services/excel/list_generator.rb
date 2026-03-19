@@ -56,7 +56,7 @@ module Excel
     end
 
     def generate
-      package = Axlsx::Package.new
+      package = Axlsx::Package.new(use_shared_strings: false)
       workbook = package.workbook
 
       add_companies_sheet(workbook)
@@ -109,50 +109,49 @@ module Excel
     end
 
     def add_company_rows(sheet)
-      # Get sirens in the same order as the companies query (if order matters)
-      # Otherwise just use the sirens from our cache
-      sirens = @companies.pluck(:siren).compact.uniq
+      # Use sirens already loaded into @company_data by preload_all_data — no extra DB query.
+      sirens = @company_data.keys
       # Sort by score descending (nil scores last)
       sirens.sort_by! do |siren|
         score_value = @score_entries_by_company.dig(siren, :score)&.to_f
         [-(score_value || -Float::INFINITY), siren]
       end
 
-      # Create style objects once and reuse
+      # Create style/type arrays once and reuse across all rows
       row_style = centered_style(sheet)
       row_styles = Array.new(24, row_style)
+      row_types = Array.new(24, :string)
 
       sirens.each do |siren|
         sheet.add_row prepare_company_row(siren, sheet),
                       style: row_styles,
-                      types: [:string] * 24
+                      types: row_types
       end
     end
 
     def preload_all_data
-      # Get all sirens from the companies query (without loading all companies into memory)
-      sirens = @companies.pluck(:siren).compact.uniq
-      return if sirens.empty?
-
-      # Single massive query to get all data at once using CTEs
-      load_all_data_in_single_query(sirens)
+      # Use the AR relation as a subquery — no pluck needed. The CTE result
+      # populates @company_data, whose keys are then used by add_company_rows.
+      load_all_data_in_single_query
     end
 
-    def load_all_data_in_single_query(sirens) # rubocop:disable Metrics/MethodLength
+    def load_all_data_in_single_query # rubocop:disable Metrics/MethodLength
       current_date = Date.current
       list_label = @list.label
       @alert_frequencies = {}
 
-      # Build SQL with a single VALUES clause for target sirens.
-      # All downstream CTEs join against target_sirens instead of repeating the siren array.
-      # This keeps the total bind parameter count at N + 5 (vs the old 8N + 3), which avoids
-      # PostgreSQL's hard limit of 65,535 parameters (~8k-company exports would crash otherwise).
-      values_placeholders = sirens.map { |_| "(?)" }.join(",")
+      # Embed the AR relation as a subquery for target_sirens instead of a VALUES clause.
+      # Benefits vs the previous VALUES approach:
+      #   - Eliminates N bind parameters (was N+5 total, now just 5 scalars regardless of list size)
+      #   - No large SQL string to build and parse in Ruby
+      #   - No separate pluck(:siren) DB round-trip
+      #   - MATERIALIZED forces a single evaluation; without it PostgreSQL 12+ could inline
+      #     and re-execute the subquery once per downstream CTE reference.
+      sirens_subquery = @companies.select(:siren).to_sql
 
       sql = <<~SQL
-        WITH target_sirens AS (
-          SELECT siren::VARCHAR(9)
-          FROM (VALUES #{values_placeholders}) AS t(siren)
+        WITH target_sirens AS MATERIALIZED (
+          #{sirens_subquery}
         ),
         siege_establishments AS (
           SELECT DISTINCT ON (e.siren) e.siren, e.siret
@@ -270,21 +269,19 @@ module Excel
         ORDER BY ts.siren
       SQL
 
-      # Parameters order (matching SQL placeholders in order):
-      #   1. sirens (VALUES clause) - N parameters  [only occurrence of sirens]
-      #   2. list_label (current_score_entries WHERE clause)
-      #   3. current_date (procol_last_actions date filter)
-      #   4. list_label (sjcf_companies WHERE clause)
-      #   5. list_date (delai_urssaf_companies WHERE clause)
-      #   6. list_label (first_alert_sirens NOT EXISTS subquery)
-      # Total: N + 5 parameters (was 8N + 3, which broke at ~8k companies)
+      # Parameters order (matching SQL placeholders in order) — sirens are in the
+      # embedded AR subquery, not as bind params, so only 5 scalar values remain:
+      #   1. list_label (current_score_entries WHERE clause)
+      #   2. current_date (procol_last_actions date filter)
+      #   3. list_label (sjcf_companies WHERE clause)
+      #   4. list_date (delai_urssaf_companies WHERE clause)
+      #   5. list_label (first_alert_sirens NOT EXISTS subquery)
       list_date = @list.list_date || Date.current
-      all_params = sirens +        # VALUES (sirens bound only once)
-                   [list_label] +  # current_score_entries WHERE
-                   [current_date] + # procol_statuses function argument
-                   [list_label] +  # sjcf_companies WHERE
-                   [list_date] +   # delai_urssaf_companies WHERE
-                   [list_label]    # is_first_alert EXISTS subquery
+      all_params = [list_label,    # current_score_entries WHERE
+                    current_date,  # procol_last_actions date filter
+                    list_label,    # sjcf_companies WHERE
+                    list_date,     # delai_urssaf_companies WHERE
+                    list_label]    # first_alert_sirens NOT EXISTS subquery
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.debug "SQL Query: #{sanitized_sql}"
 
@@ -357,14 +354,6 @@ module Excel
         }
       end
 
-      # Load all score entries for companies that don't have current list entries
-      missing_sirens = sirens - @score_entries_by_siren.keys
-      return unless missing_sirens.any?
-
-      all_entries = CompanyScoreEntry.where(siren: missing_sirens).pluck(:siren, :list_name)
-      all_entries.group_by(&:first).each do |siren, entries|
-        @score_entries_by_siren[siren] = entries.map { |_, list_name| { list_name: list_name } }
-      end
     end
 
     def prepare_company_row(siren, _sheet) # rubocop:disable Metrics/MethodLength
