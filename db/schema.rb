@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_06_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_19_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -187,6 +187,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_120000) do
     t.string "list_name", null: false
     t.index ["code_commune"], name: "index_company_score_entries_on_code_commune"
     t.index ["list_name", "siren", "alert"], name: "index_company_score_entries_on_list_name_siren_alert"
+    t.index ["list_name", "siren", "created_at"], name: "index_company_score_entries_on_list_name_siren_created_at", order: { created_at: :desc }
     t.index ["list_name", "siren", "score"], name: "index_company_score_entries_on_list_name_siren_score"
     t.index ["list_name", "siren"], name: "index_company_score_entries_on_list_name_and_siren"
     t.index ["list_name"], name: "index_company_score_entries_on_list_name"
@@ -431,6 +432,32 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_120000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "active", default: false, null: false
+  end
+
+  create_table "notification_reads", force: :cascade do |t|
+    t.bigint "notification_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notification_id", "user_id"], name: "index_notification_reads_on_notification_id_and_user_id", unique: true
+    t.index ["notification_id"], name: "index_notification_reads_on_notification_id"
+    t.index ["user_id"], name: "index_notification_reads_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "body", null: false
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_notifications_on_created_by_id"
+  end
+
+  create_table "notifications_segments", id: false, force: :cascade do |t|
+    t.bigint "notification_id", null: false
+    t.bigint "segment_id", null: false
+    t.index ["notification_id", "segment_id"], name: "index_notifications_segments_on_notification_id_and_segment_id", unique: true
   end
 
   create_table "osf_apconsos", force: :cascade do |t|
@@ -802,6 +829,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_120000) do
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "network_memberships", "networks"
   add_foreign_key "network_memberships", "users"
+  add_foreign_key "notification_reads", "notifications"
+  add_foreign_key "notification_reads", "users"
+  add_foreign_key "notifications", "users", column: "created_by_id"
   add_foreign_key "rating_reasons_ratings", "company_list_ratings", column: "rating_id", on_delete: :cascade
   add_foreign_key "rating_reasons_ratings", "rating_reasons", column: "reason_id", on_delete: :cascade
   add_foreign_key "segments", "networks"
