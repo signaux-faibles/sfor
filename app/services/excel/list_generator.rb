@@ -15,7 +15,7 @@ module Excel
     def centered_style(sheet)
       sheet.styles.add_style(
         alignment: { horizontal: :center, vertical: :center },
-        border: { style: :thin, color: "000000" }
+        border: { style: :thick, color: "000000" }
       )
     end
 
@@ -73,7 +73,6 @@ module Excel
         # Preload all data in batch before processing rows
         preload_all_data
         add_company_rows(sheet)
-        format_sheet(sheet)
       end
     end
 
@@ -504,33 +503,6 @@ module Excel
     def format_tracking_status(siren)
       # Use preloaded tracking status
       @tracking_statuses[siren] || "Pas d'accompagnement"
-    end
-
-    def format_sheet(sheet)
-      autosize_columns(sheet)
-      apply_borders(sheet)
-    end
-
-    def autosize_columns(sheet)
-      return if sheet.rows.empty?
-
-      column_count = sheet.rows.first&.cells&.size.to_i
-      return if column_count <= 2
-
-      # Autosize all columns
-      sheet.column_widths(*Array.new(column_count, nil))
-    end
-
-    def apply_borders(sheet)
-      return if sheet.rows.empty?
-
-      last_row = sheet.rows.size
-      last_column = sheet.rows.first&.cells&.size.to_i
-
-      if last_column.positive? && last_row > 1
-        range = "A1:#{('A'.ord + last_column - 1).chr}#{last_row}"
-        sheet.add_style(range, border: { style: :thick, color: "000000" })
-      end
     end
 
     def add_filter_details_sheet(workbook)
