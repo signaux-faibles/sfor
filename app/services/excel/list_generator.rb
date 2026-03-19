@@ -46,7 +46,6 @@ module Excel
       @procol_statuses = {}
       @effectifs = {}
       @social_debts = {}
-      @score_entries_by_siren = {}
       @sjcf_companies = Set.new
       @tracking_statuses = {}
       @siege_establishments = {}
@@ -161,7 +160,11 @@ module Excel
           ORDER BY e.siren, e.siret
         ),
         current_score_entries AS (
-          SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert, cse.macro_expl
+          SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert,
+            ROUND((cse.macro_expl->>'Variation de l''effectif de l''entreprise')::numeric) AS score_effectif,
+            ROUND((cse.macro_expl->>'Données financières')::numeric)                       AS score_financier,
+            ROUND((cse.macro_expl->>'Dettes sociales')::numeric)                           AS score_dettes,
+            ROUND((cse.macro_expl->>'Recours à l''activité partielle')::numeric)           AS score_ap
           FROM company_score_entries cse
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = cse.siren
           WHERE cse.list_name = ?
@@ -245,7 +248,8 @@ module Excel
               AND cse_other.list_name != ?
           )
         )
-        SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert, cse.macro_expl,
+        SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert,
+          cse.score_effectif, cse.score_financier, cse.score_dettes, cse.score_ap,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
@@ -294,21 +298,16 @@ module Excel
         # Siege establishment siret (we'll load the object when needed)
         @siege_establishments[siren] = row["siege_siret"] if row["siege_siret"]
 
-        # Score entry data for current list
+        # Score entry data for current list — JSONB values extracted in SQL, no JSON.parse needed
         if row["score"]
-          macro_expl = if row["macro_expl"]
-                         row["macro_expl"].is_a?(String) ? JSON.parse(row["macro_expl"]) : row["macro_expl"]
-                       end
-          score_data = {
+          @score_entries_by_company[siren] = {
             score: row["score"],
             alert: row["alert"],
-            macro_expl: macro_expl,
-            list_name: list_label
+            score_effectif: row["score_effectif"],
+            score_financier: row["score_financier"],
+            score_dettes: row["score_dettes"],
+            score_ap: row["score_ap"]
           }
-          @score_entries_by_siren[siren] ||= []
-          @score_entries_by_siren[siren] << score_data
-          # Also store for current list lookup (by siren for single query approach)
-          @score_entries_by_company[siren] = score_data
         end
 
         # Procol status
@@ -384,10 +383,10 @@ module Excel
         company_data[:libelle_activite_principale] || "-",
         format_alert_level(score_entry),
         format_alert_frequency(siren),
-        format_score_detail(score_entry, "Variation-de-l'effectif-de-l'entreprise"),
-        format_score_detail(score_entry, "Données-financières"),
-        format_score_detail(score_entry, "Dettes-sociales"),
-        format_score_detail(score_entry, "Recours-à-l'activité-partielle"),
+        format_score_detail(score_entry, :score_effectif),
+        format_score_detail(score_entry, :score_financier),
+        format_score_detail(score_entry, :score_dettes),
+        format_score_detail(score_entry, :score_ap),
         format_sjcf(siren),
         format_delai_urssaf(siren),
         format_entreprise_recente(company_data[:creation]),
@@ -460,12 +459,12 @@ module Excel
     end
 
     def format_score_detail(score_entry, key)
-      return "-" unless score_entry && score_entry[:macro_expl]
+      return "-" unless score_entry
 
-      value = score_entry[:macro_expl][key]
-      return "-" unless value
+      value = score_entry[key]
+      return "-" if value.nil?
 
-      value.to_f.round
+      value.to_i
     end
 
     def format_sjcf(siren)
