@@ -1,6 +1,6 @@
 class NotificationsController < ApplicationController
   def index
-    @notifications = Notification.for_user(current_user).order(created_at: :desc)
+    @notifications = Notification.for_user(current_user).order(created_at: :asc)
     notification_ids = @notifications.reselect(:id).unscope(:order)
     @notification_reads = current_user.notification_reads.where(notification_id: notification_ids)
                                       .index_by(&:notification_id)

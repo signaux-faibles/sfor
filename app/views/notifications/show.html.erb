@@ -13,7 +13,7 @@
   </p>
 
   <div class="fr-mb-3w">
-    <%= simple_format(@notification.body) %>
+    <%= raw(markdown(@notification.body)) %>
   </div>
 
   <%= link_to "Retour à la liste", notifications_path, class: "fr-btn fr-btn--secondary" %>

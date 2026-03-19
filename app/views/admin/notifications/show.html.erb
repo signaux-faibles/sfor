@@ -11,7 +11,7 @@
   <dt class="fr-text--bold fr-mt-2w">Segments</dt>
   <dd><%= @notification.segments.map(&:name).join(", ") %></dd>
   <dt class="fr-text--bold fr-mt-2w">Contenu</dt>
-  <dd><%= simple_format(@notification.body) %></dd>
+  <dd><%= raw(markdown(@notification.body)) %></dd>
   <dt class="fr-text--bold fr-mt-2w">Créée par</dt>
   <dd><%= @notification.created_by&.email || "-" %></dd>
 </dl>
