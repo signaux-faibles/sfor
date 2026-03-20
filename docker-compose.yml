@@ -27,7 +27,6 @@ services:
       - redis
     networks:
       - default
-      - dev_wekan-tier
 
   test_web:
     build:
@@ -50,8 +49,6 @@ services:
 
 networks:
   default:
-  dev_wekan-tier:
-    external: true
 
 volumes:
   postgres_data:

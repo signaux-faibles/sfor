@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_06_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_20_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -744,7 +744,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_120000) do
     t.string "provider"
     t.string "uid"
     t.string "id_token"
-    t.string "wekan_document_id"
     t.bigint "entity_id", null: false
     t.bigint "segment_id", null: false
     t.string "level", default: "A", null: false
