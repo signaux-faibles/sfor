@@ -47,9 +47,6 @@ gem "bootsnap", "~> 1.18.4", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-# Import wekan data
-gem "mongo", "~> 2.21.0"
-
 # JWT token handling for API services and statistics
 gem "jwt", "~> 2.9.3"
 

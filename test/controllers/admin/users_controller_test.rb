@@ -156,7 +156,6 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
     assert_includes @response.body, "geo_access_name"
     assert_not_includes @response.body, "encrypted_password"
     assert_not_includes @response.body, "reset_password_token"
-    assert_not_includes @response.body, "wekan_document_id"
     assert_not_includes @response.body, "entity_id"
     assert_not_includes @response.body, "segment_id"
     assert_not_includes @response.body, "level"
