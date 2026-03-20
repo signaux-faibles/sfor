@@ -509,17 +509,26 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       # A company is a "première alerte" if it has NOT appeared in any other list
       # within the last 18 months before the current list date.
       #
-      # Non-correlated anti-join: compute the "seen recently" siren set ONCE, then
-      # exclude it. This avoids a per-company correlated NOT EXISTS probe (O(n) index
-      # lookups) in favour of a single subquery + hash anti-join (O(1) amortised),
-      # which is critical for large exports (47k companies × 8ms ≈ 6 min otherwise).
-      recently_appeared_sirens = CompanyScoreEntry
-        .joins(:list)
-        .where.not(list_name: @list.label)
-        .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
-        .select(:siren)
+      # Two-step anti-join strategy:
+      #   1. Pluck the small set of recent list labels from the tiny `lists` table
+      #      (typically 5-15 values, negligible cost).
+      #   2. Use IN(specific_labels) on company_score_entries so PostgreSQL can use
+      #      index seeks on (list_name, siren) — one seek per label, very fast.
+      #
+      # Avoided: list_name != 'X' (negative condition, forces full table scan) and
+      # a correlated NOT EXISTS per company (O(n_companies) index probes).
+      recent_list_labels = List
+        .where("list_date > ? AND list_date < ?", cutoff_date, current_list_date)
+        .where.not(label: @list.label)
+        .pluck(:label)
 
-      companies = companies.where.not(siren: recently_appeared_sirens)
+      if recent_list_labels.present?
+        recently_appeared_sirens = CompanyScoreEntry
+          .where(list_name: recent_list_labels)
+          .select(:siren)
+        companies = companies.where.not(siren: recently_appeared_sirens)
+      end
+      # If no recent list labels found, all companies are first alerts — no filter needed.
     end
 
     # Filter by sans_entreprises_recentes (exclude companies created after threshold date)
