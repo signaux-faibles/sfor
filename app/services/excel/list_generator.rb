@@ -243,9 +243,10 @@ module Excel
         first_alert_sirens AS (
           SELECT ts_filter.siren
           FROM target_sirens ts_filter
-          WHERE ts_filter.siren NOT IN (
-            SELECT cse_other.siren FROM company_score_entries cse_other
-            WHERE cse_other.list_name != ?
+          WHERE NOT EXISTS (
+            SELECT 1 FROM company_score_entries cse_other
+            WHERE cse_other.siren = ts_filter.siren
+              AND cse_other.list_name != ?
           )
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert,
