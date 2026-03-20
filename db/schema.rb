@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_19_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_20_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -189,13 +189,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_19_120000) do
     t.index ["list_name", "siren", "alert"], name: "index_company_score_entries_on_list_name_siren_alert"
     t.index ["list_name", "siren", "created_at"], name: "index_company_score_entries_on_list_name_siren_created_at", order: { created_at: :desc }
     t.index ["list_name", "siren", "score"], name: "index_company_score_entries_on_list_name_siren_score"
-    t.index ["list_name", "siren"], name: "index_company_score_entries_on_list_name_and_siren"
-    t.index ["list_name"], name: "index_company_score_entries_on_list_name"
-    t.index ["macro_expl"], name: "index_company_score_entries_on_macro_expl", using: :gin
-    t.index ["micro_expl"], name: "index_company_score_entries_on_micro_expl", using: :gin
     t.index ["periode"], name: "index_company_score_entries_on_periode"
     t.index ["siren", "list_name", "periode"], name: "index_company_score_entries_on_siren_and_list_name_and_periode", unique: true
-    t.index ["siren"], name: "index_company_score_entries_on_siren"
   end
 
   create_table "contacts", force: :cascade do |t|
