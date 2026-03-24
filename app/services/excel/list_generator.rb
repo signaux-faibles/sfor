@@ -289,8 +289,6 @@ module Excel
                     list_label]    # first_alert_sirens NOT EXISTS subquery
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
 
-      Rails.logger.info "[ListGenerator] SQL:\n#{sanitized_sql}"
-
       t_db = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       results = ActiveRecord::Base.transaction do
         # random_page_cost=1.1: tells planner SSD random I/O ≈ sequential I/O,
