@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_20_090000) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_24_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -369,6 +369,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_20_090000) do
     t.index ["siren", "siege"], name: "index_establishments_on_siren_and_siege", where: "(siege = true)"
     t.index ["siren", "siret"], name: "index_establishments_on_siren_and_siret", unique: true
     t.index ["siren"], name: "index_establishments_on_siren"
+    t.index ["siren"], name: "index_establishments_on_siren_where_siege", where: "(siege = true)"
     t.index ["siret"], name: "index_establishments_on_siret", unique: true
   end
 
@@ -446,6 +447,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_20_090000) do
     t.bigint "created_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "show_as_flash"
     t.index ["created_by_id"], name: "index_notifications_on_created_by_id"
   end
 
