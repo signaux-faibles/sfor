@@ -12,6 +12,7 @@
           <th>Titre</th>
           <th>Segments</th>
           <th>Créée par</th>
+          <th>Flash</th>
           <th>Mis à jour le</th>
           <th>Actions</th>
         </tr>
@@ -22,6 +23,7 @@
             <td><%= notification.title %></td>
             <td><%= notification.segments.map(&:name).join(", ") %></td>
             <td><%= notification.created_by&.email || "-" %></td>
+            <td><%= notification.show_as_flash.presence || "-" %></td>
             <td><%= l(notification.updated_at.to_date) %></td>
             <td>
               <%= link_to "Voir", admin_notification_path(notification), class: "fr-link" %>

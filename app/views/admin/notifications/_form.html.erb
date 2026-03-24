@@ -20,6 +20,13 @@
     <%= form.text_area :body, class: "fr-input", rows: 6 %>
   </div>
 
+  <div class="fr-select-group fr-mb-2w" style="max-width: 420px;">
+    <%= form.label :show_as_flash, "Afficher en flash", class: "fr-label" %>
+    <%= form.select :show_as_flash,
+                    [["Aucun", nil], ["Succès", "success"], ["Erreur", "error"], ["Information", "information"], ["Avertissement", "warning"]],
+                    {}, class: "fr-select" %>
+  </div>
+
   <fieldset class="fr-fieldset fr-mb-2w">
     <legend class="fr-fieldset__legend">Segments</legend>
     <%= form.collection_check_boxes :segment_ids, @segments, :id, :name do |segment| %>

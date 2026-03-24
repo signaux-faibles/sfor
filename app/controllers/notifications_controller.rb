@@ -1,4 +1,6 @@
 class NotificationsController < ApplicationController
+  prepend_before_action :mark_notification_read, only: :show
+
   def index
     @notifications = Notification.for_user(current_user).order(created_at: :asc)
     notification_ids = @notifications.reselect(:id).unscope(:order)
@@ -6,7 +8,11 @@ class NotificationsController < ApplicationController
                                       .index_by(&:notification_id)
   end
 
-  def show
+  def show; end
+
+  private
+
+  def mark_notification_read
     @notification = Notification.for_user(current_user).find(params[:id])
     @notification_read = current_user.notification_reads.find_or_initialize_by(notification: @notification)
 

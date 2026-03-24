@@ -52,6 +52,6 @@ class Admin::NotificationsController < Admin::ApplicationController
   end
 
   def notification_params
-    params.require(:notification).permit(:title, :body, segment_ids: [])
+    params.require(:notification).permit(:title, :body, :show_as_flash, segment_ids: [])
   end
 end

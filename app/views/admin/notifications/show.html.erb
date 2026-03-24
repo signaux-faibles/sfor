@@ -12,6 +12,8 @@
   <dd><%= @notification.segments.map(&:name).join(", ") %></dd>
   <dt class="fr-text--bold fr-mt-2w">Contenu</dt>
   <dd><%= raw(markdown(@notification.body)) %></dd>
+  <dt class="fr-text--bold fr-mt-2w">Afficher en flash</dt>
+  <dd><%= @notification.show_as_flash.presence || "Aucun" %></dd>
   <dt class="fr-text--bold fr-mt-2w">Créée par</dt>
   <dd><%= @notification.created_by&.email || "-" %></dd>
 </dl>

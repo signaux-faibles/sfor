@@ -6,6 +6,7 @@ class Notification < ApplicationRecord
   has_many :readers, through: :notification_reads, source: :user
 
   validates :title, :body, presence: true
+  validates :show_as_flash, inclusion: { in: %w[success error information warning], allow_nil: true }
   validate :segments_presence
 
   scope :for_user, lambda { |user|
@@ -13,6 +14,12 @@ class Notification < ApplicationRecord
       id: joins(:segments)
         .where(segments: { id: user.segment_id })
         .select(:id)
+    )
+  }
+
+  scope :unread_for_user, lambda { |user|
+    where.not(
+      id: user.notification_reads.where.not(read_at: nil).select(:notification_id)
     )
   }
 
