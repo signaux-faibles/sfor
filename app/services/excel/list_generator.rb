@@ -153,13 +153,6 @@ module Excel
         WITH target_sirens AS MATERIALIZED (
           #{sirens_subquery}
         ),
-        siege_establishments AS (
-          SELECT DISTINCT ON (e.siren) e.siren, e.siret
-          FROM establishments e
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
-          WHERE e.siege = true
-          ORDER BY e.siren, e.siret
-        ),
         current_score_entries AS (
           SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert,
             ROUND((cse.macro_expl->>'Variation de l''effectif de l''entreprise')::numeric) AS score_effectif,
@@ -192,9 +185,15 @@ module Excel
           WHERE oee.is_latest = true
         ),
         all_establishments AS MATERIALIZED (
-          SELECT e.siren, e.siret
+          SELECT e.siren, e.siret, e.siege
           FROM establishments e
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
+        ),
+        siege_establishments AS (
+          SELECT DISTINCT ON (ae.siren) ae.siren, ae.siret
+          FROM all_establishments ae
+          WHERE ae.siege = true
+          ORDER BY ae.siren, ae.siret
         ),
         social_debts AS MATERIALIZED (
           SELECT ae.siren,
