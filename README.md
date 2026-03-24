@@ -412,6 +412,16 @@ Displayed: `[Jan: 42, Feb: nil, Mar: 40, Apr: nil]`
 Raw values: `[Jan: 10, Feb: 12, Mar: nil, Apr: 9]`  
 Displayed: `[Jan: 10, Feb: 12, Mar: nil, Apr: nil]`
 
+# Import a new list
+The lists are stored in the `company_score_entries` table, which can be populated directly from the `.json` files provided by the data science team.
+You need to use a database management system with a JSON driver and ensure proper mapping between the JSON fields and the table columns.
+
+Be careful with the `code` and `list_date` columns, as they are used in the application logic to identify the latest list (e.g., `last_list = List.order(code: :desc).first`).
+
+Once the `company_score_entries` table has been populated with the new list data, the list must be "activated"; otherwise, it will not be visible to users.
+To activate it, add an entry to the `lists` table. See below for an example of how to enable `sjcf` filtering.
+
+
 # Import sjcf companies
 
 Just import the data of an sjcf csv file with a `siren` column and a `libelle_list` column. The headers labels don't mater as long as you have one list of sirens and the name of the current list (e.g. "Septembre 2025").
