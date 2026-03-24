@@ -224,11 +224,18 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
     completed_tracking.codefi_redirects << codefi_redirect
     completed_tracking.supporting_services << supporting_service
 
+    summary = completed_tracking.summaries.create!(content: "Summary content", network: networks(:network_crp))
+    comment = completed_tracking.comments.create!(content: "Comment content", network: networks(:network_crp), user: users(:user_crp_paris))
+
     assert_difference("EstablishmentTracking.count", 1) do
-      post duplicate_establishment_establishment_tracking_url(
-        completed_tracking.establishment,
-        completed_tracking
-      )
+      assert_difference("Summary.count", 1) do
+        assert_difference("Comment.count", 1) do
+          post duplicate_establishment_establishment_tracking_url(
+            completed_tracking.establishment,
+            completed_tracking
+          )
+        end
+      end
     end
 
     duplicated_tracking = EstablishmentTracking.order(:id).last
@@ -249,6 +256,15 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
     assert_equal completed_tracking.difficulty_ids.sort, duplicated_tracking.difficulty_ids.sort
     assert_equal completed_tracking.codefi_redirect_ids.sort, duplicated_tracking.codefi_redirect_ids.sort
     assert_equal completed_tracking.supporting_service_ids.sort, duplicated_tracking.supporting_service_ids.sort
+
+    duplicated_summary = duplicated_tracking.summaries.sole
+    assert_equal summary.content, duplicated_summary.content
+    assert_equal summary.network_id, duplicated_summary.network_id
+
+    duplicated_comment = duplicated_tracking.comments.sole
+    assert_equal comment.content, duplicated_comment.content
+    assert_equal comment.network_id, duplicated_comment.network_id
+    assert_equal comment.user_id, duplicated_comment.user_id
   end
 end
 

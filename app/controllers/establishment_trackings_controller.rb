@@ -167,6 +167,14 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     duplicated_tracking.codefi_redirect_ids = original_tracking.codefi_redirect_ids
     duplicated_tracking.supporting_service_ids = original_tracking.supporting_service_ids
 
+    original_tracking.summaries.each do |summary|
+      duplicated_tracking.summaries.build(content: summary.content, network_id: summary.network_id, is_codefi: summary.is_codefi)
+    end
+
+    original_tracking.comments.each do |comment|
+      duplicated_tracking.comments.build(content: comment.content, network_id: comment.network_id, user_id: comment.user_id, is_codefi: comment.is_codefi)
+    end
+
     duplicated_tracking
   end
 
