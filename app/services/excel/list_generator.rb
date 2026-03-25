@@ -162,10 +162,10 @@ module Excel
         ),
         current_score_entries AS (
           SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert,
-            ROUND((cse.macro_expl->>'Variation de l''effectif de l''entreprise')::numeric) AS score_effectif,
-            ROUND((cse.macro_expl->>'Données financières')::numeric)                       AS score_financier,
-            ROUND((cse.macro_expl->>'Dettes sociales')::numeric)                           AS score_dettes,
-            ROUND((cse.macro_expl->>'Recours à l''activité partielle')::numeric)           AS score_ap
+            ROUND((cse.macro_expl->>'Variation-de-l''effectif-de-l''entreprise')::numeric) AS score_effectif,
+            ROUND((cse.macro_expl->>'Données-financières')::numeric)                       AS score_financier,
+            ROUND((cse.macro_expl->>'Dettes-sociales')::numeric)                           AS score_dettes,
+            ROUND((cse.macro_expl->>'Recours-à-l''activité-partielle')::numeric)           AS score_ap
           FROM company_score_entries cse
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = cse.siren
           WHERE cse.list_name = ?
