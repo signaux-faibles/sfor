@@ -359,7 +359,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def filtered_company_count(list)
     companies = companies_in_list(list)
     companies = policy_scope(companies)
-    companies = apply_excluded_naf_filter(companies)
     companies.select(:siren).distinct.count
   end
 
@@ -394,9 +393,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def apply_database_filters(companies) # rubocop:disable Metrics/MethodLength
     # NOTE: All filters below are combined (AND logic) - each filter narrows down the results
     # from the previous filters. The `companies` query is progressively refined.
-
-    # Systematically exclude companies with excluded NAF codes
-    companies = apply_excluded_naf_filter(companies)
 
     # Filter by search query (q) - SIREN or raison sociale
     if @search_params[:q].present?
@@ -565,21 +561,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
 
     companies
-  end
-
-  def excluded_naf_codes
-    %w[
-      84.11Z 84.12Z 84.21Z 84.22Z 84.23Z 84.24Z 84.25Z 84.13Z 84.30A 84.30B 84.30C
-      94.91Z 94.92Z 94.20Z 94.11Z 94.12Z
-      64.11Z 64.19Z 64.30Z 64.91Z 64.92Z 64.99Z 65.11Z 65.12Z 65.20Z 65.30Z 66.11Z 66.12Z 66.19A 66.19B 66.21Z 66.22Z
-      66.29Z 66.30Z 85.10Z 85.20Z 85.31Z 85.32Z 85.41Z 85.42Z
-      99.00Z
-    ]
-  end
-
-  def apply_excluded_naf_filter(companies)
-    # TODO : update this to companies.where.not(naf_code: excluded_naf_codes) when naf_code is populated
-    companies.where("naf_code IS NULL OR naf_code NOT IN (?)", excluded_naf_codes)
   end
 
   def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/MethodLength
