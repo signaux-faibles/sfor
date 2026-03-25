@@ -150,7 +150,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     )
   end
 
-  def build_duplicate_tracking(original_tracking)
+  def build_duplicate_tracking(original_tracking) # rubocop:disable Metrics/MethodLength
     duplicated_tracking = original_tracking.dup
     duplicated_tracking.creator = current_user
     duplicated_tracking.modifier = current_user

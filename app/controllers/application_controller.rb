@@ -44,7 +44,6 @@ class ApplicationController < ActionController::Base
     flash_type = notification.show_as_flash
     message = "#{notification.title} #{view_context.link_to('Voir', notification_path(notification), class: 'fr-link')}"
 
-
     Rails.logger.info("Notification flash: #{flash_type} - #{message}")
     flash.now[flash_type.to_sym] = message.html_safe
   end
