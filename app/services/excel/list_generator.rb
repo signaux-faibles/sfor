@@ -245,8 +245,11 @@ module Excel
           FROM target_sirens ts_filter
           WHERE NOT EXISTS (
             SELECT 1 FROM company_score_entries cse_other
+            INNER JOIN lists l ON l.label = cse_other.list_name
             WHERE cse_other.siren = ts_filter.siren
               AND cse_other.list_name != ?
+              AND l.list_date > ?
+              AND l.list_date < ?
           )
         )
         SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert,
@@ -275,18 +278,23 @@ module Excel
       SQL
 
       # Parameters order (matching SQL placeholders in order) — sirens are in the
-      # embedded AR subquery, not as bind params, so only 5 scalar values remain:
+      # embedded AR subquery, not as bind params, so only 7 scalar values remain:
       #   1. list_label (current_score_entries WHERE clause)
       #   2. current_date (procol_last_actions date filter)
       #   3. list_label (sjcf_companies WHERE clause)
       #   4. list_date (delai_urssaf_companies WHERE clause)
-      #   5. list_label (first_alert_sirens NOT EXISTS subquery)
+      #   5. list_label (first_alert_sirens: list_name != current list)
+      #   6. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
+      #   7. list_date (first_alert_sirens: l.list_date < current list date)
       list_date = @list.list_date || Date.current
+      cutoff_date = list_date - 18.months
       all_params = [list_label,    # current_score_entries WHERE
                     current_date,  # procol_last_actions date filter
                     list_label,    # sjcf_companies WHERE
                     list_date,     # delai_urssaf_companies WHERE
-                    list_label]    # first_alert_sirens NOT EXISTS subquery
+                    list_label,    # first_alert_sirens: list_name !=
+                    cutoff_date,   # first_alert_sirens: l.list_date >
+                    list_date]     # first_alert_sirens: l.list_date <
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
 
       t_db = Process.clock_gettime(Process::CLOCK_MONOTONIC)
