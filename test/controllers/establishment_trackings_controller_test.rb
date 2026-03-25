@@ -89,6 +89,7 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
   end
 
   test "show displays closed establishment banner" do
+    @establishment_tracking_paris.update!(state: "completed")
     @establishment_tracking_paris.establishment.update!(is_active: false)
 
     get establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris)
