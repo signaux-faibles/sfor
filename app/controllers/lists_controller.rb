@@ -302,7 +302,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @search_params = params.require(:search).permit(:q,
                                                     :effectif_min,
                                                     :dette_sociale_min, :libelle_procol,
-                                                    :frequence_alerte, :niveau_alerte,
+                                                    :niveau_alerte,
                                                     :premieres_alertes, :sans_entreprises_recentes,
                                                     :sans_delai_urssaf, :liste_retraitee,
                                                     :filters_open,
@@ -476,11 +476,6 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
           )", current_date, libelle_value
                     )
                   end
-    end
-
-    # Filter by frequence_alerte (placeholder)
-    if @search_params[:frequence_alerte].present? && @search_params[:frequence_alerte] != ""
-      # TODO: Implement when logic is defined
     end
 
     # Filter by niveau_alerte (alert from CompanyScoreEntry)

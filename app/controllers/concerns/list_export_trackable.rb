@@ -51,7 +51,7 @@ module ListExportTrackable
     # Remove pagination and UI-only params, keep only actual filters
     filter_keys = %w[
       q effectif_min score_min dette_sociale_min libelle_procol
-      frequence_alerte niveau_alerte premieres_alertes sans_entreprises_recentes
+      niveau_alerte premieres_alertes sans_entreprises_recentes
       sans_delai_urssaf liste_retraitee departement_in forme_juridique
       section_activite_principale
     ]
