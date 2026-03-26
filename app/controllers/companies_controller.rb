@@ -374,21 +374,23 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def calculate_is_first_alert
-    # Get the last list
     last_list = List.order(code: :desc).first
     return false unless last_list
 
-    # Check if company appears in the current list
-    current_entry = CompanyScoreEntry.exists?(siren: @company.siren, list_name: last_list.label)
-    return false unless current_entry
+    return false unless CompanyScoreEntry.exists?(siren: @company.siren, list_name: last_list.label)
 
-    # Check if company appears in other lists
-    other_entries = CompanyScoreEntry.where(siren: @company.siren)
-                                     .where.not(list_name: last_list.label)
-                                     .exists?
+    # A company is a "première alerte" if it has NOT appeared in any other list
+    # within the last 18 months before the current list date.
+    current_list_date = last_list.list_date || Date.current
+    cutoff_date = current_list_date - 18.months
 
-    # If no other entries, it's a first alert
-    !other_entries
+    siren_in_recent_lists = CompanyScoreEntry
+                            .joins(:list)
+                            .where(siren: @company.siren)
+                            .where.not(list_name: last_list.label)
+                            .exists?(["lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date])
+
+    !siren_in_recent_lists
   end
 
   def load_company_active_trackings
