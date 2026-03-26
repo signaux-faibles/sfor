@@ -17,6 +17,7 @@ class FixProcolAtDateFunctionFilterColumn < ActiveRecord::Migration[7.2]
         FROM last_action_procol
         -- On retire les procédures collectives qui se sont terminées
         WHERE stade_procol != 'fin_procedure' AND stade_procol != 'inclusion_autre_procedure'
+          AND NOT (stade_procol = 'plan_continuation' AND AGE(date_param, date_effet) >= INTERVAL '10 years')
         ORDER BY siren, action_procol; -- action_procol alphabetical order liquidation < redressement < sauvegarde
       $$ LANGUAGE SQL;
     SQL
