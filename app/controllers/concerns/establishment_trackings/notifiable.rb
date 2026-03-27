@@ -13,7 +13,7 @@ module EstablishmentTrackings::Notifiable
 
   # Sends a notification email to each newly added referent and participant,
   # skipping the user who performed the action.
-  def notify_added_contributors(added_referents: [], added_participants: [], added_by:, tracking:)
+  def notify_added_contributors(added_by:, tracking:, added_referents: [], added_participants: [])
     notify_contributors(added_referents, role: :referent, added_by: added_by, tracking: tracking)
     notify_contributors(added_participants, role: :participant, added_by: added_by, tracking: tracking)
   end

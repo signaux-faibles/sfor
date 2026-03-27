@@ -102,6 +102,9 @@ gem "prometheus_exporter", "~> 2.2.0"
 # Analytics
 gem "ahoy_matey", "~> 5.4"
 
+# Background job processing (uses PostgreSQL — no extra infrastructure needed)
+gem "solid_queue"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows]
