@@ -78,6 +78,13 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     create_referents_snapshot_if_changed(old_contributors[:referents], new_referents)
     create_participants_snapshot_if_changed(old_contributors[:participants], new_participants)
 
+    notify_added_contributors(
+      added_referents: new_referents - old_contributors[:referents],
+      added_participants: new_participants - old_contributors[:participants],
+      added_by: current_user,
+      tracking: @establishment_tracking
+    )
+
     flash[:success] = t("establishments.tracking.contributors.update.success")
     redirect_to [@establishment, @establishment_tracking]
   end

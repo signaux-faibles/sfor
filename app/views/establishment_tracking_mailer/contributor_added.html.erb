@@ -1,0 +1,12 @@
+<p>Bonjour,</p>
+
+<p>
+  Vous avez été ajouté comme <strong><%= t("mailer.establishment_tracking.contributor_added.role.#{@role}") %></strong>
+  de l'accompagnement « Signaux Faibles » ci-dessous par <%= @added_by.email %>.
+</p>
+
+<p>
+  <%= link_to "Accéder à l'accompagnement", @tracking_url %>
+</p>
+
+<p>Cordialement,<br>L'équipe « Signaux Faibles »</p>

@@ -429,3 +429,10 @@ fr:
       success: "Contact mis à jour avec succès."
     destroy:
       success: "Contact supprimé avec succès."
+  mailer:
+    establishment_tracking:
+      contributor_added:
+        subject: "Vous avez été ajouté comme contributeur à un accompagnement « Signaux Faibles »"
+        role:
+          referent: "référent"
+          participant: "participant"

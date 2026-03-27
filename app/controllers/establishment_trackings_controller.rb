@@ -6,6 +6,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   include EstablishmentTrackings::Loadable
   include EstablishmentTrackings::ContributorsManageable
   include EstablishmentTrackings::SupportingServicesTrackable
+  include EstablishmentTrackings::Notifiable
 
   before_action :set_paper_trail_whodunnit
 
@@ -64,6 +65,12 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     authorize @establishment_tracking
 
     if @establishment_tracking.save
+      notify_added_contributors(
+        added_referents: @establishment_tracking.referents.to_a,
+        added_participants: @establishment_tracking.participants.to_a,
+        added_by: current_user,
+        tracking: @establishment_tracking
+      )
       flash[:success] = t("establishments.tracking.create.success")
       redirect_to [@establishment, @establishment_tracking]
     else
