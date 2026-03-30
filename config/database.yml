@@ -16,10 +16,11 @@ test:
   database: <%= ENV['DATABASE_NAME'] %>_test
 
 production:
-  <<: *default
-  database: <%= ENV['DATABASE_NAME'] %>
+  primary:
+    <<: *default
+    database: <%= ENV['DATABASE_NAME'] %>
 
-queue:
-  <<: *default
-  database: app_production_queue
-  migrations_paths: db/queue_migrate
+  queue:
+    <<: *default
+    database: app_production_queue
+    migrations_paths: db/queue_migrate
