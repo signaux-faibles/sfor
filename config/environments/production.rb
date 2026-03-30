@@ -71,9 +71,9 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter = :resque
-  # config.active_job.queue_name_prefix = "signaux_faibles_v2_production"
+  # Use Solid Queue for background jobs (persisted in PostgreSQL — no extra infra needed).
+  config.active_job.queue_adapter = :solid_queue
+  config.active_job.queue_name_prefix = "signaux_faibles_v2_production"
 
   config.action_mailer.perform_caching = false
 

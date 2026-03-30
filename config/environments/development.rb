@@ -45,13 +45,16 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Configure email delivery
-  # Use :test in development and log email contents (see MailLoggerInterceptor)
+  # Use :async adapter so deliver_later runs in a background thread (same process).
+  config.active_job.queue_adapter = :async
+
+  # In Docker/dev, we often rely on logs instead of an in-browser preview UI.
+  # `MailLoggerInterceptor` logs outgoing emails in development.
   config.action_mailer.delivery_method = :test
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
 
-  # Uncomment below to use SMTP in development instead of letter_opener:
+  # Uncomment to use SMTP in development instead of letter_opener:
   # config.action_mailer.delivery_method = :smtp
   # config.action_mailer.smtp_settings = {
   #   address: ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
