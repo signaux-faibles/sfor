@@ -73,7 +73,6 @@ Rails.application.configure do
 
   # Use Solid Queue for background jobs (persisted in PostgreSQL — no extra infra needed).
   config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
   config.active_job.queue_name_prefix = "signaux_faibles_v2_production"
 
   config.action_mailer.perform_caching = false
