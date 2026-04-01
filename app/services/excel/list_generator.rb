@@ -158,45 +158,19 @@ module Excel
           FROM company_lists cl
           WHERE cl.list_id = ?
         ),
-        all_establishments AS MATERIALIZED (
-          SELECT e.siren, e.siret
-          FROM establishments e
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
-        ),
         sjcf_companies AS (
           SELECT DISTINCT sc.siren
           FROM sjcf_companies sc
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = sc.siren
           WHERE sc.libelle_liste = ?
         ),
-        tracking_states AS (
-          SELECT ae.siren, et.state
-          FROM all_establishments ae
-          INNER JOIN establishment_trackings et ON et.establishment_siret = ae.siret
-          WHERE et.discarded_at IS NULL
-        ),
-        tracking_statuses AS (
-          SELECT siren,
-            CASE
-              WHEN bool_or(state = 'in_progress') THEN 'Accompagnement en cours'
-              WHEN bool_or(state = 'under_surveillance') THEN 'Accompagnement sous surveillance'
-              WHEN bool_or(state = 'completed') THEN 'Accompagnement terminé'
-              ELSE 'Pas d''accompagnement'
-            END AS status
-          FROM tracking_states
-          GROUP BY siren
-        ),
-        delai_urssaf_companies AS (
-          SELECT DISTINCT ae.siren
-          FROM all_establishments ae
-          INNER JOIN osf_delais od ON od.siret = ae.siret
-          WHERE od.date_echeance > COALESCE(?, CURRENT_DATE)
-        ),
         company_metadata AS (
           SELECT c.siren, c.siret_siege, c.social_debt_total, c.latest_effectif,
             c.current_procol_status, c.raison_sociale, c.department, c.creation,
             c.libelle_categorie_juridique, c.naf_section, c.libelle_activite_principale,
-            c.naf_code, c.libelle_naf_section
+            c.naf_code, c.libelle_naf_section,
+            COALESCE(c.tracking_status, 'Pas d''accompagnement') AS tracking_status,
+            (c.delai_urssaf_until IS NOT NULL AND c.delai_urssaf_until > CAST(? AS date)) AS has_delai_urssaf
           FROM companies c
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = c.siren
         ),
@@ -221,13 +195,11 @@ module Excel
           COALESCE(cm.latest_effectif, 0) AS effectif,
           cm.social_debt_total,
           CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
-          COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status,
-          CASE WHEN du.siren IS NOT NULL THEN true ELSE false END AS has_delai_urssaf
+          cm.tracking_status,
+          cm.has_delai_urssaf
         FROM target_sirens ts
         LEFT JOIN list_scores ls ON ts.siren = ls.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
-        LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
-        LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
         LEFT JOIN company_metadata cm ON ts.siren = cm.siren
         LEFT JOIN first_alert_sirens fa ON ts.siren = fa.siren
         ORDER BY ts.siren
@@ -237,7 +209,7 @@ module Excel
       # embedded AR subquery, not as bind params, so only 6 scalar values remain:
       #   1. @list.id   (list_scores WHERE list_id = ?)
       #   2. list_label (sjcf_companies WHERE clause)
-      #   3. list_date  (delai_urssaf_companies WHERE clause)
+      #   3. list_date  (company_metadata: delai_urssaf_until > ?)
       #   4. list_label (first_alert_sirens: list_name != current list)
       #   5. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
       #   6. list_date  (first_alert_sirens: l.list_date < current list date)
@@ -245,7 +217,7 @@ module Excel
       cutoff_date = list_date - 18.months
       all_params = [@list.id,      # list_scores WHERE list_id = ?
                     list_label,    # sjcf_companies WHERE
-                    list_date,     # delai_urssaf_companies WHERE
+                    list_date,     # company_metadata: delai_urssaf_until > ?
                     list_label,    # first_alert_sirens: list_name !=
                     cutoff_date,   # first_alert_sirens: l.list_date >
                     list_date]     # first_alert_sirens: l.list_date <

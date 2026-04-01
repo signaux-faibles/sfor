@@ -388,6 +388,16 @@ bin/rails lists:rebuild_company_lists               # all lists
 bin/rails "lists:rebuild_company_lists[Janvier 2026]" # one list
 ```
 
+> After running `osf:sync_delai`, update the denormalized URSSAF delay column:
+```
+bin/rails companies:update_delai_urssaf_until
+```
+
+> One-time backfill for the tracking status column (afterwards kept current via callbacks):
+```
+bin/rails companies:update_tracking_status
+```
+
 > For `osf_effectif` don't forget to update the `data_freshness` attribute of the corresponding line of the `import.rb` model. You can do this using the app admin panel. You can get the value by doing `select Max(oe.periode) from osf_effectifs oe` . This will be hopefully automaticaly done at import time one day.
 
 # Data freshness and forward fill (URSSAF + Effectif/AP widgets)

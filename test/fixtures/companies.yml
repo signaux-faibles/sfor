@@ -8,6 +8,8 @@ company_paris:
   social_debt_total: 3000.50
   latest_effectif: 50
   current_procol_status: 'Redressement judiciaire'
+  tracking_status: 'Accompagnement en cours'
+  delai_urssaf_until: '2025-01-10'
 
 company_finistere:
   siren: '987654321'

@@ -41,6 +41,10 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   before_create :set_modified_at
   after_update :add_codefi_redirect_user_action
 
+  # Keep companies.tracking_status in sync whenever a tracking is created, changed, or removed.
+  after_save    :sync_company_tracking_status
+  after_destroy :sync_company_tracking_status
+
   # Snapshot callbacks
   after_create :create_creation_snapshot
   after_update :create_update_snapshot_if_changed
@@ -191,5 +195,30 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
     else
       user_actions.delete(redirect_action) if user_actions.include?(redirect_action)
     end
+  end
+
+  # Recompute companies.tracking_status for the siren affected by this tracking change.
+  # Runs after every save (create/update/discard via discarded_at update) and destroy.
+  def sync_company_tracking_status
+    siren = establishment&.siren
+    return unless siren
+
+    # Priority: in_progress > under_surveillance > completed > NULL
+    statuses = EstablishmentTracking
+               .joins(:establishment)
+               .where(establishments: { siren: siren }, discarded_at: nil)
+               .pluck(:state)
+
+    status = if statuses.include?("in_progress")
+               "Accompagnement en cours"
+             elsif statuses.include?("under_surveillance")
+               "Accompagnement sous surveillance"
+             elsif statuses.include?("completed")
+               "Accompagnement terminé"
+             end
+
+    Company.where(siren: siren).update_all(tracking_status: status)
+  rescue StandardError => e
+    Rails.logger.error "[EstablishmentTracking] Failed to sync tracking_status for siren #{siren}: #{e.message}"
   end
 end

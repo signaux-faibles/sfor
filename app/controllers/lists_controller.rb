@@ -433,17 +433,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where("creation IS NULL OR creation <= ?", filter_date)
     end
 
-    # Filter by sans_delai_urssaf (exclude companies with establishments having OsfDelai date_echeance > list_date)
+    # Filter by sans_delai_urssaf (exclude companies whose URSSAF delay extends past the list date)
     if @search_params[:sans_delai_urssaf].present? && @search_params[:sans_delai_urssaf] == "1" && @list.list_date.present?
-      # Use NOT EXISTS subquery to avoid materializing sirens/sirets in Ruby
-      # Exclude companies that have at least one establishment with OsfDelai where date_echeance > list_date
       companies = companies.where(
-        "NOT EXISTS (
-          SELECT 1 FROM establishments e
-          INNER JOIN osf_delais od ON od.siret = e.siret
-          WHERE e.siren = companies.siren
-          AND od.date_echeance > ?
-        )", @list.list_date
+        "companies.delai_urssaf_until IS NULL OR companies.delai_urssaf_until <= ?", @list.list_date
       )
     end
 
