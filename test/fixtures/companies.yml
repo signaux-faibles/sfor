@@ -5,6 +5,7 @@ company_paris:
   statut_juridique: '5710'
   creation: '2020-01-01'
   department: '75'
+  social_debt_total: 3000.50
 
 company_finistere:
   siren: '987654321'
