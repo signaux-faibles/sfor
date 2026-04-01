@@ -10,7 +10,7 @@ namespace :companies do
 
     start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-    result = ActiveRecord::Base.connection.execute(<<~SQL)
+    result = ActiveRecord::Base.connection.execute(<<~SQL.squish)
       UPDATE companies c
       SET social_debt_total = agg.total
       FROM (
