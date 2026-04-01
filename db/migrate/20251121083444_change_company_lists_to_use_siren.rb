@@ -39,8 +39,10 @@ class ChangeCompanyListsToUseSiren < ActiveRecord::Migration[7.2]
     # Remove company_id column (siren already exists)
     remove_column :company_score_entries, :company_id if column_exists?(:company_score_entries, :company_id)
     
-    # Add new indexes
-    add_index :company_score_entries, [:siren, :list_id, :periode], unique: true unless index_exists?(:company_score_entries, [:siren, :list_id, :periode])
+    # Add new indexes (only if list_id column exists — production already migrated to list_name)
+    if column_exists?(:company_score_entries, :list_id)
+      add_index :company_score_entries, [:siren, :list_id, :periode], unique: true unless index_exists?(:company_score_entries, [:siren, :list_id, :periode])
+    end
   end
 
   def down
