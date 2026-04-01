@@ -63,6 +63,7 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
   test "index shows empty state when no lists" do
     sign_in @user
+    CompanyList.delete_all
     List.delete_all
 
     get lists_path

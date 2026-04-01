@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_01_160000) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_01_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -813,7 +813,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_01_160000) do
   add_foreign_key "comments", "establishment_trackings"
   add_foreign_key "comments", "networks"
   add_foreign_key "comments", "users"
-  add_foreign_key "company_lists", "lists"
+  add_foreign_key "company_lists", "lists", on_delete: :cascade
   add_foreign_key "department_geo_accesses", "departments"
   add_foreign_key "department_geo_accesses", "geo_accesses"
   add_foreign_key "departments", "regions"
