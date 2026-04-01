@@ -152,16 +152,11 @@ module Excel
         WITH target_sirens AS MATERIALIZED (
           #{sirens_subquery}
         ),
-        current_score_entries AS (
-          SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert,
-            ROUND((cse.macro_expl->>'Variation-de-l''effectif-de-l''entreprise')::numeric) AS score_effectif,
-            ROUND((cse.macro_expl->>'Données-financières')::numeric)                       AS score_financier,
-            ROUND((cse.macro_expl->>'Dettes-sociales')::numeric)                           AS score_dettes,
-            ROUND((cse.macro_expl->>'Recours-à-l''activité-partielle')::numeric)           AS score_ap
-          FROM company_score_entries cse
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = cse.siren
-          WHERE cse.list_name = ?
-          ORDER BY cse.siren, cse.created_at DESC
+        list_scores AS (
+          SELECT cl.siren, cl.score, cl.alert,
+            cl.score_effectif, cl.score_financier, cl.score_dettes, cl.score_ap
+          FROM company_lists cl
+          WHERE cl.list_id = ?
         ),
         all_establishments AS MATERIALIZED (
           SELECT e.siren, e.siret
@@ -217,8 +212,8 @@ module Excel
               AND l.list_date < ?
           )
         )
-        SELECT ts.siren, cm.siret_siege, cse.score, cse.alert,
-          cse.score_effectif, cse.score_financier, cse.score_dettes, cse.score_ap,
+        SELECT ts.siren, cm.siret_siege, ls.score, ls.alert,
+          ls.score_effectif, ls.score_financier, ls.score_dettes, ls.score_ap,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
@@ -229,7 +224,7 @@ module Excel
           COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status,
           CASE WHEN du.siren IS NOT NULL THEN true ELSE false END AS has_delai_urssaf
         FROM target_sirens ts
-        LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
+        LEFT JOIN list_scores ls ON ts.siren = ls.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
@@ -240,7 +235,7 @@ module Excel
 
       # Parameters order (matching SQL placeholders in order) — sirens are in the
       # embedded AR subquery, not as bind params, so only 6 scalar values remain:
-      #   1. list_label (current_score_entries WHERE clause)
+      #   1. @list.id   (list_scores WHERE list_id = ?)
       #   2. list_label (sjcf_companies WHERE clause)
       #   3. list_date  (delai_urssaf_companies WHERE clause)
       #   4. list_label (first_alert_sirens: list_name != current list)
@@ -248,7 +243,7 @@ module Excel
       #   6. list_date  (first_alert_sirens: l.list_date < current list date)
       list_date = @list.list_date || Date.current
       cutoff_date = list_date - 18.months
-      all_params = [list_label,    # current_score_entries WHERE
+      all_params = [@list.id,      # list_scores WHERE list_id = ?
                     list_label,    # sjcf_companies WHERE
                     list_date,     # delai_urssaf_companies WHERE
                     list_label,    # first_alert_sirens: list_name !=

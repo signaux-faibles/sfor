@@ -6,12 +6,20 @@ paris_list_2025:
   list: list_test_2025
   score: 75.5
   alert: "Alerte seuil F1"
+  score_effectif: 80
+  score_financier: 70
+  score_dettes: 90
+  score_ap: 60
 
 finistere_list_2025:
   siren: "987654321"
   list: list_test_2025
   score: 62.0
   alert: "Alerte seuil F2"
+  score_effectif: 65
+  score_financier: 55
+  score_dettes: 70
+  score_ap: 45
 
 paris_list_2024:
   siren: "123456789"

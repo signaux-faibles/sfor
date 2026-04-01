@@ -5,22 +5,34 @@
 #   rake lists:rebuild_company_lists               # rebuild all lists
 #   rake lists:rebuild_company_lists[Janvier 2026] # rebuild one list
 
-namespace :lists do
-  desc "Rebuild company_lists (siren, list_id, score, alert) from the latest company_score_entries per list"
-  task :rebuild_company_lists, [:list_name] => :environment do |_task, args|
+namespace :lists do # rubocop:disable Metrics/BlockLength
+  desc "Rebuild company_lists from the latest company_score_entries per list (score, alert, score breakdown)"
+  task :rebuild_company_lists, [:list_name] => :environment do |_task, args| # rubocop:disable Metrics/BlockLength
     lists = args[:list_name].present? ? [List.find_by!(label: args[:list_name])] : List.all
 
-    lists.each do |list|
+    lists.each do |list| # rubocop:disable Metrics/BlockLength
       puts "Rebuilding company_lists for '#{list.label}'..."
       start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
       ActiveRecord::Base.transaction do
         CompanyList.where(list_id: list.id).delete_all
 
+        # JSONB breakdown extracted once here so the Excel export never needs to read
+        # macro_expl from company_score_entries at query time.
         ActiveRecord::Base.connection.execute(
           ActiveRecord::Base.sanitize_sql_array([<<~SQL.squish, list.id, list.label])
-            INSERT INTO company_lists (siren, list_id, score, alert, created_at, updated_at)
-            SELECT DISTINCT ON (siren) siren, ?, score, alert, NOW(), NOW()
+            INSERT INTO company_lists (
+              siren, list_id, score, alert,
+              score_effectif, score_financier, score_dettes, score_ap,
+              created_at, updated_at
+            )
+            SELECT DISTINCT ON (siren)
+              siren, ?, score, alert,
+              ROUND((macro_expl->>'Variation-de-l''effectif-de-l''entreprise')::numeric),
+              ROUND((macro_expl->>'Données-financières')::numeric),
+              ROUND((macro_expl->>'Dettes-sociales')::numeric),
+              ROUND((macro_expl->>'Recours-à-l''activité-partielle')::numeric),
+              NOW(), NOW()
             FROM company_score_entries
             WHERE list_name = ?
             ORDER BY siren, created_at DESC
