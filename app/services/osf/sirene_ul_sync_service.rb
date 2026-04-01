@@ -160,6 +160,7 @@ module Osf
 
       {
         siren: distant_record["siren"],
+        siret_siege: distant_record["siret_siege"],
         raison_sociale: distant_record["raison_sociale"],
         statut_juridique: distant_record["categorie_juridique"],
         libelle_categorie_juridique: distant_record["libelle_categorie_juridique"],
