@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_01_150000) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_01_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -167,6 +167,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_01_150000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "siren", limit: 9, null: false
+    t.decimal "score", precision: 20, scale: 10
+    t.string "alert"
+    t.index ["list_id", "score"], name: "index_company_lists_on_list_id_and_score"
     t.index ["list_id"], name: "index_company_lists_on_list_id"
     t.index ["siren", "list_id"], name: "index_company_lists_on_siren_and_list_id", unique: true
     t.index ["siren"], name: "index_company_lists_on_siren"

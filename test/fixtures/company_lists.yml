@@ -1,0 +1,30 @@
+# Mirrors the latest company_score_entries per siren per list.
+# In production this is rebuilt by rake lists:rebuild_company_lists after each JSON import.
+
+paris_list_2025:
+  siren: "123456789"
+  list: list_test_2025
+  score: 75.5
+  alert: "Alerte seuil F1"
+
+finistere_list_2025:
+  siren: "987654321"
+  list: list_test_2025
+  score: 62.0
+  alert: "Alerte seuil F2"
+
+paris_list_2024:
+  siren: "123456789"
+  list: list_test_2024
+  score: 80.0
+
+ancien_list_2025:
+  siren: "222222222"
+  list: list_test_2025
+  score: 70.0
+  alert: "Alerte seuil F2"
+
+ancien_list_2023:
+  siren: "222222222"
+  list: list_test_2023
+  score: 65.0

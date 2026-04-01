@@ -53,17 +53,17 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        # cse_latest (score + alert) is already joined by companies_in_list — no second hit needed.
-        @companies = @companies.select("companies.*, cse_latest.score")
+        # company_lists is already joined by companies_in_list — score is a direct column.
+        @companies = @companies.select("companies.*, company_lists.score")
 
         # Order by score DESC, then id ASC for stable pagination
-        @companies = @companies.order("cse_latest.score DESC NULLS LAST, companies.id ASC")
+        @companies = @companies.order("company_lists.score DESC NULLS LAST, companies.id ASC")
 
         # Apply cursor-based pagination: (score < cursor_score) OR (score = cursor_score AND id > cursor_id)
         if @cursor_id > 0
           if @cursor_score
             @companies = @companies.where(
-              "(cse_latest.score < ?) OR (cse_latest.score = ? AND companies.id > ?)",
+              "(company_lists.score < ?) OR (company_lists.score = ? AND companies.id > ?)",
               @cursor_score, @cursor_score, @cursor_id
             )
           else
@@ -117,8 +117,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     respond_to do |format|
       format.html do
-        @companies = @companies.select("companies.*, cse_latest.score")
-        @companies = @companies.order("cse_latest.score DESC NULLS LAST, companies.id ASC")
+        @companies = @companies.select("companies.*, company_lists.score")
+        @companies = @companies.order("company_lists.score DESC NULLS LAST, companies.id ASC")
 
         companies_with_extra = @companies.limit(@per_page + 1).to_a
         @has_next_page = companies_with_extra.size > @per_page
@@ -182,15 +182,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Join with company_score_entries to get score and order by score DESC
     # Use a subquery to get the latest score for each company in this list
-    # cse_latest (score + alert) is already joined by companies_in_list — no second hit needed.
-    @companies = @companies.select("companies.*, cse_latest.score")
-    @companies = @companies.order("cse_latest.score DESC NULLS LAST, companies.id ASC")
+    # company_lists is already joined by companies_in_list — score is a direct column.
+    @companies = @companies.select("companies.*, company_lists.score")
+    @companies = @companies.order("company_lists.score DESC NULLS LAST, companies.id ASC")
 
     # Apply cursor-based pagination: (score < cursor_score) OR (score = cursor_score AND id > cursor_id)
     if @cursor_id > 0
       if @cursor_score
         @companies = @companies.where(
-          "(cse_latest.score < ?) OR (cse_latest.score = ? AND companies.id > ?)",
+          "(company_lists.score < ?) OR (company_lists.score = ? AND companies.id > ?)",
           @cursor_score, @cursor_score, @cursor_id
         )
       else
@@ -315,20 +315,12 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     companies.select(:siren).distinct.count
   end
 
-  # Build base query for companies in a list using a single INNER JOIN on a DISTINCT ON subquery.
-  # This replaces the old correlated EXISTS approach and has two advantages:
-  # - Hits company_score_entries only once (EXISTS + separate score join = twice)
-  # - Exposes cse_latest.score and cse_latest.alert directly, eliminating the second
-  #   score join in the HTML format block and the EXISTS in the niveau_alerte filter.
+  # Build base query for companies in a list via the company_lists join table.
+  # company_lists is rebuilt from company_score_entries by rake lists:rebuild_company_lists
+  # after each JSON score import. This gives a pre-computed, indexed (list_id, score)
+  # lookup instead of a DISTINCT ON subquery over company_score_entries on every request.
   def companies_in_list(list)
-    score_subquery = ActiveRecord::Base.sanitize_sql_array(
-      ["(SELECT DISTINCT ON (siren) siren, score, alert
-          FROM company_score_entries
-          WHERE list_name = ?
-          ORDER BY siren, created_at DESC)",
-       list.label]
-    )
-    Company.joins("INNER JOIN #{score_subquery} cse_latest ON cse_latest.siren = companies.siren")
+    Company.joins(:company_lists).where(company_lists: { list_id: list.id })
   end
 
   def export_list(companies)
@@ -398,10 +390,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                   end
     end
 
-    # Filter by niveau_alerte — cse_latest.alert is already joined by companies_in_list,
-    # no need to hit company_score_entries again.
+    # Filter by niveau_alerte — company_lists.alert is already joined by companies_in_list,
+    # no need to hit company_score_entries at all.
     if @search_params[:niveau_alerte].present? && @search_params[:niveau_alerte] != ""
-      companies = companies.where("cse_latest.alert = ?", @search_params[:niveau_alerte])
+      companies = companies.where("company_lists.alert = ?", @search_params[:niveau_alerte])
     end
 
     # Filter by premieres_alertes (no detection in the last 18 months before this list)
