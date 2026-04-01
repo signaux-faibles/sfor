@@ -153,13 +153,6 @@ module Excel
         WITH target_sirens AS MATERIALIZED (
           #{sirens_subquery}
         ),
-        siege_establishments AS MATERIALIZED (
-          SELECT DISTINCT ON (e.siren) e.siren, e.siret
-          FROM establishments e
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
-          WHERE e.siege = true
-          ORDER BY e.siren, e.siret
-        ),
         current_score_entries AS (
           SELECT DISTINCT ON (cse.siren) cse.siren, cse.score, cse.alert,
             ROUND((cse.macro_expl->>'Variation-de-l''effectif-de-l''entreprise')::numeric) AS score_effectif,
@@ -196,14 +189,6 @@ module Excel
           FROM establishments e
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = e.siren
         ),
-        social_debts AS MATERIALIZED (
-          SELECT ae.siren,
-            COALESCE(SUM(od.part_ouvriere), 0) AS part_ouvriere,
-            COALESCE(SUM(od.part_patronale), 0) AS part_patronale
-          FROM all_establishments ae
-          LEFT JOIN osf_debits od ON od.siret = ae.siret AND od.is_last = true
-          GROUP BY ae.siren
-        ),
         sjcf_companies AS (
           SELECT DISTINCT sc.siren
           FROM sjcf_companies sc
@@ -234,7 +219,7 @@ module Excel
           WHERE od.date_echeance > COALESCE(?, CURRENT_DATE)
         ),
         company_metadata AS (
-          SELECT c.siren, c.raison_sociale, c.department, c.creation,
+          SELECT c.siren, c.siret_siege, c.social_debt_total, c.raison_sociale, c.department, c.creation,
             c.libelle_categorie_juridique, c.naf_section, c.libelle_activite_principale,
             c.naf_code, c.libelle_naf_section
           FROM companies c
@@ -252,23 +237,21 @@ module Excel
               AND l.list_date < ?
           )
         )
-        SELECT ts.siren, se.siret AS siege_siret, cse.score, cse.alert,
+        SELECT ts.siren, cm.siret_siege, cse.score, cse.alert,
           cse.score_effectif, cse.score_financier, cse.score_dettes, cse.score_ap,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
           COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
           COALESCE(ae.effectif, 0) AS effectif,
-          sd.part_ouvriere, sd.part_patronale,
+          cm.social_debt_total,
           CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
           COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status,
           CASE WHEN du.siren IS NOT NULL THEN true ELSE false END AS has_delai_urssaf
         FROM target_sirens ts
-        LEFT JOIN siege_establishments se ON ts.siren = se.siren
         LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
         LEFT JOIN procol_statuses ps ON ts.siren = ps.siren
         LEFT JOIN all_effectifs ae ON ts.siren = ae.siren
-        LEFT JOIN social_debts sd ON ts.siren = sd.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
@@ -314,8 +297,8 @@ module Excel
       results.each do |row| # rubocop:disable Metrics/BlockLength
         siren = row.is_a?(Hash) ? row["siren"] : row[:siren]
 
-        # Siege establishment siret (we'll load the object when needed)
-        @siege_establishments[siren] = row["siege_siret"] if row["siege_siret"]
+        # Siege siret — read directly from companies.siret_siege
+        @siege_establishments[siren] = row["siret_siege"] if row["siret_siege"]
 
         # Score entry data for current list — JSONB values extracted in SQL, no JSON.parse needed
         if row["score"]
@@ -336,13 +319,8 @@ module Excel
         effectif = row["effectif"]
         @effectifs[siren] = effectif&.to_i || "-" if effectif&.to_i&.positive?
 
-        # Social debt (keyed by siren - sum of all establishments)
-        if row["part_ouvriere"] || row["part_patronale"]
-          @social_debts[siren] = {
-            part_ouvriere: row["part_ouvriere"] || 0,
-            part_patronale: row["part_patronale"] || 0
-          }
-        end
+        # Social debt — pre-aggregated on companies.social_debt_total
+        @social_debts[siren] = row["social_debt_total"].to_f if row["social_debt_total"]
 
         # SJCF
         @sjcf_companies.add(siren) if row["is_sjcf"]
@@ -434,11 +412,10 @@ module Excel
     end
 
     def format_social_debt(siren, _siege_establishment)
-      debt = @social_debts[siren]
-      return "-" unless debt
+      total = @social_debts[siren]
+      return "-" unless total&.positive?
 
-      total = (debt[:part_ouvriere].to_f + debt[:part_patronale].to_f)
-      total.positive? ? total.round(2) : "-"
+      total.round(2)
     end
 
     def format_insee_sector(company_data)

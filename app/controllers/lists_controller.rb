@@ -435,21 +435,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       )
     end
 
-    # Filter by minimum dette sociale
+    # Filter by minimum dette sociale — uses the denormalized companies.social_debt_total
+    # (kept in sync by rake companies:update_social_debt_total after each osf:sync_debit)
     if @search_params[:dette_sociale_min].present?
       dette_min = @search_params[:dette_sociale_min].to_f
-      # Use EXISTS with aggregated subquery to avoid materializing sirens in Ruby
-      # Sum dette sociale across ALL establishments of each company, using latest (`is_last`) OSF debit rows
-      companies = companies.where(
-        "EXISTS (
-          SELECT 1 FROM establishments e
-          INNER JOIN osf_debits od ON od.siret = e.siret
-          WHERE e.siren = companies.siren
-          AND od.is_last = true
-          GROUP BY e.siren
-          HAVING SUM(COALESCE(od.part_ouvriere, 0) + COALESCE(od.part_patronale, 0)) >= ?
-        )", dette_min
-      )
+      companies = companies.where("companies.social_debt_total >= ?", dette_min)
     end
 
     # Filter by libelle_procol (using procol_at_date function)
