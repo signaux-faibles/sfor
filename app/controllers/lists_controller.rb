@@ -388,29 +388,13 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where("companies.social_debt_total >= ?", dette_min)
     end
 
-    # Filter by libelle_procol (using procol_at_date function)
+    # Filter by libelle_procol — uses the denormalized companies.current_procol_status
+    # (NULL means "In bonis"; kept in sync by rake companies:update_procol_status after each osf:sync_procol)
     if @search_params[:libelle_procol].present? && @search_params[:libelle_procol] != ""
-      libelle_value = @search_params[:libelle_procol]
-      current_date = Date.current
-
-      companies = if libelle_value == "In bonis"
-                    # "In bonis" means companies NOT currently in procol
-                    # This includes companies that never had a procol and those that had one but are now out
-                    companies.where(
-                      "NOT EXISTS (
-            SELECT 1 FROM procol_at_date(?::date) AS procol
-            WHERE procol.siren = companies.siren
-          )", current_date
-                    )
+      companies = if @search_params[:libelle_procol] == "In bonis"
+                    companies.where(current_procol_status: nil)
                   else
-                    # Use EXISTS subquery with procol_at_date function to avoid materializing sirens in Ruby
-                    companies.where(
-                      "EXISTS (
-            SELECT 1 FROM procol_at_date(?::date) AS procol
-            WHERE procol.siren = companies.siren
-            AND procol.libelle_procol = ?
-          )", current_date, libelle_value
-                    )
+                    companies.where(current_procol_status: @search_params[:libelle_procol])
                   end
     end
 

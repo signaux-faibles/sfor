@@ -136,7 +136,6 @@ module Excel
     end
 
     def load_all_data_in_single_query # rubocop:disable Metrics/MethodLength
-      current_date = Date.current
       list_label = @list.label
       @alert_frequencies = {}
 
@@ -163,20 +162,6 @@ module Excel
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = cse.siren
           WHERE cse.list_name = ?
           ORDER BY cse.siren, cse.created_at DESC
-        ),
-        procol_last_actions AS (
-          SELECT DISTINCT ON (op.siren, op.action_procol)
-            op.siren, op.date_effet, op.action_procol, op.libelle_procol
-          FROM osf_procols op
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = op.siren
-          WHERE op.date_effet <= ?
-          ORDER BY op.siren, op.action_procol, op.date_effet DESC
-        ),
-        procol_statuses AS (
-          SELECT DISTINCT ON (siren) siren, libelle_procol
-          FROM procol_last_actions
-          WHERE action_procol != 'fin_procedure' AND action_procol != 'inclusion_autre_procedure'
-          ORDER BY siren, action_procol
         ),
         all_establishments AS MATERIALIZED (
           SELECT e.siren, e.siret
@@ -214,7 +199,7 @@ module Excel
         ),
         company_metadata AS (
           SELECT c.siren, c.siret_siege, c.social_debt_total, c.latest_effectif,
-            c.raison_sociale, c.department, c.creation,
+            c.current_procol_status, c.raison_sociale, c.department, c.creation,
             c.libelle_categorie_juridique, c.naf_section, c.libelle_activite_principale,
             c.naf_code, c.libelle_naf_section
           FROM companies c
@@ -237,7 +222,7 @@ module Excel
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
-          COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
+          COALESCE(cm.current_procol_status, 'In Bonis') AS procol_status,
           COALESCE(cm.latest_effectif, 0) AS effectif,
           cm.social_debt_total,
           CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
@@ -245,7 +230,6 @@ module Excel
           CASE WHEN du.siren IS NOT NULL THEN true ELSE false END AS has_delai_urssaf
         FROM target_sirens ts
         LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
-        LEFT JOIN procol_statuses ps ON ts.siren = ps.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren
@@ -255,18 +239,16 @@ module Excel
       SQL
 
       # Parameters order (matching SQL placeholders in order) — sirens are in the
-      # embedded AR subquery, not as bind params, so only 7 scalar values remain:
+      # embedded AR subquery, not as bind params, so only 6 scalar values remain:
       #   1. list_label (current_score_entries WHERE clause)
-      #   2. current_date (procol_last_actions date filter)
-      #   3. list_label (sjcf_companies WHERE clause)
-      #   4. list_date (delai_urssaf_companies WHERE clause)
-      #   5. list_label (first_alert_sirens: list_name != current list)
-      #   6. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
-      #   7. list_date (first_alert_sirens: l.list_date < current list date)
+      #   2. list_label (sjcf_companies WHERE clause)
+      #   3. list_date  (delai_urssaf_companies WHERE clause)
+      #   4. list_label (first_alert_sirens: list_name != current list)
+      #   5. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
+      #   6. list_date  (first_alert_sirens: l.list_date < current list date)
       list_date = @list.list_date || Date.current
       cutoff_date = list_date - 18.months
       all_params = [list_label,    # current_score_entries WHERE
-                    current_date,  # procol_last_actions date filter
                     list_label,    # sjcf_companies WHERE
                     list_date,     # delai_urssaf_companies WHERE
                     list_label,    # first_alert_sirens: list_name !=

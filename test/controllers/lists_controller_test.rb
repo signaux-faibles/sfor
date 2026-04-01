@@ -9,14 +9,6 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     @list_2024 = lists(:list_test_2024)
   end
 
-  # procol_at_date is a SQL function created by migrations; it is not in schema.rb.
-  # Run `rails db:drop db:create db:migrate RAILS_ENV=test` to have it in the test DB.
-  def procol_at_date_available?
-    @procol_at_date_available ||= ActiveRecord::Base.connection.execute(
-      "SELECT 1 FROM pg_proc WHERE proname = 'procol_at_date'"
-    ).any?
-  end
-
   test "index redirects to sign in when not authenticated" do
     get lists_path
 
@@ -242,11 +234,9 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
   end
 
   test "show filter libelle_procol with matching value includes company" do
-    skip "procol_at_date SQL function not in test DB (run db:migrate RAILS_ENV=test)" unless procol_at_date_available?
-
     sign_in @user
 
-    # company_paris has osf_procol libelle_procol "Redressement judiciaire"
+    # company_paris has current_procol_status "Redressement judiciaire"
     get list_path(@list_2025), params: { search: { libelle_procol: "Redressement judiciaire" } }
 
     assert_response :success
@@ -254,11 +244,9 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
   end
 
   test "show filter libelle_procol In bonis excludes company in procol" do
-    skip "procol_at_date SQL function not in test DB (run db:migrate RAILS_ENV=test)" unless procol_at_date_available?
-
     sign_in @user
 
-    # company_paris is in procol, so "In bonis" excludes it
+    # company_paris has current_procol_status set, so "In bonis" (NULL) excludes it
     get list_path(@list_2025), params: { search: { libelle_procol: "In bonis" } }
 
     assert_response :success

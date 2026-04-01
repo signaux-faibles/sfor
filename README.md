@@ -377,6 +377,11 @@ bin/rails companies:update_social_debt_total ~ 10mins
 bin/rails companies:update_latest_effectif ~ 5mins
 ```
 
+> And update the denormalized procol status :
+```
+bin/rails companies:update_procol_status ~ quelques secondes
+```
+
 > For `osf_effectif` don't forget to update the `data_freshness` attribute of the corresponding line of the `import.rb` model. You can do this using the app admin panel. You can get the value by doing `select Max(oe.periode) from osf_effectifs oe` . This will be hopefully automaticaly done at import time one day.
 
 # Data freshness and forward fill (URSSAF + Effectif/AP widgets)
