@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_01_130000) do
+ActiveRecord::Schema[7.2].define(version: 2026_04_01_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -138,6 +138,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_01_130000) do
     t.boolean "is_active"
     t.string "siret_siege", limit: 14
     t.decimal "social_debt_total", precision: 15, scale: 2
+    t.integer "latest_effectif"
     t.index ["department"], name: "index_companies_on_department"
     t.index ["naf_code"], name: "index_companies_on_naf_code"
     t.index ["siren"], name: "index_companies_on_siren", unique: true

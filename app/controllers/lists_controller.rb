@@ -375,18 +375,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where(department: department_codes) if department_codes.any?
     end
 
-    # Filter by minimum effectif
+    # Filter by minimum effectif — uses the denormalized companies.latest_effectif
+    # (kept in sync by rake companies:update_latest_effectif after each osf:sync_effectif_ent)
     if @search_params[:effectif_min].present?
-      effectif_min = @search_params[:effectif_min].to_i
-      # Use EXISTS subquery to avoid materializing sirens in Ruby
-      companies = companies.where(
-        "EXISTS (
-          SELECT 1 FROM osf_ent_effectifs oee
-          WHERE oee.siren = companies.siren
-          AND oee.is_latest = true
-          AND oee.effectif >= ?
-        )", effectif_min
-      )
+      companies = companies.where("companies.latest_effectif >= ?", @search_params[:effectif_min].to_i)
     end
 
     # Filter by minimum dette sociale — uses the denormalized companies.social_debt_total

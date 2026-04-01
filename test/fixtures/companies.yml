@@ -6,6 +6,7 @@ company_paris:
   creation: '2020-01-01'
   department: '75'
   social_debt_total: 3000.50
+  latest_effectif: 50
 
 company_finistere:
   siren: '987654321'

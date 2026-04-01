@@ -178,12 +178,6 @@ module Excel
           WHERE action_procol != 'fin_procedure' AND action_procol != 'inclusion_autre_procedure'
           ORDER BY siren, action_procol
         ),
-        all_effectifs AS MATERIALIZED (
-          SELECT oee.siren, oee.effectif
-          FROM osf_ent_effectifs oee
-          INNER JOIN target_sirens ts_filter ON ts_filter.siren = oee.siren
-          WHERE oee.is_latest = true
-        ),
         all_establishments AS MATERIALIZED (
           SELECT e.siren, e.siret
           FROM establishments e
@@ -219,7 +213,8 @@ module Excel
           WHERE od.date_echeance > COALESCE(?, CURRENT_DATE)
         ),
         company_metadata AS (
-          SELECT c.siren, c.siret_siege, c.social_debt_total, c.raison_sociale, c.department, c.creation,
+          SELECT c.siren, c.siret_siege, c.social_debt_total, c.latest_effectif,
+            c.raison_sociale, c.department, c.creation,
             c.libelle_categorie_juridique, c.naf_section, c.libelle_activite_principale,
             c.naf_code, c.libelle_naf_section
           FROM companies c
@@ -243,7 +238,7 @@ module Excel
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
           COALESCE(ps.libelle_procol, 'In Bonis') AS procol_status,
-          COALESCE(ae.effectif, 0) AS effectif,
+          COALESCE(cm.latest_effectif, 0) AS effectif,
           cm.social_debt_total,
           CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
           COALESCE(ts_status.status, 'Pas d''accompagnement') AS tracking_status,
@@ -251,7 +246,6 @@ module Excel
         FROM target_sirens ts
         LEFT JOIN current_score_entries cse ON ts.siren = cse.siren
         LEFT JOIN procol_statuses ps ON ts.siren = ps.siren
-        LEFT JOIN all_effectifs ae ON ts.siren = ae.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN tracking_statuses ts_status ON ts.siren = ts_status.siren
         LEFT JOIN delai_urssaf_companies du ON ts.siren = du.siren

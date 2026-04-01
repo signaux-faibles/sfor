@@ -372,6 +372,11 @@ bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL cl
 bin/rails companies:update_social_debt_total ~ 10mins
 ```
 
+> And update the denormalized latest effectif :
+```
+bin/rails companies:update_latest_effectif ~ 5mins
+```
+
 > For `osf_effectif` don't forget to update the `data_freshness` attribute of the corresponding line of the `import.rb` model. You can do this using the app admin panel. You can get the value by doing `select Max(oe.periode) from osf_effectifs oe` . This will be hopefully automaticaly done at import time one day.
 
 # Data freshness and forward fill (URSSAF + Effectif/AP widgets)
