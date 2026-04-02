@@ -121,12 +121,19 @@
             <div class="fr-col-12 fr-col-lg-4">
               <div class="fr-input-group">
                 <%= f.label :niveau_alerte, "Niveau d'alerte", class: "fr-label" %>
+                <% niveau_alerte_options = [
+                     ["Tous", ""],
+                     ["Alerte élevée", "Alerte seuil F1"],
+                     ["Alerte modérée", "Alerte seuil F2"]
+                   ] %>
+                <% if current_user&.crp_network_member? %>
+                  <% niveau_alerte_options += [
+                       ["Plans", "Plans"],
+                       ["Ratios", "Ratios"]
+                     ] %>
+                <% end %>
                 <%= f.select :niveau_alerte,
-                             [
-                               ["Tous", ""],
-                               ["Alerte élevée", "Alerte seuil F1"],
-                               ["Alerte modérée", "Alerte seuil F2"]
-                             ],
+                             niveau_alerte_options,
                              { selected: search_params[:niveau_alerte] || "" },
                              { class: "fr-select" } %>
               </div>

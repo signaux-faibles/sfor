@@ -63,6 +63,11 @@ class User < ApplicationRecord
     networks.where(active: true).sort_by { |network| network.name == "CODEFI" ? 0 : 1 }
   end
 
+  def crp_network_member?
+    # "CRP user" == user belongs to the Network named "CRP"
+    networks.exists?(name: "CRP")
+  end
+
   def should_show_confidentiality_modal?
     return true if last_confidentiality_acknowledged_at.nil?
 

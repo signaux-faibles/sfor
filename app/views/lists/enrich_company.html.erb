@@ -18,6 +18,18 @@
       </li>
     <% end %>
 
+    <% if @enrichment[:alert_level] == "plans" %>
+      <li>
+        <p class="fr-badge fr-badge--info fr-badge--no-icon">Plans</p>
+      </li>
+    <% end %>
+
+    <% if @enrichment[:alert_level] == "ratios" %>
+      <li>
+        <p class="fr-badge fr-badge--warning fr-badge--no-icon">Ratios</p>
+      </li>
+    <% end %>
+
     <% if @enrichment[:tracking_under_surveillance_count].to_i > 0 %>
       <li>
         <p class="fr-badge fr-badge--brown-caramel">

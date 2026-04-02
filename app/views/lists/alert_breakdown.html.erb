@@ -1,14 +1,33 @@
 <%= turbo_frame_tag "alert_breakdown" do %>
   <%= pluralize(@total_count, "entreprise", "entreprises") %> résultat<%= "s" if @total_count > 1 %>
   <% if @alert_breakdown %>
-    • 
-    <span class="fr-badge fr-badge--error fr-badge--no-icon">
-      <%= @alert_breakdown[:alerte_elevee] %> <%= @alert_breakdown[:alerte_elevee] > 1 ? "Alertes élevées" : "Alerte élevée" %>
-    </span>
-    et
-    <span class="fr-badge fr-badge--yellow-tournesol">
-      <%= @alert_breakdown[:alerte_moderee] %> <%= @alert_breakdown[:alerte_moderee] > 1 ? "Alertes modérées" : "Alerte modérée" %>
-    </span>
+    <% if current_user&.crp_network_member? %>
+      •
+      <span class="fr-badge fr-badge--error fr-badge--no-icon">
+        <%= @alert_breakdown[:alerte_elevee].to_i %> <%= @alert_breakdown[:alerte_elevee].to_i > 1 ? "Alertes élevées" : "Alerte élevée" %>
+      </span>
+      et
+      <span class="fr-badge fr-badge--yellow-tournesol">
+        <%= @alert_breakdown[:alerte_moderee].to_i %> <%= @alert_breakdown[:alerte_moderee].to_i > 1 ? "Alertes modérées" : "Alerte modérée" %>
+      </span>
+      et
+      <span class="fr-badge fr-badge--info fr-badge--no-icon">
+        <%= @alert_breakdown[:alerte_plans].to_i %> <%= @alert_breakdown[:alerte_plans].to_i > 1 ? "Plans" : "Plan" %>
+      </span>
+      et
+      <span class="fr-badge fr-badge--warning fr-badge--no-icon">
+        <%= @alert_breakdown[:alerte_ratios].to_i %> <%= @alert_breakdown[:alerte_ratios].to_i > 1 ? "Ratios" : "Ratio" %>
+      </span>
+    <% else %>
+      • 
+      <span class="fr-badge fr-badge--error fr-badge--no-icon">
+        <%= @alert_breakdown[:alerte_elevee] %> <%= @alert_breakdown[:alerte_elevee] > 1 ? "Alertes élevées" : "Alerte élevée" %>
+      </span>
+      et
+      <span class="fr-badge fr-badge--yellow-tournesol">
+        <%= @alert_breakdown[:alerte_moderee] %> <%= @alert_breakdown[:alerte_moderee] > 1 ? "Alertes modérées" : "Alerte modérée" %>
+      </span>
+    <% end %>
   <% end %>
 <% end %>
 

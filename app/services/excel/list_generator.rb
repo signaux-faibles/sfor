@@ -377,6 +377,10 @@ module Excel
         "Alerte élevée"
       when "alerte seuil f2"
         "Alerte modérée"
+      when "plans"
+        "Plans"
+      when "ratios"
+        "Ratios"
       else
         "-"
       end

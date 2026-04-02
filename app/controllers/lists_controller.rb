@@ -4,6 +4,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   include ProcolStatusable
   include ListExportTrackable
 
+  STANDARD_ALERT_VALUES = ["Alerte seuil F1", "Alerte seuil F2"].freeze
+  CRP_ALERT_VALUES = ["Plans", "Ratios"].freeze
+
   def index
     @lists = List.order(list_date: :desc)
   end
@@ -340,6 +343,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # NOTE: All filters below are combined (AND logic) - each filter narrows down the results
     # from the previous filters. The `companies` query is progressively refined.
 
+    # CRP users can see additional alert values (Plans, Ratios).
+    unless crp_network_member?
+      # Keep "no alert" (NULL) and existing F1/F2, but exclude CRP-only alert values.
+      companies = companies.where(
+        "company_lists.alert IS NULL OR company_lists.alert NOT IN (?)",
+        CRP_ALERT_VALUES
+      )
+    end
+
     # Filter by search query (q) - SIREN or raison sociale
     if @search_params[:q].present?
       query = @search_params[:q].strip
@@ -525,6 +537,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         result["alert_level"] = "elevee"
       when "alerte seuil f2"
         result["alert_level"] = "moderee"
+      when "plans"
+        result["alert_level"] = "plans"
+      when "ratios"
+        result["alert_level"] = "ratios"
       end
     end
   end
@@ -559,19 +575,39 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def calculate_alert_breakdown(companies_query)
     # company_lists has one row per (siren, list) — no DISTINCT needed.
     # Uses the covering index on (list_id, score) INCLUDE (siren, alert, ...) for an index-only scan.
-    counts = CompanyList
-             .where(list_id: @list.id)
-             .where(siren: companies_query.select(:siren))
-             .where(alert: ["Alerte seuil F1", "Alerte seuil F2"])
-             .pick(
-               Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F1' THEN 1 END)"),
-               Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F2' THEN 1 END)")
-             ) || [0, 0]
+    if crp_network_member?
+      counts = CompanyList
+               .where(list_id: @list.id)
+               .where(siren: companies_query.select(:siren))
+               .where(alert: STANDARD_ALERT_VALUES + CRP_ALERT_VALUES)
+               .pick(
+                 Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F1' THEN 1 END)"),
+                 Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F2' THEN 1 END)"),
+                 Arel.sql("COUNT(CASE WHEN alert = 'Plans' THEN 1 END)"),
+                 Arel.sql("COUNT(CASE WHEN alert = 'Ratios' THEN 1 END)")
+               ) || [0, 0, 0, 0]
 
-    {
-      alerte_elevee: counts[0].to_i,
-      alerte_moderee: counts[1].to_i
-    }
+      {
+        alerte_elevee: counts[0].to_i,
+        alerte_moderee: counts[1].to_i,
+        alerte_plans: counts[2].to_i,
+        alerte_ratios: counts[3].to_i
+      }
+    else
+      counts = CompanyList
+               .where(list_id: @list.id)
+               .where(siren: companies_query.select(:siren))
+               .where(alert: STANDARD_ALERT_VALUES)
+               .pick(
+                 Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F1' THEN 1 END)"),
+                 Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F2' THEN 1 END)")
+               ) || [0, 0]
+
+      {
+        alerte_elevee: counts[0].to_i,
+        alerte_moderee: counts[1].to_i
+      }
+    end
   end
 
   def enrich_single_company(siren) # rubocop:disable Metrics/MethodLength
@@ -617,6 +653,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         enrichment[:alert_level] = "elevee"
       when "alerte seuil f2"
         enrichment[:alert_level] = "moderee"
+      when "plans"
+        enrichment[:alert_level] = "plans"
+      when "ratios"
+        enrichment[:alert_level] = "ratios"
       end
     end
 
@@ -641,5 +681,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     enrichment[:procol_status] = procol_status_for_siren(siren)
 
     enrichment
+  end
+
+  def crp_network_member?
+    current_user&.crp_network_member?
   end
 end
