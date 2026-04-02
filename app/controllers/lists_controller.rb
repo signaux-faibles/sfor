@@ -403,27 +403,20 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
       # A company is a "première alerte" if it has NOT appeared in any other list
       # within the last 18 months before the current list date.
-      #
-      # Two-step anti-join strategy:
-      #   1. Pluck the small set of recent list labels from the tiny `lists` table
-      #      (typically 5-15 values, negligible cost).
-      #   2. Use IN(specific_labels) on company_score_entries so PostgreSQL can use
-      #      index seeks on (list_name, siren) — one seek per label, very fast.
-      #
-      # Avoided: list_name != 'X' (negative condition, forces full table scan) and
-      # a correlated NOT EXISTS per company (O(n_companies) index probes).
-      recent_list_labels = List
+      # company_lists is much smaller than company_score_entries (one row per siren per list,
+      # no history) and has an index on list_id, making the IN() subquery very fast.
+      recent_list_ids = List
         .where("list_date > ? AND list_date < ?", cutoff_date, current_list_date)
         .where.not(label: @list.label)
-        .pluck(:label)
+        .pluck(:id)
 
-      if recent_list_labels.present?
-        recently_appeared_sirens = CompanyScoreEntry
-          .where(list_name: recent_list_labels)
+      if recent_list_ids.present?
+        recently_appeared_sirens = CompanyList
+          .where(list_id: recent_list_ids)
           .select(:siren)
         companies = companies.where.not(siren: recently_appeared_sirens)
       end
-      # If no recent list labels found, all companies are first alerts — no filter needed.
+      # If no recent list IDs found, all companies are first alerts — no filter needed.
     end
 
     # Filter by sans_entreprises_recentes (exclude companies created after threshold date)
@@ -564,15 +557,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def calculate_alert_breakdown(companies_query)
-    # Use a single aggregated query with conditional aggregation to count both alert types
-    # This avoids materializing all SIRENs in Ruby and reduces from 3 queries to 1
-    counts = CompanyScoreEntry
-             .where(list_name: @list.label)
+    # company_lists has one row per (siren, list) — no DISTINCT needed.
+    # Uses the covering index on (list_id, score) INCLUDE (siren, alert, ...) for an index-only scan.
+    counts = CompanyList
+             .where(list_id: @list.id)
              .where(siren: companies_query.select(:siren))
              .where(alert: ["Alerte seuil F1", "Alerte seuil F2"])
              .pick(
-               Arel.sql("COUNT(DISTINCT CASE WHEN alert = 'Alerte seuil F1' THEN siren END)"),
-               Arel.sql("COUNT(DISTINCT CASE WHEN alert = 'Alerte seuil F2' THEN siren END)")
+               Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F1' THEN 1 END)"),
+               Arel.sql("COUNT(CASE WHEN alert = 'Alerte seuil F2' THEN 1 END)")
              ) || [0, 0]
 
     {
