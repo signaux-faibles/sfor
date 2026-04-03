@@ -222,6 +222,7 @@ module Excel
                     cutoff_date,   # first_alert_sirens: l.list_date >
                     list_date]     # first_alert_sirens: l.list_date <
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
+      Rails.logger.info "[ListGenerator] Full query for EXPLAIN ANALYZE:\nEXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)\n#{sanitized_sql};"
 
       t_db = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       results = ActiveRecord::Base.transaction do

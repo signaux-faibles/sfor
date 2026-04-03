@@ -29,14 +29,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @search_params ||= {}
 
     # Parse cursor: format is "score:id" or just "id" for backward compatibility
-    cursor_str = @search_params[:cursor].to_s
-    if cursor_str.include?(":")
-      @cursor_score, @cursor_id = cursor_str.split(":").map(&:to_f)
-      @cursor_id = @cursor_id.to_i
-    else
-      @cursor_id = cursor_str.to_i
-      @cursor_score = nil
-    end
+    @cursor_score, @cursor_id = parse_cursor(@search_params[:cursor])
     @cursor_id = 0 if @cursor_id < 1
     @per_page = @search_params[:per_page].to_i
     @per_page = 20 if @per_page < 1
@@ -64,7 +57,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
         # Apply cursor-based pagination: (score < cursor_score) OR (score = cursor_score AND id > cursor_id)
         if @cursor_id > 0
-          if @cursor_score
+          if !@cursor_score.nil?
             @companies = @companies.where(
               "(company_lists.score < ?) OR (company_lists.score = ? AND companies.id > ?)",
               @cursor_score, @cursor_score, @cursor_id
@@ -74,6 +67,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
             @companies = @companies.where("companies.id > ?", @cursor_id)
           end
         end
+
+        # Log full query for EXPLAIN ANALYZE (copy-paste directly into psql)
+        Rails.logger.warn "[ListsController#show] ===== EXPLAIN ANALYZE =====\nEXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)\n#{@companies.limit(@per_page + 1).to_sql};\n=========="
 
         # Load one extra to check if there's a next page
         companies_with_extra = @companies.limit(@per_page + 1).to_a
@@ -97,7 +93,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         # Set next cursor (score:id format) if there's a next page
         if @has_next_page && @results.any?
           last_result = @results.last
-          @next_cursor = "#{last_result['score']}:#{last_result['id']}"
+          @next_cursor = build_next_cursor(last_result)
         end
 
         # Enrichment is done per-result via Turbo Frames for better performance
@@ -123,6 +119,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
         @companies = @companies.select("companies.*, company_lists.score")
         @companies = @companies.order("company_lists.score DESC NULLS LAST, companies.id ASC")
 
+        Rails.logger.warn "[ListsController#show rescue] ===== EXPLAIN ANALYZE =====\nEXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)\n#{@companies.limit(@per_page + 1).to_sql};\n=========="
+
         companies_with_extra = @companies.limit(@per_page + 1).to_a
         @has_next_page = companies_with_extra.size > @per_page
         companies_page = companies_with_extra.first(@per_page)
@@ -138,7 +136,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
         if @has_next_page && @results.any?
           last_result = @results.last
-          @next_cursor = "#{last_result['score']}:#{last_result['id']}"
+          @next_cursor = build_next_cursor(last_result)
         end
       end
       format.xlsx do
@@ -165,14 +163,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @search_params ||= {}
 
     # Parse cursor: format is "score:id" or just "id" for backward compatibility
-    cursor_str = @search_params[:cursor].to_s
-    if cursor_str.include?(":")
-      @cursor_score, @cursor_id = cursor_str.split(":").map(&:to_f)
-      @cursor_id = @cursor_id.to_i
-    else
-      @cursor_id = cursor_str.to_i
-      @cursor_score = nil
-    end
+    @cursor_score, @cursor_id = parse_cursor(@search_params[:cursor])
     @cursor_id = 0 if @cursor_id < 1
     @per_page = @search_params[:per_page].to_i
     @per_page = 20 if @per_page < 1
@@ -191,7 +182,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Apply cursor-based pagination: (score < cursor_score) OR (score = cursor_score AND id > cursor_id)
     if @cursor_id > 0
-      if @cursor_score
+      if !@cursor_score.nil?
         @companies = @companies.where(
           "(company_lists.score < ?) OR (company_lists.score = ? AND companies.id > ?)",
           @cursor_score, @cursor_score, @cursor_id
@@ -220,7 +211,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Set next cursor (score:id format) if there's a next page
     if @has_next_page && @results.any?
       last_result = @results.last
-      @next_cursor = "#{last_result['score']}:#{last_result['id']}"
+      @next_cursor = build_next_cursor(last_result)
     end
 
     respond_to do |format|
@@ -685,5 +676,25 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   def crp_network_member?
     current_user&.crp_network_member?
+  end
+
+  def parse_cursor(raw_cursor)
+    cursor_str = raw_cursor.to_s
+    return [nil, 0] if cursor_str.blank?
+
+    if cursor_str.include?(":")
+      score_part, id_part = cursor_str.split(":", 2)
+      parsed_score = score_part.present? ? score_part.to_f : nil
+      parsed_id = id_part.to_i
+      [parsed_score, parsed_id]
+    else
+      [nil, cursor_str.to_i]
+    end
+  end
+
+  def build_next_cursor(result)
+    score = result["score"]
+    id = result["id"]
+    score.nil? ? id.to_s : "#{score}:#{id}"
   end
 end
