@@ -18,6 +18,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def show
     @establishments = @company.establishments_ordered
     load_company_badges
+    @show_detection_widgets = show_detection_widgets?
     load_company_active_trackings
     track_out_of_zone_access(@company)
   end
@@ -29,6 +30,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def detection_widget
     last_list, entry = fetch_last_list_and_entry
+    return head :no_content if hide_detection_for_current_user?(entry)
     return head :no_content unless last_list && entry
 
     @criticite = calculate_criticite(entry)
@@ -40,6 +42,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def feedback_detection_widget
     last_list = latest_list_or_render_error
     return unless last_list
+
+    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    return head :no_content if hide_detection_for_current_user?(entry)
 
     load_feedback_entry_and_reasons(last_list)
     @existing_rating = existing_rating_for_list(last_list)
@@ -70,6 +75,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def history_detection_widget
+    _, entry = fetch_last_list_and_entry
+    return head :no_content if hide_detection_for_current_user?(entry)
+
     data = Companies::AlertHistoryBuilder.new(@company).build
     @alert_history = data[:alert_history]
     @show_alert_history_button = data[:show_alert_history_button]
@@ -79,6 +87,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def waterfall_detection_widget
     last_list, entry = fetch_last_list_and_entry
+    return head :no_content if hide_detection_for_current_user?(entry)
     return render partial: "waterfall_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
 
     @entry = entry
@@ -353,19 +362,19 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def calculate_alert_level
-    # Get the last list
-    last_list = List.order(code: :desc).first
-    return nil unless last_list
-
-    # Find the CompanyScoreEntry for this company and last list
-    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    _last_list, entry = fetch_last_list_and_entry
     return nil unless entry&.alert
+    return nil if hide_detection_for_current_user?(entry)
 
-    case entry.alert.downcase
+    case entry.alert.downcase # rubocop:disable Style/HashLikeCase
     when "alerte seuil f1"
       "elevee"
     when "alerte seuil f2"
       "moderee"
+    when "plans"
+      "plans"
+    when "ratios"
+      "ratios"
     end
   end
 
@@ -374,8 +383,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def calculate_is_first_alert
-    last_list = List.order(code: :desc).first
+    last_list, entry = fetch_last_list_and_entry
     return false unless last_list
+    return false if hide_detection_for_current_user?(entry)
 
     return false unless CompanyScoreEntry.exists?(siren: @company.siren, list_name: last_list.label)
 
@@ -412,5 +422,20 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     authorized_trackings = can_see_trackings ? all_company_trackings : EstablishmentTracking.none
     @in_progress_trackings = authorized_trackings.in_progress
     @under_surveillance_trackings = authorized_trackings.under_surveillance
+  end
+
+  def show_detection_widgets?
+    _last_list, entry = fetch_last_list_and_entry
+    entry.present? && !hide_detection_for_current_user?(entry)
+  end
+
+  def hide_detection_for_current_user?(entry)
+    return false if crp_network_member?
+
+    %w[plans ratios].include?(entry&.alert&.downcase)
+  end
+
+  def crp_network_member?
+    current_user&.crp_network_member?
   end
 end

@@ -44,6 +44,14 @@
           <p class="fr-badge fr-badge--yellow-tournesol fr-ml-1w">Alerte modérée</p>
         <% end %>
 
+        <% if @alert_level == "plans" %>
+          <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">Plans</p>
+        <% end %>
+
+        <% if @alert_level == "ratios" %>
+          <p class="fr-badge fr-badge--warning fr-badge--no-icon fr-ml-1w">Ratios</p>
+        <% end %>
+
         <%# Statut procédure collective (si différent de in bonis) %>
         <% if @procol_status && @procol_status != "In Bonis" %>
           <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
