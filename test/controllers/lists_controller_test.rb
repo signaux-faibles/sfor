@@ -275,6 +275,28 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_includes @response.body, "Company Ancien"
   end
 
+  test "show filter niveau_alerte Plans is available to CRP users" do
+    sign_in @user
+    company_lists(:paris_list_2025).update!(alert: "Plans", score: nil)
+
+    get list_path(@list_2025), params: { search: { niveau_alerte: "Plans" } }
+
+    assert_response :success
+    assert_includes @response.body, "Company Paris"
+  end
+
+  test "show filter niveau_alerte Plans returns no results for non-CRP users" do
+    non_crp_user = users(:user_urssaf_paris)
+    sign_in non_crp_user
+    company_lists(:paris_list_2025).update!(alert: "Plans", score: nil)
+
+    get list_path(@list_2025), params: { search: { niveau_alerte: "Plans" } }
+
+    assert_response :success
+    assert_includes @response.body, "Aucun résultat trouvé"
+    assert_not_includes @response.body, "Company Paris"
+  end
+
   test "show filter premieres_alertes keeps company only detected over 18 months ago" do
     sign_in @user
 
@@ -366,6 +388,48 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
     assert_response :success
     assert_includes @response.body, "Company Paris"
+  end
+
+  test "show displays load more button when page size is smaller than results" do
+    sign_in @user
+    # user_crp_paris sees department 75 companies in list_test_2025: Company Paris + Company Ancien
+    get list_path(@list_2025), params: { search: { per_page: 1 } }
+
+    assert_response :success
+    assert_includes @response.body, "Charger plus de résultats"
+  end
+
+  test "load_more returns turbo stream payload" do
+    sign_in @user
+
+    get load_more_list_path(@list_2025, format: :turbo_stream),
+        params: { search: { per_page: 1, cursor: "0:1" } },
+        headers: { "Accept" => Mime[:turbo_stream].to_s }
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream].to_s, @response.media_type
+  end
+
+  test "load_more works with Plans filter and cursor without score (nil score pagination)" do
+    sign_in @user
+
+    # Reuse fixture companies (same pattern as the rest of this test suite)
+    company_lists(:paris_list_2025).update!(alert: "Plans", score: nil)
+    company_lists(:ancien_list_2025).update!(alert: "Plans", score: nil)
+
+    get list_path(@list_2025), params: { search: { niveau_alerte: "Plans", per_page: 1 } }
+    assert_response :success
+    assert_includes @response.body, "Charger plus de résultats"
+
+    first_id = Company.where(siren: %w[123456789 222222222]).order(:id).first.id
+    get load_more_list_path(@list_2025, format: :turbo_stream),
+        params: { search: { niveau_alerte: "Plans", per_page: 1, cursor: first_id.to_s } },
+        headers: { "Accept" => Mime[:turbo_stream].to_s }
+
+    assert_response :success
+    assert_equal Mime[:turbo_stream].to_s, @response.media_type
+    assert_includes @response.body, "turbo-stream"
+    assert_includes @response.body, "Company"
   end
 
   # --- enrich_company (uses enrich_single_company) ---

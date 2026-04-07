@@ -346,6 +346,58 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_includes @response.body, "Accompagnements"
   end
 
+  test "non-CRP user does not see detection ecosystem for latest Plans alert" do
+    non_crp_user = users(:user_urssaf_paris)
+    list_2025 = lists(:list_test_2025)
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Plans")
+
+    sign_in non_crp_user
+    get company_path(@company_paris.siren)
+
+    assert_response :success
+    assert_not_includes @response.body, "Détection Signaux faibles"
+    assert_not_includes @response.body, "Historique des alertes"
+    assert_select "p.fr-badge", text: "Plans", count: 0
+    assert_select "p.fr-badge", text: "Ratios", count: 0
+
+    # Detection-related Turbo Frame endpoints are hidden as well.
+    get detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
+
+    get feedback_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
+
+    get waterfall_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
+
+    get history_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
+
+    assert_equal "Liste test 2025", list_2025.label
+  end
+
+  test "CRP user sees Plans label and detection for latest Plans alert" do
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Plans")
+
+    sign_in @user
+    get company_path(@company_paris.siren)
+
+    assert_response :success
+    assert_includes @response.body, "Plans"
+    assert_includes @response.body, "Détection Signaux faibles"
+  end
+
+  test "CRP user sees Ratios label and detection for latest Ratios alert" do
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Ratios")
+
+    sign_in @user
+    get company_path(@company_paris.siren)
+
+    assert_response :success
+    assert_includes @response.body, "Ratios"
+    assert_includes @response.body, "Détection Signaux faibles"
+  end
+
   test "establishment_trackings_list_widget returns success" do
     sign_in @user
 
