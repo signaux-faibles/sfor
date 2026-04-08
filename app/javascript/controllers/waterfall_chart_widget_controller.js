@@ -88,11 +88,18 @@ export default class extends Controller {
           return;
         }
 
-        const {ctx, chartArea: {left, right, top, bottom, width, height}} = chart;
+        const {ctx, chartArea: {bottom, width, height}} = chart;
 
         const lastBarIndex = finalScoreIndex;
         const meta = chart.getDatasetMeta(0);
+        if (!meta?.data || lastBarIndex < 0 || lastBarIndex >= meta.data.length) {
+          return;
+        }
+
         const bar = meta.data[lastBarIndex];
+        if (!bar || typeof bar.x !== "number") {
+          return;
+        }
 
         const categoryWidth = width / data.labels.length;
         const columnLeft = bar.x - categoryWidth / 2;
