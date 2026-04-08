@@ -51,10 +51,12 @@ export default class extends Controller {
       gridColor = '#FFFFFF59';
     }
 
+    const hasFinalScoreBar = this.labelsValue.includes("Risque de défaillance (%)")
+    const finalScoreIndex = this.labelsValue.findIndex((label) => label === "Risque de défaillance (%)")
     let backgroundColors = []
 
     this.valuesValue.forEach((values, index) => {
-      if (index === this.valuesValue.length - 1) {
+      if (hasFinalScoreBar && index === finalScoreIndex) {
         backgroundColors.push(colors[2]);
       } else {
         const val1 = values[0];
@@ -78,13 +80,17 @@ export default class extends Controller {
       ]
     };
 
-    // Colored background on the last bar.
+    // Colored background only on explicit final score bar.
     const backgroundPlugin = {
       id: 'customBackground',
       beforeDatasetsDraw: (chart) => {
+        if (!hasFinalScoreBar) {
+          return;
+        }
+
         const {ctx, chartArea: {left, right, top, bottom, width, height}} = chart;
 
-        const lastBarIndex = data.labels.length - 1;
+        const lastBarIndex = finalScoreIndex;
         const meta = chart.getDatasetMeta(0);
         const bar = meta.data[lastBarIndex];
 
@@ -134,8 +140,7 @@ export default class extends Controller {
           const value = Array.isArray(dataValue) ? dataValue[1] - dataValue[0] : dataValue;
           const label = Math.round(value * 10) / 10 + '%';
 
-          // Changer la couleur pour le dernier label
-          if (index === meta.data.length - 1) {
+          if (hasFinalScoreBar && index === finalScoreIndex) {
             ctx.fillStyle = '#000000'; // Rouge pour la dernière valeur (change selon tes besoins)
           } else {
             ctx.fillStyle = color;

@@ -86,8 +86,9 @@
                   <tbody>
 
                   <% @labels.each_with_index do |label, index| %>
+                    <% next if label.blank? %>
                     <tr id="table-detection-row-key-<%= index %>" data-row-key="<%= index %>">
-                      <% if index == @labels.length - 1 %>
+                      <% if label == "Risque de défaillance (%)" %>
                         <th scope="row">
                           <strong><%= label %></strong>
                         </th>

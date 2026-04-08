@@ -4,27 +4,21 @@ module Companies
       @entry = entry
     end
 
-    def build # rubocop:disable Metrics/MethodLength
+    def build
       key_mapping = waterfall_key_mapping
       data_ordered = waterfall_data_from_entry(key_mapping)
       label_by_key = label_by_key_map(key_mapping)
 
       labels = []
       values = []
-      risk = 0
       val1 = 0
 
       data_ordered.each do |key, value|
-        risk += value
         val2 = (val1 + value).round(0)
         labels << label_by_key[key] if label_by_key[key]
         values << [val1.round(0), val2]
         val1 = val2
       end
-
-      final_score = (@entry.score&.to_f || risk).round(0)
-      values << [0, final_score]
-      labels << "Risque de défaillance (%)"
 
       {
         labels: labels,
