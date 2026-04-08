@@ -59,7 +59,11 @@
           ></canvas>
         </div>
 
-        <p class="fr-mt-1w"><strong>L'entreprise présente un risque de défaillance <%= @criticite %>.</strong></p>
+        <p class="fr-mt-1w">
+          <strong>
+            Le risque de défaillance de l'entreprise apparaît comme <%= @criticite %>, c'est-à-dire qu'il existe <%= @entry.score.to_f.round(0) %>% de probabilité qu'elle entre en défaillance sous 18 mois.
+          </strong>
+        </p>
 
         <p class="fr-mb-3w fr-text--sm"><strong>Source :</strong> Signaux faibles — <strong>Mise à jour : </strong><%= @data_date %></p>
       </div>
@@ -93,12 +97,12 @@
                           <strong><%= label %></strong>
                         </th>
                         <td>
-                          <strong><%= (@values[index][1] - @values[index][0]) %> %</strong>
+                          <strong><%= (@values[index][1] - @values[index][0]).round(1) %> %</strong>
                         </td>
                       <% else %>
                         <th scope="row"><%= label %></th>
                         <td>
-                          <%= (@values[index][1] - @values[index][0]) %> %
+                          <%= (@values[index][1] - @values[index][0]).round(1) %> %
                         </td>
                       <% end %>
 
@@ -111,7 +115,7 @@
           </div>
         </div>
 
-        <p class="fr-mt-1w"><strong>L'entreprise présente un risque de défaillance <%= @criticite %>.</strong></p>
+        <p class="fr-mt-1w"><strong>Le risque de défaillance de l'entreprise apparaît comme <%= @criticite %>, c'est-à-dire qu'il existe <%= @entry.score.to_f.round(0) %>% de probabilité qu'elle entre en défaillance sous 18 mois.</strong></p>
 
         <p class="fr-mb-4w fr-text--sm"><strong>Source :</strong> Signaux faibles — <strong>Mise à jour : </strong><%= @data_date %></p>
       </div>

@@ -11,12 +11,12 @@ module Companies
 
       labels = []
       values = []
-      val1 = 0
+      val1 = 0.0
 
       data_ordered.each do |key, value|
-        val2 = (val1 + value).round(0)
+        val2 = val1 + value
         labels << label_by_key[key] if label_by_key[key]
-        values << [val1.round(0), val2]
+        values << [val1, val2]
         val1 = val2
       end
 
@@ -46,7 +46,7 @@ module Companies
         mapping = key_mapping[macro_key]
         next unless mapping
 
-        data[mapping[:key]] = value.to_f.round(1)
+        data[mapping[:key]] = value.to_f
       end
 
       data.sort_by { |_key, value| value }.reverse.to_h
