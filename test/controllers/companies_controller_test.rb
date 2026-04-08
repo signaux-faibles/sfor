@@ -260,7 +260,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
 
     assert_response :success
     assert_includes @response.body, "data-waterfall-chart-widget-values-value="
-    assert_includes @response.body, "Risque de défaillance"
+    assert_includes @response.body, "Éléments constitutifs de cette alerte"
   end
 
   test "waterfall_detection_widget renders empty when entry missing" do
