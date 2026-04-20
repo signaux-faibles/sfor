@@ -12,5 +12,6 @@ namespace :osf do
       puts "Syncing all debit data using PostgreSQL cursor"
     end
     Osf::DebitSyncService.new(months_back: months_back).perform
+    Rake::Task["companies:update_social_debt_total"].invoke
   end
 end

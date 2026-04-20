@@ -7,5 +7,6 @@ namespace :osf do
   task sync_procol: :environment do
     puts "Syncing all procol data using PostgreSQL cursor"
     Osf::ProcolSyncService.new.perform
+    Rake::Task["companies:update_procol_status"].invoke
   end
 end

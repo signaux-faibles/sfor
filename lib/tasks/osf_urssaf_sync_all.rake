@@ -20,11 +20,6 @@ namespace :osf do
     Rake::Task["osf:sync_procol"].invoke
     Rake::Task["osf:sync_effectif"].invoke(months_back)
     Rake::Task["osf:sync_effectif_ent"].invoke(months_back)
-    Rake::Task["companies:update_social_debt_total"].invoke
-    Rake::Task["companies:update_delai_urssaf_until"].invoke
-    Rake::Task["companies:update_procol_status"].invoke
-    Rake::Task["companies:update_latest_effectif"].invoke
-
     duration = (Time.current - start_time).round(2)
 
     puts "\n#{'=' * 50}"
