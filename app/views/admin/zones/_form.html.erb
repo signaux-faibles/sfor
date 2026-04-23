@@ -1,0 +1,29 @@
+<%= form_with model: [:admin, @zone], local: true, class: "fr-mb-3w" do |form| %>
+  <% if @zone.errors.any? %>
+    <div class="fr-alert fr-alert--error fr-mb-2w">
+      <p class="fr-alert__title"><%= pluralize(@zone.errors.count, "erreur") %> ont empeche l'enregistrement :</p>
+      <ul>
+        <% @zone.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :key, "Cle technique", class: "fr-label" %>
+    <%= form.text_field :key, class: "fr-input", disabled: @zone.persisted? %>
+    <p class="fr-hint-text">Exemple : support_page_body</p>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :content, "Contenu (Markdown)", class: "fr-label" %>
+    <%= form.text_area :content, class: "fr-input", rows: 16 %>
+    <p class="fr-hint-text">Le contenu est rendu en Markdown sur la page cible.</p>
+  </div>
+
+  <div class="fr-btns-group">
+    <%= form.submit "Enregistrer", class: "fr-btn" %>
+    <%= link_to "Annuler", admin_zones_path, class: "fr-btn fr-btn--secondary" %>
+  </div>
+<% end %>

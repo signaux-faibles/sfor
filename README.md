@@ -531,3 +531,23 @@ docker compose run test_web rails db:test:drop_force db:create db:migrate RAILS_
 ```
 
 La couverture des tests est calculée par la gem `simplecov` et sera affichée à la fin des tests. Un fichier récapitulatif est disponible dans le dossier `coverage`.
+
+# Editable zones (admin)
+
+Some page content can be edited from the admin through **Zones**.
+
+- A zone contains:
+  - a technical key (`key`)
+  - Markdown content (`content`)
+- Rendering is done through the `markdown` helper (`redcarpet` gem).
+- At the moment, **only one key is used**: `support_page_body` (content displayed under the support page H1).
+
+## Markdown links and CSS classes
+
+With the current configuration (`filter_html: true`), regular Markdown links work:
+
+```md
+[User guide](https://example.com)
+```
+
+However, adding CSS classes to links from Markdown is not supported (for example with `<a class="fr-btn">...</a>`) because HTML is filtered.

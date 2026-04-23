@@ -1,0 +1,34 @@
+<h1 class="fr-h4 fr-mb-3w">Zones editables</h1>
+
+<div class="fr-mb-3w">
+  <%= link_to "Nouvelle zone", new_admin_zone_path, class: "fr-btn" %>
+</div>
+
+<% if @zones.any? %>
+  <div class="fr-table fr-table--bordered">
+    <table>
+      <thead>
+        <tr>
+          <th>Cle</th>
+          <th>Apercu</th>
+          <th>Mis a jour le</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @zones.each do |zone| %>
+          <tr>
+            <td><code><%= zone.key %></code></td>
+            <td><%= truncate(zone.content, length: 120) %></td>
+            <td><%= l(zone.updated_at.to_date) %></td>
+            <td>
+              <%= link_to "Modifier", edit_admin_zone_path(zone), class: "fr-link" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p>Aucune zone disponible.</p>
+<% end %>
