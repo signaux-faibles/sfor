@@ -514,3 +514,29 @@ docker compose run test_web rails db:test:drop_force db:create db:migrate RAILS_
 ```
 
 La couverture des tests est calculée par la gem `simplecov` et sera affichée à la fin des tests. Un fichier récapitulatif est disponible dans le dossier `coverage`.
+
+# Mode maintenance
+
+L'application dispose d'un mode maintenance qui affiche une page d'indisponibilité aux utilisateurs. Ce mode est contrôlé via le modèle `AppSetting` en base de données.
+
+## Activer le mode maintenance
+
+```bash
+podman exec -ti sfor-app bin/rails runner 'AppSetting.current.update!(maintenance_mode: true)'
+```
+
+## Désactiver le mode maintenance
+
+```bash
+podman exec -ti sfor-app bin/rails runner 'AppSetting.current.update!(maintenance_mode: true)'
+```
+
+## Comportement
+
+Lorsque le mode maintenance est activé :
+
+- Toutes les pages affichent `public/maintenance.html` avec un statut HTTP 503
+- Les routes suivantes restent accessibles :
+  - `/up` (health check)
+  - `/admin` (panneau d'administration)
+  - Les routes Devise (login, reset de mot de passe, etc.)
