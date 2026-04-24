@@ -15,12 +15,7 @@ namespace :osf do
     start_time = Time.current
 
     Rake::Task["osf:sync_ap"].invoke(months_back)
-    Rake::Task["osf:sync_cotisation"].invoke(months_back)
-    Rake::Task["osf:sync_debit"].invoke(months_back)
-    Rake::Task["osf:sync_delai"].invoke(months_back)
-    Rake::Task["osf:sync_effectif"].invoke(months_back)
-    Rake::Task["osf:sync_effectif_ent"].invoke(months_back)
-    Rake::Task["osf:sync_procol"].invoke
+    Rake::Task["osf:sync_urssaf"].invoke(months_back)
     Rake::Task["osf:sync_sirene"].invoke
     Rake::Task["osf:sync_sirene_ul"].invoke
 

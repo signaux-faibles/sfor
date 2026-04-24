@@ -12,5 +12,6 @@ namespace :osf do
       puts "Syncing all effectif_ent data using PostgreSQL cursor"
     end
     Osf::EffectifEntSyncService.new(months_back: months_back).perform
+    Rake::Task["companies:update_latest_effectif"].invoke
   end
 end

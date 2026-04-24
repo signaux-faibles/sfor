@@ -356,6 +356,7 @@ If you encounter "Asset not declared to be precompiled" errors in Docker:
 
 ```
 bin/rails osf:sync_all[24]                    # Sync all OSF data from OSF database to local Rails tables
+bin/rails osf:sync_urssaf[24]                 # Sync all URSSAF data (cotisation, debit, delai, procol, effectifs)
 bin/rails osf:sync_ap[24]                     # Sync OSF ap data from clean_ap materialized view to local Rails tables
 bin/rails osf:sync_cotisation[24]             # Sync OSF cotisation data using PostgreSQL cursors ~ 1 heure
 bin/rails osf:sync_debit[24]                  # Sync OSF debit data using PostgreSQL cursors ~ 30 mins
@@ -367,30 +368,12 @@ bin/rails osf:sync_sirene                     # Sync establishments from SIRENE 
 bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL clean view ~ 1 hour
 ```
 
-> Then update the freshly created companies table with the consolidated social debt :
-```
-bin/rails companies:update_social_debt_total ~ 10mins
-```
-
-> And update the denormalized latest effectif :
-```
-bin/rails companies:update_latest_effectif ~ 5mins
-```
-
-> And update the denormalized procol status :
-```
-bin/rails companies:update_procol_status ~ quelques secondes
-```
+> **Note** : Les tâches de sync individuelles (`sync_debit`, `sync_delai`, `sync_effectif_ent`, `sync_procol`) appellent automatiquement leurs scripts post-sync respectifs (`companies:update_social_debt_total`, `companies:update_delai_urssaf_until`, `companies:update_latest_effectif`, `companies:update_procol_status`). Il n'est plus nécessaire de les lancer manuellement.
 
 > After importing a new JSON score file, rebuild the company_lists join table :
 ```
 bin/rails lists:rebuild_company_lists               # all lists
 bin/rails "lists:rebuild_company_lists[Janvier 2026]" # one list
-```
-
-> After running `osf:sync_delai`, update the denormalized URSSAF delay column:
-```
-bin/rails companies:update_delai_urssaf_until ~ 6mins
 ```
 
 > One-time backfill for the tracking status column (afterwards kept current via callbacks):
@@ -531,3 +514,29 @@ docker compose run test_web rails db:test:drop_force db:create db:migrate RAILS_
 ```
 
 La couverture des tests est calculée par la gem `simplecov` et sera affichée à la fin des tests. Un fichier récapitulatif est disponible dans le dossier `coverage`.
+
+# Mode maintenance
+
+L'application dispose d'un mode maintenance qui affiche une page d'indisponibilité aux utilisateurs. Ce mode est contrôlé via le modèle `AppSetting` en base de données.
+
+## Activer le mode maintenance
+
+```bash
+podman exec -ti sfor-app bin/rails runner 'AppSetting.current.update!(maintenance_mode: true)'
+```
+
+## Désactiver le mode maintenance
+
+```bash
+podman exec -ti sfor-app bin/rails runner 'AppSetting.current.update!(maintenance_mode: true)'
+```
+
+## Comportement
+
+Lorsque le mode maintenance est activé :
+
+- Toutes les pages affichent `public/maintenance.html` avec un statut HTTP 503
+- Les routes suivantes restent accessibles :
+  - `/up` (health check)
+  - `/admin` (panneau d'administration)
+  - Les routes Devise (login, reset de mot de passe, etc.)

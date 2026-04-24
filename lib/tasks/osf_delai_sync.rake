@@ -12,5 +12,6 @@ namespace :osf do
       puts "Syncing all delai data using PostgreSQL cursor"
     end
     Osf::DelaiSyncService.new(months_back: months_back).perform
+    Rake::Task["companies:update_delai_urssaf_until"].invoke
   end
 end
