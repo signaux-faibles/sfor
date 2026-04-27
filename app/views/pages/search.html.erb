@@ -1,5 +1,34 @@
-<% if @search_params.dig(:q).present? %>
-  <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe %>
+<%= debug(@search_params) %>
+
+<%# PAGE TITLE %>
+<%# If search query and page 1 %>
+<% if @search_params.dig(:q).present? and (!@search_params.dig(:page).present? or @search_params.dig(:page).to_i == 1) %>
+  <% if @pagination.dig(:total_results).to_i == 1 %>
+    <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe + ", " + @pagination.dig(:total_results).to_s + " résultat trouvé" %>
+  <% elsif @pagination.dig(:total_results).to_i > 1 %>
+    <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe + ", " + @pagination.dig(:total_results).to_s + " résultats trouvés" %>
+  <% else %>
+    <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe + ", aucun résult trouvé" %>
+  <% end %>
+<%# If search query and page > 1 %>
+<% elsif @search_params.dig(:q).present? and (@search_params.dig(:page).present? and @search_params.dig(:page).to_i > 1) %>
+  <% if @pagination.dig(:total_results).to_i == 1 %>
+    <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe + ", " + @pagination.dig(:total_results).to_s + " résultat trouvé, page " + @pagination.dig(:page).to_s %>
+  <% elsif @pagination.dig(:total_results).to_i > 1 %>
+    <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe + ", " + @pagination.dig(:total_results).to_s + " résultats trouvés, page " + @pagination.dig(:page).to_s %>
+  <% else %>
+    <% content_for :title, "Recherche \"".html_safe + @search_params.dig(:q) + "\"".html_safe + ", aucun résult trouvé, page " + @pagination.dig(:page).to_s %>
+  <% end %>
+<%# If no search query and page > 1 %>
+<% elsif (!@search_params.dig(:q).present? or @search_params.dig(:q) == '') and (@search_params.dig(:page).present? and @search_params.dig(:page).to_i > 1) %>
+  <% if @pagination.dig(:total_results).to_i == 1 %>
+    <% content_for :title, "Recherche , " + @pagination.dig(:total_results).to_s + " résultat trouvé, page " + @pagination.dig(:page).to_s %>
+  <% elsif @pagination.dig(:total_results).to_i > 1 %>
+    <% content_for :title, "Recherche, " + @pagination.dig(:total_results).to_s + " résultats trouvés, page " + @pagination.dig(:page).to_s %>
+  <% else %>
+    <% content_for :title, "Recherche, aucun résult trouvé, page " + @pagination.dig(:page).to_s %>
+  <% end %>
+<%# If no search query, show "Recherche" %>
 <% else %>
   <% content_for :title, "Recherche" %>
 <% end %>
@@ -19,8 +48,6 @@
           - Page <%= @pagination[:page] %> sur <%= @pagination[:total_pages] %>
         <% end %>
       </p>
-
-
 
       <div class="fr-mt-3w">
         <div class="fr-grid-row fr-grid-row--gutters">
