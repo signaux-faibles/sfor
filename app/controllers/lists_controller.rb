@@ -14,6 +14,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def show # rubocop:disable Metrics/MethodLength
     @list = List.find(params[:id])
 
+    parse_multiselect_params
+
     # Get search params
     @search_params = params.require(:search).permit(:q,
                                                     :effectif_min,
@@ -148,6 +150,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def load_more
     @list = List.find(params[:id])
 
+    parse_multiselect_params
+
     # Get search params (same as show action)
     @search_params = params.require(:search).permit(:q,
                                                     :effectif_min,
@@ -245,6 +249,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def alert_breakdown # rubocop:disable Metrics/MethodLength
     @list = List.find(params[:id])
 
+    parse_multiselect_params
+
     # Get search params (same as show action)
     @search_params = params.require(:search).permit(:q,
                                                     :effectif_min,
@@ -307,6 +313,22 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     companies = companies_in_list(list)
     companies = policy_scope(companies)
     companies.select(:siren).distinct.count
+  end
+
+  def parse_multiselect_params
+    return unless params[:search].present?
+
+    %w[departement_in section_activite_principale].each do |key|
+      json_key = "#{key}_values"
+      next unless params[:search][json_key].present?
+
+      begin
+        values = JSON.parse(params[:search][json_key])
+        params[:search][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
+      rescue JSON::ParserError
+        # leave as-is
+      end
+    end
   end
 
   # Build base query for companies in a list via the company_lists join table.

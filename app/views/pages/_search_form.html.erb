@@ -84,38 +84,67 @@
               role="listbox"
             >
           </div>
-
           </div>
         </div>
-        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4">
+        <% secteurs_activite = [
+          { value: "A", label: "A - Agriculture, sylviculture et pêche" },
+          { value: "B", label: "B - Industries extractives" },
+          { value: "C", label: "C - Industrie manufacturière" },
+          { value: "D", label: "D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné" },
+          { value: "E", label: "E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution" },
+          { value: "F", label: "F - Construction" },
+          { value: "G", label: "G - Commerce ; réparation d'automobiles et de motocycles" },
+          { value: "H", label: "H - Transports et entreposage" },
+          { value: "I", label: "I - Hébergement et restauration" },
+          { value: "J", label: "J - Information et communication" },
+          { value: "K", label: "K - Activités financières et d'assurance" },
+          { value: "L", label: "L - Activités immobilières" },
+          { value: "M", label: "M - Activités spécialisées, scientifiques et techniques" },
+          { value: "N", label: "N - Activités de services administratifs et de soutien" },
+          { value: "P", label: "P - Enseignement" },
+          { value: "Q", label: "Q - Santé humaine et action sociale" },
+          { value: "R", label: "R - Arts, spectacles et activités récréatives" },
+          { value: "S", label: "S - Autres activités de services" },
+          { value: "T", label: "T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre" }
+        ] %>
+        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= secteurs_activite.to_json %>">
           <div class="fr-input-group">
-            <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
-            <%= f.select :section_activite_principale,
-                         [
-                           ["A - Agriculture, sylviculture et pêche", "A"],
-                           ["B - Industries extractives", "B"],
-                           ["C - Industrie manufacturière", "C"],
-                           ["D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné", "D"],
-                           ["E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution", "E"],
-                           ["F - Construction", "F"],
-                           ["G - Commerce ; réparation d'automobiles et de motocycles", "G"],
-                           ["H - Transports et entreposage", "H"],
-                           ["I - Hébergement et restauration", "I"],
-                           ["J - Information et communication", "J"],
-                           ["K - Activités financières et d'assurance", "K"],
-                           ["L - Activités immobilières", "L"],
-                           ["M - Activités spécialisées, scientifiques et techniques", "M"],
-                           ["N - Activités de services administratifs et de soutien", "N"],
-                           ["P - Enseignement", "P"],
-                           ["Q - Santé humaine et action sociale", "Q"],
-                           ["R - Arts, spectacles et activités récréatives", "R"],
-                           ["S - Autres activités de services", "S"],
-                           ["T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre", "T"]
-                         ],
-                         { selected: Array(search_params[:section_activite_principale]).compact_blank },
-                         { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+            <%= f.label :section_activite_principale, "Secteurs d'activité", class: "fr-label" %>
+            <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+              <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+              <%= f.text_field :section_activite_principale,
+                              value: "",
+                              class: "fr-input",
+                              placeholder: "",
+                              aria: {
+                                autocomplete: "both",
+                                controls: "sf-multiselect-activite-list",
+                                expanded: "false",
+                              },
+                              role: "combobox",
+                              data: {
+                                multiselect_target: "input",
+                                action: "input->multiselect#search keydown->multiselect#handleKeydown"
+                              },
+                              autocomplete: "off"
+              %>
+            </div>
+            <% selected_sections_with_labels = Array(search_params[:section_activite_principale]).compact_blank
+                                                .map { |v| secteurs_activite.find { |s| s[:value] == v } }
+                                                .compact %>
+            <%= f.hidden_field :section_activite_principale_values, value: selected_sections_with_labels.to_json, data: { multiselect_target: "hiddenValues" } %>
+
+            <div
+              id="sf-multiselect-activite-list"
+              data-multiselect-target="results"
+              class="sf-multiselect-results-container"
+              role="listbox"
+              aria-multiselectable="true"
+            >
+            </div>
           </div>
         </div>
+
       </div>
 
       <div class="fr-grid-row fr-grid-row--right fr-mt-5w">
