@@ -1,5 +1,3 @@
-<%= debug(@search_params) %>
-
 <%# PAGE TITLE %>
 <%# If search query and page 1 %>
 <% if @search_params.dig(:q).present? and (!@search_params.dig(:page).present? or @search_params.dig(:page).to_i == 1) %>
