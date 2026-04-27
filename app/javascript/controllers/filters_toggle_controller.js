@@ -4,7 +4,6 @@ export default class extends Controller {
     static targets = ["hiddenFilters", "toggleButton", "filtersOpenInput"];
 
     toggle() {
-        console.log("Toggling")
         const isHidden = this.hiddenFiltersTarget.style.display === "none";
 
         this.hiddenFiltersTarget.style.display = isHidden ? "block" : "none";
@@ -14,5 +13,12 @@ export default class extends Controller {
             : `<span class="fr-icon-arrow-down-line" aria-hidden="true"></span> Afficher des critères supplémentaires`;
 
         this.filtersOpenInputTarget.value = isHidden ? "true" : "false";
+
+        if (isHidden) {
+            const firstField = this.hiddenFiltersTarget.querySelector(
+                "input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled])"
+            );
+            firstField?.focus();
+        }
     }
 }

@@ -16,6 +16,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   before_action :set_system_labels, only: %i[index new new_by_siret edit update create confirm]
 
   def index
+    parse_multiselect_q_params
     params[:q] = handle_filters(params)
     clean_params = handle_view_params(params)
     @establishment_trackings = apply_filters(determine_base_scope, clean_params)

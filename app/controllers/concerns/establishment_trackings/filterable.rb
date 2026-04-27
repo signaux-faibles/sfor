@@ -6,6 +6,25 @@ module EstablishmentTrackings::Filterable
 
   private
 
+  def parse_multiselect_q_params
+    return unless params[:q].present?
+
+    {
+      establishment_departement_in_values: :establishment_departement_in,
+      state_in_values: :state_in
+    }.each do |json_key, target_key|
+      json_val = params.dig(:q, json_key)
+      next unless json_val.present?
+
+      begin
+        values = JSON.parse(json_val)
+        params[:q][target_key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
+      rescue JSON::ParserError
+        # leave as-is
+      end
+    end
+  end
+
   def handle_filters(params)
     if params[:clear_filters]
       session[:establishment_tracking_filters] = nil
@@ -32,6 +51,7 @@ module EstablishmentTrackings::Filterable
   end
 
   def apply_filters(base_scope, clean_params)
+    @filter_params = clean_params || {}
     @q = base_scope.ransack(clean_params)
     filter_by_tracking_type(@q.result)
   end
