@@ -16,13 +16,35 @@
             <%= f.text_field :establishment_siret_cont, class: "fr-input" %>
           </div>
         </div>
-        <div class="fr-col-3">
+        <% dept_options = current_user.geo_access.departments.order(:code).map { |d| { value: d.code, label: "#{d.code} - #{d.name}" } } %>
+        <% selected_depts = dept_options.select { |d| Array(@filter_params["establishment_departement_in"]).include?(d[:value]) } %>
+        <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= dept_options.to_json %>">
           <div class="fr-input-group">
             <%= f.label :establishment_departement_in, "Départements" %>
-            <%= f.collection_select :establishment_departement_in, current_user.geo_access.departments.order(:code), :code, ->(d) { "#{d.code} - #{d.name}" }, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+            <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+              <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+              <%= f.text_field :establishment_departement_in,
+                              value: "",
+                              class: "fr-input",
+                              placeholder: "",
+                              aria: { autocomplete: "both", controls: "sf-multiselect-departement-list", expanded: "false" },
+                              role: "combobox",
+                              data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                              autocomplete: "off" %>
+            </div>
+            <%= f.hidden_field :establishment_departement_in_values,
+                              value: selected_depts.to_json,
+                              data: { multiselect_target: "hiddenValues" } %>
+            <div id="sf-multiselect-departement-list"
+                 data-multiselect-target="results"
+                 class="sf-multiselect-results-container"
+                 role="listbox"
+                 aria-multiselectable="true"></div>
           </div>
         </div>
-        <div class="fr-col-3">
+        <% state_options = EstablishmentTracking.aasm.states.map { |s| { value: s.name.to_s, label: s.human_name } } %>
+        <% selected_states = state_options.select { |s| Array(@filter_params["state_in"]).include?(s[:value]) } %>
+        <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= state_options.to_json %>">
           <div class="fr-input-group">
             <%= f.label :state_in, "Statuts" %>
             <button class="fr-btn--tooltip fr-btn" type="button" id="button-statuts" aria-describedby="tooltip-statuts">
@@ -37,7 +59,25 @@
                 <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
               </ul>
             </span>
-            <%= f.collection_select :state_in, EstablishmentTracking.aasm.states.map { |s| [s.human_name, s.name] }, :last, :first, {}, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+            <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+              <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+              <%= f.text_field :state_in,
+                              value: "",
+                              class: "fr-input",
+                              placeholder: "",
+                              aria: { autocomplete: "both", controls: "sf-multiselect-state-list", expanded: "false" },
+                              role: "combobox",
+                              data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                              autocomplete: "off" %>
+            </div>
+            <%= f.hidden_field :state_in_values,
+                              value: selected_states.to_json,
+                              data: { multiselect_target: "hiddenValues" } %>
+            <div id="sf-multiselect-state-list"
+                 data-multiselect-target="results"
+                 class="sf-multiselect-results-container"
+                 role="listbox"
+                 aria-multiselectable="true"></div>
           </div>
         </div>
       </div>
