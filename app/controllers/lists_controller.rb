@@ -318,7 +318,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   def parse_multiselect_params
     return unless params[:search].present?
 
-    %w[departement_in section_activite_principale].each do |key|
+    %w[departement_in section_activite_principale forme_juridique].each do |key|
       json_key = "#{key}_values"
       next unless params[:search][json_key].present?
 
