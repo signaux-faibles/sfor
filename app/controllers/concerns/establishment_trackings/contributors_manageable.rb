@@ -15,6 +15,8 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
     authorize @establishment_tracking, :manage_contributors?
     @establishment_tracking.modifier = current_user
 
+    parse_multiselect_contributor_params
+
     old_contributors = capture_current_contributors
 
     if @establishment_tracking.update(contributor_params)
@@ -85,6 +87,22 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
   def handle_failed_update
     @establishment_tracking.reload
     render :manage_contributors, status: :unprocessable_entity
+  end
+
+  def parse_multiselect_contributor_params
+    return unless params[:establishment_tracking].present?
+
+    %w[referent_ids participant_ids].each do |key|
+      json_val = params[:establishment_tracking]["#{key}_values"]
+      next unless json_val.present?
+
+      begin
+        values = JSON.parse(json_val)
+        params[:establishment_tracking][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
+      rescue JSON::ParserError
+        # leave as-is
+      end
+    end
   end
 
   def contributor_params

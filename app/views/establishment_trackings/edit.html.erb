@@ -28,10 +28,10 @@
                 </ul>
               </span>
               <%= form.select :state,
-                            options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']],
-                            @establishment_tracking.state),
-                            {},
-                            { class: 'fr-select', data: { tracking_status_target: "stateSelect", action: "change->tracking-status#toggleWarningBanner" } } %>
+                              options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']],
+                                                 @establishment_tracking.state),
+                              {},
+                              { class: 'fr-select', data: { tracking_status_target: "stateSelect", action: "change->tracking-status#toggleWarningBanner" } } %>
               <% @establishment_tracking.errors[:state].each do |error| %>
                 <p class="fr-error-text"><%= error %></p>
               <% end %>
@@ -56,92 +56,169 @@
               L’agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l’entreprise pour le CODEFI.
             </span>
             <%= form.collection_select :criticality_id,
-                Criticality.all,
-                :id,
-                :name,
-                { selected: @establishment_tracking.criticality_id || Criticality.find_by(name: "Pas de criticité")&.id },
-                { class: 'fr-select' } %>
+                                       Criticality.all,
+                                       :id,
+                                       :name,
+                                       { selected: @establishment_tracking.criticality_id || Criticality.find_by(name: "Pas de criticité")&.id },
+                                       { class: 'fr-select' } %>
             <% @establishment_tracking.errors[:criticality_id].each do |error| %>
               <p class="fr-error-text"><%= error %></p>
             <% end %>
           </div>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>">
-            <%= form.label :tracking_label_ids, 'Étiquettes' %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-labels" aria-describedby="button-edit-tracking-labels">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur les étiquettes</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-labels" role="tooltip">
-              Le champ "étiquettes" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
-            </span>
-            <%= form.select :tracking_label_ids,
-                            @system_labels,
-                            {},
-                            { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
-            <% @establishment_tracking.errors[:tracking_label_ids].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
+          <% tracking_labels_options = TrackingLabel.kept.where(system: true).map { |l| { value: l.id.to_s, label: l.name } } %>
+          <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= tracking_labels_options.to_json %>">
+            <div class="fr-input-group">
+              <div class="fr-label-wrapper">
+                <%= form.label :tracking_label_ids, 'Étiquettes', class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-labels" aria-describedby="button-edit-tracking-labels">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les étiquettes</span>
+                </button>
+              </div>
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-labels" role="tooltip">
+                Le champ "étiquettes" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
+              </span>
+              <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                <%= form.text_field :tracking_label_ids, value: "", class: "fr-input", placeholder: "",
+                                    aria: { autocomplete: "both", controls: "sf-multiselect-tracking-labels-list", expanded: "false" },
+                                    role: "combobox",
+                                    data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                    autocomplete: "off" %>
+              </div>
+              <%= form.hidden_field :tracking_label_ids_values,
+                                    value: @establishment_tracking.tracking_labels.map { |l| { value: l.id.to_s, label: l.name } }.to_json,
+                                    data: { multiselect_target: "hiddenValues" } %>
+              <div id="sf-multiselect-tracking-labels-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
+              <% @establishment_tracking.errors[:tracking_label_ids].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
+            </div>
           </div>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>">
-            <%= form.label :supporting_service_ids, 'Instances concernées' %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-supporting-service" aria-describedby="button-edit-tracking-supporting-service">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur les instances concernées</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-supporting-service" role="tooltip">
-              Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
-            </span>
-            <%= form.collection_select :supporting_service_ids, SupportingService.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
-            <% @establishment_tracking.errors[:supporting_service_ids].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
+          <% supporting_services_options = SupportingService.all.map { |s| { value: s.id.to_s, label: s.name } } %>
+          <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= supporting_services_options.to_json %>">
+            <div class="fr-input-group">
+              <div class="fr-label-wrapper">
+                <%= form.label :supporting_service_ids, 'Instances concernées', class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-supporting-service" aria-describedby="button-edit-tracking-supporting-service">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les instances concernées</span>
+                </button>
+              </div>
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-supporting-service" role="tooltip">
+                Le champ "instances concernées" indique les parties prenantes concernées par le dossier.
+              </span>
+              <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                <%= form.text_field :supporting_service_ids, value: "", class: "fr-input", placeholder: "",
+                                    aria: { autocomplete: "both", controls: "sf-multiselect-supporting-services-list", expanded: "false" },
+                                    role: "combobox",
+                                    data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                    autocomplete: "off" %>
+              </div>
+              <%= form.hidden_field :supporting_service_ids_values,
+                                    value: @establishment_tracking.supporting_services.map { |s| { value: s.id.to_s, label: s.name } }.to_json,
+                                    data: { multiselect_target: "hiddenValues" } %>
+              <div id="sf-multiselect-supporting-services-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
+              <% @establishment_tracking.errors[:supporting_service_ids].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
+            </div>
           </div>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>">
-            <%= form.label :Difficultés %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-difficulty" aria-describedby="button-edit-tracking-difficulty">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur les difficultés</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-difficulty" role="tooltip">
-              Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
-            </span>
-            <%= form.collection_select :difficulty_ids, Difficulty.all, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
-            <% @establishment_tracking.errors[:difficulty_ids].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
+          <% difficulties_options = Difficulty.all.map { |d| { value: d.id.to_s, label: d.name } } %>
+          <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= difficulties_options.to_json %>">
+            <div class="fr-input-group">
+              <div class="fr-label-wrapper">
+                <%= form.label :difficulty_ids, 'Difficultés', class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-difficulty" aria-describedby="button-edit-tracking-difficulty">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les difficultés</span>
+                </button>
+              </div>
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-difficulty" role="tooltip">
+                Ce champ indique les difficultés rencontrées par les entreprises qu'elles soient les sources premières ou les conséquences de difficultés préexistantes. Par exemple, une entreprise avec des besoins de trésorerie peut également avoir été victime d'un aléa climatique à l'origine de ses problèmes de trésorerie.
+              </span>
+              <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                <%= form.text_field :difficulty_ids, value: "", class: "fr-input", placeholder: "",
+                                    aria: { autocomplete: "both", controls: "sf-multiselect-difficulties-list", expanded: "false" },
+                                    role: "combobox",
+                                    data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                    autocomplete: "off" %>
+              </div>
+              <%= form.hidden_field :difficulty_ids_values,
+                                    value: @establishment_tracking.difficulties.map { |d| { value: d.id.to_s, label: d.name } }.to_json,
+                                    data: { multiselect_target: "hiddenValues" } %>
+              <div id="sf-multiselect-difficulties-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
+              <% @establishment_tracking.errors[:difficulty_ids].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
+            </div>
           </div>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>">
-            <%= form.label :user_action_ids, 'Actions réalisées' %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-user-action" aria-describedby="button-edit-tracking-user-action">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur les actions réalisées</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-user-action" role="tooltip">
-              Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
-            </span>
-            <%= form.collection_select :user_action_ids, UserAction.kept.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select", tom_select_options: { sortField: { field: "position", direction: "asc" } } } } %>
-            <% @establishment_tracking.errors[:user_action_ids].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
+          <% user_actions_options = UserAction.kept.ordered.map { |a| { value: a.id.to_s, label: a.name } } %>
+          <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= user_actions_options.to_json %>">
+            <div class="fr-input-group">
+              <div class="fr-label-wrapper">
+                <%= form.label :user_action_ids, 'Actions réalisées', class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-user-action" aria-describedby="button-edit-tracking-user-action">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les actions réalisées</span>
+                </button>
+              </div>
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-user-action" role="tooltip">
+                Ce champ précise les actions réellement mises en œuvre par l'agent ou le CODEFI. Il est à remplir une fois les actions réalisées, au cours ou à la clôture de l'accompagnement.
+              </span>
+              <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                <%= form.text_field :user_action_ids, value: "", class: "fr-input", placeholder: "",
+                                    aria: { autocomplete: "both", controls: "sf-multiselect-user-actions-list", expanded: "false" },
+                                    role: "combobox",
+                                    data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                    autocomplete: "off" %>
+              </div>
+              <%= form.hidden_field :user_action_ids_values,
+                                    value: @establishment_tracking.user_actions.map { |a| { value: a.id.to_s, label: a.name } }.to_json,
+                                    data: { multiselect_target: "hiddenValues" } %>
+              <div id="sf-multiselect-user-actions-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
+              <% @establishment_tracking.errors[:user_action_ids].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
+            </div>
           </div>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>">
-            <%= form.label :codefi_redirect_ids, 'Réorientations hors CODEFI' %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-codefi-redirect" aria-describedby="button-edit-tracking-codefi-redirect">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur la réorientation hors CODEFI</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-codefi-redirect" role="tooltip">
-              Ce champ précise les acteurs ne relevant pas du CODEFI, internes ou externes à l'administration, vers lesquels l'entreprise a été redirigée.
-            </span>
-            <%= form.collection_select :codefi_redirect_ids, CodefiRedirect.ordered, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
-            <% @establishment_tracking.errors[:codefi_redirect_ids].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
+          <% codefi_redirects_options = CodefiRedirect.ordered.map { |c| { value: c.id.to_s, label: c.name } } %>
+          <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= codefi_redirects_options.to_json %>">
+            <div class="fr-input-group">
+              <div class="fr-label-wrapper">
+                <%= form.label :codefi_redirect_ids, 'Réorientations hors CODEFI', class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-codefi-redirect" aria-describedby="button-edit-tracking-codefi-redirect">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur la réorientation hors CODEFI</span>
+                </button>
+              </div>
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-codefi-redirect" role="tooltip">
+                Ce champ précise les acteurs ne relevant pas du CODEFI, internes ou externes à l'administration, vers lesquels l'entreprise a été redirigée.
+              </span>
+              <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                <%= form.text_field :codefi_redirect_ids, value: "", class: "fr-input", placeholder: "",
+                                    aria: { autocomplete: "both", controls: "sf-multiselect-codefi-redirects-list", expanded: "false" },
+                                    role: "combobox",
+                                    data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                    autocomplete: "off" %>
+              </div>
+              <%= form.hidden_field :codefi_redirect_ids_values,
+                                    value: @establishment_tracking.codefi_redirects.map { |c| { value: c.id.to_s, label: c.name } }.to_json,
+                                    data: { multiselect_target: "hiddenValues" } %>
+              <div id="sf-multiselect-codefi-redirects-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
+              <% @establishment_tracking.errors[:codefi_redirect_ids].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>
@@ -156,19 +233,35 @@
 
           <p><%= @establishment_tracking.establishment.siret %></p>
 
-          <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>">
-            <%= form.label :sector_ids, 'Filières' %>
-            <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-sector" aria-describedby="button-edit-tracking-sector">
-              <span class="fr-icon-information-line" aria-hidden="true"></span>
-              <span class="fr-sr-only">Information sur les filières</span>
-            </button>
-            <span class="fr-tooltip fr-placement" id="button-edit-tracking-sector" role="tooltip">
-              La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
-            </span>
-            <%= form.collection_select :sector_ids, Sector.ordered_by_name, :id, :name, {}, { multiple: true, class: 'tom-select', placeholder: 'Non renseigné', data: { controller: "tom-select" } } %>
-            <% @establishment_tracking.errors[:sector_ids].each do |error| %>
-              <p class="fr-error-text"><%= error %></p>
-            <% end %>
+          <% sectors_options = Sector.ordered_by_name.map { |s| { value: s.id.to_s, label: s.name } } %>
+          <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= sectors_options.to_json %>">
+            <div class="fr-input-group">
+              <div class="fr-label-wrapper">
+                <%= form.label :sector_ids, 'Filières', class: "fr-label" %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-sector" aria-describedby="button-edit-tracking-sector">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur les filières</span>
+                </button>
+              </div>
+              <span class="fr-tooltip fr-placement" id="button-edit-tracking-sector" role="tooltip">
+                La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
+              </span>
+              <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                <%= form.text_field :sector_ids, value: "", class: "fr-input", placeholder: "",
+                                    aria: { autocomplete: "both", controls: "sf-multiselect-sectors-list", expanded: "false" },
+                                    role: "combobox",
+                                    data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                    autocomplete: "off" %>
+              </div>
+              <%= form.hidden_field :sector_ids_values,
+                                    value: @establishment_tracking.sectors.map { |s| { value: s.id.to_s, label: s.name } }.to_json,
+                                    data: { multiselect_target: "hiddenValues" } %>
+              <div id="sf-multiselect-sectors-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
+              <% @establishment_tracking.errors[:sector_ids].each do |error| %>
+                <p class="fr-error-text"><%= error %></p>
+              <% end %>
+            </div>
           </div>
         </div>
       </div>

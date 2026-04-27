@@ -73,6 +73,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def update
     @establishment_tracking.modifier = current_user
+    parse_multiselect_tracking_params
 
     # Capture old supporting services before update
     old_supporting_services = @establishment_tracking.supporting_services.to_a
@@ -139,6 +140,22 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def set_system_labels
     @system_labels = TrackingLabel.kept.where(system: true).pluck(:name, :id)
+  end
+
+  def parse_multiselect_tracking_params
+    return unless params[:establishment_tracking].present?
+
+    %w[tracking_label_ids supporting_service_ids difficulty_ids user_action_ids codefi_redirect_ids sector_ids].each do |key|
+      json_val = params[:establishment_tracking]["#{key}_values"]
+      next unless json_val.present?
+
+      begin
+        values = JSON.parse(json_val)
+        params[:establishment_tracking][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
+      rescue JSON::ParserError
+        # leave as-is
+      end
+    end
   end
 
   def tracking_params

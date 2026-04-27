@@ -13,10 +13,38 @@
             </div>
           </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
+        <% departements = current_user.geo_access.departments.order(:code).map { |d| { value: d.code, label: "#{d.code} - #{d.name}" } } %>
+        <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= departements.to_json %>">
           <div class="fr-input-group">
             <%= f.label :departement_in, "Départements", class: "fr-label" %>
-            <%= f.collection_select :departement_in, current_user.geo_access.departments.order(:code), :code, ->(d) { "#{d.code} - #{d.name}" }, { selected: search_params[:departement_in] }, { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+            <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+              <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+              <%= f.text_field :departement_in,
+                              value: "",
+                              class: "fr-input",
+                              placeholder: "",
+                              aria: {
+                                autocomplete: "both",
+                                controls: "sf-multiselect-departement-list",
+                                expanded: "false",
+                              },
+                              role: "combobox",
+                              data: {
+                                multiselect_target: "input",
+                                action: "input->multiselect#search keydown->multiselect#handleKeydown"
+                              },
+                              autocomplete: "off"
+              %>
+            </div>
+            <%= f.hidden_field :departement_in_values, value: Array(search_params[:departement_in]).compact_blank.to_json, data: { multiselect_target: "hiddenValues" } %>
+            <div
+              id="sf-multiselect-departement-list"
+              data-multiselect-target="results"
+              class="sf-multiselect-results-container"
+              role="listbox"
+              aria-multiselectable="true"
+            >
+            </div>
           </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">

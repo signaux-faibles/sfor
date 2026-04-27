@@ -7,6 +7,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   def home; end
 
   def search # rubocop:disable Metrics/MethodLength
+    parse_multiselect_params
     @search_params = params.require(:search).permit(:q, :tranche_effectif_salarie,
                                                     :page, :per_page, :cp_dep,
                                                     :cp_dep_type, :cp_dep_label,
@@ -188,6 +189,22 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
         when "alerte seuil f2"
           result["alert_level"] = "moderee"
         end
+      end
+    end
+  end
+
+  def parse_multiselect_params
+    return unless params[:search].present?
+
+    %w[section_activite_principale].each do |key|
+      json_key = "#{key}_values"
+      next unless params[:search][json_key].present?
+
+      begin
+        values = JSON.parse(params[:search][json_key])
+        params[:search][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
+      rescue JSON::ParserError
+        # leave as-is
       end
     end
   end
