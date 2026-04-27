@@ -91,7 +91,9 @@
         <div data-filters-toggle-target="hiddenFilters" style="display: <%= params.dig(:q, :filters_open) == "true" ? "block" : "none" %>">
 
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-            <div class="fr-col-3">
+            <% label_options = @system_labels.map { |name, id| { value: id.to_s, label: name } } %>
+            <% selected_labels = label_options.select { |o| Array(@filter_params["tracking_labels_id_in"]).include?(o[:value]) } %>
+            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= label_options.to_json %>">
               <div class="fr-input-group">
                 <%= f.label :tracking_labels_id_in, "Étiquettes" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-labels" aria-describedby="tooltip-labels">
@@ -101,13 +103,30 @@
                 <span class="fr-tooltip fr-placement" id="tooltip-labels" role="tooltip">
                   Le champ "étiquette" indique un élément de contexte ou un dispositif ponctuel ou prioritaire concernant le dossier.
                 </span>
-                <%= f.select :tracking_labels_id_in,
-                             @system_labels,
-                             {},
-                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+                <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                  <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                  <%= f.text_field :tracking_labels_id_in,
+                                  value: "",
+                                  class: "fr-input",
+                                  placeholder: "",
+                                  aria: { autocomplete: "both", controls: "sf-multiselect-labels-list", expanded: "false" },
+                                  role: "combobox",
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  autocomplete: "off" %>
+                </div>
+                <%= f.hidden_field :tracking_labels_id_in_values,
+                                  value: selected_labels.to_json,
+                                  data: { multiselect_target: "hiddenValues" } %>
+                <div id="sf-multiselect-labels-list"
+                     data-multiselect-target="results"
+                     class="sf-multiselect-results-container"
+                     role="listbox"
+                     aria-multiselectable="true"></div>
               </div>
             </div>
-            <div class="fr-col-3">
+            <% service_options = SupportingService.pluck(:name, :id).map { |name, id| { value: id.to_s, label: name } } %>
+            <% selected_services = service_options.select { |o| Array(@filter_params["supporting_services_id_in"]).include?(o[:value]) } %>
+            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= service_options.to_json %>">
               <div class="fr-input-group">
                 <%= f.label :supporting_services_id_in, "Instances concernées" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-supporting-services" aria-describedby="tooltip-supporting-services">
@@ -117,13 +136,30 @@
                 <span class="fr-tooltip fr-placement" id="tooltip-supporting-services" role="tooltip">
                   Le champ "instances concernées" indique les acteurs en charge du suivi de l'entreprise.
                 </span>
-                <%= f.select :supporting_services_id_in,
-                             SupportingService.pluck(:name, :id),
-                             {},
-                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+                <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                  <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                  <%= f.text_field :supporting_services_id_in,
+                                  value: "",
+                                  class: "fr-input",
+                                  placeholder: "",
+                                  aria: { autocomplete: "both", controls: "sf-multiselect-services-list", expanded: "false" },
+                                  role: "combobox",
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  autocomplete: "off" %>
+                </div>
+                <%= f.hidden_field :supporting_services_id_in_values,
+                                  value: selected_services.to_json,
+                                  data: { multiselect_target: "hiddenValues" } %>
+                <div id="sf-multiselect-services-list"
+                     data-multiselect-target="results"
+                     class="sf-multiselect-results-container"
+                     role="listbox"
+                     aria-multiselectable="true"></div>
               </div>
             </div>
-            <div class="fr-col-3">
+            <% sector_options = Sector.ordered_by_name.pluck(:name, :id).map { |name, id| { value: id.to_s, label: name } } %>
+            <% selected_sectors = sector_options.select { |o| Array(@filter_params["sectors_id_in"]).include?(o[:value]) } %>
+            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= sector_options.to_json %>">
               <div class="fr-input-group">
                 <%= f.label :sectors_id_in, "Filières" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-sectors" aria-describedby="tooltip-sectors">
@@ -131,12 +167,27 @@
                   <span class="fr-sr-only">Information sur les filières</span>
                 </button>
                 <span class="fr-tooltip fr-placement" id="tooltip-sectors" role="tooltip">
-                  La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national. 
+                  La "filière" indique la filière économique ou chaîne de valeur dans laquelle s'inscrit l'entreprise. Différente du code NAF qui définit le secteur d'activité. Les statistiques par "filière" permettent d'identifier les segments de l'économie fragilisés au niveau local et national.
                 </span>
-                <%= f.select :sectors_id_in,
-                             Sector.ordered_by_name.pluck(:name, :id),
-                             {},
-                             { multiple: true, class: "tom-select", data: { controller: "tom-select" } } %>
+                <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                  <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                  <%= f.text_field :sectors_id_in,
+                                  value: "",
+                                  class: "fr-input",
+                                  placeholder: "",
+                                  aria: { autocomplete: "both", controls: "sf-multiselect-sectors-list", expanded: "false" },
+                                  role: "combobox",
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  autocomplete: "off" %>
+                </div>
+                <%= f.hidden_field :sectors_id_in_values,
+                                  value: selected_sectors.to_json,
+                                  data: { multiselect_target: "hiddenValues" } %>
+                <div id="sf-multiselect-sectors-list"
+                     data-multiselect-target="results"
+                     class="sf-multiselect-results-container"
+                     role="listbox"
+                     aria-multiselectable="true"></div>
               </div>
             </div>
             <div class="fr-col-3">
