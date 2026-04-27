@@ -38,7 +38,7 @@
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
-            <table class="fr-table fr-mt-0 fr-mb-0 establishment_trackings_table">
+            <table class="fr-table fr-mt-0 fr-mb-0 establishment_trackings_table" data-controller="table-sort">
               <% if @paginated_establishment_trackings.any? %>
                 <thead>
                 <tr>
@@ -85,7 +85,8 @@
                       Les "référents" sont responsables de la mise à jour de la synthèse et sont les seuls à pouvoir modifier le statut. Le SP CODEFI dispose d'un droit de regard sur la synthèse dans le cadre de la rédaction du CR du CODEFI.
                     </span>
                   </th>
-                  <th scope="col"><%= sort_link @q, :modified_at, "Dernière<br>modif.".html_safe %>
+                  <th scope="col">
+                    <button type="button" data-action="click->table-sort#sort" data-table-sort-column-param="5"><abbr title="Dernière modification" class="fr-text--bold sf-text--underline">Dernière<br>modif.</abbr><span data-table-sort-target="icon" class="fr-icon-arrow-up-s-fill" aria-hidden="true"></span></button>
                     <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-modified-at" aria-describedby="tooltip-table-modified-at">
                       <span class="fr-icon-information-line" aria-hidden="true"></span>
                       <span class="fr-sr-only">Information sur la date de modification</span>
@@ -94,11 +95,11 @@
                       Date à laquelle au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité.
                     </span>
                   </th>
-                  <th scope="col">Dépt.</th>
+                  <th scope="col"><abbr title="Département">Dépt.</abbr></th>
                   <th scope="col">Action</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody data-table-sort-target="body">
                 <% @paginated_establishment_trackings.each do |tracking| %>
                   <tr>
                     <th scope="row">
@@ -126,11 +127,11 @@
                         <span>Aucun référent</span>
                       <% end %>
                     </td>
-                    <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
+                    <td data-sort-value="<%= tracking.modified_at&.iso8601 %>"><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
                     <td><%= tracking.establishment.department.code %></td>
                     <td>
                       <%= link_to [tracking.establishment, tracking],
-                                  class: 'fr-link',
+                                  class: 'fr-link sf-icon-eye-link',
                                   title: "Consulter #{tracking.establishment.raison_sociale}" do %>
                         <span class="fr-icon-eye-fill" aria-hidden="true"></span>
                         <span class="fr-sr-only">Consulter <%= tracking.establishment.raison_sociale %></span>
