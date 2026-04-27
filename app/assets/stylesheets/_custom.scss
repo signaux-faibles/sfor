@@ -554,6 +554,21 @@
   }
 }
 
+.sf-text--underline {
+  text-decoration: underline;
+}
+
+.sf-icon-eye-link {
+  background-image : none;
+  text-decoration: none;
+
+  &:hover {
+    > .fr-icon-eye-fill {
+      color: var(--background-action-high-blue-france-hover);
+    }
+  }
+}
+
 @keyframes sf-loading-dot {
   0%, 80%, 100% { opacity: 0.3; }
   40% { opacity: 1; }

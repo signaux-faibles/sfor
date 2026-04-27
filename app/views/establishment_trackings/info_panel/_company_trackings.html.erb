@@ -24,7 +24,7 @@
                   <th scope="col">Criticité</th>
                   <th scope="col">Référents</th>
                   <th scope="col">Dernière modification</th>
-                  <th scope="col">Dépt.</th>
+                  <th scope="col"><abbr title="Département">Dépt.</abbr></th>
                   <th scope="col">Actions</th>
                 </tr>
                 </thead>
@@ -62,7 +62,7 @@
                       <% if policy(tracking).show? %>
 
                         <%= link_to [tracking.establishment, tracking],
-                                    class: 'fr-link',
+                                    class: 'fr-link sf-icon-eye-link',
                                     title: "Consulter #{tracking.establishment.raison_sociale}" do %>
                           <span class="fr-icon-eye-fill" aria-hidden="true"></span>
                           <span class="fr-sr-only">Consulter <%= tracking.establishment.raison_sociale %></span>

@@ -50,7 +50,7 @@
                     </span>
               </th>
               <th scope="col">
-                Dernière modif.
+                <abbr title="Dernière modification">Dernière modif.</abbr>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-modified-at-<%= id %>" aria-describedby="tooltip-table-modified-at-<%= id %>">
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la date de modification</span>
@@ -59,7 +59,7 @@
                   Date à laquelle au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité.
                 </span>
               </th>
-              <th scope="col">Dépt.</th>
+              <th scope="col"><abbr title="Département">Dépt.</abbr></th>
               <th scope="col">Actions</th>
             </tr>
             </thead>
@@ -95,7 +95,7 @@
                 <td><%= tracking.establishment.department.code %></td>
                 <td>
                   <%= link_to [tracking.establishment, tracking],
-                              class: 'fr-link',
+                              class: 'fr-link sf-icon-eye-link',
                               title: "Consulter #{tracking.establishment.raison_sociale}",
                               data: { turbo: false } do %>
                     <span class="fr-icon-eye-fill" aria-hidden="true"></span>
