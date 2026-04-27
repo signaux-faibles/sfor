@@ -11,14 +11,20 @@ module EstablishmentTrackings::Filterable
 
     {
       establishment_departement_in_values: :establishment_departement_in,
-      state_in_values: :state_in
+      state_in_values: :state_in,
+      tracking_labels_id_in_values: :tracking_labels_id_in,
+      supporting_services_id_in_values: :supporting_services_id_in,
+      sectors_id_in_values: :sectors_id_in
     }.each do |json_key, target_key|
       json_val = params.dig(:q, json_key)
       next unless json_val.present?
 
       begin
         values = JSON.parse(json_val)
-        params[:q][target_key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
+        if values.is_a?(Array)
+          parsed = values.map { |v| v["value"] }.compact_blank
+          parsed.any? ? params[:q][target_key] = parsed : params[:q].delete(target_key)
+        end
       rescue JSON::ParserError
         # leave as-is
       end
@@ -30,10 +36,10 @@ module EstablishmentTrackings::Filterable
       session[:establishment_tracking_filters] = nil
       redirect_to action: :index and {}
     elsif params[:q].present?
-      session[:establishment_tracking_filters] = params[:q]
+      session[:establishment_tracking_filters] = params[:q].except(:filters_open)
       params[:q]
     else
-      session[:establishment_tracking_filters] || {}
+      (session[:establishment_tracking_filters] || {}).except("filters_open", :filters_open)
     end
   end
 
