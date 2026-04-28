@@ -47,7 +47,9 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
       }
     end
 
-    assert_redirected_to admin_user_path(User.find_by!(email: "new-user@example.com"))
+    created_user = User.find_by!(email: "new-user@example.com")
+    assert_redirected_to admin_user_path(created_user)
+    assert_equal %w[CODEFI CRP], created_user.networks.pluck(:name).sort
   end
 
   test "update user" do
@@ -56,6 +58,7 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
     patch admin_user_path(@target_user), params: {
       user: {
         first_name: "Updated",
+        segment_id: segments(:segment_urssaf).id,
         ambassador: true,
         trained: true
       }
@@ -66,6 +69,23 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
     assert_equal "Updated", @target_user.first_name
     assert_equal true, @target_user.ambassador
     assert_equal true, @target_user.trained
+    assert_equal %w[CODEFI URSSAF], @target_user.networks.pluck(:name).sort
+  end
+
+  test "update user with excluded segment does not add codefi network" do
+    sign_in @admin
+
+    excluded_segment = Segment.create!(name: "dreets_reseaucrp", network: networks(:network_crp))
+
+    patch admin_user_path(@target_user), params: {
+      user: {
+        segment_id: excluded_segment.id
+      }
+    }
+
+    assert_redirected_to admin_user_path(@target_user)
+    @target_user.reload
+    assert_equal ["CRP"], @target_user.networks.pluck(:name)
   end
 
   test "discard user" do

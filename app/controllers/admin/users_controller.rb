@@ -35,6 +35,7 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     @user.level ||= "A"
 
     if @user.save
+      assign_networks_from_segment(@user)
       # Invitation email sending is disabled for now; colleagues will send manually.
       # begin
       #   @user.send_reset_password_instructions
@@ -50,6 +51,7 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
 
   def update
     if @user.update(user_params)
+      assign_networks_from_segment(@user)
       redirect_to admin_user_path(@user), notice: "Utilisateur mis à jour avec succès." # rubocop:disable Rails/I18nLocaleTexts
     else
       load_form_collections
@@ -231,5 +233,40 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
       :feedbacks,
       :last_contact
     )
+  end
+
+  def assign_networks_from_segment(user)
+    segment_name = user.segment&.name&.downcase
+    return if segment_name.blank?
+
+    codefi_network = Network.find_or_create_by(name: "CODEFI")
+    crp_network = Network.find_or_create_by(name: "CRP")
+    urssaf_network = Network.find_or_create_by(name: "URSSAF")
+    banque_de_france_network = Network.find_or_create_by(name: "Banque de France")
+    dgfip_network = Network.find_or_create_by(name: "DGFiP")
+    dgefp_network = Network.find_or_create_by(name: "DGEFP")
+    signaux_faibles_network = Network.find_or_create_by(name: "Signaux Faibles")
+
+    network_mapping = {
+      "sf" => signaux_faibles_network,
+      "dgfip" => dgfip_network,
+      "mire" => crp_network,
+      "centrale-dge" => crp_network,
+      "dreets_reseaucrp" => crp_network,
+      "crp" => crp_network,
+      "bdf" => banque_de_france_network,
+      "darp" => dgefp_network,
+      "muteco" => dgefp_network,
+      "dgefp" => dgefp_network,
+      "urssaf" => urssaf_network
+    }
+
+    excluded_segments = %w[dreets_reseaucrp centrale-dge dreets finances]
+
+    user.networks.clear
+    user.networks << codefi_network unless excluded_segments.include?(segment_name) || user.networks.include?(codefi_network)
+
+    network = network_mapping[segment_name]
+    user.networks << network if network.present? && !user.networks.include?(network)
   end
 end
