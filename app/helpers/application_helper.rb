@@ -82,11 +82,11 @@ module ApplicationHelper
   # @TODO : use criticality_class_for instead.
   def criticality_style_for(level)
     case level
-    when "Niveau rouge", "Criticité élevée"
+    when "Criticité élevée"
       "background-color: var(--warning-950-100); color: var(--error-425-625);"
     when "Criticité modérée"
       "background-color: var(--brown-opera-950-100); color: var(--warning-425-625);"
-    when "Niveau vert", "Pas de criticité"
+    when "Pas de criticité"
       "background-color: var(--success-950-100); color: var(--success-425-625);"
     else
       "background-color: var(--background-contrast-grey); color: var(--text-default-grey);"
