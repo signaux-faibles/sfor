@@ -235,7 +235,7 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     )
   end
 
-  def assign_networks_from_segment(user)
+  def assign_networks_from_segment(user) # rubocop:disable Metrics/MethodLength
     segment_name = user.segment&.name&.downcase
     return if segment_name.blank?
 
@@ -267,6 +267,6 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     user.networks << codefi_network unless excluded_segments.include?(segment_name) || user.networks.include?(codefi_network)
 
     network = network_mapping[segment_name]
-    user.networks << network if network.present? && !user.networks.include?(network)
+    user.networks << network if network.present? && user.networks.exclude?(network)
   end
 end
