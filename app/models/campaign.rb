@@ -5,4 +5,8 @@ class Campaign < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[created_at end_date id id_value name start_date updated_at]
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[campaign_companies companies]
+  end
 end

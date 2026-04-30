@@ -9,6 +9,6 @@ class SupportingService < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    []
+    %w[establishment_trackings]
   end
 end
