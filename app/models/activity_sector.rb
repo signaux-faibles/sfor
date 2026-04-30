@@ -16,4 +16,8 @@ class ActivitySector < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[code created_at depth id id_value level_one_id libelle parent_id updated_at]
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[parent level_one subsectors establishments level_one_establishments companies]
+  end
 end

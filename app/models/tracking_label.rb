@@ -11,6 +11,6 @@ class TrackingLabel < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    []
+    %w[establishment_tracking_labels establishment_trackings]
   end
 end

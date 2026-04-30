@@ -11,4 +11,8 @@ class List < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[code created_at id id_value label updated_at]
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[company_lists companies company_score_entries company_list_ratings]
+  end
 end

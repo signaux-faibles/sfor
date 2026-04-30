@@ -13,4 +13,8 @@ class Department < ApplicationRecord
   def self.ransackable_attributes(_auth_object = nil)
     %w[code created_at id id_value name updated_at]
   end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[region department_geo_accesses geo_accesses establishments companies]
+  end
 end
