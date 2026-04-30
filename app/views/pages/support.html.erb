@@ -20,16 +20,24 @@
 
 <div class="fr-container fr-mb-6w">
   <h1>Support</h1>
-  <p>Pour aller plus loin, retrouvez notre documentation en ligne :</p>
-  <a
-    title="Guide utilisateur - Nouvelle fenêtre"
-    href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-f.a.q.-de-signaux-faibles"
-    target="_blank"
-    rel="noopener external"
-    class="fr-btn"
-  >
-    Guide utilisateur
-  </a>
-
-  <p class="fr-mt-3w">Pour toute question, veuillez vous adresser à <a href="mailto:esther.spindler@beta.gouv.fr">esther.spindler@beta.gouv.fr</a></p>
+  <%= markdown(
+    Zone.content_for(
+      Zone::SUPPORT_PAGE_BODY_KEY,
+      fallback: <<~MARKDOWN
+        Le contenu de la page support est en cours de construction.
+      MARKDOWN
+    )
+  ) %>
+    <p>Pour aller plus loin, retrouvez notre documentation en ligne :</p>
+    <a
+      title="Guide utilisateur - Nouvelle fenêtre"
+      href="https://signaux-faibles.gitbook.io/guide-dutilisation-et-f.a.q.-de-signaux-faibles"
+      target="_blank"
+      rel="noopener external"
+      class="fr-btn"
+    >
+      Guide utilisateur
+    </a>
+  
+    <p class="fr-mt-3w">Pour toute question, veuillez vous adresser à <a href="mailto:esther.spindler@beta.gouv.fr">esther.spindler@beta.gouv.fr</a></p>
 </div>

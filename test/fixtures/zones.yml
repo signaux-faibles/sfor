@@ -1,0 +1,9 @@
+support_page_body:
+  key: support_page_body
+  content: |
+    Contenu fixture support.
+
+other_zone:
+  key: homepage_secondary_block
+  content: |
+    Un autre contenu.
