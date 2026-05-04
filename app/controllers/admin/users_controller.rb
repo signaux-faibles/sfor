@@ -244,7 +244,7 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     urssaf_network = Network.find_or_create_by(name: "URSSAF")
     banque_de_france_network = Network.find_or_create_by(name: "Banque de France")
     dgfip_network = Network.find_or_create_by(name: "DGFiP")
-    dgefp_network = Network.find_or_create_by(name: "DGEFP")
+    darp_muteco_network = Network.find_or_create_by(name: "DARP/MUTECO")
     signaux_faibles_network = Network.find_or_create_by(name: "Signaux Faibles")
 
     network_mapping = {
@@ -255,9 +255,9 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
       "dreets_reseaucrp" => crp_network,
       "crp" => crp_network,
       "bdf" => banque_de_france_network,
-      "darp" => dgefp_network,
-      "muteco" => dgefp_network,
-      "dgefp" => dgefp_network,
+      "darp" => darp_muteco_network,
+      "muteco" => darp_muteco_network,
+      "dgefp" => darp_muteco_network,
       "urssaf" => urssaf_network
     }
 
