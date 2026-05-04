@@ -38,7 +38,7 @@
       <div class="fr-table__wrapper">
         <div class="fr-table__container">
           <div class="fr-table__content">
-            <table class="fr-table fr-mt-0 fr-mb-0 establishment_trackings_table" data-controller="table-sort">
+            <table class="fr-table fr-mt-0 fr-mb-0 establishment_trackings_table">
               <% if @paginated_establishment_trackings.any? %>
                 <thead>
                 <tr>
@@ -86,7 +86,13 @@
                     </span>
                   </th>
                   <th scope="col">
-                    <button type="button" data-action="click->table-sort#sort" data-table-sort-column-param="5"><abbr title="Dernière modification" class="fr-text--bold sf-text--underline">Dernière<br>modif.</abbr><span data-table-sort-target="icon" class="fr-icon-arrow-up-s-fill" aria-hidden="true"></span></button>
+                    <button type="button"
+                            data-controller="ransack-sort"
+                            data-action="click->ransack-sort#sort"
+                            data-ransack-sort-url-value="<%= next_sort_url(params) %>">
+                      <abbr title="Dernière modification" class="fr-text--bold sf-text--underline">Dernière<br>modif.</abbr>
+                      <span aria-hidden="true" class="<%= sort_icon_class(params) %>"></span>
+                    </button>
                     <button class="fr-btn--tooltip fr-btn" type="button" id="button-table-modified-at" aria-describedby="tooltip-table-modified-at">
                       <span class="fr-icon-information-line" aria-hidden="true"></span>
                       <span class="fr-sr-only">Information sur la date de modification</span>
@@ -99,7 +105,7 @@
                   <th scope="col">Action</th>
                 </tr>
                 </thead>
-                <tbody data-table-sort-target="body">
+                <tbody>
                 <% @paginated_establishment_trackings.each do |tracking| %>
                   <tr>
                     <th scope="row">
@@ -127,7 +133,7 @@
                         <span>Aucun référent</span>
                       <% end %>
                     </td>
-                    <td data-sort-value="<%= tracking.modified_at&.iso8601 %>"><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
+                    <td><%= tracking.modified_at.present? ? l(tracking.modified_at, format: :default) : '-' %></td>
                     <td><%= tracking.establishment.department.code %></td>
                     <td>
                       <%= link_to [tracking.establishment, tracking],

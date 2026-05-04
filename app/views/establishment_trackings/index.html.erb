@@ -27,7 +27,9 @@
   </div>
   <div class="grid-row">
     <div class="fr-mt-5w fr-mb-7w">
-      <%= render 'establishment_trackings_table' %>
+      <turbo-frame id="sort-results" target="_top">
+        <%= render 'establishment_trackings_table' %>
+      </turbo-frame>
     </div>
 
   </div>
