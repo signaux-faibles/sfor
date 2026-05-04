@@ -1,9 +1,9 @@
 module TitlesHelper
   def search_page_title(search_params, pagination)
-    query = search_params.dig(:q)
-    page = search_params.dig(:page).to_i
-    total_results = pagination.dig(:total_results).to_i
-    current_page = pagination.dig(:page).to_i
+    query = search_params[:q]
+    page = search_params[:page].to_i
+    total_results = pagination[:total_results].to_i
+    current_page = pagination[:page].to_i
 
     has_query = query.present?
     has_page = page > 1
