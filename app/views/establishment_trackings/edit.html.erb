@@ -1,3 +1,5 @@
+<% content_for :title, "Modifier les informations de l'accompagnement #{@establishment_tracking.establishment.raison_sociale}".html_safe %>
+
 <%= form_with(model: [@establishment, @establishment_tracking], local: true, data: { controller: "tracking-status" }, class: "edit_tracking") do |form| %>
 
   <div class="fr-container">
