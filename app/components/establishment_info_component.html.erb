@@ -1,10 +1,11 @@
 <div>
     <div class="accompagnement__tab-title">
-    <h3 class="fr-h2">Informations sur l'établissement
-        <% if show_edit_button? %>
+      <h3 class="fr-h2">Informations sur l'établissement</h3>
+    </div>
+    <div>
+      <% if show_edit_button? %>
         <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(@establishment, @establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
-        <% end %>
-    </h3>
+      <% end %>
     </div>
     <dl class="sf-keyvalue-list">
       <dt class="sf-keyvalue-list__key">SIRET :</dt>

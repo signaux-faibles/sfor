@@ -1,30 +1,30 @@
 <div class="tracking-info">
   <div class="accompagnement__tab-title">
-    <h3 class="fr-h2">Informations sur l'accompagnement
-      <% if show_edit_button? %>
-        <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
-      <% end %>
-      <% if show_create_button? %>
-        <%= link_to 'Créer un accompagnement vierge', new_establishment_establishment_tracking_path(@establishment), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line' %>
-      <% end %>
-      <% if show_duplicate_button? %>
-        <%= link_to 'Dupliquer cet accompagnement',
-                    duplicate_establishment_establishment_tracking_path(establishment, establishment_tracking),
-                    class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-file-copy-line',
-                    data: { turbo_method: :post } %>
-      <% end %>
-    </h3>
+    <h3 class="fr-h2">Informations sur l'accompagnement</h3>
+  </div>
+  <div>
+    <% if show_edit_button? %>
+      <%= link_to 'Modifier les informations', edit_establishment_establishment_tracking_path(establishment, establishment_tracking), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-edit-line fr-mb-2w' %>
+    <% end %>
+    <% if show_create_button? %>
+      <%= link_to 'Créer un accompagnement vierge', new_establishment_establishment_tracking_path(@establishment), class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-add-line' %>
+    <% end %>
+    <% if show_duplicate_button? %>
+      <%= link_to 'Dupliquer cet accompagnement',
+                  duplicate_establishment_establishment_tracking_path(establishment, establishment_tracking),
+                  class: 'fr-btn fr-btn--secondary fr-btn--icon-left fr-icon-file-copy-line',
+                  data: { turbo_method: :post } %>
+    <% end %>
   </div>
 
   <dl class="sf-keyvalue-list">
     <% unless confirmation_mode? %>
       <dt class="sf-keyvalue-list__key">Statut : </dt>
       <dd class="sf-keyvalue-list__value">
-        <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-statuts" aria-describedby="button-tracking-info-statuts">
-          <span class="fr-icon-information-line" aria-hidden="true"></span>
-          <span class="fr-sr-only">Information sur les statuts</span>
+        <button class="fr-btn--tooltip fr-btn" type="button" aria-describedby="tooltip-tracking-info-statuts">
+          infobulle
         </button>
-        <span class="fr-tooltip fr-placement" id="button-tracking-info-statuts" role="tooltip">
+        <span class="fr-tooltip fr-placement" id="tooltip-tracking-info-statuts" role="tooltip">
           Le "statut" indique l'état d'avancement de l'accompagnement :
           <ul>
             <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
@@ -35,6 +35,7 @@
 
         <%= establishment_tracking.aasm.human_state %>
       </dd>
+
       <dt class="sf-keyvalue-list__key">Date de début : </dt>
       <dd class="sf-keyvalue-list__value">
         <button class="fr-btn--tooltip fr-btn" type="button" id="button-tracking-info-start-date" aria-describedby="button-tracking-info-start-date">
