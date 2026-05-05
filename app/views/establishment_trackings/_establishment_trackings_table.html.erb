@@ -1,5 +1,5 @@
 <% if @paginated_establishment_trackings.any? %>
-  <h4>Résultats de la recherche (<%= @paginated_establishment_trackings.total_count %>)</h4>
+  <h2 class="fr-mt-5w">Résultats de la recherche (<%= @paginated_establishment_trackings.total_count %>)</h2>
   <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
     <div class="fr-col-6" role="status">
       <%= link_to establishment_trackings_path(format: :xlsx, q: params[:q]&.permit!),

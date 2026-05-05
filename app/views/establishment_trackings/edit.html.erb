@@ -12,7 +12,7 @@
     <fieldset class="fr-grid-row fr-grid-row--left fr-mb-3w">
       <div class="fr-col-6">
         <div class="fr-p-3w">
-          <legend class="fr-h2">Informations sur l'accompagnement</legend>
+          <legend class="fr-h2"><h2>Informations sur l'accompagnement</h2></legend>
 
           <% if policy(@establishment_tracking).manage_state? %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
@@ -153,7 +153,7 @@
       <div class="fr-col-6">
         <div class="fr-p-3w">
 
-          <legend class="fr-h2">Informations sur l'établissement</legend>
+          <legend class="fr-h2"><h2>Informations sur l'établissement</h2></legend>
           <p class="fr-m-0"><strong>SIRET</strong></p>
 
           <p><%= @establishment_tracking.establishment.siret %></p>
