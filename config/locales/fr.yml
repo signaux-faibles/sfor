@@ -414,7 +414,7 @@ fr:
   unauthorized:
     access_denied: "Accès interdit."
     action_not_allowed: "Vous n'êtes pas autorisé à effectuer cette action."
-    section_not_allowed: "Vous n'êtes pas autorisé à accéder à cette section."
+    section_not_allowed: "Erreur : Vous n'êtes pas autorisé à accéder à cette section."
   comments:
     create:
       success: "Commentaire ajouté avec succès."
