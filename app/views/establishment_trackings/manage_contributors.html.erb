@@ -15,7 +15,7 @@
       <% end %>
 
       <% referents_options = User.includes([:entity]).kept.map { |u| { value: u.id.to_s, label: u.display_name } } %>
-      <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= referents_options.to_json %>">
+      <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= referents_options.to_json %>" data-multiselect-required-value="true">
         <div class="fr-input-group">
           <div class="fr-label-wrapper">
             <%= form.label :referent_ids, "Référents", class: "fr-label" %>
