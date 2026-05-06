@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["input", "results", "hiddenValues", "tags"]
   static values = {
     debounce: Number,
-    options: Array
+    options: Array,
+    required: Boolean
   }
 
   connect() {
@@ -22,6 +23,11 @@ export default class extends Controller {
     this.resizeObserver.observe(wrap)
 
     this.restoreFromHiddenField()
+
+    if (this.hasRequiredValue && this.requiredValue) {
+      this.addRequiredMarker()
+      this.updateRequiredValidity()
+    }
   }
 
   disconnect() {
@@ -229,6 +235,30 @@ export default class extends Controller {
 
   updateHiddenField() {
     this.hiddenValuesTarget.value = JSON.stringify(this.selectedItems)
+    if (this.hasRequiredValue && this.requiredValue) {
+      this.updateRequiredValidity()
+    }
+  }
+
+  addRequiredMarker() {
+    const label = this.element.querySelector('.fr-label')
+    if (label) {
+      const asterisk = document.createElement('span')
+      asterisk.setAttribute('aria-hidden', 'true')
+      asterisk.textContent = ' *'
+      label.appendChild(asterisk)
+    }
+    this.inputTarget.setAttribute('aria-required', 'true')
+  }
+
+  updateRequiredValidity() {
+    if (this.selectedItems.length === 0) {
+      this.inputTarget.setAttribute('required', '')
+      this.inputTarget.setCustomValidity("Veuillez sélectionner au moins un élément.")
+    } else {
+      this.inputTarget.removeAttribute('required')
+      this.inputTarget.setCustomValidity("")
+    }
   }
 
   renderTags() {
