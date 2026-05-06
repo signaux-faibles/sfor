@@ -16,13 +16,13 @@
           <legend class="fr-segmented__legend">Format d'affichage</legend>
           <div class="fr-segmented__elements">
             <div class="fr-segmented__element">
-              <input type="radio" id="view-table" name="q[toto]" value="table"
+              <input type="radio" id="view-table" name="q[view]" value="table"
                      data-action="view-toggle#change" data-view-toggle-target="radioInput"
                      <%= @current_view == "table" ? "checked" : "" %>>
               <label class="fr-label fr-icon-table-line" for="view-table">Tableau</label>
             </div>
             <div class="fr-segmented__element">
-              <input type="radio" id="view-cards" name="q[toto]" value="cards"
+              <input type="radio" id="view-cards" name="q[view]" value="cards"
                      data-action="view-toggle#change" data-view-toggle-target="radioInput"
                      <%= @current_view == "cards" ? "checked" : "" %>>
               <label class="fr-label fr-icon-layout-grid-fill" for="view-cards">Vignettes</label>

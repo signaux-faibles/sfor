@@ -25,7 +25,7 @@
       <%= render 'filters' %>
     </div>
   </div>
-  <div class="grid-row">
+  <div class="grid-row" data-controller="view-toggle">
     <div class="fr-mt-5w fr-mb-7w">
       <turbo-frame id="sort-results" target="_top">
         <%= render 'establishment_trackings_table' %>
