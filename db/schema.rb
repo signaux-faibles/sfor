@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_04_23_100000) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_07_144800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -569,6 +569,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_04_23_100000) do
     t.boolean "is_latest"
     t.index ["periode"], name: "index_osf_effectifs_on_periode"
     t.index ["siret", "periode"], name: "index_osf_effectifs_on_siret_and_periode"
+    t.index ["siret"], name: "idx_osf_effectifs_siret_latest", where: "(is_latest = true)"
     t.index ["siret"], name: "index_osf_effectifs_on_siret"
   end
 
