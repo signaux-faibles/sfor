@@ -457,3 +457,5 @@ fr:
         role:
           referent: "référent"
           participant: "participant"
+      tracking_updated:
+        subject: "Un accompagnement a été modifié"

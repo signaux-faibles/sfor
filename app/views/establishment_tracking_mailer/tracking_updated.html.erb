@@ -1,0 +1,19 @@
+<p>Bonjour,</p>
+
+<p>
+  <%= @modified_by.email %> a modifié l'accompagnement :
+  <%= link_to "Accéder à l'accompagnement", @tracking_url %>
+</p>
+
+<p>
+  Pour rappel, vous êtes notifié d'une modification sur un accompagnement dans les cas suivants :
+</p>
+
+<ul>
+  <li>Modification du statut de l'accompagnement</li>
+  <li>Ajout d'une action réalisée</li>
+  <li>Ajout d'une réorientation hors CODEFI</li>
+  <li>Modifications de la synthèse ou ajout de commentaires</li>
+</ul>
+
+<p>Cordialement,<br>L'équipe « Signaux Faibles »</p>

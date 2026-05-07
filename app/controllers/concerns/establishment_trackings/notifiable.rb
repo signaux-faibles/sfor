@@ -30,4 +30,22 @@ module EstablishmentTrackings::Notifiable
       ).deliver_later
     end
   end
+
+  # Sends a notification email to each referent when a tracking is modified.
+  # If network_ids are provided, only referents that belong to one of these
+  # networks are notified.
+  def notify_referents_tracking_updated(modified_by:, tracking:, network_ids: nil)
+    referents = tracking.referents.kept
+    referents = referents.joins(:networks).where(networks: { id: network_ids }) if network_ids.present?
+
+    referents.distinct.find_each do |referent|
+      next if referent == modified_by
+
+      EstablishmentTrackingMailer.tracking_updated(
+        recipient: referent,
+        tracking: tracking,
+        modified_by: modified_by
+      ).deliver_later
+    end
+  end
 end

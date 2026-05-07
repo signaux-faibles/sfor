@@ -16,11 +16,13 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "user A can create a comment" do
     sign_in @user_a
 
-    assert_difference("Comment.count", 1) do
-      post establishment_establishment_tracking_comments_path(@establishment, @establishment_tracking),
-           params: { comment: { content: "This is a new comment",
-                                network_id: @user_a.networks.where.not(name: "codefi").first.id } },
-           as: :turbo_stream
+    assert_enqueued_emails 1 do
+      assert_difference("Comment.count", 1) do
+        post establishment_establishment_tracking_comments_path(@establishment, @establishment_tracking),
+             params: { comment: { content: "This is a new comment",
+                                  network_id: @user_a.networks.where.not(name: "codefi").first.id } },
+             as: :turbo_stream
+      end
     end
 
     assert_response :success

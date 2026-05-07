@@ -84,4 +84,14 @@ class SummariesControllerTest < ActionDispatch::IntegrationTest
 
     assert_includes @response.body, @summary.content
   end
+
+  test "user A updating summary notifies other referents from same network" do
+    sign_in @user_a
+
+    assert_enqueued_emails 1 do
+      patch establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, @summary),
+            params: { summary: { content: "Updated summary content", network_id: networks(:network_crp).id } },
+            as: :turbo_stream
+    end
+  end
 end

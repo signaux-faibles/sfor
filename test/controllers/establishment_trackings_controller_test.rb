@@ -171,6 +171,25 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
     )
   end
 
+  test "should notify referents when state changes" do
+    @establishment_tracking_paris.referents << @user_crp_paris2
+
+    assert_enqueued_emails 1 do
+      patch establishment_establishment_tracking_url(@establishment_paris, @establishment_tracking_paris), params: {
+        establishment_tracking: {
+          state: "under_surveillance",
+          tracking_label_ids: [],
+          user_action_ids: [],
+          sector_ids: [],
+          participant_ids: [],
+          referent_ids: [@user_crp_paris.id, @user_crp_paris2.id],
+          difficulty_ids: [],
+          codefi_redirect_ids: []
+        }
+      }
+    end
+  end
+
   test "should update establishment_tracking with all optional fields" do # rubocop:disable Metrics/BlockLength
     criticality = criticalities(:niveau_orange)
     sector = sectors(:industry)

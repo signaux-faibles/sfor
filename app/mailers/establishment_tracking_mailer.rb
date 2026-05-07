@@ -25,4 +25,24 @@ class EstablishmentTrackingMailer < ApplicationMailer
       subject: t("mailer.establishment_tracking.contributor_added.subject")
     )
   end
+
+  # Notifies referents that a tracking has been modified.
+  #
+  # @param recipient [User] the referent being notified
+  # @param tracking [EstablishmentTracking] the modified tracking
+  # @param modified_by [User] the user who performed the update
+  def tracking_updated(recipient:, tracking:, modified_by:)
+    @recipient = recipient
+    @tracking = tracking
+    @modified_by = modified_by
+    @tracking_url = establishment_establishment_tracking_url(
+      tracking.establishment,
+      tracking
+    )
+
+    mail(
+      to: recipient.email,
+      subject: t("mailer.establishment_tracking.tracking_updated.subject")
+    )
+  end
 end

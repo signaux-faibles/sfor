@@ -1,4 +1,6 @@
 class SummariesController < ApplicationController
+  include EstablishmentTrackings::Notifiable
+
   before_action :set_establishment_and_tracking
 
   before_action :set_paper_trail_whodunnit
@@ -19,6 +21,11 @@ class SummariesController < ApplicationController
     assign_network unless @summary.network
 
     if @summary.save
+      notify_referents_tracking_updated(
+        modified_by: current_user,
+        tracking: @establishment_tracking,
+        network_ids: [@summary.network_id]
+      )
       flash.now[:notice] = t(".success")
     else
       render_summary_form
@@ -30,6 +37,11 @@ class SummariesController < ApplicationController
     @summary.unlock!
 
     if @summary.update(summary_params)
+      notify_referents_tracking_updated(
+        modified_by: current_user,
+        tracking: @establishment_tracking,
+        network_ids: [@summary.network_id]
+      )
       flash.now[:notice] = t(".success")
     else
       render_summary_form

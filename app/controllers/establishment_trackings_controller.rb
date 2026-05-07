@@ -94,14 +94,26 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
     # Capture old supporting services before update
     old_supporting_services = @establishment_tracking.supporting_services.to_a
+    old_state = @establishment_tracking.state
+    old_user_action_ids = @establishment_tracking.user_action_ids.sort
+    old_codefi_redirect_ids = @establishment_tracking.codefi_redirect_ids.sort
 
-    ActiveRecord::Base.transaction do
+    successful_update = ActiveRecord::Base.transaction do
       if tracking_params[:state] == "completed"
         handle_completed_state_update(old_supporting_services)
       else
         handle_regular_update(old_supporting_services)
       end
     end
+
+    notify_referents_tracking_updated(
+      modified_by: current_user,
+      tracking: @establishment_tracking
+    ) if successful_update && relevant_general_info_change?(
+      old_state: old_state,
+      old_user_action_ids: old_user_action_ids,
+      old_codefi_redirect_ids: old_codefi_redirect_ids
+    )
   end
 
   def destroy
@@ -113,8 +125,13 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def complete
     @establishment_tracking.modifier = current_user
+    old_state = @establishment_tracking.state
 
     if @establishment_tracking.update(state: "completed", end_date: Time.zone.today)
+      notify_referents_tracking_updated(
+        modified_by: current_user,
+        tracking: @establishment_tracking
+      ) if old_state != @establishment_tracking.state
       flash[:success] = t("establishments.tracking.complete.success", raison_sociale: @establishment.raison_sociale)
       redirect_to [@establishment, @establishment_tracking]
     else
@@ -218,6 +235,12 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     duplicated_tracking
   end
 
+  def relevant_general_info_change?(old_state:, old_user_action_ids:, old_codefi_redirect_ids:)
+    @establishment_tracking.state != old_state ||
+      @establishment_tracking.user_action_ids.sort != old_user_action_ids ||
+      @establishment_tracking.codefi_redirect_ids.sort != old_codefi_redirect_ids
+  end
+
   def handle_completed_state_update(old_supporting_services)
     if @establishment_tracking.completed? && @establishment_tracking.update(prepare_label_params(tracking_params))
       track_supporting_services_changes_if_any(old_supporting_services)
@@ -225,13 +248,16 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
         [@establishment, @establishment_tracking],
         success: t("establishments.tracking.update.success")
       )
+      true
     elsif @establishment_tracking.update(prepare_label_params(tracking_params.except(:state)))
       track_supporting_services_changes_if_any(old_supporting_services)
       redirect_to(
         confirm_establishment_establishment_tracking_path(@establishment, @establishment_tracking)
       )
+      true
     else
       render :edit, status: :unprocessable_entity
+      false
     end
   end
 
@@ -240,8 +266,10 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
       track_supporting_services_changes_if_any(old_supporting_services)
       flash[:success] = t("establishments.tracking.update.success")
       redirect_to [@establishment, @establishment_tracking]
+      true
     else
       render :edit, status: :unprocessable_entity
+      false
     end
   end
 end

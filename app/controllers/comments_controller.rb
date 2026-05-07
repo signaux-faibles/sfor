@@ -1,4 +1,6 @@
 class CommentsController < ApplicationController
+  include EstablishmentTrackings::Notifiable
+
   before_action :set_establishment_and_tracking
   before_action :set_comment, only: %i[edit update destroy]
   before_action :authorize_comment, only: %i[edit update destroy]
@@ -10,6 +12,11 @@ class CommentsController < ApplicationController
   def create
     @comment = build_comment
     if @comment.save
+      notify_referents_tracking_updated(
+        modified_by: current_user,
+        tracking: @establishment_tracking,
+        network_ids: [@comment.network_id]
+      )
       flash.now[:notice] = t(".success")
     else
       render turbo_stream: turbo_stream.update("new_comment_#{@comment.network.name.parameterize}",
@@ -30,7 +37,14 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    @comment.destroy
+    network_id = @comment.network_id
+    if @comment.destroy
+      notify_referents_tracking_updated(
+        modified_by: current_user,
+        tracking: @establishment_tracking,
+        network_ids: [network_id]
+      )
+    end
     flash.now[:notice] = t(".success")
   end
 
