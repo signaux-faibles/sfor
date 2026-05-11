@@ -10,6 +10,24 @@ module Excel
       company = companies(:company_paris)
       list = lists(:list_test_2025)
 
+      create_inpi_bce_ratios(company)
+      rows = generated_rows(list, company)
+
+      assert_equal "Taux endettement", rows.first[24]
+      assert_equal "CA", rows.first[25]
+      assert_equal "Résultat net", rows.first[26]
+      assert_equal "Résultat d'exploitation", rows.first[27]
+      assert_equal "Ratio de liquidité", rows.first[28]
+      assert_equal "45.123456", rows.second[24]
+      assert_equal "1234567", rows.second[25]
+      assert_equal "-12345", rows.second[26]
+      assert_equal "67890", rows.second[27]
+      assert_equal "98.765432", rows.second[28]
+    end
+
+    private
+
+    def create_inpi_bce_ratios(company)
       InpiBceRatio.create!(
         siren: company.siren,
         date_cloture_exercice: Date.new(2022, 12, 31),
@@ -30,7 +48,9 @@ module Excel
         taux_d_endettement: 45.123456,
         ratio_de_liquidite: 98.765432
       )
+    end
 
+    def generated_rows(list, company)
       xlsx = ListGenerator.new(
         list,
         Company.where(siren: company.siren),
@@ -38,39 +58,30 @@ module Excel
         users(:user_crp_paris)
       ).generate
 
-      rows = worksheet_rows(xlsx)
-
-      assert_equal "Taux endettement", rows.first[24]
-      assert_equal "CA", rows.first[25]
-      assert_equal "Résultat net", rows.first[26]
-      assert_equal "Résultat d'exploitation", rows.first[27]
-      assert_equal "Ratio de liquidité", rows.first[28]
-      assert_equal "45.123456", rows.second[24]
-      assert_equal "1234567", rows.second[25]
-      assert_equal "-12345", rows.second[26]
-      assert_equal "67890", rows.second[27]
-      assert_equal "98.765432", rows.second[28]
+      worksheet_rows(xlsx)
     end
 
-    private
-
     def worksheet_rows(xlsx)
+      rows = nil
+
       Zip::File.open_buffer(StringIO.new(xlsx)) do |zip_file|
         sheet_xml = zip_file.read("xl/worksheets/sheet1.xml")
         document = Nokogiri::XML(sheet_xml)
-        namespace = { "x" => "http://schemas.openxmlformats.org/spreadsheetml/2006/main" }
+        document.remove_namespaces!
 
-        document.xpath("//x:sheetData/x:row", namespace).map do |row|
-          row.xpath("x:c", namespace).map { |cell| cell_value(cell, namespace) }
+        rows = document.xpath("//sheetData/row").map do |row|
+          row.xpath("c").map { |cell| cell_value(cell) }
         end
       end
+
+      rows
     end
 
-    def cell_value(cell, namespace)
+    def cell_value(cell)
       if cell["t"] == "inlineStr"
-        cell.at_xpath("x:is/x:t", namespace)&.text
+        cell.at_xpath("is/t")&.text
       else
-        cell.at_xpath("x:v", namespace)&.text
+        cell.at_xpath("v")&.text
       end
     end
   end
