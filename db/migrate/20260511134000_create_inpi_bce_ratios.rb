@@ -1,5 +1,5 @@
 class CreateInpiBceRatios < ActiveRecord::Migration[7.2]
-  def change
+  def change # rubocop:disable Metrics/MethodLength
     create_table :inpi_bce_ratios do |t|
       t.string :siren, limit: 9, null: false
       t.date :date_cloture_exercice, null: false
