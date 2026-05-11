@@ -52,6 +52,7 @@ module Excel
       @score_entries_by_company = {}
       @has_delai_urssaf = Set.new
       @company_data = {} # Cache for company metadata (raison_sociale, department, etc.)
+      @inpi_bce_ratios = {}
     end
 
     def generate
@@ -108,11 +109,16 @@ module Excel
         "Liste retraitée (Oui / Non)",
         "Délai de paiement Urssaf",
         "Entreprises récentes",
-        "Accompagnement"
+        "Accompagnement",
+        "Taux endettement",
+        "CA",
+        "Résultat net",
+        "Résultat d'exploitation",
+        "Ratio de liquidité"
       ]
-      # Reuse single style object instead of creating 24
+      # Reuse single style object instead of creating 29
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(24, header_style_obj)
+      sheet.add_row headers, style: Array.new(29, header_style_obj)
     end
 
     def add_company_rows(sheet)
@@ -186,6 +192,26 @@ module Excel
               AND l.list_date < ?
               AND (cse_other.alert IS NULL OR cse_other.alert NOT IN ('Plans', 'Ratios'))
           )
+        ),
+        latest_inpi_bce_ratios AS (
+          SELECT DISTINCT ON (ibr.siren)
+            ibr.siren,
+            ibr.taux_d_endettement,
+            ibr.chiffre_d_affaires,
+            ibr.resultat_net,
+            ibr.ebit,
+            ibr.ratio_de_liquidite
+          FROM inpi_bce_ratios ibr
+          INNER JOIN target_sirens ts_filter ON ts_filter.siren = ibr.siren
+          ORDER BY ibr.siren,
+            ibr.date_cloture_exercice DESC,
+            CASE ibr.type_bilan
+              WHEN 'K' THEN 1
+              WHEN 'C' THEN 2
+              WHEN 'S' THEN 3
+              ELSE 4
+            END,
+            ibr.id DESC
         )
         SELECT ts.siren, cm.siret_siege, ls.score, ls.alert,
           ls.score_effectif, ls.score_financier, ls.score_dettes, ls.score_ap,
@@ -197,12 +223,18 @@ module Excel
           cm.social_debt_total,
           CASE WHEN sc.siren IS NOT NULL THEN true ELSE false END AS is_sjcf,
           cm.tracking_status,
-          cm.has_delai_urssaf
+          cm.has_delai_urssaf,
+          libr.taux_d_endettement,
+          libr.chiffre_d_affaires,
+          libr.resultat_net,
+          libr.ebit,
+          libr.ratio_de_liquidite
         FROM target_sirens ts
         LEFT JOIN list_scores ls ON ts.siren = ls.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN company_metadata cm ON ts.siren = cm.siren
         LEFT JOIN first_alert_sirens fa ON ts.siren = fa.siren
+        LEFT JOIN latest_inpi_bce_ratios libr ON ts.siren = libr.siren
         ORDER BY ts.siren
       SQL
 
@@ -279,6 +311,14 @@ module Excel
         # Delai URSSAF
         @has_delai_urssaf.add(siren) if row["has_delai_urssaf"]
 
+        @inpi_bce_ratios[siren] = {
+          taux_d_endettement: row["taux_d_endettement"],
+          chiffre_d_affaires: row["chiffre_d_affaires"],
+          resultat_net: row["resultat_net"],
+          ebit: row["ebit"],
+          ratio_de_liquidite: row["ratio_de_liquidite"]
+        }
+
         # Company metadata (convert date strings to Date objects)
         creation_date = row["creation"]
         creation_date = creation_date.to_date if creation_date.is_a?(String)
@@ -304,6 +344,7 @@ module Excel
 
       # Get score entry for current list specifically (always a hash from single query)
       score_entry = @score_entries_by_company[siren]
+      inpi_bce_ratio = @inpi_bce_ratios[siren] || {}
 
       # Get department code - company_data[:department] is already the code string
       department_code = company_data[:department] || "-"
@@ -332,7 +373,12 @@ module Excel
         format_sjcf(siren),
         format_delai_urssaf(siren),
         format_entreprise_recente(company_data[:creation]),
-        format_tracking_status(siren)
+        format_tracking_status(siren),
+        format_inpi_bce_ratio(inpi_bce_ratio[:taux_d_endettement]),
+        format_inpi_bce_ratio(inpi_bce_ratio[:chiffre_d_affaires]),
+        format_inpi_bce_ratio(inpi_bce_ratio[:resultat_net]),
+        format_inpi_bce_ratio(inpi_bce_ratio[:ebit]),
+        format_inpi_bce_ratio(inpi_bce_ratio[:ratio_de_liquidite])
       ]
     end
 
@@ -436,6 +482,10 @@ module Excel
     def format_tracking_status(siren)
       # Use preloaded tracking status
       @tracking_statuses[siren] || "Pas d'accompagnement"
+    end
+
+    def format_inpi_bce_ratio(value)
+      value.nil? ? "-" : value
     end
 
     def add_filter_details_sheet(workbook)
