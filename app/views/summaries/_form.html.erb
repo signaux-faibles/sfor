@@ -1,14 +1,14 @@
 <% if policy(@establishment_tracking).edit? %>
   <div class="fr-ml-3w">
     <%= form_with(model: [@establishment, @establishment_tracking, summary], local: false) do |form| %>
-      <%= form.hidden_field :network_id, value: network.id %>
+      <%= form.hidden_field :network_id, value: network.id, id:nil %>
       <div class="fr-input-group <%= 'fr-input-group--error' if summary.errors.any? %>">
-        <%= form.label :content, "Contenu de la synthèse" %>
+        <%= form.label :content, "Contenu de la synthèse", for: "summary-content-#{network.id}" %>
         <%= form.text_area :content,
                            class: "fr-input",
-                           autofocus: true,
                            data: { controller: "auto-resize", action: "input->auto-resize#adjust" },
-                           value: form.object.content.presence || "**Contexte :**\n\n**Difficultés :**\n\n**Actions :**"
+                           value: form.object.content.presence || "**Contexte :**\n\n**Difficultés :**\n\n**Actions :**",
+                           id: "summary-content-#{network.id}"
         %>
 
 
