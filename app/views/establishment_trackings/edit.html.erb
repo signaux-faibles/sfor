@@ -7,11 +7,10 @@
 
     <h1>Modifier les informations - <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
 
-    <fieldset class="fr-grid-row fr-grid-row--left fr-mb-3w">
-      <div class="fr-col-6">
-        <div class="fr-p-3w">
-          <legend class="fr-h2">Informations sur l'accompagnement</legend>
-
+    <div class="sf-fieldset-container">
+      <fieldset class="fr-grid-row fr-fieldset">
+        <legend class="fr-h2 fr-fieldset__legend--regular fr-fieldset__legend">Informations sur l'accompagnement</legend>
+        <div class="fr-col-6">
           <% if policy(@establishment_tracking).manage_state? %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
               <%= form.label :state, 'Statut' %>
