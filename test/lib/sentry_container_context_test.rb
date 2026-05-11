@@ -18,13 +18,4 @@ class SentryContainerContextTest < ActiveSupport::TestCase
       "SENTRY_CONTAINER_ROLE" => "worker"
     })
   end
-
-  test "adds optional container name tag" do
-    assert_equal(
-      { container_role: "web", container_name: "sfor-app" },
-      SentryContainerContext.tags(program_name: "bin/rails", argv: [], env: {
-        "SENTRY_CONTAINER_NAME" => "sfor-app"
-      })
-    )
-  end
 end

@@ -138,8 +138,7 @@ The worker role is detected automatically when the process is started with `bin/
 You can also make the deployment explicit with:
 
 ```bash
-SENTRY_CONTAINER_ROLE=web      # or worker
-SENTRY_CONTAINER_NAME=sfor-app # optional, for example sfor-worker
+SENTRY_CONTAINER_ROLE=web # or worker
 ```
 
 ## Synchronization Commands

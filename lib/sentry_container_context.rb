@@ -1,6 +1,5 @@
 module SentryContainerContext
   ROLE_ENV = "SENTRY_CONTAINER_ROLE"
-  NAME_ENV = "SENTRY_CONTAINER_NAME"
 
   WORKER_PROGRAM_NAMES = %w[jobs].freeze
   WORKER_ARGUMENTS = %w[jobs solid_queue].freeze
@@ -8,12 +7,7 @@ module SentryContainerContext
   module_function
 
   def tags(program_name: $PROGRAM_NAME, argv: ARGV, env: ENV)
-    container_role = role(program_name:, argv:, env:)
-    name = env_value(env, NAME_ENV)
-
-    { container_role: container_role }.tap do |tags|
-      tags[:container_name] = name if name
-    end
+    { container_role: role(program_name:, argv:, env:) }
   end
 
   def role(program_name: $PROGRAM_NAME, argv: ARGV, env: ENV)
