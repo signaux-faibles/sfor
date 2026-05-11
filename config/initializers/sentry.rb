@@ -1,3 +1,5 @@
+require Rails.root.join("lib/sentry_container_context").to_s
+
 Sentry.init do |config|
   config.enabled_environments = %w[development preprod production]
   config.dsn = ENV.fetch("SENTRY_DSN", nil)
@@ -7,4 +9,8 @@ Sentry.init do |config|
   config.debug = Rails.env.development?
   config.traces_sample_rate = 1.0
   config.profiles_sample_rate = 1.0
+end
+
+Sentry.configure_scope do |scope|
+  scope.set_tags(SentryContainerContext.tags)
 end

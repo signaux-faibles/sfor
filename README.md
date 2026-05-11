@@ -129,6 +129,19 @@ OSF_DATABASE_PASSWORD=osf_database_password
 OSF_DATABASE_POOL=5
 ```
 
+## Sentry Configuration
+
+Sentry uses `SENTRY_ENV` to separate deployed environments such as `preprod` and `production`.
+Errors are also tagged with `container_role` so the Rails web container (`web`) can be filtered separately from the Solid Queue container (`worker`).
+
+The worker role is detected automatically when the process is started with `bin/jobs`.
+You can also make the deployment explicit with:
+
+```bash
+SENTRY_CONTAINER_ROLE=web      # or worker
+SENTRY_CONTAINER_NAME=sfor-app # optional, for example sfor-worker
+```
+
 ## Synchronization Commands
 
 ### Sync Individual Data Types
