@@ -100,11 +100,11 @@
                     <% else %>
                       <div class="fr-ml-3w">
                         <h3>Synthèse
-                          <button class="fr-btn--tooltip fr-btn" type="button" id="button-summary" aria-describedby="button-summary-<%= network.name.parameterize %>">
+                          <button class="fr-btn--tooltip fr-btn" type="button" id="button-summary-<%= network.name.parameterize %>" aria-describedby="tooltip-summary-<%= network.name.parameterize %>">
                             <span class="fr-icon-information-line" aria-hidden="true"></span>
                             <span class="fr-sr-only">Information sur la synthèse</span>
                           </button>
-                          <span class="fr-tooltip fr-placement" id="button-summary-<%= network.name.parameterize %>" role="tooltip">
+                          <span class="fr-tooltip fr-placement" id="tooltip-summary-<%= network.name.parameterize %>" role="tooltip">
                           La "synthèse" permet de comprendre rapidement et simplement les grands enjeux du dossier.<br/><br/>
                           Pour une meilleure homogénéisation, elle s'articule en trois paragraphes : présentation de l’entreprise, description des difficultés ou problématiques, actions engagées et calendrier de suivi. La mise en forme de ce champ s’effectue en Markdown (cf guide utilisateur).
                         </span>
@@ -118,15 +118,15 @@
               </div>
 
               <div class="fr-pl-3w">
-                <h3>Commentaires
-                  <button class="fr-btn--tooltip fr-btn" type="button" id="button-comments" aria-describedby="button-comments-<%= network.name.parameterize %>">
+                <h2 class="fr-h3">Commentaires
+                  <button class="fr-btn--tooltip fr-btn" type="button" id="button-comments-<%= network.name.parameterize %>" aria-describedby="tooltip-comments-<%= network.name.parameterize %>">
                     <span class="fr-icon-information-line" aria-hidden="true"></span>
                     <span class="fr-sr-only">Information sur les commentaires</span>
                   </button>
-                  <span class="fr-tooltip fr-placement" id="button-comments-<%= network.name.parameterize %>" role="tooltip">
+                  <span class="fr-tooltip fr-placement" id="tooltip-comments-<%= network.name.parameterize %>" role="tooltip">
                   Les "commentaires" informent sur les récentes actualités du dossier et la situation de l’entreprise.
                 </span>
-                </h3>
+                </h2>
 
                 <% if policy(@establishment_tracking).edit? %>
                   <%= turbo_frame_tag "new_comment_#{network.name.parameterize}" do %>
@@ -135,7 +135,7 @@
                 <% end %>
 
                 <div class="fr-mt-4w">
-                  <div id="comments_<%= network.name.parameterize %>">
+                  <div id="comments_<%= network.name.parameterize %>--container">
                     <%= turbo_frame_tag "comments_#{network.name.parameterize}" do %>
                       <% comments = network.name.downcase == 'codefi' ? @codefi_comments : @user_network_comments %>
 

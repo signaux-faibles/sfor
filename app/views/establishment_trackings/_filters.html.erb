@@ -2,7 +2,7 @@
   <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
     <%= f.hidden_field :view, value: @current_view || "table", data: { view_toggle_target: "hiddenInput" } %>
     <div class="fr-container--fluid fr-m-2w">
-      <h4>Rechercher un accompagnement</h4>
+      <h2 class="fr-h4">Rechercher un accompagnement</h2>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div class="fr-col-3">
           <div class="fr-input-group">
@@ -51,14 +51,15 @@
               <span class="fr-icon-information-line" aria-hidden="true"></span>
               <span class="fr-sr-only">Information sur les statuts</span>
             </button>
-            <span class="fr-tooltip fr-placement" id="tooltip-statuts" role="tooltip">
+
+            <div class="fr-tooltip fr-placement" id="tooltip-statuts" role="tooltip">
               Le "statut" indique l'état d'avancement de l'accompagnement :
               <ul>
                 <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
                 <li>Il est "terminé" lorsque l'agent a proposé une solution ou une orientation, sans besoin d'actions complémentaires de sa part, ou que les solutions proposées ont été épuisées (pas de solution possible pour aider la société, ou société fermée).</li>
                 <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
               </ul>
-            </span>
+            </div>
             <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
               <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
               <%= f.text_field :state_in,
@@ -213,7 +214,7 @@
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la criticité</span>
                 </button>
-                <span class="fr-tooltip fr-placement" id="tooltip-criticality" role="tooltip">
+                <div class="fr-tooltip fr-placement" id="tooltip-criticality" role="tooltip">
                   La "criticité" définit la priorisation de traitement par le CODEFI de l'accompagnement, elle mesure l'urgence à agir en fonction du risque encouru par l'entreprise, des enjeux en termes stratégique ou d'emploi et de la sensibilité du dossier : 
                   <ul>
                     <li>La criticité "élevée" indique que l’entreprise nécessite une attention renforcée du CODEFI compte tenu de sa situation. Elle peut, entre autres, être confrontée à des risques élevés de défaillance à court terme et/ou sujette à des sensibilités politiques du fait de son intérêt stratégique.</li>
@@ -221,7 +222,7 @@
                     <li>Par défaut, les dossiers n'ont "pas de criticité". Cela indique une difficulté avérée de l'entreprise obligeant à son suivi régulier au sein du CODEFI, mais ne remettant pas en cause la pérennité de l’entreprise et des emplois.</li>
                   </ul>
                   L’agent "référent" est responsable de la définition de la criticité. En cas de suivi impliquant des agents de différentes administrations, la criticité est déterminée collégialement, en fonction de la priorité de l’entreprise pour le CODEFI.
-                </span>
+                </div>
                 <%= f.select :criticality_id_eq,
                              Criticality.pluck(:name, :id),
                              { include_blank: "Tous" },
@@ -262,43 +263,44 @@
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
             <div class="fr-col-12">
               <fieldset class="fr-fieldset" id="radio-inline" aria-labelledby="radio-inline-legend radio-inline-messages">
-                <legend class="fr-fieldset__legend--regular fr-fieldset__legend" id="radio-inline-legend">
+                <legend class="fr-fieldset__legend--regular fr-fieldset__legend sf-establishment-trackings-radio-legend" id="radio-inline-legend">
                   Afficher
                 </legend>
                 <div class="fr-fieldset__element fr-fieldset__element--inline">
-                  <div class="fr-radio-group fr-mb-2w">
+                  <div class="fr-radio-group fr-mb-2w sf-establishment-trackings-radio--inline">
                     <input type="radio" id="radio-inline-1" name="q[my_tracking]" value="1"
                            class="fr-radio" <%= params.dig(:q, :my_tracking) == "1" ? "checked" : "" %>>
-                    <label class="fr-label" for="radio-inline-1" aria-describedby="tooltip-my-tracking">
+                    <label class="fr-label" for="radio-inline-1">
                       Mes accompagnements
-                      <span class="fr-tooltip fr-placement" id="tooltip-my-tracking" role="tooltip">
-                        Tous les accompagnements pour lesquels vous êtes "référent" ou "participant".
-                      </span>
+                      <span class="fr-sr-only">Tous les accompagnements pour lesquels vous êtes "référent" ou "participant".</span>
                     </label>
+                    <button aria-describedby="tooltip-my-tracking" type="button" class="fr-btn--tooltip fr-btn">Information sur "Mes accompagnements"</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip-my-tracking" role="tooltip">Tous les accompagnements pour lesquels vous êtes "référent" ou "participant".</span>
                   </div>
                 </div>
                 <div class="fr-fieldset__element fr-fieldset__element--inline">
-                  <div class="fr-radio-group fr-mb-2w">
+                  <div class="fr-radio-group fr-mb-2w sf-establishment-trackings-radio--inline">
                     <input type="radio" id="radio-inline-2" name="q[my_tracking]" value="0"
                            class="fr-radio" <%= params.dig(:q, :my_tracking) != "1" ? "checked" : "" %>>
-                    <label class="fr-label" for="radio-inline-2" aria-describedby="tooltip-all-trackings">
+                    <label class="fr-label" for="radio-inline-2">
                       Tous les accompagnements
-                      <span class="fr-tooltip fr-placement" id="tooltip-all-trackings" role="tooltip">
-                        Tous les accompagnements de votre zone géographique.
-                      </span>
+                      <span class="fr-sr-only">Tous les accompagnements de votre zone géographique.</span>
                     </label>
+                    <button aria-describedby="tooltip-all-trackings" type="button" class="fr-btn--tooltip fr-btn">Information sur "Tous les accompagnements"</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip-all-trackings" role="tooltip">Tous les accompagnements de votre zone géographique.</span>
                   </div>
                 </div>
                 <div class="fr-fieldset__element fr-fieldset__element--inline">
-                  <div class="fr-radio-group fr-mb-2w">
+                  <div class="fr-radio-group fr-mb-2w sf-establishment-trackings-radio--inline">
                     <input type="radio" id="radio-inline-3" name="q[my_tracking]" value="network"
                            class="fr-radio" <%= params.dig(:q, :my_tracking) == "network" ? "checked" : "" %>>
-                    <label class="fr-label" for="radio-inline-3" aria-describedby="tooltip-my-network">
+                    <label class="fr-label" for="radio-inline-3">
                       Les accompagnements de mon administration
-                      <span class="fr-tooltip fr-placement" id="tooltip-my-network" role="tooltip">
-                        Tous les accompagnements pour lesquels au moins une personne de votre administration est référente ou participante, dans votre zone géographique.
-                      </span>
+                      <span class="fr-sr-only">Tous les accompagnements pour lesquels au moins une personne de votre administration est référente ou participante, dans votre zone géographique.</span>
                     </label>
+
+                    <button aria-describedby="tooltip-my-network" type="button" class="fr-btn--tooltip fr-btn">Information sur "Les accompagnements de mon administration"</button>
+                    <span class="fr-tooltip fr-placement" id="tooltip-my-network" role="tooltip">Tous les accompagnements pour lesquels au moins une personne de votre administration est référente ou participante, dans votre zone géographique.</span>
                   </div>
                 </div>
                 <div class="fr-messages-group" id="radio-inline-messages" aria-live="assertive">
