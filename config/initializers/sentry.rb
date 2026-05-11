@@ -1,5 +1,3 @@
-require Rails.root.join("lib/sentry_container_context").to_s
-
 Sentry.init do |config|
   config.enabled_environments = %w[development preprod production]
   config.dsn = ENV.fetch("SENTRY_DSN", nil)
@@ -11,6 +9,5 @@ Sentry.init do |config|
   config.profiles_sample_rate = 1.0
 end
 
-Sentry.configure_scope do |scope|
-  scope.set_tags(SentryContainerContext.tags)
-end
+sentry_container_role = ENV.fetch("SENTRY_CONTAINER_ROLE", nil)
+Sentry.set_tags(container_role: sentry_container_role) if sentry_container_role.present?
