@@ -11,6 +11,7 @@ class Company < ApplicationRecord
   has_many :company_score_entries, foreign_key: :siren, primary_key: :siren, dependent: :destroy
   has_many :osf_procols, foreign_key: :siren, primary_key: :siren, dependent: :destroy
   has_many :company_list_ratings, foreign_key: :siren, primary_key: :siren, dependent: :destroy
+  has_many :inpi_bce_ratios, foreign_key: :siren, primary_key: :siren, dependent: :destroy
 
   validates :siren, presence: true, uniqueness: true
   validates :department, presence: true, length: { maximum: 10 }
