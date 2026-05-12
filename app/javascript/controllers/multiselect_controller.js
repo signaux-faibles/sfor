@@ -5,7 +5,8 @@ export default class extends Controller {
   static values = {
     debounce: Number,
     options: Array,
-    required: Boolean
+    required: Boolean,
+    label: String
   }
 
   connect() {
@@ -63,12 +64,24 @@ export default class extends Controller {
       }
     } else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      this.handleArrowUp()
+      if (event.altKey) {
+        this.closeAndFocusInput()
+      } else {
+        this.handleArrowUp()
+      }
     } else if (event.key === 'Enter') {
       event.preventDefault()
       this.handleEnter()
     } else if (event.key === 'Escape') {
-      this.clearResults()
+      const isOpen = this.resultsTarget.querySelector('.sf-multiselect-results') !== null
+      if (isOpen) {
+        this.clearResults()
+      } else {
+        this.inputTarget.value = ''
+        this.selectedItems = []
+        this.updateHiddenField()
+        this.renderTags()
+      }
     } else if (event.key === 'Tab') {
       this.clearResults()
     } else if (event.key === 'Backspace' && this.inputTarget.value === '' && this.selectedItems.length > 0) {
@@ -78,6 +91,9 @@ export default class extends Controller {
     } else if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) {
       this.focusedOptionIndex = -1
       this.clearOptionFocus()
+    } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
+      this.focusedOptionIndex = -1
+      this.clearOptionFocus()
     }
   }
 
@@ -85,6 +101,13 @@ export default class extends Controller {
     const isOpen = this.resultsTarget.querySelector('.sf-multiselect-results') !== null
     if (isOpen) return
     this.performSearch(this.inputTarget.value.trim())
+  }
+
+  closeAndFocusInput() {
+    const isOpen = this.resultsTarget.querySelector('.sf-multiselect-results') !== null
+    if (!isOpen) return
+    this.clearResults()
+    this.inputTarget.focus()
   }
 
   handleArrowDown() {
@@ -128,8 +151,11 @@ export default class extends Controller {
 
   handleEnter() {
     const options = this.getOptionButtons()
-    if (this.focusedOptionIndex === -1 || options.length === 0) return
-    options[this.focusedOptionIndex]?.click()
+    if (this.focusedOptionIndex !== -1 && options.length > 0) {
+      options[this.focusedOptionIndex]?.click()
+    } else {
+      this.clearResults()
+    }
   }
 
   getOptionButtons() {
@@ -141,12 +167,15 @@ export default class extends Controller {
       option.classList.toggle('sf-multiselect-focused', index === this.focusedOptionIndex)
       if (index === this.focusedOptionIndex) {
         option.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+        const li = option.closest('[role="option"]')
+        if (li) this.inputTarget.setAttribute('aria-activedescendant', li.id)
       }
     })
   }
 
   clearOptionFocus() {
     this.getOptionButtons().forEach(btn => btn.classList.remove('sf-multiselect-focused'))
+    this.inputTarget.removeAttribute('aria-activedescendant')
   }
 
   search() {
@@ -189,11 +218,13 @@ export default class extends Controller {
       return
     }
 
-    let html = '<ul class="sf-multiselect-results fr-list" role="listbox">'
-    options.forEach(opt => {
+    const listboxLabel = this.hasLabelValue ? ` aria-label="${this.escapeHtml(this.labelValue)}"` : ''
+    let html = `<ul class="sf-multiselect-results fr-list" role="listbox"${listboxLabel}>`
+    options.forEach((opt, index) => {
       const selectedClass = opt.selected ? ' sf-multiselect-result-item--selected' : ''
       const iconClass = opt.selected ? ' fr-icon-success-fill' : ''
-      html += `<li class="sf-multiselect-result-item${selectedClass}" role="option" aria-selected="${opt.selected}">`
+      const optionId = `${this.resultsTarget.id}-option-${index}`
+      html += `<li id="${optionId}" class="sf-multiselect-result-item${selectedClass}" role="option" aria-selected="${opt.selected}">`
       html += `<button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-btn--icon-left${iconClass}" `
       html += `data-action="click->multiselect#toggleResult" `
       html += `data-result-value="${this.escapeHtml(String(opt.value))}" `
@@ -206,6 +237,7 @@ export default class extends Controller {
 
     this.resultsTarget.innerHTML = html
     this.focusedOptionIndex = -1
+    this.inputTarget.setAttribute('aria-expanded', 'true')
   }
 
   toggleResult(event) {
@@ -340,6 +372,8 @@ export default class extends Controller {
   clearResults() {
     if (this.resultsTarget) this.resultsTarget.innerHTML = ""
     this.focusedOptionIndex = -1
+    this.inputTarget.setAttribute('aria-expanded', 'false')
+    this.inputTarget.removeAttribute('aria-activedescendant')
   }
 
   escapeHtml(text) {
