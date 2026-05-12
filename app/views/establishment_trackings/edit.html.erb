@@ -71,8 +71,7 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <% tracking_labels_options = TrackingLabel.kept.where(system: true).map { |l| { value: l.id.to_s, label: l.name } } %>
-            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= tracking_labels_options.to_json %>" data-multiselect-label-value="Étiquettes">
+            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @labels_options.to_json %>" data-multiselect-label-value="Étiquettes">
               <div class="fr-input-group">
                 <div class="fr-label-wrapper">
                   <%= form.label :tracking_label_ids, 'Étiquettes', class: "fr-label" %>
@@ -104,8 +103,7 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <% supporting_services_options = SupportingService.all.map { |s| { value: s.id.to_s, label: s.name } } %>
-            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= supporting_services_options.to_json %>" data-multiselect-label-value="Instances concernées">
+            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @supporting_services_options.to_json %>" data-multiselect-label-value="Instances concernées">
               <div class="fr-input-group">
                 <div class="fr-label-wrapper">
                   <%= form.label :supporting_service_ids, 'Instances concernées', class: "fr-label" %>
@@ -137,8 +135,7 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <% difficulties_options = Difficulty.all.map { |d| { value: d.id.to_s, label: d.name } } %>
-            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= difficulties_options.to_json %>" data-multiselect-label-value="Difficultés">
+            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @difficulties_options.to_json %>" data-multiselect-label-value="Difficultés">
               <div class="fr-input-group">
                 <div class="fr-label-wrapper">
                   <%= form.label :difficulty_ids, 'Difficultés', class: "fr-label" %>
@@ -170,8 +167,7 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <% user_actions_options = UserAction.kept.ordered.map { |a| { value: a.id.to_s, label: a.name } } %>
-            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= user_actions_options.to_json %>" data-multiselect-label-value="Actions réalisées">
+            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @user_actions_options.to_json %>" data-multiselect-label-value="Actions réalisées">
               <div class="fr-input-group">
                 <div class="fr-label-wrapper">
                   <%= form.label :user_action_ids, 'Actions réalisées', class: "fr-label" %>
@@ -203,8 +199,7 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <% codefi_redirects_options = CodefiRedirect.ordered.map { |c| { value: c.id.to_s, label: c.name } } %>
-            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= codefi_redirects_options.to_json %>" data-multiselect-label-value="Réorientations hors CODEFI">
+            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @codefi_redirects_options.to_json %>" data-multiselect-label-value="Réorientations hors CODEFI">
               <div class="fr-input-group">
                 <div class="fr-label-wrapper">
                   <%= form.label :codefi_redirect_ids, 'Réorientations hors CODEFI', class: "fr-label" %>
@@ -248,8 +243,7 @@
           <p><%= @establishment_tracking.establishment.siret %></p>
 
           <div class="fr-fieldset__element">
-            <% sectors_options = Sector.ordered_by_name.map { |s| { value: s.id.to_s, label: s.name } } %>
-            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= sectors_options.to_json %>" data-multiselect-label-value="Filières">
+            <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @sectors_options.to_json %>" data-multiselect-label-value="Filières">
               <div class="fr-input-group">
                 <div class="fr-label-wrapper">
                   <%= form.label :sector_ids, 'Filières', class: "fr-label" %>

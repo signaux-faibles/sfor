@@ -13,8 +13,7 @@
             </div>
           </div>
         </div>
-        <% departements = current_user.geo_access.departments.order(:code).map { |d| { value: d.code, label: "#{d.code} - #{d.name}" } } %>
-        <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= departements.to_json %>" data-multiselect-label-value="Départements">
+        <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @departements_options.to_json %>" data-multiselect-label-value="Départements">
           <div class="fr-input-group">
             <%= f.label :departement_in, "Départements", class: "fr-label" %>
             <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
@@ -36,7 +35,7 @@
                               autocomplete: "off"
               %>
             </div>
-            <%= f.hidden_field :departement_in_values, value: Array(search_params[:departement_in]).compact_blank.to_json, data: { multiselect_target: "hiddenValues" } %>
+            <%= f.hidden_field :departement_in_values, value: @selected_departements_json, data: { multiselect_target: "hiddenValues" } %>
             <div
               id="sf-multiselect-departement-list"
               data-multiselect-target="results"
@@ -66,31 +65,7 @@
                            data: { filters_toggle_target: "filtersOpenInput" } %>
         <div data-filters-toggle-target="hiddenFilters" style="display: <%= params.dig(:search, :filters_open) == "true" ? "block" : "none" %>">
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-            <% section_options = [
-                 { value: "A", label: "A - Agriculture, sylviculture et pêche" },
-                 { value: "B", label: "B - Industries extractives" },
-                 { value: "C", label: "C - Industrie manufacturière" },
-                 { value: "D", label: "D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné" },
-                 { value: "E", label: "E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution" },
-                 { value: "F", label: "F - Construction" },
-                 { value: "G", label: "G - Commerce ; réparation d'automobiles et de motocycles" },
-                 { value: "H", label: "H - Transports et entreposage" },
-                 { value: "I", label: "I - Hébergement et restauration" },
-                 { value: "J", label: "J - Information et communication" },
-                 { value: "K", label: "K - Activités financières et d'assurance" },
-                 { value: "L", label: "L - Activités immobilières" },
-                 { value: "M", label: "M - Activités spécialisées, scientifiques et techniques" },
-                 { value: "N", label: "N - Activités de services administratifs et de soutien" },
-                 { value: "O", label: "O - Administration publique" },
-                 { value: "P", label: "P - Enseignement" },
-                 { value: "Q", label: "Q - Santé humaine et action sociale" },
-                 { value: "R", label: "R - Arts, spectacles et activités récréatives" },
-                 { value: "S", label: "S - Autres activités de services" },
-                 { value: "T", label: "T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre" },
-                 { value: "U", label: "U - Activités extra-territoriales" }
-               ] %>
-            <% selected_sections = section_options.select { |o| Array(search_params[:section_activite_principale]).include?(o[:value]) } %>
-            <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= section_options.to_json %>" data-multiselect-label-value="Secteur d'activité">
+            <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @section_options.to_json %>" data-multiselect-label-value="Secteur d'activité">
               <div class="fr-input-group">
                 <%= f.label :section_activite_principale, "Secteur d'activité", class: "fr-label" %>
                 <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
@@ -105,7 +80,7 @@
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :section_activite_principale_values,
-                                  value: selected_sections.to_json,
+                                  value: @selected_sections_json,
                                   data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-section-list"
                      data-multiselect-target="results"
@@ -114,9 +89,7 @@
                      aria-multiselectable="true"></div>
               </div>
             </div>
-            <% forme_options = legal_forms_options.map { |code, label| { value: code, label: "#{code} - #{label}" } } %>
-            <% selected_formes = forme_options.select { |o| Array(search_params[:forme_juridique]).include?(o[:value]) } %>
-            <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= forme_options.to_json %>" data-multiselect-label-value="Forme juridique">
+            <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @forme_options.to_json %>" data-multiselect-label-value="Forme juridique">
               <div class="fr-input-group">
                 <%= f.label :forme_juridique, "Forme juridique", class: "fr-label" %>
                 <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
@@ -131,7 +104,7 @@
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :forme_juridique_values,
-                                  value: selected_formes.to_json,
+                                  value: @selected_formes_json,
                                   data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-forme-list"
                      data-multiselect-target="results"

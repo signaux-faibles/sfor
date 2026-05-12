@@ -8,6 +8,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   STANDARD_ALERT_VALUES = ["Alerte seuil F1", "Alerte seuil F2"].freeze
   CRP_ALERT_VALUES = ["Plans", "Ratios"].freeze
 
+  before_action :set_multiselect_options, only: :show
+
   def index
     @lists = List.order(list_date: :desc)
   end
@@ -30,6 +32,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     forme_juridique: [],
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
+    @selected_departements_json = Array(@search_params[:departement_in]).compact_blank.to_json
+    @selected_sections_json = @section_options.select { |o| Array(@search_params[:section_activite_principale]).include?(o[:value]) }.to_json
+    @selected_formes_json = @forme_options.select { |o| Array(@search_params[:forme_juridique]).include?(o[:value]) }.to_json
 
     # Parse cursor: format is "score:id" or just "id" for backward compatibility
     @cursor_score, @cursor_id = parse_cursor(@search_params[:cursor])
@@ -318,6 +323,34 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   def parse_multiselect_params
     parse_multiselect(:search, %w[departement_in section_activite_principale forme_juridique])
+  end
+
+  def set_multiselect_options
+    @departements_options = current_user.geo_access.departments.order(:code).map { |d| { value: d.code, label: "#{d.code} - #{d.name}" } }
+    @section_options = [
+      { value: "A", label: "A - Agriculture, sylviculture et pêche" },
+      { value: "B", label: "B - Industries extractives" },
+      { value: "C", label: "C - Industrie manufacturière" },
+      { value: "D", label: "D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné" },
+      { value: "E", label: "E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution" },
+      { value: "F", label: "F - Construction" },
+      { value: "G", label: "G - Commerce ; réparation d'automobiles et de motocycles" },
+      { value: "H", label: "H - Transports et entreposage" },
+      { value: "I", label: "I - Hébergement et restauration" },
+      { value: "J", label: "J - Information et communication" },
+      { value: "K", label: "K - Activités financières et d'assurance" },
+      { value: "L", label: "L - Activités immobilières" },
+      { value: "M", label: "M - Activités spécialisées, scientifiques et techniques" },
+      { value: "N", label: "N - Activités de services administratifs et de soutien" },
+      { value: "O", label: "O - Administration publique" },
+      { value: "P", label: "P - Enseignement" },
+      { value: "Q", label: "Q - Santé humaine et action sociale" },
+      { value: "R", label: "R - Arts, spectacles et activités récréatives" },
+      { value: "S", label: "S - Autres activités de services" },
+      { value: "T", label: "T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre" },
+      { value: "U", label: "U - Activités extra-territoriales" }
+    ]
+    @forme_options = helpers.legal_forms_options.map { |code, label| { value: code, label: "#{code} - #{label}" } }
   end
 
   # Build base query for companies in a list via the company_lists join table.

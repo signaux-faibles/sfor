@@ -9,15 +9,11 @@
       <fieldset class="fr-grid-row fr-fieldset">
         <legend class="fr-h2 fr-fieldset__legend--regular fr-fieldset__legend">Contributeurs de l'accompagnement</legend>
         <div class="fr-col-6">
-          <%
-            users_options = User.includes([:entity]).kept.map { |u| { value: u.id.to_s, label: u.display_name } }
-            current_referent_ids = @establishment_tracking.referent_ids.map(&:to_s)
-          %>
-
+          <% current_referent_ids = @establishment_tracking.referent_ids.map(&:to_s) %>
 
           <div class="fr-fieldset__element">
             <div class="fr-input-group">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= users_options.to_json %>" data-multiselect-label-value="Référents">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @users_options.to_json %>" data-multiselect-label-value="Référents">
                 <div class="fr-label-wrapper">
                   <%= form.label :referent_ids_input, 'Référents', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-referents" aria-describedby="tooltip-new-tracking-referents">
@@ -43,7 +39,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :referent_ids_values,
-                                      value: current_referent_ids.map { |id| { value: id, label: users_options.find { |u| u[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_referent_ids.map { |id| { value: id, label: @users_options.find { |u| u[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-referents-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -59,7 +55,7 @@
 
           <div class="fr-fieldset__element">
             <div class="fr-input-group">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= users_options.to_json %>" data-multiselect-label-value="Participants">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @users_options.to_json %>" data-multiselect-label-value="Participants">
                 <div class="fr-label-wrapper">
                   <%= form.label :participant_ids_input, 'Participants', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-participants" aria-describedby="tooltip-new-tracking-participants">
@@ -84,7 +80,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :participant_ids_values,
-                                      value: current_participant_ids.map { |id| { value: id, label: users_options.find { |u| u[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_participant_ids.map { |id| { value: id, label: @users_options.find { |u| u[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-participants-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -133,12 +129,9 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <%
-              labels_options = @system_labels.map { |name, id| { value: id.to_s, label: name } }
-              current_label_ids = @establishment_tracking.tracking_label_ids.map(&:to_s)
-            %>
+            <% current_label_ids = @establishment_tracking.tracking_label_ids.map(&:to_s) %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= labels_options.to_json %>" data-multiselect-label-value="Étiquettes">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @labels_options.to_json %>" data-multiselect-label-value="Étiquettes">
                 <div class="fr-label-wrapper">
                   <%= form.label :tracking_label_ids_input, 'Étiquettes', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-labels" aria-describedby="tooltip-new-tracking-labels">
@@ -162,7 +155,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :tracking_label_ids_values,
-                                      value: current_label_ids.map { |id| { value: id, label: labels_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_label_ids.map { |id| { value: id, label: @labels_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-labels-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -173,12 +166,9 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <%
-              supporting_services_options = SupportingService.all.map { |s| { value: s.id.to_s, label: s.name } }
-              current_supporting_service_ids = @establishment_tracking.supporting_service_ids.map(&:to_s)
-            %>
+            <% current_supporting_service_ids = @establishment_tracking.supporting_service_ids.map(&:to_s) %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= supporting_services_options.to_json %>" data-multiselect-label-value="Instances concernées">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @supporting_services_options.to_json %>" data-multiselect-label-value="Instances concernées">
                 <div class="fr-label-wrapper">
                   <%= form.label :supporting_service_ids_input, 'Instances concernées', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-supporting-service" aria-describedby="tooltip-new-tracking-supporting-service">
@@ -201,7 +191,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :supporting_service_ids_values,
-                                      value: current_supporting_service_ids.map { |id| { value: id, label: supporting_services_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_supporting_service_ids.map { |id| { value: id, label: @supporting_services_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-supporting-services-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -212,12 +202,9 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <%
-              difficulties_options = Difficulty.all.map { |d| { value: d.id.to_s, label: d.name } }
-              current_difficulty_ids = @establishment_tracking.difficulty_ids.map(&:to_s)
-            %>
+            <% current_difficulty_ids = @establishment_tracking.difficulty_ids.map(&:to_s) %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= difficulties_options.to_json %>" data-multiselect-label-value="Difficultés">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @difficulties_options.to_json %>" data-multiselect-label-value="Difficultés">
                 <div class="fr-label-wrapper">
                   <%= form.label :difficulty_ids_input, 'Difficultés', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-difficulty" aria-describedby="tooltip-new-tracking-difficulty">
@@ -240,7 +227,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :difficulty_ids_values,
-                                      value: current_difficulty_ids.map { |id| { value: id, label: difficulties_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_difficulty_ids.map { |id| { value: id, label: @difficulties_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-difficulties-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -251,12 +238,9 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <%
-              user_actions_options = UserAction.kept.ordered.map { |a| { value: a.id.to_s, label: a.name } }
-              current_user_action_ids = @establishment_tracking.user_action_ids.map(&:to_s)
-            %>
+            <% current_user_action_ids = @establishment_tracking.user_action_ids.map(&:to_s) %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= user_actions_options.to_json %>" data-multiselect-label-value="Actions réalisées">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @user_actions_options.to_json %>" data-multiselect-label-value="Actions réalisées">
                 <div class="fr-label-wrapper">
                   <%= form.label :user_action_ids_input, 'Actions réalisées', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-user-action" aria-describedby="tooltip-new-tracking-user-action">
@@ -279,7 +263,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :user_action_ids_values,
-                                      value: current_user_action_ids.map { |id| { value: id, label: user_actions_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_user_action_ids.map { |id| { value: id, label: @user_actions_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-user-actions-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -290,12 +274,9 @@
           </div>
 
           <div class="fr-fielset__element">
-            <%
-              codefi_redirects_options = CodefiRedirect.ordered.map { |r| { value: r.id.to_s, label: r.name } }
-              current_codefi_redirect_ids = @establishment_tracking.codefi_redirect_ids.map(&:to_s)
-            %>
+            <% current_codefi_redirect_ids = @establishment_tracking.codefi_redirect_ids.map(&:to_s) %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= codefi_redirects_options.to_json %>" data-multiselect-label-value="Réorientations hors CODEFI">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @codefi_redirects_options.to_json %>" data-multiselect-label-value="Réorientations hors CODEFI">
                 <div class="fr-label-wrapper">
                   <%= form.label :codefi_redirect_ids_input, 'Réorientations hors CODEFI', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-codefi-redirect" aria-describedby="tooltip-new-tracking-codefi-redirect">
@@ -318,7 +299,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :codefi_redirect_ids_values,
-                                      value: current_codefi_redirect_ids.map { |id| { value: id, label: codefi_redirects_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_codefi_redirect_ids.map { |id| { value: id, label: @codefi_redirects_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-codefi-redirects-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
@@ -343,12 +324,9 @@
           </div>
 
           <div class="fr-fieldset__element">
-            <%
-              sectors_options = Sector.ordered_by_name.map { |s| { value: s.id.to_s, label: s.name } }
-              current_sector_ids = @establishment_tracking.sector_ids.map(&:to_s)
-            %>
+            <% current_sector_ids = @establishment_tracking.sector_ids.map(&:to_s) %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= sectors_options.to_json %>" data-multiselect-label-value="Filières">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @sectors_options.to_json %>" data-multiselect-label-value="Filières">
                 <div class="fr-label-wrapper">
                   <%= form.label :sector_ids_input, 'Filières', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-sector" aria-describedby="tooltip-new-tracking-sector">
@@ -371,7 +349,7 @@
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :sector_ids_values,
-                                      value: current_sector_ids.map { |id| { value: id, label: sectors_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
+                                      value: current_sector_ids.map { |id| { value: id, label: @sectors_options.find { |o| o[:value] == id }&.dig(:label).to_s } }.to_json,
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-sectors-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>

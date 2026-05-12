@@ -16,6 +16,8 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
                 only: %i[show destroy edit update manage_contributors update_contributors remove_referent
                          remove_participant confirm complete duplicate]
   before_action :set_system_labels, only: %i[index new new_by_siret edit update create confirm]
+  before_action :set_filter_multiselect_options, only: :index
+  before_action :set_tracking_form_options, only: %i[new new_by_siret create edit update confirm manage_contributors update_contributors]
 
   def index
     parse_multiselect_q_params
@@ -154,6 +156,24 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
 
   def parse_multiselect_tracking_params
     parse_multiselect(:establishment_tracking, %w[referent_ids participant_ids tracking_label_ids supporting_service_ids difficulty_ids user_action_ids codefi_redirect_ids sector_ids])
+  end
+
+  def set_filter_multiselect_options
+    @dept_options = current_user.geo_access.departments.order(:code).map { |d| { value: d.code, label: "#{d.code} - #{d.name}" } }
+    @state_options = EstablishmentTracking.aasm.states.map { |s| { value: s.name.to_s, label: s.human_name } }
+    @label_options = @system_labels.map { |name, id| { value: id.to_s, label: name } }
+    @service_options = SupportingService.pluck(:name, :id).map { |name, id| { value: id.to_s, label: name } }
+    @sector_options = Sector.ordered_by_name.pluck(:name, :id).map { |name, id| { value: id.to_s, label: name } }
+  end
+
+  def set_tracking_form_options
+    @users_options = User.includes(:entity).kept.map { |u| { value: u.id.to_s, label: u.display_name } }
+    @labels_options = @system_labels.map { |name, id| { value: id.to_s, label: name } }
+    @supporting_services_options = SupportingService.all.map { |s| { value: s.id.to_s, label: s.name } }
+    @difficulties_options = Difficulty.all.map { |d| { value: d.id.to_s, label: d.name } }
+    @user_actions_options = UserAction.kept.ordered.map { |a| { value: a.id.to_s, label: a.name } }
+    @codefi_redirects_options = CodefiRedirect.ordered.map { |c| { value: c.id.to_s, label: c.name } }
+    @sectors_options = Sector.ordered_by_name.map { |s| { value: s.id.to_s, label: s.name } }
   end
 
   def tracking_params
