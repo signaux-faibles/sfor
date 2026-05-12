@@ -3,6 +3,28 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   include ProcolStatusable
   include MultiselectParseable
 
+  SECTION_ACTIVITE_SEARCH_OPTIONS = [
+    { value: "A", label: "A - Agriculture, sylviculture et pêche" },
+    { value: "B", label: "B - Industries extractives" },
+    { value: "C", label: "C - Industrie manufacturière" },
+    { value: "D", label: "D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné" },
+    { value: "E", label: "E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution" },
+    { value: "F", label: "F - Construction" },
+    { value: "G", label: "G - Commerce ; réparation d'automobiles et de motocycles" },
+    { value: "H", label: "H - Transports et entreposage" },
+    { value: "I", label: "I - Hébergement et restauration" },
+    { value: "J", label: "J - Information et communication" },
+    { value: "K", label: "K - Activités financières et d'assurance" },
+    { value: "L", label: "L - Activités immobilières" },
+    { value: "M", label: "M - Activités spécialisées, scientifiques et techniques" },
+    { value: "N", label: "N - Activités de services administratifs et de soutien" },
+    { value: "P", label: "P - Enseignement" },
+    { value: "Q", label: "Q - Santé humaine et action sociale" },
+    { value: "R", label: "R - Arts, spectacles et activités récréatives" },
+    { value: "S", label: "S - Autres activités de services" },
+    { value: "T", label: "T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre" }
+  ].freeze
+
   skip_before_action :authenticate_user!, only: [:unauthorized]
   before_action :set_secteurs_activite_options, only: %i[home search]
 
@@ -16,8 +38,8 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
     @selected_sections_json = Array(@search_params[:section_activite_principale]).compact_blank
-                                                                                 .map { |v| @secteurs_activite_options.find { |s| s[:value] == v } }
-                                                                                 .compact.to_json
+                                                                                 .filter_map { |v| @secteurs_activite_options.find { |s| s[:value] == v } }
+                                                                                 .to_json
 
     # Check if search query is a valid SIREN or SIRET and redirect if so
     redirect_if_siren_or_siret(@search_params[:q])
@@ -203,27 +225,7 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def set_secteurs_activite_options
-    @secteurs_activite_options = [
-      { value: "A", label: "A - Agriculture, sylviculture et pêche" },
-      { value: "B", label: "B - Industries extractives" },
-      { value: "C", label: "C - Industrie manufacturière" },
-      { value: "D", label: "D - Production et distribution d'électricité, de gaz, de vapeur et d'air conditionné" },
-      { value: "E", label: "E - Production et distribution d'eau ; assainissement, gestion des déchets et dépollution" },
-      { value: "F", label: "F - Construction" },
-      { value: "G", label: "G - Commerce ; réparation d'automobiles et de motocycles" },
-      { value: "H", label: "H - Transports et entreposage" },
-      { value: "I", label: "I - Hébergement et restauration" },
-      { value: "J", label: "J - Information et communication" },
-      { value: "K", label: "K - Activités financières et d'assurance" },
-      { value: "L", label: "L - Activités immobilières" },
-      { value: "M", label: "M - Activités spécialisées, scientifiques et techniques" },
-      { value: "N", label: "N - Activités de services administratifs et de soutien" },
-      { value: "P", label: "P - Enseignement" },
-      { value: "Q", label: "Q - Santé humaine et action sociale" },
-      { value: "R", label: "R - Arts, spectacles et activités récréatives" },
-      { value: "S", label: "S - Autres activités de services" },
-      { value: "T", label: "T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre" }
-    ]
+    @secteurs_activite_options = SECTION_ACTIVITE_SEARCH_OPTIONS
     @selected_sections_json = [].to_json
   end
 end

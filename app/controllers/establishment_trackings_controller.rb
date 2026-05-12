@@ -15,10 +15,14 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   before_action :set_tracking, # rubocop:disable Rails/LexicallyScopedActionFilter
                 only: %i[show destroy edit update manage_contributors update_contributors remove_referent
                          remove_participant confirm complete duplicate]
+  # manage_contributors / update_contributors are defined in EstablishmentTrackings::ContributorsManageable
+  # rubocop:disable Rails/LexicallyScopedActionFilter
   before_action :set_system_labels,
                 only: %i[index new new_by_siret edit update create confirm manage_contributors update_contributors]
-  before_action :set_filter_multiselect_options, only: :index
   before_action :set_tracking_form_options, only: %i[new new_by_siret create edit update confirm manage_contributors update_contributors]
+  # rubocop:enable Rails/LexicallyScopedActionFilter
+
+  before_action :set_filter_multiselect_options, only: :index
 
   def index
     parse_multiselect_q_params
