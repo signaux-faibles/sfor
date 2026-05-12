@@ -1,5 +1,4 @@
 module EstablishmentTrackingsHelper
-
   # Public : Build url params for sorting.
   def next_sort_url(params)
     sort_q = current_q_params(params)
@@ -23,22 +22,19 @@ module EstablishmentTrackingsHelper
   def current_modified_at_direction(params)
     current_sort = current_q_params(params)["s"].to_s
     modified_at_sort = current_sort
-                         .split(",")
-                         .map(&:strip)
-                         .find { |sort_value| sort_value.start_with?("modified_at ") }
+                       .split(",")
+                       .map(&:strip)
+                       .find { |sort_value| sort_value.start_with?("modified_at ") }
 
     modified_at_sort&.split&.last
   end
 
   # Private : Get current query params.
   def current_q_params(params)
-    raw_q =
-      if params[:q].respond_to?(:to_unsafe_h)
-        params[:q].to_unsafe_h
-      else
-        params[:q].to_h
-      end
-
-    raw_q
+    if params[:q].respond_to?(:to_unsafe_h)
+      params[:q].to_unsafe_h
+    else
+      params[:q].to_h
+    end
   end
 end
