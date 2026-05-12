@@ -107,7 +107,7 @@
           { value: "S", label: "S - Autres activités de services" },
           { value: "T", label: "T - Activités des ménages en tant qu'employeurs ; activités indifférenciées des ménages en tant que producteurs de biens et services pour usage propre" }
         ] %>
-        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= secteurs_activite.to_json %>">
+        <div class="fr-col-12 fr-col-md-6 fr-col-xl-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= secteurs_activite.to_json %>" data-multiselect-label-value="Secteurs d'activité">
           <div class="fr-input-group">
             <%= f.label :section_activite_principale, "Secteurs d'activité", class: "fr-label" %>
             <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
@@ -117,7 +117,7 @@
                               class: "fr-input",
                               placeholder: "",
                               aria: {
-                                autocomplete: "both",
+                                autocomplete: "list",
                                 controls: "sf-multiselect-activite-list",
                                 expanded: "false",
                               },

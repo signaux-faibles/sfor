@@ -18,7 +18,7 @@
         </div>
         <% dept_options = current_user.geo_access.departments.order(:code).map { |d| { value: d.code, label: "#{d.code} - #{d.name}" } } %>
         <% selected_depts = dept_options.select { |d| Array(@filter_params["establishment_departement_in"]).include?(d[:value]) } %>
-        <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= dept_options.to_json %>">
+        <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= dept_options.to_json %>" data-multiselect-label-value="Départements">
           <div class="fr-input-group">
             <%= f.label :establishment_departement_in, "Départements" %>
             <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
@@ -27,7 +27,7 @@
                               value: "",
                               class: "fr-input",
                               placeholder: "",
-                              aria: { autocomplete: "both", controls: "sf-multiselect-departement-list", expanded: "false" },
+                              aria: { autocomplete: "list", controls: "sf-multiselect-departement-list", expanded: "false" },
                               role: "combobox",
                               data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                               autocomplete: "off" %>
@@ -44,7 +44,7 @@
         </div>
         <% state_options = EstablishmentTracking.aasm.states.map { |s| { value: s.name.to_s, label: s.human_name } } %>
         <% selected_states = state_options.select { |s| Array(@filter_params["state_in"]).include?(s[:value]) } %>
-        <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= state_options.to_json %>">
+        <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= state_options.to_json %>" data-multiselect-label-value="Statuts">
           <div class="fr-input-group">
             <%= f.label :state_in, "Statuts" %>
             <button class="fr-btn--tooltip fr-btn" type="button" id="button-statuts" aria-describedby="tooltip-statuts">
@@ -65,7 +65,7 @@
                               value: "",
                               class: "fr-input",
                               placeholder: "",
-                              aria: { autocomplete: "both", controls: "sf-multiselect-state-list", expanded: "false" },
+                              aria: { autocomplete: "list", controls: "sf-multiselect-state-list", expanded: "false" },
                               role: "combobox",
                               data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                               autocomplete: "off" %>
@@ -93,7 +93,7 @@
           <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
             <% label_options = @system_labels.map { |name, id| { value: id.to_s, label: name } } %>
             <% selected_labels = label_options.select { |o| Array(@filter_params["tracking_labels_id_in"]).include?(o[:value]) } %>
-            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= label_options.to_json %>">
+            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= label_options.to_json %>" data-multiselect-label-value="Étiquettes">
               <div class="fr-input-group">
                 <%= f.label :tracking_labels_id_in, "Étiquettes" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-labels" aria-describedby="tooltip-labels">
@@ -109,7 +109,7 @@
                                   value: "",
                                   class: "fr-input",
                                   placeholder: "",
-                                  aria: { autocomplete: "both", controls: "sf-multiselect-labels-list", expanded: "false" },
+                                  aria: { autocomplete: "list", controls: "sf-multiselect-labels-list", expanded: "false" },
                                   role: "combobox",
                                   data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                   autocomplete: "off" %>
@@ -126,7 +126,7 @@
             </div>
             <% service_options = SupportingService.pluck(:name, :id).map { |name, id| { value: id.to_s, label: name } } %>
             <% selected_services = service_options.select { |o| Array(@filter_params["supporting_services_id_in"]).include?(o[:value]) } %>
-            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= service_options.to_json %>">
+            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= service_options.to_json %>" data-multiselect-label-value="Instances concernées">
               <div class="fr-input-group">
                 <%= f.label :supporting_services_id_in, "Instances concernées" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-supporting-services" aria-describedby="tooltip-supporting-services">
@@ -142,7 +142,7 @@
                                   value: "",
                                   class: "fr-input",
                                   placeholder: "",
-                                  aria: { autocomplete: "both", controls: "sf-multiselect-services-list", expanded: "false" },
+                                  aria: { autocomplete: "list", controls: "sf-multiselect-services-list", expanded: "false" },
                                   role: "combobox",
                                   data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                   autocomplete: "off" %>
@@ -159,7 +159,7 @@
             </div>
             <% sector_options = Sector.ordered_by_name.pluck(:name, :id).map { |name, id| { value: id.to_s, label: name } } %>
             <% selected_sectors = sector_options.select { |o| Array(@filter_params["sectors_id_in"]).include?(o[:value]) } %>
-            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= sector_options.to_json %>">
+            <div class="fr-col-3 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= sector_options.to_json %>" data-multiselect-label-value="Filières">
               <div class="fr-input-group">
                 <%= f.label :sectors_id_in, "Filières" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-sectors" aria-describedby="tooltip-sectors">
@@ -175,7 +175,7 @@
                                   value: "",
                                   class: "fr-input",
                                   placeholder: "",
-                                  aria: { autocomplete: "both", controls: "sf-multiselect-sectors-list", expanded: "false" },
+                                  aria: { autocomplete: "list", controls: "sf-multiselect-sectors-list", expanded: "false" },
                                   role: "combobox",
                                   data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                   autocomplete: "off" %>

@@ -17,7 +17,7 @@
 
           <div class="fr-fieldset__element">
             <div class="fr-input-group">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= users_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= users_options.to_json %>" data-multiselect-label-value="Référents">
                 <div class="fr-label-wrapper">
                   <%= form.label :referent_ids_input, 'Référents', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-referents" aria-describedby="tooltip-new-tracking-referents">
@@ -37,7 +37,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-referents-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-referents-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -59,7 +59,7 @@
 
           <div class="fr-fieldset__element">
             <div class="fr-input-group">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= users_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= users_options.to_json %>" data-multiselect-label-value="Participants">
                 <div class="fr-label-wrapper">
                   <%= form.label :participant_ids_input, 'Participants', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-participants" aria-describedby="tooltip-new-tracking-participants">
@@ -78,7 +78,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-participants-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-participants-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -138,7 +138,7 @@
               current_label_ids = @establishment_tracking.tracking_label_ids.map(&:to_s)
             %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:tracking_label_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= labels_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= labels_options.to_json %>" data-multiselect-label-value="Étiquettes">
                 <div class="fr-label-wrapper">
                   <%= form.label :tracking_label_ids_input, 'Étiquettes', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-labels" aria-describedby="tooltip-new-tracking-labels">
@@ -156,7 +156,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-labels-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-labels-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -178,7 +178,7 @@
               current_supporting_service_ids = @establishment_tracking.supporting_service_ids.map(&:to_s)
             %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:supporting_service_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= supporting_services_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= supporting_services_options.to_json %>" data-multiselect-label-value="Instances concernées">
                 <div class="fr-label-wrapper">
                   <%= form.label :supporting_service_ids_input, 'Instances concernées', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-supporting-service" aria-describedby="tooltip-new-tracking-supporting-service">
@@ -195,7 +195,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-supporting-services-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-supporting-services-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -217,7 +217,7 @@
               current_difficulty_ids = @establishment_tracking.difficulty_ids.map(&:to_s)
             %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:difficulty_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= difficulties_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= difficulties_options.to_json %>" data-multiselect-label-value="Difficultés">
                 <div class="fr-label-wrapper">
                   <%= form.label :difficulty_ids_input, 'Difficultés', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-difficulty" aria-describedby="tooltip-new-tracking-difficulty">
@@ -234,7 +234,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-difficulties-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-difficulties-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -256,7 +256,7 @@
               current_user_action_ids = @establishment_tracking.user_action_ids.map(&:to_s)
             %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:user_action_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= user_actions_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= user_actions_options.to_json %>" data-multiselect-label-value="Actions réalisées">
                 <div class="fr-label-wrapper">
                   <%= form.label :user_action_ids_input, 'Actions réalisées', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-user-action" aria-describedby="tooltip-new-tracking-user-action">
@@ -273,7 +273,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-user-actions-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-user-actions-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -295,7 +295,7 @@
               current_codefi_redirect_ids = @establishment_tracking.codefi_redirect_ids.map(&:to_s)
             %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:codefi_redirect_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= codefi_redirects_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= codefi_redirects_options.to_json %>" data-multiselect-label-value="Réorientations hors CODEFI">
                 <div class="fr-label-wrapper">
                   <%= form.label :codefi_redirect_ids_input, 'Réorientations hors CODEFI', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-codefi-redirect" aria-describedby="tooltip-new-tracking-codefi-redirect">
@@ -312,7 +312,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-codefi-redirects-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-codefi-redirects-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
@@ -348,7 +348,7 @@
               current_sector_ids = @establishment_tracking.sector_ids.map(&:to_s)
             %>
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= sectors_options.to_json %>">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= sectors_options.to_json %>" data-multiselect-label-value="Filières">
                 <div class="fr-label-wrapper">
                   <%= form.label :sector_ids_input, 'Filières', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-sector" aria-describedby="tooltip-new-tracking-sector">
@@ -365,7 +365,7 @@
                                       value: "",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "both", controls: "sf-multiselect-sectors-list", expanded: "false" },
+                                      aria: { autocomplete: "list", controls: "sf-multiselect-sectors-list", expanded: "false" },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
                                       autocomplete: "off" %>
