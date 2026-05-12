@@ -3,32 +3,18 @@
 # Handles filtering and index functionality for establishment trackings
 module EstablishmentTrackings::Filterable
   extend ActiveSupport::Concern
+  include MultiselectParseable
 
   private
 
   def parse_multiselect_q_params
-    return unless params[:q].present?
-
-    {
-      establishment_departement_in_values: :establishment_departement_in,
-      state_in_values: :state_in,
-      tracking_labels_id_in_values: :tracking_labels_id_in,
-      supporting_services_id_in_values: :supporting_services_id_in,
-      sectors_id_in_values: :sectors_id_in
-    }.each do |json_key, target_key|
-      json_val = params.dig(:q, json_key)
-      next unless json_val.present?
-
-      begin
-        values = JSON.parse(json_val)
-        if values.is_a?(Array)
-          parsed = values.map { |v| v["value"] }.compact_blank
-          parsed.any? ? params[:q][target_key] = parsed : params[:q].delete(target_key)
-        end
-      rescue JSON::ParserError
-        # leave as-is
-      end
-    end
+    parse_multiselect(:q, {
+      "establishment_departement_in_values" => :establishment_departement_in,
+      "state_in_values" => :state_in,
+      "tracking_labels_id_in_values" => :tracking_labels_id_in,
+      "supporting_services_id_in_values" => :supporting_services_id_in,
+      "sectors_id_in_values" => :sectors_id_in
+    })
   end
 
   def handle_filters(params)

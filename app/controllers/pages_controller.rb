@@ -1,6 +1,7 @@
 class PagesController < ApplicationController # rubocop:disable Metrics/ClassLength
   include SirenSiretRedirectable
   include ProcolStatusable
+  include MultiselectParseable
 
   skip_before_action :authenticate_user!, only: [:unauthorized]
 
@@ -194,18 +195,6 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def parse_multiselect_params
-    return unless params[:search].present?
-
-    %w[section_activite_principale].each do |key|
-      json_key = "#{key}_values"
-      next unless params[:search][json_key].present?
-
-      begin
-        values = JSON.parse(params[:search][json_key])
-        params[:search][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
-      rescue JSON::ParserError
-        # leave as-is
-      end
-    end
+    parse_multiselect(:search, %w[section_activite_principale])
   end
 end

@@ -2,6 +2,7 @@
 
 module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/ModuleLength
   extend ActiveSupport::Concern
+  include MultiselectParseable
 
   included do
     before_action :set_tracking, only: %i[manage_contributors update_contributors remove_referent remove_participant]
@@ -97,19 +98,7 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
   end
 
   def parse_multiselect_contributor_params
-    return unless params[:establishment_tracking].present?
-
-    %w[referent_ids participant_ids].each do |key|
-      json_val = params[:establishment_tracking]["#{key}_values"]
-      next unless json_val.present?
-
-      begin
-        values = JSON.parse(json_val)
-        params[:establishment_tracking][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
-      rescue JSON::ParserError
-        # leave as-is
-      end
-    end
+    parse_multiselect(:establishment_tracking, %w[referent_ids participant_ids])
   end
 
   def contributor_params

@@ -3,6 +3,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   include SirenSiretRedirectable
   include ProcolStatusable
   include ListExportTrackable
+  include MultiselectParseable
 
   STANDARD_ALERT_VALUES = ["Alerte seuil F1", "Alerte seuil F2"].freeze
   CRP_ALERT_VALUES = ["Plans", "Ratios"].freeze
@@ -316,19 +317,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def parse_multiselect_params
-    return unless params[:search].present?
-
-    %w[departement_in section_activite_principale forme_juridique].each do |key|
-      json_key = "#{key}_values"
-      next unless params[:search][json_key].present?
-
-      begin
-        values = JSON.parse(params[:search][json_key])
-        params[:search][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
-      rescue JSON::ParserError
-        # leave as-is
-      end
-    end
+    parse_multiselect(:search, %w[departement_in section_activite_principale forme_juridique])
   end
 
   # Build base query for companies in a list via the company_lists join table.

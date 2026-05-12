@@ -1,4 +1,5 @@
 class EstablishmentTrackingsController < ApplicationController # rubocop:disable Metrics/ClassLength
+  include MultiselectParseable
   include EstablishmentTrackings::Filterable
   include EstablishmentTrackings::Exportable
   include EstablishmentTrackings::Creatable
@@ -152,19 +153,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
   end
 
   def parse_multiselect_tracking_params
-    return unless params[:establishment_tracking].present?
-
-    %w[referent_ids participant_ids tracking_label_ids supporting_service_ids difficulty_ids user_action_ids codefi_redirect_ids sector_ids].each do |key|
-      json_val = params[:establishment_tracking]["#{key}_values"]
-      next unless json_val.present?
-
-      begin
-        values = JSON.parse(json_val)
-        params[:establishment_tracking][key] = values.map { |v| v["value"] }.compact_blank if values.is_a?(Array)
-      rescue JSON::ParserError
-        # leave as-is
-      end
-    end
+    parse_multiselect(:establishment_tracking, %w[referent_ids participant_ids tracking_label_ids supporting_service_ids difficulty_ids user_action_ids codefi_redirect_ids sector_ids])
   end
 
   def tracking_params
