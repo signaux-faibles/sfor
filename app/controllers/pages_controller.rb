@@ -16,8 +16,8 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
     @selected_sections_json = Array(@search_params[:section_activite_principale]).compact_blank
-                                .map { |v| @secteurs_activite_options.find { |s| s[:value] == v } }
-                                .compact.to_json
+                                                                                 .map { |v| @secteurs_activite_options.find { |s| s[:value] == v } }
+                                                                                 .compact.to_json
 
     # Check if search query is a valid SIREN or SIRET and redirect if so
     redirect_if_siren_or_siret(@search_params[:q])

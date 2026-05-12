@@ -7,7 +7,7 @@ module MultiselectParseable
     return unless ns_params.present?
 
     # Normalize keys into a { "json_key" => target_key } hash in both cases
-    mappings = keys.is_a?(Hash) ? keys : keys.to_h { |k| ["#{k}_values", k] }
+    mappings = keys.is_a?(Hash) ? keys : keys.index_by { |k| "#{k}_values" }
 
     mappings.each do |json_key, target_key|
       json_val = ns_params[json_key]

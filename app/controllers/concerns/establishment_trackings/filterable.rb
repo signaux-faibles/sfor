@@ -9,12 +9,12 @@ module EstablishmentTrackings::Filterable
 
   def parse_multiselect_q_params
     parse_multiselect(:q, {
-      "establishment_departement_in_values" => :establishment_departement_in,
-      "state_in_values" => :state_in,
-      "tracking_labels_id_in_values" => :tracking_labels_id_in,
-      "supporting_services_id_in_values" => :supporting_services_id_in,
-      "sectors_id_in_values" => :sectors_id_in
-    })
+                        "establishment_departement_in_values" => :establishment_departement_in,
+                        "state_in_values" => :state_in,
+                        "tracking_labels_id_in_values" => :tracking_labels_id_in,
+                        "supporting_services_id_in_values" => :supporting_services_id_in,
+                        "sectors_id_in_values" => :sectors_id_in
+                      })
   end
 
   def handle_filters(params)
