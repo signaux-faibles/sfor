@@ -16,7 +16,7 @@
                 <p class="fr-card__title">
                   <%= link_to notification.title, notification_path(notification), class: "fr-link" %>
                   <% if read_at.blank? %>
-                    <span class="fr-badge fr-badge--new fr-ml-1w">Nouveau</span>
+                    <span class="fr-badge fr-badge--new fr-ml-1w fr-badge--sm">Nouveau</span>
                   <% end %>
                 </p>
                 <p class="fr-card__desc">

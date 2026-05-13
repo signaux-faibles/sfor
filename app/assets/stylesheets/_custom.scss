@@ -573,3 +573,25 @@
   0%, 80%, 100% { opacity: 0.3; }
   40% { opacity: 1; }
 }
+
+.sf-establishment-trackings-radio-legend {
+  padding-bottom: .5rem;
+}
+
+.sf-establishment-trackings-radio--inline {
+  display: flex;
+  align-items: center;
+}
+
+.sf-fieldset-container {
+  border: 1px solid var(--grey-50-1000);
+  padding: 2rem;
+
+  &:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}
+
+.sf-fieldset-container .fr-h2 {
+  margin-bottom: 0;
+}
