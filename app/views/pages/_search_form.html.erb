@@ -11,7 +11,7 @@
 </div>
 
 <div class="fr-card sf-establishment-search">
-  <%= form_with url: search_path, method: :get, scope: :search, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
+  <%= form_with url: search_path, method: :get, scope: :search, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form", turbo: false } } do |f| %>
     <div class="fr-container--fluid fr-m-2w">
       <h2 class="fr-h4 fr-mt-1w">Rechercher un établissement ou une entreprise</h2>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-3w">

@@ -108,6 +108,7 @@
                 <li>
                   <%= link_to search_path(search: @search_params.merge(page: @pagination[:page] - 1)),
                               class: "fr-pagination__link fr-pagination__link--prev",
+                              data: { turbo: false },
                               "aria-disabled": "false",
                               rel: "prev" do %>
                     Page précédente
@@ -124,6 +125,7 @@
                   <%= link_to page_num,
                               search_path(search: @search_params.merge(page: page_num)),
                               class: "fr-pagination__link #{'fr-pagination__link--current' if page_num == @pagination[:page]}",
+                              data: { turbo: false },
                               "aria-current": (page_num == @pagination[:page] ? "page" : nil),
                               title: "Page #{page_num}" %>
                 </li>
@@ -133,6 +135,7 @@
                 <li>
                   <%= link_to search_path(search: @search_params.merge(page: @pagination[:page] + 1)),
                               class: "fr-pagination__link fr-pagination__link--next",
+                              data: { turbo: false },
                               "aria-disabled": "false",
                               rel: "next" do %>
                     Page suivante
