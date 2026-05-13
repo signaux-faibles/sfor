@@ -1,12 +1,12 @@
 <div class="fr-grid-row fr-mt-4w">
   <div class="fr-col-12">
     <h3 class="fr-h2">Tous les accompagnements de l'entreprise <%= @establishment&.company&.siren %>
-      <button class="fr-btn--tooltip fr-btn" type="button" id="button-company-trackings" aria-describedby="button-company-trackings">
+      <button class="fr-btn--tooltip fr-btn" type="button" id="button-company-trackings" aria-describedby="tooltip-company-trackings">
         <span class="fr-icon-information-line" aria-hidden="true"></span>
         <span class="fr-sr-only">Information sur les accompagnements de l'entreprise</span>
       </button>
       </h3>
-    <span class="fr-tooltip fr-placement" id="button-company-trackings" role="tooltip">
+    <span class="fr-tooltip fr-placement" id="tooltip-company-trackings" role="tooltip">
       Tous les accompagnements menés sur l'ensemble des établissements de l'entreprise. La centralisation des informations sur l'établissement siège est à privilégiée dans le cadre de dossiers à portée nationale. Il sera alors possible d'ajouter en "contributeur" des agents d'autres départements.
     </span>
     <% if @company_trackings.any? %>
