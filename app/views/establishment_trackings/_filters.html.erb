@@ -1,5 +1,5 @@
 <div class="fr-card establishment_trackings">
-  <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form" } } do |f| %>
+  <%= search_form_for @q, url: establishment_trackings_path, method: :get, class: "fr-search-bar", html: { class: "fr-search-bar__form", data: { view_toggle_target: "form", turbo: false } } do |f| %>
     <%= f.hidden_field :view, value: @current_view || "table", data: { view_toggle_target: "hiddenInput" } %>
     <div class="fr-container--fluid fr-m-2w">
       <h2 class="fr-h4">Rechercher un accompagnement</h2>

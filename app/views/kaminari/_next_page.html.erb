@@ -9,5 +9,5 @@
 <%= if current_page.last?
       content_tag(:a, t('views.pagination.next').html_safe, class: 'fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label', aria: { disabled: 'true' }, role: 'link')
     else
-      link_to(t('views.pagination.next').html_safe, url, rel: 'next', remote: remote, class: 'fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label', aria: { disabled: 'false' }, role: 'link')
+      link_to(t('views.pagination.next').html_safe, url, rel: 'next', remote: remote, class: 'fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label', aria: { disabled: 'false' }, role: 'link', data: { turbo: false })
     end %>

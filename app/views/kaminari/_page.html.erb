@@ -7,4 +7,4 @@
     per_page:      number of items to fetch per page
     remote:        data-remote
 -%>
-  <%= link_to page, url, {remote: remote, rel: page.rel, class: 'fr-pagination__link', aria: { current: page.current? }} %>
+  <%= link_to page, url, {remote: remote, rel: page.rel, class: 'fr-pagination__link', aria: { current: page.current? }, data: { turbo: false }} %>
