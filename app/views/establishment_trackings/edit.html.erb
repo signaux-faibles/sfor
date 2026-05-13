@@ -9,19 +9,19 @@
 
     <h1>Modifier les informations - <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
 
-    <fieldset class="fr-grid-row fr-grid-row--left fr-mb-3w">
-      <div class="fr-col-6">
-        <div class="fr-p-3w">
-          <legend class="fr-h2"><h2>Informations sur l'accompagnement</h2></legend>
-
-          <% if policy(@establishment_tracking).manage_state? %>
-            <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
-              <%= form.label :state, 'Statut' %>
-              <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-state" aria-describedby="button-edit-tracking-state">
-                <span class="fr-icon-information-line" aria-hidden="true"></span>
-                <span class="fr-sr-only">Information sur le statut</span>
-              </button>
-              <span class="fr-tooltip fr-placement" id="button-edit-tracking-state" role="tooltip">
+    <div class="sf-fieldset-container">
+      <fieldset class="fr-fieldset">
+        <legend class="fr-h2 fr-fieldset__legend"><h2>Informations sur l'accompagnement</h2></legend>
+        <div class="fr-col-6">
+          <div class="fr-fieldset__element">
+            <% if policy(@establishment_tracking).manage_state? %>
+              <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:state].any? %>">
+                <%= form.label :state, 'Statut' %>
+                <button class="fr-btn--tooltip fr-btn" type="button" id="button-edit-tracking-state" aria-describedby="tooltip-edit-tracking-state">
+                  <span class="fr-icon-information-line" aria-hidden="true"></span>
+                  <span class="fr-sr-only">Information sur le statut</span>
+                </button>
+                <span class="fr-tooltip fr-placement" id="tooltip-edit-tracking-state" role="tooltip">
                 Le "statut" indique l'état d'avancement de l'accompagnement :
                 <ul>
                   <li>Il est "en cours" pour un accompagnement sur lequel l'agent travaille, des échanges entre partenaires ou avec l'entreprise sont en cours, ou encore que des solutions sont recherchées ou ont été proposées.</li>
@@ -29,18 +29,19 @@
                   <li>Le "sous surveillance" n'a pas vocation à être utilisé dans le cadre des accompagnements d'entreprises issues des listes et traitées en CODEFI. Son usage est réservé aux CRP lorsque l'entreprise est identifiée comme fragilisée et/ou stratégique sans actions régulières sur le dossier. Les accompagnements "sous surveillance" ne sont pas pris compte dans les statistiques.</li>
                 </ul>
               </span>
-              <%= form.select :state,
-                              options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']],
-                                                 @establishment_tracking.state),
-                              {},
-                              { class: 'fr-select', data: { tracking_status_target: "stateSelect", action: "change->tracking-status#toggleWarningBanner" } } %>
-              <% @establishment_tracking.errors[:state].each do |error| %>
-                <p class="fr-error-text"><%= error %></p>
-              <% end %>
-            </div>
-          <% else %>
-            <%= form.hidden_field :state, value: @establishment_tracking.state %>
-          <% end %>
+                <%= form.select :state,
+                                options_for_select([['En cours', 'in_progress'], ['Terminé', 'completed'], ['Sous surveillance', 'under_surveillance']],
+                                                   @establishment_tracking.state),
+                                {},
+                                { class: 'fr-select', data: { tracking_status_target: "stateSelect", action: "change->tracking-status#toggleWarningBanner" } } %>
+                <% @establishment_tracking.errors[:state].each do |error| %>
+                  <p class="fr-error-text"><%= error %></p>
+                <% end %>
+              </div>
+            <% else %>
+              <%= form.hidden_field :state, value: @establishment_tracking.state %>
+            <% end %>
+          </div>
 
           <div class="fr-fieldset__element">
             <div class="fr-input-group <%= 'fr-input-group--error' if @establishment_tracking.errors[:criticality_id].any? %>">
@@ -230,18 +231,17 @@
             </div>
           </div>
         </div>
-      </div>
-    </fieldset>
+      </fieldset>
+    </div>
 
-    <fieldset class="fr-grid-row fr-grid-row--left fr-mb-3w">
-      <div class="fr-col-6">
-        <div class="fr-p-3w">
-
-          <legend class="fr-h2">Informations sur l'établissement</legend>
-          <p class="fr-m-0"><strong>SIRET</strong></p>
-
-          <p><%= @establishment_tracking.establishment.siret %></p>
-
+    <div class="sf-fieldset-container">
+      <fieldset class="fr-fieldset">
+        <legend class="fr-h2 fr-fieldset__legend"><h2>Informations sur l'établissement</h2></legend>
+        <div class="fr-col-6">
+          <div class="fr-fieldset__element">
+            <p class="fr-m-0"><strong>SIRET</strong></p>
+            <p><%= @establishment_tracking.establishment.siret %></p>
+          </div>
           <div class="fr-fieldset__element">
             <div class="sf-multiselect <%= 'fr-input-group--error' if @establishment_tracking.errors[:sector_ids].any? %>" data-controller="multiselect" data-multiselect-options-value="<%= @sectors_options.to_json %>" data-multiselect-label-value="Filières">
               <div class="fr-input-group">
@@ -273,9 +273,10 @@
               </div>
             </div>
           </div>
+
         </div>
-      </div>
-    </fieldset>
+      </fieldset>
+    </div>
 
     <div class="fr-grid-row fr-grid-row--left fr-mb-3w">
       <div class="fr-col-6">

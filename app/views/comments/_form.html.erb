@@ -1,11 +1,26 @@
 <% if policy(@establishment_tracking).edit? %>
   <%= form_with(model: [ @establishment, @establishment_tracking, comment ], local: false, class: 'fr-mb-3w') do |form| %>
-    <%= form.hidden_field :network_id, value: network.id %>
+    <%= form.hidden_field :network_id, value: network.id, id:nil %>
     <div class="fr-input-group <%= 'fr-input-group--error' if comment.errors[:content].any? %>">
+      <div class="fr-pb-2w">
+        <label class="fr-h3" for="comment-content-<%= network.id %>">
+          Commentaires
+        </label>
+
+        <button class="fr-btn--tooltip fr-btn" type="button" id="button-comments-<%= network.name.parameterize %>" aria-describedby="tooltip-comments-<%= network.name.parameterize %>">
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-sr-only">Information sur les commentaires</span>
+        </button>
+        <span class="fr-tooltip fr-placement" id="tooltip-comments-<%= network.name.parameterize %>" role="tooltip">
+        Les "commentaires" informent sur les récentes actualités du dossier et la situation de l’entreprise.
+      </span>
+      </div>
       <%= form.text_area :content,
                          class: "fr-input",
                          placeholder: "Taper votre nouveau commentaire",
-                         data: { controller: "auto-resize", action: "input->auto-resize#resize" } %>      <% comment.errors.each do |error| %>
+                         data: { controller: "auto-resize", action: "input->auto-resize#resize" },
+                         id: "comment-content-#{network.id}" %>
+      <% comment.errors.each do |error| %>
         <% if error.attribute == :content || error.attribute == :network %>
           <p id=<%= "comment_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
             <%= error.full_message %>
