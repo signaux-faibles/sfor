@@ -35,7 +35,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-referents-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :referent_ids_values,
@@ -76,7 +76,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-participants-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :participant_ids_values,
@@ -151,7 +151,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-labels-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :tracking_label_ids_values,
@@ -187,7 +187,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-supporting-services-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :supporting_service_ids_values,
@@ -223,7 +223,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-difficulties-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :difficulty_ids_values,
@@ -259,7 +259,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-user-actions-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :user_action_ids_values,
@@ -295,7 +295,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-codefi-redirects-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :codefi_redirect_ids_values,
@@ -345,7 +345,7 @@
                                       placeholder: "",
                                       aria: { autocomplete: "list", controls: "sf-multiselect-sectors-list", expanded: "false" },
                                       role: "combobox",
-                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                      data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
                 </div>
                 <%= form.hidden_field :sector_ids_values,

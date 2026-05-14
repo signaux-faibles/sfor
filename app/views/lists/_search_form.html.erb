@@ -30,7 +30,7 @@
                               role: "combobox",
                               data: {
                                 multiselect_target: "input",
-                                action: "input->multiselect#search keydown->multiselect#handleKeydown"
+                                action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus"
                               },
                               autocomplete: "off"
               %>
@@ -76,7 +76,7 @@
                                   placeholder: "",
                                   aria: { autocomplete: "list", controls: "sf-multiselect-section-list", expanded: "false" },
                                   role: "combobox",
-                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :section_activite_principale_values,
@@ -100,7 +100,7 @@
                                   placeholder: "",
                                   aria: { autocomplete: "list", controls: "sf-multiselect-forme-list", expanded: "false" },
                                   role: "combobox",
-                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :forme_juridique_values,

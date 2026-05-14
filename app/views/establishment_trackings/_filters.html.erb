@@ -27,7 +27,7 @@
                               placeholder: "",
                               aria: { autocomplete: "list", controls: "sf-multiselect-departement-list", expanded: "false" },
                               role: "combobox",
-                              data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                              data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                               autocomplete: "off" %>
             </div>
             <%= f.hidden_field :establishment_departement_in_values,
@@ -64,7 +64,7 @@
                               placeholder: "",
                               aria: { autocomplete: "list", controls: "sf-multiselect-state-list", expanded: "false" },
                               role: "combobox",
-                              data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                              data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                               autocomplete: "off" %>
             </div>
             <%= f.hidden_field :state_in_values,
@@ -106,7 +106,7 @@
                                   placeholder: "",
                                   aria: { autocomplete: "list", controls: "sf-multiselect-labels-list", expanded: "false" },
                                   role: "combobox",
-                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :tracking_labels_id_in_values,
@@ -137,7 +137,7 @@
                                   placeholder: "",
                                   aria: { autocomplete: "list", controls: "sf-multiselect-services-list", expanded: "false" },
                                   role: "combobox",
-                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :supporting_services_id_in_values,
@@ -168,7 +168,7 @@
                                   placeholder: "",
                                   aria: { autocomplete: "list", controls: "sf-multiselect-sectors-list", expanded: "false" },
                                   role: "combobox",
-                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown" },
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                   autocomplete: "off" %>
                 </div>
                 <%= f.hidden_field :sectors_id_in_values,
