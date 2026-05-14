@@ -49,6 +49,7 @@ export default class extends Controller {
   }
 
   handleClickOutside(event) {
+    if (!event.target.isConnected) return
     if (!this.element.contains(event.target)) {
       this.clearResults()
     }
@@ -88,6 +89,7 @@ export default class extends Controller {
       this.selectedItems.shift()
       this.updateHiddenField()
       this.renderTags()
+      this.refreshResultsIfOpen()
     } else if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) {
       this.focusedOptionIndex = -1
       this.clearOptionFocus()
@@ -95,6 +97,10 @@ export default class extends Controller {
       this.focusedOptionIndex = -1
       this.clearOptionFocus()
     }
+  }
+
+  handleFocus() {
+    this.openIfClosed()
   }
 
   openIfClosed() {
@@ -252,8 +258,7 @@ export default class extends Controller {
 
     this.updateHiddenField()
     this.renderTags()
-    this.inputTarget.value = ""
-    this.clearResults()
+    this.refreshResultsIfOpen()
     this.inputTarget.focus()
   }
 
@@ -367,6 +372,11 @@ export default class extends Controller {
     if (tagItems[0].getBoundingClientRect().right > limit - badgeWidth) {
       tagItems[0].style.maxWidth = `${Math.max(limit - badgeWidth - tagLeft, 32)}px`
     }
+  }
+
+  refreshResultsIfOpen() {
+    const isOpen = this.resultsTarget.querySelector('.sf-multiselect-results') !== null
+    if (isOpen) this.performSearch(this.inputTarget.value.trim())
   }
 
   clearResults() {
