@@ -8,9 +8,6 @@ module ActionView
   module Helpers
     module Tags
       class HiddenField < TextField
-        def render
-          super
-        end
       end
     end
   end
