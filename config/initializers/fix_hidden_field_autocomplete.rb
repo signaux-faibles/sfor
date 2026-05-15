@@ -1,5 +1,7 @@
 # Rails adds autocomplete="off" to all hidden fields, which is invalid HTML5:
 # hidden inputs must not have autocomplete="on" or "off".
+#
+# See README.md — section "Accessibility" for context and maintenance notes.
 
 # Covers f.hidden_field (form builder)
 module ActionView

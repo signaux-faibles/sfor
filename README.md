@@ -551,3 +551,25 @@ With the current configuration (`filter_html: true`), regular Markdown links wor
 ```
 
 However, adding CSS classes to links from Markdown is not supported (for example with `<a class="fr-btn">...</a>`) because HTML is filtered.
+
+# Accessibility
+
+## Hidden fields and `autocomplete`
+
+Rails 7.2 adds `autocomplete="off"` on several hidden `<input>` elements (for example `f.hidden_field`, `hidden_field_tag`, and the UTF-8 enforcer tag embedded in forms). That attribute is not valid on hidden inputs in HTML: `autocomplete` is only allowed on certain visible control types, not on `type="hidden"`.
+
+Automated accessibility and HTML validators flag this as an error (“forbidden attribute” / invalid use of `autocomplete`). The application therefore ships a small initializer that restores valid markup without changing form behaviour:
+
+**File:** [`config/initializers/fix_hidden_field_autocomplete.rb`](config/initializers/fix_hidden_field_autocomplete.rb)
+
+| Helper / tag | What the initializer does |
+|--------------|---------------------------|
+| `f.hidden_field` | Reopens `ActionView::Helpers::Tags::HiddenField` and overrides `render` so Rails no longer sets `@options[:autocomplete] = "off"` before rendering. |
+| `hidden_field_tag` | Reimplements the helper via `text_field_tag` with `type: :hidden`, without merging `autocomplete: "off"`. |
+| `utf8_enforcer_tag` | Emits the same hidden UTF-8 marker input, without `autocomplete="off"`. |
+
+This pattern is used widely in the app (search filters, multiselect value fields, establishment tracking forms, Devise hidden tokens, etc.). Removing the initializer would bring back invalid HTML on those fields.
+
+**Do not remove this file** unless Rails stops adding `autocomplete` on hidden inputs upstream, or you replace it with an equivalent fix. After upgrading Rails, re-check generated HTML for hidden inputs and confirm the initializer still matches the framework’s helpers.
+
+**Note:** Rails may still add `autocomplete="off"` on other hidden inputs it generates directly (for example the CSRF token, checkbox “unchecked” companions, or `_method` spoofing). Those are separate code paths. If an audit reports remaining violations on those tags, extend the fix in the same spirit (strip `autocomplete` only, keep Rails’ naming and behaviour) rather than duplicating helper logic by hand.
