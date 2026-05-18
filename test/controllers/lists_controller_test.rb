@@ -205,6 +205,16 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_includes @response.body, "Company Paris"
   end
 
+  test "show filter departement_in restores multiselect tags with labels" do
+    sign_in @user
+
+    get list_path(@list_2025), params: { search: { departement_in: ["75"] } }
+
+    assert_response :success
+    assert_includes @response.body, 'name="search[departement_in_values]"'
+    assert_includes @response.body, "75 - Paris"
+  end
+
   test "show filter departement_in with other department shows no results for Paris user" do
     sign_in @user
 

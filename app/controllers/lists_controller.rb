@@ -32,7 +32,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                                                     forme_juridique: [],
                                                     section_activite_principale: []) if params[:search].present?
     @search_params ||= {}
-    @selected_departements_json = Array(@search_params[:departement_in]).compact_blank.to_json
+    @selected_departements_json = @departements_options.select { |o| Array(@search_params[:departement_in]).include?(o[:value]) }.to_json
     @selected_sections_json = @section_options.select { |o| Array(@search_params[:section_activite_principale]).include?(o[:value]) }.to_json
     @selected_formes_json = @forme_options.select { |o| Array(@search_params[:forme_juridique]).include?(o[:value]) }.to_json
 
