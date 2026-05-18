@@ -4,41 +4,47 @@
 # usage: rake companies:update_procol_status
 
 namespace :companies do # rubocop:disable Metrics/BlockLength
+  # Latest active libelle_procol per siren (matches procol_at_date action_procol filter).
+  ACTIVE_PROCOL_STATUSES_SQL = <<~SQL.squish
+    SELECT DISTINCT ON (siren) siren, libelle_procol
+    FROM (
+      SELECT DISTINCT ON (siren, action_procol)
+        siren, action_procol, libelle_procol
+      FROM osf_procols
+      WHERE date_effet <= CURRENT_DATE
+      ORDER BY siren, action_procol, date_effet DESC
+    ) last_actions
+    WHERE action_procol NOT IN ('fin_procedure', 'inclusion_autre_procedure')
+    ORDER BY siren, action_procol
+  SQL
+
   desc "Update companies.current_procol_status from the latest osf_procols rows per siren"
-  task update_procol_status: :environment do
+  task update_procol_status: :environment do # rubocop:disable Metrics/BlockLength
     puts "Updating companies.current_procol_status..."
 
     start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
     conn = ActiveRecord::Base.connection
 
-    # Step 1: clear all — companies no longer in procol must become NULL.
-    conn.execute("UPDATE companies SET current_procol_status = NULL")
-
-    # Step 2: set the active libelle_procol for companies currently in procol.
-    # Mirrors the procol_last_actions + procol_statuses CTEs in the excel generator:
-    #   1. Get the latest osf_procols row per (siren, action_procol) up to today.
-    #   2. Exclude terminal actions (fin_procedure, inclusion_autre_procedure).
-    #   3. Pick one libelle_procol per siren (ordered by action_procol for determinism).
+    # Step 1: set active libelle_procol (uses index_osf_procols_on_siren_action_procol_date_effet).
     result = conn.execute(<<~SQL.squish)
       UPDATE companies c
       SET current_procol_status = ps.libelle_procol
-      FROM (
-        SELECT DISTINCT ON (siren) siren, libelle_procol
-        FROM (
-          SELECT DISTINCT ON (siren, action_procol)
-            siren, action_procol, libelle_procol
-          FROM osf_procols
-          WHERE date_effet <= CURRENT_DATE
-          ORDER BY siren, action_procol, date_effet DESC
-        ) last_actions
-        WHERE action_procol NOT IN ('fin_procedure', 'inclusion_autre_procedure')
-        ORDER BY siren, action_procol
-      ) ps
+      FROM (#{ACTIVE_PROCOL_STATUSES_SQL}) ps
       WHERE c.siren = ps.siren
     SQL
 
+    # Step 2: clear companies that left procol (still have a stale non-NULL status).
+    cleared = conn.execute(<<~SQL.squish)
+      UPDATE companies c
+      SET current_procol_status = NULL
+      WHERE c.current_procol_status IS NOT NULL
+        AND NOT EXISTS (
+          SELECT 1 FROM (#{ACTIVE_PROCOL_STATUSES_SQL}) ps WHERE ps.siren = c.siren
+        )
+    SQL
+
     elapsed = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start).round(2)
-    puts "Done — #{result.cmd_tuples} companies set as in-procol in #{elapsed}s"
+    puts "Done — #{result.cmd_tuples} set as in-procol, #{cleared.cmd_tuples} cleared in #{elapsed}s"
   end
 end
