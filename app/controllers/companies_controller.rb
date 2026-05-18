@@ -30,8 +30,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def detection_widget
     last_list, entry = fetch_last_list_and_entry
-    return head :no_content if hide_detection_for_current_user?(entry)
-    return head :no_content unless last_list && entry
+    return head :no_content unless detection_visible_for_entry?(entry)
+    return head :no_content unless last_list
 
     @criticite = calculate_criticite(entry)
     @data_date = format_data_date(last_list, entry)
@@ -44,7 +44,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     return unless last_list
 
     entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
-    return head :no_content if hide_detection_for_current_user?(entry)
+    return head :no_content unless detection_visible_for_entry?(entry)
 
     load_feedback_entry_and_reasons(last_list)
     @existing_rating = existing_rating_for_list(last_list)
@@ -76,7 +76,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def history_detection_widget
     _, entry = fetch_last_list_and_entry
-    return head :no_content if hide_detection_for_current_user?(entry)
+    return head :no_content unless detection_visible_for_entry?(entry)
 
     data = Companies::AlertHistoryBuilder.new(@company).build
     @alert_history = data[:alert_history]
@@ -87,12 +87,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def waterfall_detection_widget
     last_list, entry = fetch_last_list_and_entry
-    return head :no_content if hide_detection_for_current_user?(entry)
+    return head :no_content unless detection_visible_for_entry?(entry)
     return render partial: "waterfall_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
 
     @entry = entry
-    return render partial: "waterfall_detection_widget",
-                  locals: { error: "Aucune donnée disponible pour cette entreprise" } unless entry
 
     data = Companies::WaterfallChartBuilder.new(entry).build
     @labels = data[:labels]
@@ -363,7 +361,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def calculate_alert_level
     _last_list, entry = fetch_last_list_and_entry
-    return nil unless entry&.alert
+    return nil unless meaningful_alert?(entry)
     return nil if hide_detection_for_current_user?(entry)
 
     case entry.alert.downcase # rubocop:disable Style/HashLikeCase
@@ -426,7 +424,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def show_detection_widgets?
     _last_list, entry = fetch_last_list_and_entry
-    entry.present? && !hide_detection_for_current_user?(entry)
+    detection_visible_for_entry?(entry)
+  end
+
+  def detection_visible_for_entry?(entry)
+    meaningful_alert?(entry) && !hide_detection_for_current_user?(entry)
   end
 
   def hide_detection_for_current_user?(entry)

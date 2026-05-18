@@ -4,6 +4,9 @@
 module DetectionWidgetable
   extend ActiveSupport::Concern
 
+  MEANINGFUL_ALERT_VALUES = ["alerte seuil f1", "alerte seuil f2", "plans", "ratios"].freeze
+  NO_ALERT_LABEL = "pas d'alerte"
+
   private
 
   # Get the last list and entry for the current company
@@ -14,6 +17,15 @@ module DetectionWidgetable
 
     entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
     [last_list, entry]
+  end
+
+  # True when the entry carries a detection-relevant alert (F1, F2, Plans, or Ratios).
+  def meaningful_alert?(entry)
+    alert = entry&.alert&.to_s&.strip # rubocop:disable Style/SafeNavigationChainLength
+    return false if alert.blank?
+    return false if alert.casecmp?(NO_ALERT_LABEL)
+
+    MEANINGFUL_ALERT_VALUES.include?(alert.downcase)
   end
 
   # Calculate criticite from entry's alert field
