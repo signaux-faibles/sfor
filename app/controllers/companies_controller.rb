@@ -19,6 +19,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @establishments = @company.establishments_ordered
     load_company_badges
     @show_detection_widgets = show_detection_widgets?
+    @show_history_detection_widget = show_history_detection_widget?
     load_company_active_trackings
     track_out_of_zone_access(@company)
   end
@@ -75,10 +76,9 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def history_detection_widget
-    _, entry = fetch_last_list_and_entry
-    return head :no_content unless detection_visible_for_entry?(entry)
+    data = alert_history_data
+    return head :no_content unless data[:show_alert_history_button]
 
-    data = Companies::AlertHistoryBuilder.new(@company).build
     @alert_history = data[:alert_history]
     @show_alert_history_button = data[:show_alert_history_button]
 
@@ -425,6 +425,14 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def show_detection_widgets?
     _last_list, entry = fetch_last_list_and_entry
     detection_visible_for_entry?(entry)
+  end
+
+  def show_history_detection_widget?
+    alert_history_data[:show_alert_history_button]
+  end
+
+  def alert_history_data
+    @alert_history_data ||= Companies::AlertHistoryBuilder.new(@company).build
   end
 
   def detection_visible_for_entry?(entry)
