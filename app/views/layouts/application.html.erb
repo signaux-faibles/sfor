@@ -8,26 +8,7 @@
 
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
-  <script
-    src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.min.js"
-    integrity="sha384-wYec/atCKBIhxMeAqO4JgQzLgv7nPphrOELh1UduVUFqt5DXn0Ey8pqiYEyYvZZ3"
-    crossorigin="anonymous"
-    defer>
-  </script>
-
-  <script>
-      document.addEventListener('DOMContentLoaded', function () {
-          Sentry.init({
-              dsn: "<%= ENV['SENTRY_DSN'] %>",
-              environment: "<%= ENV['SENTRY_ENV'] || Rails.env %>",
-              tracesSampleRate: 0.1,
-          });
-
-          <% if user_signed_in? %>
-          Sentry.setUser({email: "<%= current_user.email %>"});
-          <% end %>
-      });
-  </script>
+  <%= render "layouts/sentry", identify_user: true %>
 
   <%= javascript_importmap_tags %>
   <meta name="turbo-prefetch" content="false">

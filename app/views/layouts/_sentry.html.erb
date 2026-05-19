@@ -1,0 +1,54 @@
+<% sentry_dsn = ENV["SENTRY_DSN"].presence %>
+<% if sentry_dsn %>
+  <script
+    src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.min.js"
+    integrity="sha384-wYec/atCKBIhxMeAqO4JgQzLgv7nPphrOELh1UduVUFqt5DXn0Ey8pqiYEyYvZZ3"
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    (function () {
+      var sentryClient = Sentry.init({
+        dsn: <%= sentry_dsn.to_json %>,
+        environment: <%= (ENV["SENTRY_ENV"].presence || Rails.env).to_json %>,
+        integrations: [
+          Sentry.browserTracingIntegration({
+            instrumentNavigation: false,
+            instrumentPageLoad: true,
+          }),
+        ],
+        tracesSampleRate: 0.2,
+        tracePropagationTargets: [window.location.origin],
+      });
+
+      <% if local_assigns.fetch(:identify_user, false) && user_signed_in? %>
+      Sentry.setUser({ email: <%= current_user.email.to_json %> });
+      <% end %>
+
+      // Turbo Drive: update the initial pageload span, then track navigations.
+      var sentryPageloadSpanActive = true;
+
+      document.addEventListener("turbo:load", function () {
+        if (!sentryClient) return;
+
+        if (sentryPageloadSpanActive) {
+          var activeSpan = Sentry.getActiveSpan();
+          if (activeSpan) {
+            activeSpan.updateName(window.location.pathname);
+            activeSpan.setAttribute(
+              Sentry.SEMANTIC_ATTRIBUTE_SENTRY_SOURCE,
+              "route"
+            );
+          }
+          sentryPageloadSpanActive = false;
+        } else {
+          Sentry.startBrowserTracingNavigationSpan(sentryClient, {
+            name: window.location.pathname,
+            attributes: {
+              [Sentry.SEMANTIC_ATTRIBUTE_SENTRY_SOURCE]: "route",
+            },
+          });
+        }
+      });
+    })();
+  </script>
+<% end %>
