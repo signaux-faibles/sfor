@@ -1,9 +1,7 @@
 namespace :sentry do
   desc "Send a test message to Sentry (requires SENTRY_DSN)"
   task test: :environment do
-    if ENV["SENTRY_DSN"].blank?
-      abort "SENTRY_DSN is not set. Add it to .env and restart the web container."
-    end
+    abort "SENTRY_DSN is not set. Add it to .env and restart the web container." if ENV["SENTRY_DSN"].blank?
 
     sentry_environment = ENV.fetch("SENTRY_ENV", Rails.env)
 
