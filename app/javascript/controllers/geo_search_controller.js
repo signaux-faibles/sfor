@@ -269,15 +269,16 @@ export default class extends Controller {
   }
 
   async performSearch(query) {
-    // Check if query is only numbers (department code)
     const isNumericOnly = /^\d+$/.test(query)
 
     try {
-      if (isNumericOnly) {
-        // Only search departments by code
+      if (isNumericOnly && query.length === 5) {
+        // French postal codes: search communes by code postal
+        await this.searchCommunesByPostalCode(query)
+      } else if (isNumericOnly) {
+        // Department codes (2–3 digits)
         await this.searchDepartmentsByCode(query)
       } else {
-        // Search all 4 endpoints in parallel
         await Promise.all([
           this.searchCommunes(query),
           this.searchDepartments(query),
@@ -290,24 +291,75 @@ export default class extends Controller {
     }
   }
 
+  mapCommuneToResults(item) {
+    const postalCodes = item.codesPostaux?.filter(Boolean) || []
+    const nom = item.nom || ""
+
+    // Cities with several postal codes (Paris, Lyon, Marseille…): one option per code.
+    // The recherche-entreprises API indexes establishments by arrondissement INSEE code
+    // (e.g. 75101) or postal code, not the municipality code (e.g. 75056 for Paris).
+    if (postalCodes.length > 1) {
+      return postalCodes.map(postalCode => ({
+        type: "cp",
+        code: postalCode,
+        label: `${nom} (${postalCode})`,
+        fullLabel: nom,
+        postalCode,
+        department: item.departement
+      }))
+    }
+
+    const postalCode = postalCodes[0] || ""
+    if (postalCode) {
+      return [{
+        type: "cp",
+        code: postalCode,
+        label: `${nom} (${postalCode})`,
+        fullLabel: nom,
+        postalCode,
+        department: item.departement
+      }]
+    }
+
+    return [{
+      type: "insee",
+      code: item.code || "",
+      label: nom,
+      fullLabel: nom,
+      postalCode: "",
+      department: item.departement
+    }]
+  }
+
   async searchCommunes(query) {
     try {
-      const url = `https://geo.api.gouv.fr/communes?fields=code,codesPostaux,departement&format=json&nom=${encodeURIComponent(query)}`
+      const url = `https://geo.api.gouv.fr/communes?fields=code,codesPostaux,departement,nom&format=json&nom=${encodeURIComponent(query)}`
       const response = await fetch(url)
       const data = await response.json()
 
       if (Array.isArray(data) && data.length > 0) {
-        this.displayResults(data.map(item => ({
-          type: "insee",
-          code: item.code || "",
-          label: `${item.nom} (${item.codesPostaux?.[0] || ""})`,
-          fullLabel: item.nom,
-          postalCode: item.codesPostaux?.[0] || "",
-          department: item.departement
-        })), "communes")
+        const results = data.flatMap(item => this.mapCommuneToResults(item))
+        this.displayResults(results, "communes")
       }
     } catch (error) {
       console.error("Error searching communes:", error)
+    }
+  }
+
+  async searchCommunesByPostalCode(postalCode) {
+    try {
+      const url = `https://geo.api.gouv.fr/communes?fields=code,codesPostaux,departement,nom&format=json&codePostal=${encodeURIComponent(postalCode)}`
+      const response = await fetch(url)
+      const data = await response.json()
+
+      if (Array.isArray(data) && data.length > 0) {
+        const results = data
+          .flatMap(item => this.mapCommuneToResults(item))
+          .filter(result => result.code === postalCode)
+        this.displayResults(results, "communes")
+      }
+    } catch (error) {
+      console.error("Error searching communes by postal code:", error)
     }
   }
 
