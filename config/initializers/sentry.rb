@@ -6,4 +6,5 @@ Sentry.init do |config|
 
   config.debug = Rails.env.development?
   config.traces_sample_rate = 1.0
+  config.profiles_sample_rate = 1.0
 end
