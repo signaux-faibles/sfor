@@ -84,7 +84,9 @@ gem "pretender", "~> 0.5.0"
 gem "caxlsx", "~> 4.1"
 
 # Send issues to Sentry
-gem "sentry-rails", "~> 5.22"
+
+gem "stackprof", "~> 0.2.26"
+gem "sentry-rails", "~> 5.22" # rubocop:disable Bundler/OrderedGems
 gem "sentry-ruby", "~> 5.22"
 
 # Interpret the markdown used in the summaries
@@ -147,7 +149,6 @@ group :development do
 
   # Performance profiling
   gem "memory_profiler"
-  gem "stackprof"
 end
 
 group :test do

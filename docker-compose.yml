@@ -14,6 +14,8 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     command: bash -c "rm -f tmp/pids/server.pid && foreman start -f Procfile.dev"
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
