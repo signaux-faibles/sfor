@@ -72,7 +72,7 @@ gem "aasm", "~> 5.5"
 gem "rails_autolink", "~> 1.1", ">= 1.1.8"
 
 # Handle soft delete
-gem "discard", "~> 1.2"
+gem "discard", "~> 1.4.0"
 
 # Track changes to models
 gem "paper_trail", "~> 16.0"
@@ -90,7 +90,7 @@ gem "sentry-rails", "~> 5.22" # rubocop:disable Bundler/OrderedGems
 gem "sentry-ruby", "~> 5.22"
 
 # Interpret the markdown used in the summaries
-gem "redcarpet", "~> 3.6.0"
+gem "redcarpet", "~> 3.6.1"
 
 # Authentication
 gem "devise", "~> 4.9", ">= 4.9.4"
@@ -110,7 +110,7 @@ gem "solid_queue"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows]
-  gem "dotenv-rails"
+  gem "dotenv-rails", "~> 3.1.8"
 
   # Generate fake data for development and testing
   gem "faker", "~> 3.5", ">= 3.5.1"

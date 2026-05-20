@@ -131,12 +131,12 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    discard (1.2.1)
-      activerecord (>= 4.2, < 8)
+    discard (1.4.0)
+      activerecord (>= 4.2, < 9.0)
     docile (1.4.1)
-    dotenv (3.1.2)
-    dotenv-rails (3.1.2)
-      dotenv (= 3.1.2)
+    dotenv (3.1.8)
+    dotenv-rails (3.1.8)
+      dotenv (= 3.1.8)
       railties (>= 6.1)
     drb (2.2.1)
     erubi (1.12.0)
@@ -308,7 +308,7 @@ GEM
       i18n
     rdoc (6.7.0)
       psych (>= 4.0.0)
-    redcarpet (3.6.0)
+    redcarpet (3.6.1)
     redis (5.0.8)
       redis-client (>= 0.17.0)
     redis-client (0.24.0)
@@ -451,8 +451,8 @@ DEPENDENCIES
   dartsass-rails (~> 0.5.0)
   debug
   devise (~> 4.9, >= 4.9.4)
-  discard (~> 1.2)
-  dotenv-rails
+  discard (~> 1.4.0)
+  dotenv-rails (~> 3.1.8)
   faker (~> 3.5, >= 3.5.1)
   importmap-rails (~> 2.1.0)
   jbuilder (~> 2.13.0)
@@ -472,7 +472,7 @@ DEPENDENCIES
   rails-erd
   rails_autolink (~> 1.1, >= 1.1.8)
   ransack (~> 4.2.1)
-  redcarpet (~> 3.6.0)
+  redcarpet (~> 3.6.1)
   redis (~> 5.0.8)
   rubocop
   rubocop-performance
