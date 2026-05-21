@@ -256,6 +256,7 @@ export default class extends Controller {
       this.selectedItems.push({ value, label })
     }
 
+    this.inputTarget.value = ''
     this.updateHiddenField()
     this.renderTags()
     this.refreshResultsIfOpen()
