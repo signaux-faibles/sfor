@@ -3,34 +3,34 @@ source "https://rubygems.org"
 ruby "3.2.2"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.2.2.1"
+gem "rails", "~> 8.1.0"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
-gem "sprockets-rails", "~> 3.5.2"
+gem "sprockets-rails"
 
 # Use dartsass-rails to compile sass
-gem "dartsass-rails", "~> 0.5.0"
+gem "dartsass-rails"
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.5.9"
+gem "pg"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 7.1.0"
+gem "puma"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails", "~> 2.1.0"
+gem "importmap-rails"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails", "~> 2.0.11"
+gem "turbo-rails"
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails", "~> 1.3.4"
+gem "stimulus-rails"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder", "~> 2.13.0"
+gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
-gem "redis", "~> 5.0.8"
+gem "redis"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -39,70 +39,69 @@ gem "redis", "~> 5.0.8"
 # gem "bcrypt", "~> 3.1.7"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", "~> 1.2024.2", platforms: %i[windows jruby]
+gem "tzinfo-data", platforms: %i[windows jruby]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", "~> 1.18.4", require: false
+gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
 # Decode keycloak tokens
-gem "jwt", "~> 3.1.2"
+gem "jwt"
 
 # Allow requests from legacy vue app
-gem "rack-cors", "~> 2.0.2"
+gem "rack-cors"
 
 # Search the data
-gem "ransack", "~> 4.2.1"
+gem "ransack"
 
 # Authorizations
-gem "pundit", "~> 2.4"
+gem "pundit"
 
 # Pagination
-gem "kaminari", "~> 1.2", ">= 1.2.2"
+gem "kaminari"
 
 # Import users from the habilitations file
-gem "rubyXL", "~> 3.4", ">= 3.4.27"
+gem "rubyXL"
 
 # State machine for establishment trackings
-gem "aasm", "~> 5.5"
+gem "aasm"
 
 # Links in summaries and comments made clickable
-gem "rails_autolink", "~> 1.1", ">= 1.1.8"
+gem "rails_autolink"
 
 # Handle soft delete
-gem "discard", "~> 1.4.0"
+gem "discard"
 
-# Track changes to models
-gem "paper_trail", "~> 16.0"
+# Track changes to models (17+ for Rails 8.1)
+gem "paper_trail", "~> 17.0"
 
 # Impersonate users
-gem "pretender", "~> 0.5.0"
+gem "pretender"
 
 # Generate excel files for establishment trackings
-gem "caxlsx", "~> 4.1"
+gem "caxlsx"
 
 # Send issues to Sentry
-
-gem "stackprof", "~> 0.2.26"
-gem "sentry-rails", "~> 5.22" # rubocop:disable Bundler/OrderedGems
-gem "sentry-ruby", "~> 5.22"
+gem "stackprof"
+gem "sentry-rails" # rubocop:disable Bundler/OrderedGems
+gem "sentry-ruby"
 
 # Interpret the markdown used in the summaries
-gem "redcarpet", "~> 3.6.1"
+gem "redcarpet"
 
 # Authentication
-gem "devise", "~> 4.9", ">= 4.9.4"
+gem "devise"
 
-# View component
-gem "view_component"
+# View component (4.x for Rails 8)
+gem "view_component", "~> 4.0"
 
 # Add health check endpoint
-gem "prometheus_exporter", "~> 2.2.0"
+gem "prometheus_exporter"
 
 # Analytics
-gem "ahoy_matey", "~> 5.4"
+gem "ahoy_matey"
 
 # Background job processing (uses PostgreSQL — no extra infrastructure needed)
 gem "solid_queue"
@@ -110,10 +109,10 @@ gem "solid_queue"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows]
-  gem "dotenv-rails", "~> 3.1.8"
+  gem "dotenv-rails"
 
   # Generate fake data for development and testing
-  gem "faker", "~> 3.5", ">= 3.5.1"
+  gem "faker"
 
   # Code quality and style
   gem "rubocop", require: false
@@ -140,12 +139,12 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   gem "spring"
 
-  # Generate erd diagrams
-  gem "bullet"
+  # N+1 query detection (8.1+ for Active Record 8.1)
+  gem "bullet", "~> 8.1"
   gem "rails-erd"
 
-  # Model annotations
-  gem "annotate"
+  # Model annotations (Rails 8–compatible fork of annotate)
+  gem "annotaterb"
 
   # Performance profiling
   gem "memory_profiler"
