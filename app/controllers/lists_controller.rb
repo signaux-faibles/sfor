@@ -449,7 +449,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       current_list_date = @list.list_date || Date.current
 
       # A company is a "première alerte" if it has NOT appeared in any other list
-      # within the last 18 months before the current list date.
+      # within the last 18 months before the current list date (Plans/Ratios do not count).
       # company_lists is much smaller than company_score_entries (one row per siren per list,
       # no history) and has an index on list_id, making the IN() subquery very fast.
       recent_list_ids = List
@@ -460,6 +460,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       if recent_list_ids.present?
         recently_appeared_sirens = CompanyList
           .where(list_id: recent_list_ids)
+          .where("alert IS NULL OR alert NOT IN (?)", CRP_ALERT_VALUES)
           .select(:siren)
         companies = companies.where.not(siren: recently_appeared_sirens)
       end
@@ -590,12 +591,13 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     current_list_date = @list.list_date || Date.current
 
     # A company is a "première alerte" if it has NOT appeared in any other list
-    # within the last 18 months before the current list date.
+    # within the last 18 months before the current list date (Plans/Ratios do not count).
     sirens_in_recent_lists = CompanyScoreEntry
                              .joins(:list)
                              .where(siren: sirens)
                              .where.not(list_name: @list.label)
                              .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
+                             .where("company_score_entries.alert IS NULL OR company_score_entries.alert NOT IN (?)", CRP_ALERT_VALUES)
                              .distinct
                              .pluck(:siren)
                              .to_set
@@ -703,6 +705,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                             .where(siren: siren)
                             .where.not(list_name: @list.label)
                             .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
+                            .where("company_score_entries.alert IS NULL OR company_score_entries.alert NOT IN (?)", CRP_ALERT_VALUES)
                             .exists?
 
     enrichment[:is_first_alert] = !siren_in_recent_lists

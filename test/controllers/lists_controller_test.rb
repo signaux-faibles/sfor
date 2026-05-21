@@ -319,6 +319,18 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_not_includes @response.body, "Company Paris"
   end
 
+  test "show filter premieres_alertes ignores prior Plans and Ratios detections" do
+    sign_in @user
+
+    company_lists(:paris_list_2024).update!(alert: "Plans")
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Plans")
+
+    get list_path(@list_2025), params: { search: { premieres_alertes: "1" } }
+
+    assert_response :success
+    assert_includes @response.body, "Company Paris"
+  end
+
   test "show filter sans_entreprises_recentes keeps company created over 3 years ago" do
     sign_in @user
 
@@ -483,6 +495,17 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
     # company_ancien (222222222) is in list_test_2023 and list_test_2025 only
     get enrich_company_list_path(@list_2025), params: { siren: "222222222" }
+
+    assert_response :success
+    assert_select "p.fr-badge", text: "1ère alerte"
+  end
+
+  test "enrich_company shows first alert badge when prior detection was only Plans" do
+    sign_in @user
+
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Plans")
+
+    get enrich_company_list_path(@list_2025), params: { siren: "123456789" }
 
     assert_response :success
     assert_select "p.fr-badge", text: "1ère alerte"

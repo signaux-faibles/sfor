@@ -184,6 +184,7 @@ module Excel
               AND cse_other.list_name != ?
               AND l.list_date > ?
               AND l.list_date < ?
+              AND (cse_other.alert IS NULL OR cse_other.alert NOT IN ('Plans', 'Ratios'))
           )
         )
         SELECT ts.siren, cm.siret_siege, ls.score, ls.alert,
