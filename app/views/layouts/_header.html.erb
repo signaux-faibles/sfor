@@ -96,7 +96,12 @@
                 </li>
               <% end %>
               <li class="sf-user-menu">
-                <%= link_to notifications_path, class: "fr-btn fr-icon-account-circle-fill sf-username sf-user-menu-button" do %>
+                <% notification_label = "#{current_user&.full_name} - voir les notifications#{unread_notifications_count.positive? ? " - #{unread_notifications_count} notification#{'s' if unread_notifications_count > 1}" : ''}" %>
+
+                <%= link_to notifications_path,
+                            class: "fr-btn fr-icon-account-circle-fill sf-username sf-user-menu-button",
+                            aria: { label: notification_label },
+                            title: notification_label do %>
                   <span class="sf-username"><%= current_user&.full_name %></span>
                   <% if unread_notifications_count.positive? %>
                     <span class="fr-badge sf-user-menu-badge"><%= unread_notifications_count %></span>
