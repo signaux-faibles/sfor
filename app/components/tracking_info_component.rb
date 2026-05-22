@@ -44,7 +44,8 @@ class TrackingInfoComponent < ViewComponent::Base
 
   def format_tags(items)
     if items.any?
-      items.map { |item| tag.span(item.name, class: "fr-tag fr-tag--sm") }.join.html_safe
+      lis = items.map { |item| tag.li(tag.span(item.name, class: "fr-tag fr-tag--sm")) }.join.html_safe
+      tag.ul(lis, class: "sf-tags-list")
     else
       tag.span("Non renseign\u00E9")
     end

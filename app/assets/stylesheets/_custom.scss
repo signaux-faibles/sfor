@@ -83,7 +83,7 @@
 .avatar {
     width: 40px;
     height: 40px;
-    background-color: #d8d8d8;
+    background-color: var(--text-action-high-blue-france);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -104,7 +104,7 @@
 }
 
 .comment-content a {
-    color: #007bff;
+    color: var(--text-action-high-blue-france);
     text-decoration: underline;
 }
 
@@ -115,7 +115,7 @@
 
 .comment-footer a {
     margin-left: 8px;
-    color: #007bff;
+    color: var(--text-action-high-blue-france);
     text-decoration: none;
 }
 .comment-footer a:hover {
@@ -594,4 +594,15 @@
 
 .sf-fieldset-container .fr-h2 {
   margin-bottom: 0;
+}
+
+.sf-tags-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
 }

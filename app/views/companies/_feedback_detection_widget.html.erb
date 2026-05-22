@@ -88,7 +88,7 @@
         </dialog>
       </div>
     <% elsif @existing_rating&.useful == false %>
-      <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
+      <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w" role="status">
         <p>Vous avez déjà indiqué que la détection était inutile.</p>
         <% if @existing_rating.comment.present? %>
           <p class="fr-mt-2w"><strong>Votre commentaire :</strong> <%= @existing_rating.comment %></p>
@@ -103,7 +103,7 @@
         <% end %>
       </div>
     <% elsif @existing_rating&.useful == true %>
-      <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w">
+      <div class="fr-alert fr-alert--success fr-alert--sm fr-mb-3w" role="status">
         <p>Vous avez déjà indiqué que la détection était utile.</p>
       </div>
     <% end %>
