@@ -52,6 +52,6 @@ class Admin::AppSettingsController < Admin::ApplicationController
   end
 
   def app_setting_params
-    params.require(:app_setting).permit(:entreprises_recentes_filter_date)
+    params.expect(app_setting: [:entreprises_recentes_filter_date])
   end
 end

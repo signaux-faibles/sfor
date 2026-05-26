@@ -32,10 +32,10 @@ class PagesController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   def search # rubocop:disable Metrics/MethodLength
     parse_multiselect_params
-    @search_params = params.require(:search).permit(:q, :tranche_effectif_salarie,
-                                                    :page, :per_page, :cp_dep,
-                                                    :cp_dep_type, :cp_dep_label,
-                                                    section_activite_principale: []) if params[:search].present?
+    @search_params = params.expect(search: [:q, :tranche_effectif_salarie,
+                                            :page, :per_page, :cp_dep,
+                                            :cp_dep_type, :cp_dep_label,
+                                            { section_activite_principale: [] }]) if params[:search].present?
     @search_params ||= {}
     @selected_sections_json = Array(@search_params[:section_activite_principale]).compact_blank
                                                                                  .filter_map { |v| @secteurs_activite_options.find { |s| s[:value] == v } }

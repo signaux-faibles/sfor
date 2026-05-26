@@ -220,18 +220,18 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
   end
 
   def user_params
-    params.require(:user).permit(
-      :email,
-      :first_name,
-      :last_name,
-      :segment_id,
-      :geo_access_id,
-      :entity_id,
-      :description,
-      :ambassador,
-      :trained,
-      :feedbacks,
-      :last_contact
+    params.expect(
+      user: %i[email
+               first_name
+               last_name
+               segment_id
+               geo_access_id
+               entity_id
+               description
+               ambassador
+               trained
+               feedbacks
+               last_contact]
     )
   end
 

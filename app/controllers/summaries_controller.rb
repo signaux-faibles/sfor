@@ -50,7 +50,7 @@ class SummariesController < ApplicationController
   end
 
   def summary_params
-    params.require(:summary).permit(:content, :network_id)
+    params.expect(summary: %i[content network_id])
   end
 
   def assign_network

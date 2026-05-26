@@ -4,6 +4,7 @@ class ContributorsInfoComponent < ViewComponent::Base
   include Pundit::Authorization
 
   def initialize(establishment_tracking:, establishment:, current_user:, show_manage_button: true)
+    super()
     @establishment_tracking = establishment_tracking
     @establishment = establishment
     @current_user = current_user

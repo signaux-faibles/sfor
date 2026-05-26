@@ -42,6 +42,6 @@ class Admin::ImportsController < Admin::ApplicationController
   end
 
   def import_params
-    params.require(:import).permit(:name, :import_date, :data_freshness)
+    params.expect(import: %i[name import_date data_freshness])
   end
 end

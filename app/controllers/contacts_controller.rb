@@ -62,7 +62,7 @@ class ContactsController < ApplicationController
   end
 
   def contact_params
-    params.require(:contact).permit(:first_name, :last_name, :role, :phone_number_primary, :phone_number_secondary,
-                                    :email, :description)
+    params.expect(contact: %i[first_name last_name role phone_number_primary phone_number_secondary
+                              email description])
   end
 end

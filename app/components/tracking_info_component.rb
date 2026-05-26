@@ -4,6 +4,7 @@ class TrackingInfoComponent < ViewComponent::Base
   include Pundit::Authorization
 
   def initialize(establishment_tracking:, establishment:, current_user:, options: {})
+    super()
     @establishment_tracking = establishment_tracking
     @establishment = establishment
     @current_user = current_user

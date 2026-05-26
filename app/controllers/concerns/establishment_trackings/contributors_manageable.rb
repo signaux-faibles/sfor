@@ -102,11 +102,11 @@ module EstablishmentTrackings::ContributorsManageable # rubocop:disable Metrics/
   end
 
   def contributor_params
-    establishment_tracking_params = params.require(:establishment_tracking).permit(
-      referent_ids: [],
-      discarded_referent_ids: [],
-      participant_ids: [],
-      discarded_participant_ids: []
+    establishment_tracking_params = params.expect(
+      establishment_tracking: [referent_ids: [],
+                               discarded_referent_ids: [],
+                               participant_ids: [],
+                               discarded_participant_ids: []]
     )
 
     {

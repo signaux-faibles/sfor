@@ -35,6 +35,6 @@ class Admin::ZonesController < Admin::ApplicationController
   end
 
   def zone_params
-    params.require(:zone).permit(:key, :content)
+    params.expect(zone: %i[key content])
   end
 end

@@ -50,7 +50,7 @@ class CommentsController < ApplicationController
   end
 
   def comment_params
-    params.require(:comment).permit(:content, :network_id)
+    params.expect(comment: %i[content network_id])
   end
 
   def build_comment
