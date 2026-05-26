@@ -13,6 +13,9 @@ namespace :sentry do
     if event_id
       puts "OK — sent event #{event_id} (environment: #{sentry_environment})"
       puts "Check Sentry → Issues, filter environment: #{sentry_environment}"
+      if (role = ENV["SENTRY_CONTAINER_ROLE"].presence)
+        puts "Expected tag: container_role=#{role} (search: container_role:#{role})"
+      end
     else
       abort "Sentry did not return an event id (is the SDK enabled for #{Rails.env}?)"
     end

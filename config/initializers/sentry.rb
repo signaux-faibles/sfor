@@ -7,7 +7,15 @@ Sentry.init do |config|
   config.debug = Rails.env.development?
   config.traces_sample_rate = 1.0
   config.profiles_sample_rate = 1.0
-end
 
-sentry_container_role = ENV.fetch("SENTRY_CONTAINER_ROLE", nil)
-Sentry.set_tags(container_role: sentry_container_role) if sentry_container_role.present?
+  container_role = ENV["SENTRY_CONTAINER_ROLE"].presence
+  if container_role
+    tag_event = lambda do |event, _hint|
+      event.tags["container_role"] = container_role
+      event
+    end
+
+    config.before_send = tag_event
+    config.before_send_transaction = tag_event
+  end
+end
