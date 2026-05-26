@@ -216,6 +216,7 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
+    minitest-mock (5.27.0)
     msgpack (1.7.5)
     net-imap (0.6.4)
       date
@@ -475,6 +476,7 @@ DEPENDENCIES
   kaminari
   letter_opener
   memory_profiler
+  minitest-mock
   paper_trail (~> 17.0)
   pg
   pretender

@@ -5,7 +5,6 @@ class EstablishmentInfoComponent < ViewComponent::Base
 
   def initialize(establishment_tracking:, establishment:, current_user:, show_edit_button: true,
                  confirmation_mode: false)
-    super
     @establishment_tracking = establishment_tracking
     @establishment = establishment
     @current_user = current_user

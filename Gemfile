@@ -151,6 +151,9 @@ group :development do
 end
 
 group :test do
+  # Minitest 6 moved mock/stub support out of the core gem (used by e.g. Object.stub)
+  gem "minitest-mock"
+
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
