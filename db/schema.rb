@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -402,31 +402,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_180000) do
   end
 
   create_table "inpi_bce_ratios", force: :cascade do |t|
-    t.string "siren", limit: 9, null: false
-    t.date "date_cloture_exercice", null: false
-    t.bigint "chiffre_d_affaires"
-    t.bigint "marge_brute"
-    t.bigint "ebe"
-    t.bigint "ebit"
-    t.bigint "resultat_net"
-    t.decimal "taux_d_endettement", precision: 20, scale: 6
-    t.decimal "ratio_de_liquidite", precision: 20, scale: 6
-    t.decimal "ratio_de_vetuste", precision: 20, scale: 6
     t.decimal "autonomie_financiere", precision: 20, scale: 6
-    t.decimal "poids_bfr_exploitation_sur_ca", precision: 20, scale: 6
-    t.decimal "couverture_des_interets", precision: 20, scale: 6
     t.decimal "caf_sur_ca", precision: 20, scale: 6
     t.decimal "capacite_de_remboursement", precision: 20, scale: 6
-    t.decimal "marge_ebe", precision: 20, scale: 6
-    t.decimal "resultat_courant_avant_impots_sur_ca", precision: 20, scale: 6
-    t.decimal "poids_bfr_exploitation_sur_ca_jours", precision: 20, scale: 6
-    t.decimal "rotation_des_stocks_jours", precision: 20, scale: 6
+    t.bigint "chiffre_d_affaires"
+    t.string "confidentiality"
+    t.decimal "couverture_des_interets", precision: 20, scale: 6
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.decimal "credit_clients_jours", precision: 20, scale: 6
     t.decimal "credit_fournisseurs_jours", precision: 20, scale: 6
+    t.date "date_cloture_exercice", null: false
+    t.bigint "ebe"
+    t.bigint "ebit"
+    t.bigint "marge_brute"
+    t.decimal "marge_ebe", precision: 20, scale: 6
+    t.decimal "poids_bfr_exploitation_sur_ca", precision: 20, scale: 6
+    t.decimal "poids_bfr_exploitation_sur_ca_jours", precision: 20, scale: 6
+    t.decimal "ratio_de_liquidite", precision: 20, scale: 6
+    t.decimal "ratio_de_vetuste", precision: 20, scale: 6
+    t.decimal "resultat_courant_avant_impots_sur_ca", precision: 20, scale: 6
+    t.bigint "resultat_net"
+    t.decimal "rotation_des_stocks_jours", precision: 20, scale: 6
+    t.string "siren", limit: 9, null: false
+    t.decimal "taux_d_endettement", precision: 20, scale: 6
     t.string "type_bilan", limit: 1, null: false
-    t.string "confidentiality"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["siren", "date_cloture_exercice", "type_bilan"], name: "idx_inpi_bce_ratios_unique_period_type", unique: true
     t.index ["siren", "date_cloture_exercice"], name: "idx_inpi_bce_ratios_latest_by_siren"
     t.index ["siren"], name: "index_inpi_bce_ratios_on_siren"
