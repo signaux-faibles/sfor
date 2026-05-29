@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
 module Companies
   class WaterfallChartBuilder
+    CONTRIBUTION_THRESHOLD = 0.05
+
     def initialize(entry)
       @entry = entry
     end
@@ -39,17 +43,28 @@ module Companies
     end
 
     def waterfall_data_from_entry(key_mapping)
-      data = {}
+      score = @entry.score.to_f
       macro_expl = @entry.macro_expl || {}
 
-      macro_expl.each do |macro_key, value|
+      raw_contributions = macro_expl.each_with_object({}) do |(macro_key, shap_risk), data|
         mapping = key_mapping[macro_key]
         next unless mapping
 
-        data[mapping[:key]] = value.to_f
+        data[mapping[:key]] = score - shap_risk.to_f
       end
 
-      data.sort_by { |_key, value| value }.reverse.to_h
+      filtered_sum = raw_contributions.values.sum { |contribution| filtered_contribution(contribution) }
+      return {} if filtered_sum <= 0
+
+      raw_contributions
+        .transform_values { |contribution| filtered_contribution(contribution) }
+        .sort_by { |_key, value| value }
+        .reverse
+        .to_h
+    end
+
+    def filtered_contribution(contribution)
+      contribution > CONTRIBUTION_THRESHOLD ? contribution : 0.0
     end
 
     def label_by_key_map(key_mapping)
