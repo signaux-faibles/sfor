@@ -256,9 +256,9 @@ export default class extends Controller {
       clearTimeout(this.debounceTimeout)
     }
 
-    // Clear results if query is empty
+    // Clear selection and hidden fields when the visible input is emptied
     if (query === "") {
-      this.clearResults()
+      this.clearSelection()
       return
     }
 
