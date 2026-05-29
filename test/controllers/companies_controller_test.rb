@@ -389,6 +389,26 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
 
     assert_response :success
     assert_includes @response.body, "pagination"
+    assert_not_includes @response.body, 'data-turbo="false"'
+  end
+
+  test "establishments_widget page 2 returns turbo frame content" do
+    sign_in @user
+
+    4.times do |index|
+      Establishment.create!(
+        siren: @company_paris.siren,
+        siret: format("123456789001%02d", index + 20),
+        departement: "75",
+        siege: false
+      )
+    end
+
+    get establishments_widget_company_path(@company_paris.siren, page: 2), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, 'turbo-frame id="establishments_widget"'
+    assert_includes @response.body, "Liste des établissements"
   end
 
   test "show displays Accompagnements tab" do

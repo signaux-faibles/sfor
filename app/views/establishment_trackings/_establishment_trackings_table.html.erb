@@ -193,7 +193,7 @@
   </div>
 
   <div class="fr-mt-3w fr-mb-3w" data-view-toggle-target="pagination">
-    <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit!, anchor: 'results' } %>
+    <%= paginate @paginated_establishment_trackings, params: { q: params[:q]&.permit!, anchor: 'results' }, turbo: false %>
   </div>
 <% else %>
   <p>Aucun accompagnement trouvé pour cette combinaison de filtres.</p>

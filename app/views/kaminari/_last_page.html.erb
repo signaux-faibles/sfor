@@ -6,8 +6,9 @@
     per_page:      number of items to fetch per page
     remote:        data-remote
 -%>
+<% pagination_link_data = local_assigns[:turbo] == false ? { turbo: false } : {} %>
 <%= if current_page.last?
       content_tag(:a, t('views.pagination.last').html_safe, class: 'fr-pagination__link fr-pagination__link--last', aria: { disabled: 'true' }, role: 'link')
     else
-      link_to(t('views.pagination.last').html_safe, url, remote: remote, class: 'fr-pagination__link fr-pagination__link--last', aria: { disabled: 'false' }, role: 'link', data: { turbo: false })
+      link_to(t('views.pagination.last').html_safe, url, remote: remote, class: 'fr-pagination__link fr-pagination__link--last', aria: { disabled: 'false' }, role: 'link', data: pagination_link_data)
     end %>
