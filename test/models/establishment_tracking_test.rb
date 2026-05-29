@@ -70,9 +70,35 @@ class EstablishmentTrackingTest < ActiveSupport::TestCase
       referents: [users(:user_crp_paris)]
     )
 
-    # Validate the new tracking is invalid
     assert_not new_tracking.valid?
     assert_includes new_tracking.errors[:state],
                     'Un accompagnement "en cours" ou "sous surveillance" existe déjà pour cet établissement.'
+  end
+
+  test "syncs companies.tracking_status on create" do
+    company = companies(:company_finistere)
+    establishment = establishments(:establishment_finistere)
+    establishment.establishment_trackings.destroy_all
+    Company.where(siren: company.siren).update_all(tracking_status: nil)
+
+    EstablishmentTracking.create!(
+      establishment: establishment,
+      state: "in_progress",
+      creator: users(:user_crp_finistere),
+      referents: [users(:user_crp_finistere)]
+    )
+
+    assert_equal "Accompagnement en cours", company.reload.tracking_status
+  end
+
+  test "syncs companies.tracking_status on state change and destroy" do
+    company = companies(:company_finistere)
+    tracking = establishment_trackings(:establishment_tracking_finistere)
+
+    tracking.update!(state: "completed", end_date: Time.zone.today)
+    assert_equal "Accompagnement terminé", company.reload.tracking_status
+
+    tracking.destroy
+    assert_nil company.reload.tracking_status
   end
 end

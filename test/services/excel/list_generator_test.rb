@@ -6,6 +6,16 @@ require "zip"
 
 module Excel
   class ListGeneratorTest < ActiveSupport::TestCase
+    test "exports tracking status from companies.tracking_status" do
+      company = companies(:company_paris)
+      list = lists(:list_test_2025)
+
+      rows = generated_rows(list, company)
+
+      assert_equal "Accompagnement", rows.first[23]
+      assert_equal "Accompagnement en cours", rows.second[23]
+    end
+
     test "exports latest INPI BCE ratios for each company" do
       company = companies(:company_paris)
       list = lists(:list_test_2025)
