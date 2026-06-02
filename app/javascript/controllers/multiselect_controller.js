@@ -250,15 +250,21 @@ export default class extends Controller {
     const value = event.currentTarget.dataset.resultValue
     const label = event.currentTarget.dataset.resultLabel
     const existingIndex = this.selectedItems.findIndex(item => item.value === value)
-    if (existingIndex !== -1) {
-      this.selectedItems.splice(existingIndex, 1)
-    } else {
+    const wasAdded = existingIndex === -1
+    if (wasAdded) {
       this.selectedItems.push({ value, label })
+      this.inputTarget.value = ''
+    } else {
+      this.selectedItems.splice(existingIndex, 1)
     }
 
     this.updateHiddenField()
     this.renderTags()
-    this.refreshResultsIfOpen()
+    if (wasAdded) {
+      this.clearResults()
+    } else {
+      this.refreshResultsIfOpen()
+    }
     this.inputTarget.focus()
   }
 
