@@ -485,7 +485,10 @@ module Excel
     end
 
     def format_inpi_bce_ratio(value)
-      value.nil? ? "-" : value
+      return "-" if value.nil?
+
+      rounded = value.to_f.round(2)
+      rounded == rounded.truncate ? rounded.to_i : rounded
     end
 
     def add_filter_details_sheet(workbook)

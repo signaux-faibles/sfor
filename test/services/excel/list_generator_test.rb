@@ -28,11 +28,11 @@ module Excel
       assert_equal "Résultat net", rows.first[26]
       assert_equal "Résultat d'exploitation", rows.first[27]
       assert_equal "Ratio de liquidité", rows.first[28]
-      assert_equal "45.123456", rows.second[24]
+      assert_equal "45.12", rows.second[24]
       assert_equal "1234567", rows.second[25]
       assert_equal "-12345", rows.second[26]
       assert_equal "67890", rows.second[27]
-      assert_equal "98.765432", rows.second[28]
+      assert_equal "98.77", rows.second[28]
     end
 
     private
