@@ -3,3 +3,23 @@ osf_effectif_import:
   import_date: 2025-01-20
   data_freshness: 2025-01-15
 
+osf_effectif_ent_import:
+  name: "osf_effectif_ent"
+  import_date: 2025-01-20
+  data_freshness: 2025-01-15
+
+osf_ap_import:
+  name: "osf_ap"
+  import_date: 2025-01-20
+  data_freshness: 2025-01-01
+
+osf_cotisation_import:
+  name: "osf_cotisation"
+  import_date: 2025-01-20
+  data_freshness: 2025-01-10
+
+osf_debit_import:
+  name: "osf_debit"
+  import_date: 2025-01-20
+  data_freshness: 2025-01-05
+

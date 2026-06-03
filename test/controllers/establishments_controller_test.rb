@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
+class EstablishmentsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Metrics/ClassLength
   setup do
     @user = users(:user_crp_paris)
     @establishment_paris = establishments(:establishment_paris)
@@ -114,6 +114,9 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "1001"
     assert_includes @response.body, "2000"
     assert_includes @response.body, "5000"
+    assert_includes @response.body, "<strong>Source :</strong> ACOSS"
+    assert_includes @response.body, "Cotisations appelées et montant de l'échéancier de paiement — <strong>Mise à jour :</strong> 10/01/2025"
+    assert_includes @response.body, "Dette restante — <strong>Mise à jour :</strong> 05/01/2025"
   end
 
   test "data_effectif_ap_widget renders chart data attributes" do
@@ -133,5 +136,8 @@ class EstablishmentsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "42"
     assert_includes @response.body, "10"
     assert_includes @response.body, "13"
+    assert_includes @response.body, "<strong>Source :</strong> ACOSS et DARES"
+    assert_includes @response.body, "Effectif — <strong>Mise à jour :</strong> 15/01/2025"
+    assert_includes @response.body, "Activité partielle — <strong>Mise à jour :</strong> 01/01/2025"
   end
 end

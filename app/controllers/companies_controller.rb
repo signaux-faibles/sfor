@@ -122,6 +122,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @parts_patronales = data[:parts_patronales]
     @montant_echeancier = data[:montant_echeancier]
     @dataset_names = urssaf_dataset_names
+    @cotisation_data_freshness = import_data_freshness_label("osf_cotisation")
+    @debit_data_freshness = import_data_freshness_label("osf_debit")
 
     render partial: "data_urssaf_widget"
   end
@@ -143,6 +145,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     @consommation_ap = data[:consommation_ap]
     @autorisation_ap = data[:autorisation_ap]
     @dataset_names = effectif_ap_dataset_names
+    @ap_data_freshness = import_data_freshness_label("osf_ap")
+    @effectif_data_freshness = import_data_freshness_label("osf_effectif_ent")
 
     render partial: "data_effectif_ap_widget"
   end

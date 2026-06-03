@@ -47,6 +47,8 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @montant_echeancier = data[:montant_echeancier]
 
     @dataset_names = urssaf_dataset_names
+    @cotisation_data_freshness = import_data_freshness_label("osf_cotisation")
+    @debit_data_freshness = import_data_freshness_label("osf_debit")
 
     render partial: "data_urssaf_widget"
   end
@@ -68,6 +70,8 @@ class EstablishmentsController < ApplicationController # rubocop:disable Metrics
     @autorisation_ap = data[:autorisation_ap]
 
     @dataset_names = effectif_ap_dataset_names
+    @ap_data_freshness = import_data_freshness_label("osf_ap")
+    @effectif_data_freshness = import_data_freshness_label("osf_effectif")
 
     render partial: "data_effectif_ap_widget"
   end

@@ -32,4 +32,11 @@ module DebitFreshnessable
   def effectif_ent_freshness_index(periodes)
     data_freshness_index("osf_effectif_ent", periodes)
   end
+
+  def import_data_freshness_label(import_name)
+    data_freshness = Import.find_by(name: import_name)&.data_freshness
+    return "Date non disponible" if data_freshness.blank?
+
+    I18n.l(data_freshness.to_date, locale: :fr)
+  end
 end
