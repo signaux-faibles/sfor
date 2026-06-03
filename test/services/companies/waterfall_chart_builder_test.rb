@@ -35,7 +35,7 @@ module Companies
         }
       )
 
-      WaterfallChartBuilder.stub_const(:CONTRIBUTION_THRESHOLD, 0.4) do
+      stub_const(WaterfallChartBuilder, :CONTRIBUTION_THRESHOLD, 0.4) do
         data = WaterfallChartBuilder.new(@entry).build
 
         assert_equal ["Santé financière", "Variation de l'effectif de l'entreprise"], data[:labels]
