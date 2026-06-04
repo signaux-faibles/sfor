@@ -102,10 +102,6 @@ module Excel
         "Libellé NAF/APE",
         "Niveau d'alerte",
         "Fréquence d'alerte",
-        "Détail du score effectif",
-        "Détail du score santé financière",
-        "Détail du score dettes sociales",
-        "Détail du score activité partielle",
         "Liste retraitée (Oui / Non)",
         "Délai de paiement Urssaf",
         "Entreprises récentes",
@@ -116,9 +112,9 @@ module Excel
         "Résultat d'exploitation",
         "Ratio de liquidité"
       ]
-      # Reuse single style object instead of creating 29
+      # Reuse single style object instead of creating 25
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(29, header_style_obj)
+      sheet.add_row headers, style: Array.new(25, header_style_obj)
     end
 
     def add_company_rows(sheet)
@@ -159,8 +155,7 @@ module Excel
           #{sirens_subquery}
         ),
         list_scores AS (
-          SELECT cl.siren, cl.score, cl.alert,
-            cl.score_effectif, cl.score_financier, cl.score_dettes, cl.score_ap
+          SELECT cl.siren, cl.score, cl.alert
           FROM company_lists cl
           WHERE cl.list_id = ?
         ),
@@ -214,7 +209,6 @@ module Excel
             ibr.id DESC
         )
         SELECT ts.siren, cm.siret_siege, ls.score, ls.alert,
-          ls.score_effectif, ls.score_financier, ls.score_dettes, ls.score_ap,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
@@ -281,11 +275,7 @@ module Excel
         if row["score"]
           @score_entries_by_company[siren] = {
             score: row["score"],
-            alert: row["alert"],
-            score_effectif: row["score_effectif"],
-            score_financier: row["score_financier"],
-            score_dettes: row["score_dettes"],
-            score_ap: row["score_ap"]
+            alert: row["alert"]
           }
         end
 
@@ -366,10 +356,6 @@ module Excel
         company_data[:libelle_activite_principale] || "-",
         format_alert_level(score_entry),
         format_alert_frequency(siren),
-        format_score_detail(score_entry, :score_effectif),
-        format_score_detail(score_entry, :score_financier),
-        format_score_detail(score_entry, :score_dettes),
-        format_score_detail(score_entry, :score_ap),
         format_sjcf(siren),
         format_delai_urssaf(siren),
         format_entreprise_recente(company_data[:creation]),
@@ -447,15 +433,6 @@ module Excel
 
       # If no other entries, it's a first alert; otherwise nothing
       other_entries_exist ? "-" : "1ère alerte"
-    end
-
-    def format_score_detail(score_entry, key)
-      return "-" unless score_entry
-
-      value = score_entry[key]
-      return "-" if value.nil?
-
-      value.to_i
     end
 
     def format_sjcf(siren)

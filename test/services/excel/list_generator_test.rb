@@ -12,8 +12,8 @@ module Excel
 
       rows = generated_rows(list, company)
 
-      assert_equal "Accompagnement", rows.first[23]
-      assert_equal "Accompagnement en cours", rows.second[23]
+      assert_equal "Accompagnement", rows.first[19]
+      assert_equal "Accompagnement en cours", rows.second[19]
     end
 
     test "exports latest INPI BCE ratios for each company" do
@@ -23,16 +23,16 @@ module Excel
       create_inpi_bce_ratios(company)
       rows = generated_rows(list, company)
 
-      assert_equal "Taux endettement", rows.first[24]
-      assert_equal "CA", rows.first[25]
-      assert_equal "Résultat net", rows.first[26]
-      assert_equal "Résultat d'exploitation", rows.first[27]
-      assert_equal "Ratio de liquidité", rows.first[28]
-      assert_equal "45.12", rows.second[24]
-      assert_equal "1234567", rows.second[25]
-      assert_equal "-12345", rows.second[26]
-      assert_equal "67890", rows.second[27]
-      assert_equal "98.77", rows.second[28]
+      assert_equal "Taux endettement", rows.first[20]
+      assert_equal "CA", rows.first[21]
+      assert_equal "Résultat net", rows.first[22]
+      assert_equal "Résultat d'exploitation", rows.first[23]
+      assert_equal "Ratio de liquidité", rows.first[24]
+      assert_equal "45.12", rows.second[20]
+      assert_equal "1234567", rows.second[21]
+      assert_equal "-12345", rows.second[22]
+      assert_equal "67890", rows.second[23]
+      assert_equal "98.77", rows.second[24]
     end
 
     private
