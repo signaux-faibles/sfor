@@ -332,6 +332,30 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_not_includes @response.body, "data-waterfall-chart-widget-values-value="
   end
 
+  test "waterfall_detection_widget hides chart when company is not in latest list" do
+    sign_in @user
+
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Alerte seuil F1")
+    company_lists(:paris_list_2025).destroy!
+
+    get waterfall_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :no_content
+  end
+
+  test "show hides detection and waterfall when company is not in latest list" do
+    sign_in @user
+
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Alerte seuil F1")
+    company_lists(:paris_list_2025).destroy!
+
+    get company_path(@company_paris.siren)
+
+    assert_response :success
+    assert_not_includes @response.body, "Détection Signaux faibles"
+    assert_not_includes @response.body, "Éléments constitutifs de cette alerte"
+  end
+
   test "history_detection_widget hides button when no history" do
     sign_in @user
 

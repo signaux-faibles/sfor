@@ -9,14 +9,28 @@ module DetectionWidgetable
 
   private
 
-  # Get the last list and entry for the current company
+  # Get the last list and the latest score entry for the current company in that list.
   # @return [Array<List, CompanyScoreEntry>] Returns [last_list, entry] or [nil, nil] if not found
   def fetch_last_list_and_entry
     last_list = List.order(code: :desc).first
     return [nil, nil] unless last_list
 
-    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
+    entry = latest_score_entry_for_list(last_list)
     [last_list, entry]
+  end
+
+  # True when the company appears in the latest list (same source as list#show).
+  def company_in_last_list?(last_list)
+    return false unless last_list
+
+    CompanyList.exists?(siren: @company.siren, list_id: last_list.id)
+  end
+
+  def latest_score_entry_for_list(list)
+    CompanyScoreEntry
+      .where(siren: @company.siren, list_name: list.label)
+      .order(created_at: :desc)
+      .first
   end
 
   # True when the entry carries a detection-relevant alert (F1, F2, Plans, or Ratios).

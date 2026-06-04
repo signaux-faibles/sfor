@@ -31,8 +31,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def detection_widget
     last_list, entry = fetch_last_list_and_entry
-    return head :no_content unless detection_visible_for_entry?(entry)
     return head :no_content unless last_list
+    return head :no_content unless detection_visible_for_last_list?(last_list, entry)
 
     @criticite = calculate_criticite(entry)
     @data_date = format_data_date(last_list, entry)
@@ -44,8 +44,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     last_list = latest_list_or_render_error
     return unless last_list
 
-    entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: last_list.label)
-    return head :no_content unless detection_visible_for_entry?(entry)
+    entry = latest_score_entry_for_list(last_list)
+    return head :no_content unless detection_visible_for_last_list?(last_list, entry)
 
     load_feedback_entry_and_reasons(last_list)
     @existing_rating = existing_rating_for_list(last_list)
@@ -87,8 +87,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def waterfall_detection_widget
     last_list, entry = fetch_last_list_and_entry
-    return head :no_content unless detection_visible_for_entry?(entry)
     return render partial: "waterfall_detection_widget", locals: { error: "Aucune liste disponible" } unless last_list
+    return head :no_content unless detection_visible_for_last_list?(last_list, entry)
 
     @entry = entry
 
@@ -208,7 +208,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def load_feedback_entry_and_reasons(list)
-    @entry = CompanyScoreEntry.find_by(siren: @company.siren, list_name: list.label)
+    @entry = latest_score_entry_for_list(list)
     @rating_reasons = RatingReason.order(:code)
   end
 
@@ -428,8 +428,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def show_detection_widgets?
-    _last_list, entry = fetch_last_list_and_entry
-    detection_visible_for_entry?(entry)
+    last_list, entry = fetch_last_list_and_entry
+    detection_visible_for_last_list?(last_list, entry)
   end
 
   def show_history_detection_widget?
@@ -442,6 +442,10 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
   def detection_visible_for_entry?(entry)
     meaningful_alert?(entry) && !hide_detection_for_current_user?(entry)
+  end
+
+  def detection_visible_for_last_list?(last_list, entry)
+    company_in_last_list?(last_list) && detection_visible_for_entry?(entry)
   end
 
   def hide_detection_for_current_user?(entry)
