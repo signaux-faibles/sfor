@@ -1,6 +1,6 @@
 class CompanyList < ApplicationRecord
   STANDARD_ALERT_VALUES = ["Alerte seuil F1", "Alerte seuil F2"].freeze
-  CRP_ALERT_VALUES = ["Plans", "Ratios"].freeze
+  CRP_ALERT_VALUES = %w[Plans Ratios].freeze
   MEANINGFUL_ALERT_VALUES = (STANDARD_ALERT_VALUES + CRP_ALERT_VALUES).freeze
 
   belongs_to :company, foreign_key: :siren, primary_key: :siren, optional: false
