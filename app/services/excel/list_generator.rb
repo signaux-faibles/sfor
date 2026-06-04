@@ -185,7 +185,7 @@ module Excel
               AND cse_other.list_name != ?
               AND l.list_date > ?
               AND l.list_date < ?
-              AND (cse_other.alert IS NULL OR cse_other.alert NOT IN ('Plans', 'Ratios'))
+              AND cse_other.alert IN (?)
           )
         ),
         latest_inpi_bce_ratios AS (
@@ -233,13 +233,14 @@ module Excel
       SQL
 
       # Parameters order (matching SQL placeholders in order) — sirens are in the
-      # embedded AR subquery, not as bind params, so only 6 scalar values remain:
+      # embedded AR subquery, not as bind params, so only 7 values remain:
       #   1. @list.id   (list_scores WHERE list_id = ?)
       #   2. list_label (sjcf_companies WHERE clause)
       #   3. list_date  (company_metadata: delai_urssaf_until > ?)
       #   4. list_label (first_alert_sirens: list_name != current list)
       #   5. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
       #   6. list_date  (first_alert_sirens: l.list_date < current list date)
+      #   7. F1/F2 alerts (first_alert_sirens: prior detection; Plans/Ratios/Pas d'alerte excluded)
       list_date = @list.list_date || Date.current
       cutoff_date = list_date - 18.months
       all_params = [@list.id,      # list_scores WHERE list_id = ?
@@ -247,7 +248,8 @@ module Excel
                     list_date,     # company_metadata: delai_urssaf_until > ?
                     list_label,    # first_alert_sirens: list_name !=
                     cutoff_date,   # first_alert_sirens: l.list_date >
-                    list_date]     # first_alert_sirens: l.list_date <
+                    list_date,     # first_alert_sirens: l.list_date <
+                    CompanyList::STANDARD_ALERT_VALUES]
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.info "[ListGenerator] Full query for EXPLAIN ANALYZE:\nEXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)\n#{sanitized_sql};"
 

@@ -4,7 +4,7 @@
 module DetectionWidgetable
   extend ActiveSupport::Concern
 
-  MEANINGFUL_ALERT_VALUES = ["alerte seuil f1", "alerte seuil f2", "plans", "ratios"].freeze
+  MEANINGFUL_ALERT_VALUES = CompanyList::MEANINGFUL_ALERT_VALUES.map(&:downcase).freeze
   NO_ALERT_LABEL = "pas d'alerte"
 
   private

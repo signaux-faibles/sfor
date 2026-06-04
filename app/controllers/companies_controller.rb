@@ -401,7 +401,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
                             .where(siren: @company.siren)
                             .where.not(list_name: last_list.label)
                             .exists?(["lists.list_date > ? AND lists.list_date < ? AND " \
-                                      "(company_score_entries.alert IS NULL OR company_score_entries.alert NOT IN (?))", cutoff_date, current_list_date, ListsController::CRP_ALERT_VALUES])
+                                      "company_score_entries.alert IN (?)", cutoff_date, current_list_date, CompanyList::STANDARD_ALERT_VALUES])
 
     !siren_in_recent_lists
   end

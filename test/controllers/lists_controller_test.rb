@@ -307,11 +307,48 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_not_includes @response.body, "Company Paris"
   end
 
+  test "show excludes companies with Pas d'alerte" do
+    sign_in @user
+    company_lists(:paris_list_2025).update!(alert: "Pas d'alerte")
+
+    get list_path(@list_2025), params: { search: {} }
+
+    assert_response :success
+    assert_not_includes @response.body, "Company Paris"
+    assert_includes @response.body, "Company Ancien"
+  end
+
+  test "alert_breakdown total count excludes Pas d'alerte" do
+    sign_in @user
+    company_lists(:paris_list_2025).update!(alert: "Pas d'alerte")
+
+    get alert_breakdown_list_path(@list_2025), params: { search: {} }
+
+    assert_response :success
+    assert_includes @response.body, "1 entreprise résultat"
+    assert_not_includes @response.body, "2 entreprises"
+  end
+
+  test "show filter premieres_alertes ignores prior Pas d'alerte detection" do
+    sign_in @user
+
+    company_lists(:paris_list_2024).update!(alert: "Pas d'alerte")
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Pas d'alerte")
+
+    get list_path(@list_2025), params: { search: { premieres_alertes: "1" } }
+
+    assert_response :success
+    assert_includes @response.body, "Company Paris"
+  end
+
   test "show filter premieres_alertes keeps company only detected over 18 months ago" do
     sign_in @user
 
     # company_paris appears in list 2025 and list 2024 (within 18 months) → not "première alerte"
     # company_ancien appears in list 2025 and list 2023 (older than 18 months) → "première alerte"
+    company_lists(:paris_list_2024).update!(alert: "Alerte seuil F1")
+    company_score_entries(:one_paris_list_test_2024).update!(alert: "Alerte seuil F1")
+
     get list_path(@list_2025), params: { search: { premieres_alertes: "1" } }
 
     assert_response :success
