@@ -90,6 +90,23 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_select "h2", text: "Résultats de recherche"
   end
 
+  test "show does not display outdated list notice for latest list" do
+    sign_in @user
+
+    get list_path(@list_2025), params: { search: {} }
+
+    assert_not_includes @response.body, "n'est pas la dernière disponible"
+  end
+
+  test "show displays outdated list notice for older lists" do
+    sign_in @user
+
+    get list_path(@list_2024), params: { search: {} }
+
+    assert_includes @response.body, "La liste que vous consultez n'est pas la dernière disponible."
+    assert_includes @response.body, "Vous pouvez néanmoins les retrouver via l'export."
+  end
+
   test "show handles missing search param via rescue" do
     sign_in @user
 

@@ -1,4 +1,6 @@
 class List < ApplicationRecord
+  scope :latest_first, -> { order(code: :desc) }
+
   has_many :company_lists, dependent: :destroy
   # company_lists has siren column, which matches companies.siren
   has_many :companies, -> { distinct }, through: :company_lists, source: :company
@@ -14,5 +16,13 @@ class List < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[company_lists companies company_score_entries company_list_ratings]
+  end
+
+  def self.latest
+    latest_first.first
+  end
+
+  def latest?
+    id == self.class.latest&.id
   end
 end

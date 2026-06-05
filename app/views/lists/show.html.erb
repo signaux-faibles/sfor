@@ -29,6 +29,14 @@
 
     <h2 class="fr-mt-5w">Résultats de recherche</h2>
 
+    <% unless @list.latest? %>
+      <div class="fr-alert fr-alert--info fr-mt-2w">
+        <p>
+          La liste que vous consultez n'est pas la dernière disponible. Par conséquent, les explications liées aux détections de cette liste ne sont pas affichées dans la fiche entreprise. Vous pouvez néanmoins les retrouver via l'export.
+        </p>
+      </div>
+    <% end %>
+
     <% if @results && @results.any? %>
       <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
         <div class="fr-col-12" role="status">
