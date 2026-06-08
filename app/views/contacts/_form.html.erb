@@ -59,7 +59,7 @@
   </div>
 
   <div class="fr-input-group <%= @contact.errors[:email].any? ? 'fr-input-group--error' :  '' %>">
-    <%= f.label :email, "Adresse email", class: "fr-label" %>
+    <%= f.label :email, "Adresse email (nom@site.com)", class: "fr-label" %>
     <%= f.email_field :email,
                       class: "fr-input #{ @contact.errors[:email].any? ? 'fr-input--error' : '' }",
                       'aria-describedby': @contact.errors[:email].any? ? "email-error" : nil %>
@@ -74,9 +74,9 @@
     <%= f.label :description, "Notes de contact", class: "fr-label" %>
     <%= f.text_area :description,
                      class: "fr-input #{ @contact.errors[:description].any? ? 'fr-input--error' : '' }",
-                     'aria-describedby': @contact.errors[:description].any? ? "last-name-error" : nil %>
+                     'aria-describedby': @contact.errors[:description].any? ? "description-error" : nil %>
     <% if @contact.errors[:description].any? %>
-      <p id="last-name-error" class="fr-error-text">
+      <p id="description-error" class="fr-error-text">
         <%= @contact.errors[:description].join(', ') %>
       </p>
     <% end %>

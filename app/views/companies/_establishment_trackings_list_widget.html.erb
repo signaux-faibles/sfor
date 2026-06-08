@@ -39,11 +39,12 @@
       <div class="fr-card">
         <div class="fr-card__body">
           <div class="fr-card__content">
-            <h3 class="fr-h2">Accompagnement en cours de l'entreprise</h3>
+            <h3 class="fr-h2" id="in-progress-trackings-title">Accompagnement en cours de l'entreprise</h3>
             <%= render partial: 'establishment_trackings_list_table',
                        locals: { trackings: @active_trackings,
                                  title: 'Accompagnement en cours de l\'entreprise',
-                                 id: 'in-progress-trackings' } %>
+                                 id: 'in-progress-trackings',
+                                 title_id: 'in-progress-trackings-title' } %>
           </div>
         </div>
       </div>
@@ -62,8 +63,12 @@
       <div class="fr-card fr-mt-5w">
         <div class="fr-card__body">
           <div class="fr-card__content">
-            <h3 class="fr-h2">Historique des accompagnements de l'entreprise</h3>
-            <%= render partial: 'establishment_trackings_list_table', locals: { trackings: @completed_trackings, title: 'Historique des accompagnements de l\'entreprise', id: 'completed-trackings' } %>
+            <h3 class="fr-h2" id="completed-trackings-title">Historique des accompagnements de l'entreprise</h3>
+            <%= render partial: 'establishment_trackings_list_table',
+                       locals: { trackings: @completed_trackings,
+                                 title: 'Historique des accompagnements de l\'entreprise',
+                                 id: 'completed-trackings',
+                                 title_id: 'completed-trackings-title' } %>
           </div>
         </div>
       </div>

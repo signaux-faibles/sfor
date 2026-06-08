@@ -13,7 +13,7 @@
 
           <div class="fr-fieldset__element">
             <div class="fr-input-group">
-              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @users_options.to_json %>" data-multiselect-label-value="Référents">
+              <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @users_options.to_json %>" data-multiselect-label-value="Référents" data-multiselect-required-value="true">
                 <div class="fr-label-wrapper">
                   <%= form.label :referent_ids_input, 'Référents', class: "fr-label" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-referents" aria-describedby="tooltip-new-tracking-referents">
@@ -31,9 +31,15 @@
                   <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
                   <%= form.text_field :referent_ids_input,
                                       value: "",
+                                      id: "referent-ids-input",
                                       class: "fr-input",
                                       placeholder: "",
-                                      aria: { autocomplete: "list", controls: "sf-multiselect-referents-list", expanded: "false" },
+                                      aria: {
+                                        autocomplete: "list",
+                                        controls: "sf-multiselect-referents-list",
+                                        expanded: "false",
+                                        describedby: @establishment_tracking.errors[:referents].any? ? "referents-error" : nil
+                                      },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
                                       autocomplete: "off" %>
@@ -43,8 +49,10 @@
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-referents-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
-              <% @establishment_tracking.errors[:referents].each do |error| %>
-                <p class="fr-error-text"><%= error %></p>
+              <% if @establishment_tracking.errors[:referents].any? %>
+                <p id="referents-error" class="fr-error-text">
+                  <%= @establishment_tracking.errors[:referents].join(", ") %>
+                </p>
               <% end %>
             </div>
           </div>

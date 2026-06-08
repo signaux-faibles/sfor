@@ -2,7 +2,7 @@
   <div class="fr-table__wrapper">
     <div class="fr-table__container">
       <div class="fr-table__content">
-        <table class="fr-table fr-mt-0 fr-mb-0 establishment_trackings_table">
+        <table class="fr-table fr-mt-0 fr-mb-0 establishment_trackings_table"<% if local_assigns[:title_id] %> aria-labelledby="<%= title_id %>"<% end %>>
           <% if trackings.any? %>
             <thead>
             <tr>
