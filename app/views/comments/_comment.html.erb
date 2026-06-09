@@ -1,14 +1,16 @@
 <%= turbo_frame_tag dom_id(comment) do %>
 
   <div class="comment-container fr-mb-3w" data-controller="auto-resize">
-    <div class="comment-header">
-      <div class="avatar">
-        <span><%= comment.user.full_name[0..1].upcase %></span>
-      </div>
-      <div class="author-details">
-        <strong><%= comment.user.display_name %></strong>
-      </div>
-    </div>
+    <ul class="comment-header">
+      <li class="comment-header__item">
+        <div class="avatar" aria-hidden="true">
+          <span><%= comment.user.full_name[0..1].upcase %></span>
+        </div>
+        <div class="author-details">
+          <strong><%= comment.user.display_name %></strong>
+        </div>
+      </li>
+    </ul>
 
     <div class="comment-content">
       <p>

@@ -11,6 +11,15 @@ module EstablishmentTrackingsHelper
     current_modified_at_direction(params) == "asc" ? "fr-icon-arrow-up-s-fill" : "fr-icon-arrow-down-s-fill"
   end
 
+  # Public : ARIA sort state for the modified_at column header.
+  def modified_at_aria_sort(params)
+    case current_modified_at_direction(params)
+    when "asc" then "ascending"
+    when "desc" then "descending"
+    else "none"
+    end
+  end
+
   private
 
   # Private : Define sort direction.

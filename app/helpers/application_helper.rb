@@ -19,6 +19,14 @@ module ApplicationHelper
   end
 
   def markdown(text)
+    render_markdown(text, ::Redcarpet::Render::HTML)
+  end
+
+  def summary_markdown(text)
+    render_markdown(text, SummaryMarkdownRenderer)
+  end
+
+  def render_markdown(text, renderer_class)
     options = {
       filter_html: true,
       hard_wrap: true,
@@ -33,7 +41,7 @@ module ApplicationHelper
       tables: true
     }
 
-    renderer = ::Redcarpet::Render::HTML.new(options)
+    renderer = renderer_class.new(options)
     markdown = ::Redcarpet::Markdown.new(renderer, extensions)
     markdown.render(text).html_safe
   end

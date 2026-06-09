@@ -7,7 +7,7 @@
         <%= form.text_area :content,
                            class: "fr-input",
                            data: { controller: "auto-resize", action: "input->auto-resize#adjust" },
-                           value: form.object.content.presence || "**Contexte :**\n\n**Difficultés :**\n\n**Actions :**",
+                           value: form.object.content.presence || "#### Contexte\n\n#### Difficultés\n\n#### Actions",
                            id: "summary-content-#{network.id}"
         %>
 

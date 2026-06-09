@@ -75,9 +75,14 @@
 }
 
 .comment-header {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 8px;
+}
+
+.comment-header__item {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
 }
 
 .avatar {

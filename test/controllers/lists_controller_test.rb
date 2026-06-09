@@ -473,6 +473,7 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
 
     assert_response :success
     assert_includes @response.body, "Charger plus de résultats"
+    assert_select "button", text: "Charger plus de résultats"
   end
 
   test "load_more returns turbo stream payload" do

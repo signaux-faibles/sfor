@@ -5,11 +5,15 @@
 
 <% if @has_next_page && @next_cursor %>
   <%= turbo_stream.replace "load-more-container" do %>
-    <div class="fr-grid-row fr-grid-row--center fr-mt-4w" id="load-more-container">
-      <%= link_to "Charger plus de résultats",
-                  load_more_list_path(@list, search: @search_params.merge(cursor: @next_cursor), format: :turbo_stream),
-                  class: "fr-btn fr-btn--secondary",
-                  data: { turbo_stream: true } %>
+    <div class="fr-grid-row fr-grid-row--center fr-mt-4w"
+         id="load-more-container"
+         data-controller="load-more"
+         data-load-more-url-value="<%= load_more_list_path(@list, search: @search_params.merge(cursor: @next_cursor), format: :turbo_stream) %>">
+      <button type="button"
+              class="fr-btn fr-btn--secondary"
+              data-action="load-more#load">
+        Charger plus de résultats
+      </button>
     </div>
   <% end %>
 <% else %>
