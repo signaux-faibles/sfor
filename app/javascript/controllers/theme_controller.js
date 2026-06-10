@@ -6,33 +6,57 @@ export default class extends Controller {
   connect() {
     const savedTheme = localStorage.getItem('theme') || 'system'
     this.setTheme({ currentTarget: { value: savedTheme } })
+    this.openedByButton = null
+
+    if (this.hasModalTarget) {
+      this.handleModalClose = this.handleModalClose.bind(this)
+      this.modalTarget.addEventListener("close", this.handleModalClose)
+    }
+  }
+
+  disconnect() {
+    if (this.hasModalTarget) {
+      this.modalTarget.removeEventListener("close", this.handleModalClose)
+    }
   }
 
   open(event) {
-    console.log("Opening modal")
+    this.openedByButton = event.currentTarget
     const modal = this.modalTarget
-    const button = this.buttonTarget
-    
-    if (modal && button) {
+
+    if (modal && this.openedByButton) {
       const openEvent = new CustomEvent('fr:modal:open', {
         bubbles: true,
-        detail: { modal, button }
+        detail: { modal, button: this.openedByButton }
       })
-      button.dispatchEvent(openEvent)
+      this.openedByButton.dispatchEvent(openEvent)
     }
   }
 
-  close(event) {
+  close() {
     const modal = this.modalTarget
-    const button = this.buttonTarget
-    
-    if (modal && button) {
+
+    if (modal && this.openedByButton) {
       const closeEvent = new CustomEvent('fr:modal:close', {
         bubbles: true,
-        detail: { modal, button }
+        detail: { modal, button: this.openedByButton }
       })
-      button.dispatchEvent(closeEvent)
+      this.openedByButton.dispatchEvent(closeEvent)
     }
+
+    this.restoreFocus()
+  }
+
+  handleModalClose() {
+    this.restoreFocus()
+  }
+
+  restoreFocus() {
+    const focusTarget = this.openedByButton?.closest("#header-menu")
+      ? document.getElementById("header-menu-btn")
+      : this.openedByButton
+
+    requestAnimationFrame(() => focusTarget?.focus())
   }
 
   setTheme(event) {

@@ -16,9 +16,10 @@
 
 <body>
 <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
-<div id="flash" aria-live="polite" class="fr-container">
+<div id="flash" class="fr-container">
   <% flash.delete(:timedout).each do |type, msg| %>
-    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm fr-mt-2w">
+    <% alert_role = %w[error alert].include?(type.to_s) ? "alert" : "status" %>
+    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm fr-mt-2w" role="<%= alert_role %>">
       <p><%= msg %></p>
     </div>
   <% end %>

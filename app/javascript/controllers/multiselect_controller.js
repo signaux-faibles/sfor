@@ -221,6 +221,7 @@ export default class extends Controller {
 
     if (options.length === 0) {
       this.resultsTarget.innerHTML = '<div class="fr-alert fr-alert--info fr-mt-2w"><p>Aucun résultat trouvé.</p></div>'
+      this.inputTarget.setAttribute('aria-expanded', 'true')
       return
     }
 
@@ -230,12 +231,15 @@ export default class extends Controller {
       const selectedClass = opt.selected ? ' sf-multiselect-result-item--selected' : ''
       const iconClass = opt.selected ? ' fr-icon-success-fill' : ''
       const optionId = `${this.resultsTarget.id}-option-${index}`
-      html += `<li id="${optionId}" class="sf-multiselect-result-item${selectedClass}" role="option" aria-selected="${opt.selected}">`
+      html += `<li id="${optionId}" class="sf-multiselect-result-item${selectedClass}" role="option" aria-checked="${opt.selected}">`
       html += `<button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-btn--icon-left${iconClass}" `
       html += `data-action="click->multiselect#toggleResult" `
       html += `data-result-value="${this.escapeHtml(String(opt.value))}" `
       html += `data-result-label="${this.escapeHtml(opt.label)}">`
       html += this.escapeHtml(opt.label)
+      if (opt.selected) {
+        html += `<span class="fr-sr-only"> Sélectionné</span>`
+      }
       html += `</button>`
       html += `</li>`
     })

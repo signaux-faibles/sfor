@@ -194,35 +194,32 @@ export default class extends Controller {
   }
 
   handleArrowRight() {
-    this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
-    allOptions.forEach(option => {
-      option.classList.remove('sf-geo-search-focused')
-    })
+    this.clearActiveOption()
   }
 
   handleArrowLeft() {
-    this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
-    allOptions.forEach(option => {
-      option.classList.remove('sf-geo-search-focused')
-    })
+    this.clearActiveOption()
   }
 
   handleHome() {
-    this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
-    allOptions.forEach(option => {
-      option.classList.remove('sf-geo-search-focused')
-    })
+    this.clearActiveOption()
   }
 
   handleEnd() {
+    this.clearActiveOption()
+  }
+
+  clearActiveOption() {
     this.focusedOptionIndex = -1
     const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
     allOptions.forEach(option => {
       option.classList.remove('sf-geo-search-focused')
     })
+    this.inputTarget.removeAttribute('aria-activedescendant')
+  }
+
+  setListboxOpen(isOpen) {
+    this.inputTarget.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
   }
 
   displayAllLocations() {
@@ -243,6 +240,10 @@ export default class extends Controller {
       if (index === this.focusedOptionIndex) {
         option.classList.add('sf-geo-search-focused')
         option.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+        const listItem = option.closest('[role="option"]')
+        if (listItem?.id) {
+          this.inputTarget.setAttribute('aria-activedescendant', listItem.id)
+        }
       } else {
         option.classList.remove('sf-geo-search-focused')
       }
@@ -448,11 +449,15 @@ export default class extends Controller {
 
     if (allResults.length === 0) {
       this.resultsTarget.innerHTML = '<div class="fr-alert fr-alert--info fr-mt-2w"><p>Aucun résultat trouvé.</p></div>'
+      this.setListboxOpen(true)
+      this.focusedOptionIndex = -1
+      this.inputTarget.removeAttribute('aria-activedescendant')
       return
     }
 
     // Group by category for better display
     let html = '<div class="sf-geo-search-results">'
+    let optionIndex = 0
 
     categories.forEach(category => {
       const categoryResults = allResults.filter(r => r.category === category)
@@ -468,7 +473,9 @@ export default class extends Controller {
         html += `<ul class="fr-list">`
 
         categoryResults.forEach(result => {
-          html += `<li class="sf-geo-search-result-item" role="option">`
+          const optionId = `${this.resultsTarget.id}-option-${optionIndex}`
+          optionIndex += 1
+          html += `<li id="${optionId}" class="sf-geo-search-result-item" role="option">`
           html += `<button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" `
           html += `data-action="click->geo-search#selectResult" `
           html += `data-result-type="${result.type}" `
@@ -487,9 +494,11 @@ export default class extends Controller {
 
     html += '</div>'
     this.resultsTarget.innerHTML = html
+    this.setListboxOpen(true)
 
     // Reset visual focus when new results are displayed
     this.focusedOptionIndex = -1
+    this.inputTarget.removeAttribute('aria-activedescendant')
   }
 
   selectResult(event) {
@@ -525,6 +534,8 @@ export default class extends Controller {
     }
     this.resultsContainer = {}
     this.focusedOptionIndex = -1
+    this.setListboxOpen(false)
+    this.inputTarget.removeAttribute('aria-activedescendant')
   }
 
   clearSelection() {
@@ -551,6 +562,9 @@ export default class extends Controller {
   displayError(message) {
     if (this.resultsTarget) {
       this.resultsTarget.innerHTML = `<div class="fr-alert fr-alert--error fr-mt-2w"><p>${message}</p></div>`
+      this.setListboxOpen(true)
+      this.focusedOptionIndex = -1
+      this.inputTarget.removeAttribute('aria-activedescendant')
     }
   }
 }
