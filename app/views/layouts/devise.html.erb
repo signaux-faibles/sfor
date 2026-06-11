@@ -15,14 +15,11 @@
 </head>
 
 <body>
+<div id="page-start" tabindex="-1" data-controller="initial-focus" class="fr-sr-only">Début de la page</div>
+
 <!-- In some circumstances, Devise adds a :timedout key to the flash hash, which is not meant for display. Remove this key from the hash if you intend to print the entire hash. -->
 <div id="flash" class="fr-container">
-  <% flash.delete(:timedout).each do |type, msg| %>
-    <% alert_role = %w[error alert].include?(type.to_s) ? "alert" : "status" %>
-    <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm fr-mt-2w" role="<%= alert_role %>">
-      <p><%= msg %></p>
-    </div>
-  <% end %>
+  <%= render "layouts/flash_messages", margin: true %>
 </div>
 
 <main role="main" id="content">
