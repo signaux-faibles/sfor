@@ -45,8 +45,8 @@ fr:
         entity: Entité
         geo_access: Accès géographique
         networks: Réseaux
-        password: "\"Nouveau mot de passe\""
-        password_confirmation: "\"Confirmer le nouveau mot de passe\""
+        password: Mot de passe
+        password_confirmation: Confirmation du mot de passe
         reset_password_token: "\"Jeton de réinitialisation du mot de passe\""
       network:
         name: Nom
@@ -133,7 +133,10 @@ fr:
             email:
               invalid: "Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr"
             password:
-              complexity: "Veuillez saisir un mot de passe valide : 12 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
+              complexity: "doit respecter le format attendu, par exemple : Test1234#dev"
+              too_short: "doit contenir au moins %{count} caractères, par exemple : Test1234#dev"
+            password_confirmation:
+              confirmation: "doit être identique au mot de passe saisi"
         establishment_tracking:
           attributes:
             referents:
@@ -290,10 +293,10 @@ fr:
       format_hint: "Format attendu : nom.prenom@domaine.fr"
       invalid_message: "Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr"
     password:
-      format_hint: "Format attendu : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
+      format_hint: "Format attendu : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -). Exemple : Test1234#dev"
       sign_in_hint: "Mot de passe personnel : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
       confirmation_hint: "Saisissez à nouveau le même mot de passe."
-      invalid_message: "Veuillez saisir un mot de passe valide : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
+      invalid_message: "Veuillez saisir un mot de passe valide, par exemple : Test1234#dev"
     select:
       prompt: Veuillez sélectionner
     submit:

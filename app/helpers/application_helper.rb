@@ -45,9 +45,10 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def password_field_describedby(field_id, object:, attribute: :password, extra_ids: [])
-    ids = ["#{field_id}-hint"]
-    ids << "#{field_id}-error" if object.errors[attribute].any?
+  def password_field_describedby(field_id, object:, attribute: :password, extra_ids: [], include_error: nil)
+    ids = ["#{field_id}-format"]
+    show_error = include_error.nil? ? object.errors[attribute].any? : include_error
+    ids << "#{field_id}-error" if show_error
     ids.concat(Array(extra_ids))
 
     ids.compact.join(" ")

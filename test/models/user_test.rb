@@ -15,7 +15,7 @@ class UserTest < ActiveSupport::TestCase
     user.password_confirmation = "short"
 
     assert_not user.valid?
-    assert_includes user.errors[:password],
-                    I18n.t("activerecord.errors.models.user.attributes.password.complexity")
+    assert_includes user.errors.full_messages_for(:password),
+                    "Mot de passe #{I18n.t('activerecord.errors.models.user.attributes.password.complexity')}"
   end
 end
