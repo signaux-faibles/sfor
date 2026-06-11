@@ -9,6 +9,10 @@ class Devise::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "#page-start[data-controller='initial-focus'][tabindex='-1']"
     assert_select "#page-start + #flash"
+    assert_select "#user_email-format", text: /Format attendu : nom.prenom@domaine.fr/
+    assert_select "#user_email[aria-describedby=?]", "user_email-format"
+    assert_select "#user_password-hint", text: /12 caractères minimum/
+    assert_select "#user_password[aria-describedby=?]", "user_password-hint"
     assert_select "input[type=email][autofocus]", false
     assert_select "div[role=alert]", false
   end

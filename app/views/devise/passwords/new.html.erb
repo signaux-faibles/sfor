@@ -16,10 +16,12 @@
               <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "fr-mt-4w" }) do |f| %>
                 <%= render "devise/shared/error_messages", resource: resource %>
 
-                <div class="fr-input-group fr-mb-3w">
-                  <%= f.label :email, "Adresse électronique", class: "fr-label" %>
-                  <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "fr-input", required: true %>
-                </div>
+                <%= render "shared/accessible_email_field",
+                           form: f,
+                           label: "Adresse électronique",
+                           field_id: "user_email",
+                           wrapper_class: "fr-mb-3w",
+                           html_options: { autofocus: true, required: true } %>
 
                 <div class="fr-btns-group fr-btns-group--inline">
                   <%= f.submit "Envoyer les instructions de réinitialisation", class: "fr-btn" %>

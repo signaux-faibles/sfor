@@ -18,6 +18,28 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "#{@contact.first_name} #{@contact.last_name}"
   end
 
+  test "create contact with invalid email shows format hint and example error message" do
+    sign_in @user_a
+
+    assert_no_difference("Contact.count") do
+      post establishment_establishment_tracking_contacts_path(@establishment, @establishment_tracking),
+           params: {
+             contact: {
+               first_name: "New",
+               last_name: "Contact",
+               role: "Dirigeant",
+               email: "adresse-invalide"
+             }
+           }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select "#contact_email-format", text: /Format attendu : nom.prenom@domaine.fr/
+    assert_select "#contact_email-error",
+                  text: /Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr/
+    assert_select "#contact_email[aria-describedby=?]", "contact_email-format contact_email-error"
+  end
+
   test "user A can create a new contact" do
     sign_in @user_a
 

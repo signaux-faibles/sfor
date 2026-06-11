@@ -5,7 +5,6 @@ class Contact < ApplicationRecord
   validates :email,
             format: {
               with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i,
-              allow_blank: true,
-              message: "Saisir une adresse email valide, par exemple jean.dupont@email.fr" # rubocop:disable Rails/I18nLocaleTexts
+              allow_blank: true
             }
 end

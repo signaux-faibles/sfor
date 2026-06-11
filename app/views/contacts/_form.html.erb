@@ -58,17 +58,10 @@
     <% end %>
   </div>
 
-  <div class="fr-input-group <%= @contact.errors[:email].any? ? 'fr-input-group--error' :  '' %>">
-    <%= f.label :email, "Adresse email (nom@site.com)", class: "fr-label" %>
-    <%= f.email_field :email,
-                      class: "fr-input #{ @contact.errors[:email].any? ? 'fr-input--error' : '' }",
-                      'aria-describedby': @contact.errors[:email].any? ? "email-error" : nil %>
-    <% if @contact.errors[:email].any? %>
-      <p id="email-error" class="fr-error-text">
-        <%= @contact.errors[:email].join(', ') %>
-      </p>
-    <% end %>
-  </div>
+  <%= render "shared/accessible_email_field",
+             form: f,
+             label: "Adresse e-mail",
+             field_id: "contact_email" %>
 
   <div class="fr-input-group <%= @contact.errors[:description].any? ? 'fr-input-group--error' : '' %>">
     <%= f.label :description, "Notes de contact", class: "fr-label" %>

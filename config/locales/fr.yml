@@ -124,6 +124,16 @@ fr:
             taken: "est déjà membre de ce réseau"
     errors:
       models:
+        contact:
+          attributes:
+            email:
+              invalid: "Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr"
+        user:
+          attributes:
+            email:
+              invalid: "Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr"
+            password:
+              complexity: "Veuillez saisir un mot de passe valide : 12 caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
         establishment_tracking:
           attributes:
             referents:
@@ -276,6 +286,14 @@ fr:
         one: 'Impossible d''enregistrer ce(tte) %{model} : %{count} erreur'
         other: 'Impossible d''enregistrer ce(tte) %{model} : %{count} erreurs'
   helpers:
+    email:
+      format_hint: "Format attendu : nom.prenom@domaine.fr"
+      invalid_message: "Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr"
+    password:
+      format_hint: "Format attendu : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
+      sign_in_hint: "Mot de passe personnel : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
+      confirmation_hint: "Saisissez à nouveau le même mot de passe."
+      invalid_message: "Veuillez saisir un mot de passe valide : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."
     select:
       prompt: Veuillez sélectionner
     submit:

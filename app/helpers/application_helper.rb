@@ -1,8 +1,45 @@
 require "redcarpet"
 
-module ApplicationHelper
+module ApplicationHelper # rubocop:disable Metrics/ModuleLength
   def current?(key, path)
     key.to_s if current_page? path
+  end
+
+  def email_format_hint
+    I18n.t("helpers.email.format_hint")
+  end
+
+  def email_invalid_message
+    I18n.t("helpers.email.invalid_message")
+  end
+
+  def email_field_describedby(field_id, object:, attribute: :email)
+    ids = ["#{field_id}-format"]
+    ids << "#{field_id}-error" if object.errors[attribute].any?
+
+    ids.join(" ")
+  end
+
+  def password_minimum_length
+    Devise.password_length.begin
+  end
+
+  def password_hint_for(purpose)
+    case purpose.to_sym
+    when :confirmation
+      I18n.t("helpers.password.confirmation_hint")
+    when :sign_in
+      I18n.t("helpers.password.sign_in_hint", count: password_minimum_length)
+    else
+      I18n.t("helpers.password.format_hint", count: password_minimum_length)
+    end
+  end
+
+  def password_field_describedby(field_id, object:, attribute: :password)
+    ids = ["#{field_id}-hint"]
+    ids << "#{field_id}-error" if object.errors[attribute].any?
+
+    ids.join(" ")
   end
 
   def dsfr_class_for(flash_type)

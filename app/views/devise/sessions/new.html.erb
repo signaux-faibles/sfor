@@ -22,15 +22,20 @@
 
               <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "fr-mt-4w" }) do |f| %>
                 <p class="fr-text--sm">Tous les champs sont obligatoires.</p>
-                <div class="fr-input-group fr-mb-3w">
-                  <%= f.label :email, "Adresse électronique", class: "fr-label" %>
-                  <%= f.email_field :email, autocomplete: "email", class: "fr-input", required: true %>
-                </div>
+                <%= render "shared/accessible_email_field",
+                           form: f,
+                           label: "Adresse électronique",
+                           field_id: "user_email",
+                           wrapper_class: "fr-mb-3w",
+                           html_options: { required: true } %>
 
-                <div class="fr-input-group fr-mb-3w">
-                  <%= f.label :password, "Mot de passe", class: "fr-label" %>
-                  <%= f.password_field :password, autocomplete: "current-password", class: "fr-input", required: true %>
-                </div>
+                <%= render "shared/accessible_password_field",
+                           form: f,
+                           label: "Mot de passe",
+                           field_id: "user_password",
+                           purpose: :sign_in,
+                           wrapper_class: "fr-mb-3w",
+                           html_options: { required: true } %>
 
                 <% if devise_mapping.rememberable? %>
                   <div class="fr-checkbox-group fr-mb-3w">

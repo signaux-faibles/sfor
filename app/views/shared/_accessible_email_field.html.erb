@@ -1,0 +1,32 @@
+<%#
+  locals:
+    form:       form builder
+    label:      visible label text
+    field_id:   unique HTML id for the input
+    html_options: extra options passed to email_field (optional)
+%>
+<% field_id = local_assigns.fetch(:field_id) %>
+<% html_options = local_assigns.fetch(:html_options, {}) %>
+<% email_errors = form.object.errors[:email] %>
+<% input_classes = ["fr-input", html_options[:class], ("fr-input--error" if email_errors.any?)].compact.join(" ") %>
+
+<div class="fr-input-group<%= " fr-input-group--error" if email_errors.any? %><%= " #{local_assigns[:wrapper_class]}" if local_assigns[:wrapper_class] %>">
+  <%= form.label :email, label, class: "fr-label", for: field_id %>
+  <p id="<%= field_id %>-format" class="fr-hint-text"><%= email_format_hint %></p>
+  <%= form.email_field :email,
+                       {
+                         id: field_id,
+                         class: input_classes,
+                         autocomplete: "email",
+                         "aria-describedby": email_field_describedby(field_id, object: form.object),
+                         data: {
+                           controller: "email-field",
+                           email_field_invalid_message_value: email_invalid_message
+                         }
+                       }.deep_merge(html_options.except(:class)) %>
+  <% if email_errors.any? %>
+    <p id="<%= field_id %>-error" class="fr-error-text">
+      <%= email_errors.join(", ") %>
+    </p>
+  <% end %>
+</div>
