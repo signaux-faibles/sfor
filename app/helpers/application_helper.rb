@@ -13,11 +13,21 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     I18n.t("helpers.email.invalid_message")
   end
 
-  def email_field_describedby(field_id, object:, attribute: :email)
+  def email_field_describedby(field_id, object:, attribute: :email, extra_ids: [], include_error: nil)
     ids = ["#{field_id}-format"]
-    ids << "#{field_id}-error" if object.errors[attribute].any?
+    show_error = include_error.nil? ? object.errors[attribute].any? : include_error
+    ids << "#{field_id}-error" if show_error
+    ids.concat(Array(extra_ids))
 
-    ids.join(" ")
+    ids.compact.join(" ")
+  end
+
+  def field_error_messages(object, attribute)
+    object.errors.full_messages_for(attribute)
+  end
+
+  def field_aria_invalid(object, attribute)
+    object.errors[attribute].any? ? "true" : nil
   end
 
   def password_minimum_length
@@ -35,11 +45,12 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     end
   end
 
-  def password_field_describedby(field_id, object:, attribute: :password)
+  def password_field_describedby(field_id, object:, attribute: :password, extra_ids: [])
     ids = ["#{field_id}-hint"]
     ids << "#{field_id}-error" if object.errors[attribute].any?
+    ids.concat(Array(extra_ids))
 
-    ids.join(" ")
+    ids.compact.join(" ")
   end
 
   def dsfr_class_for(flash_type)

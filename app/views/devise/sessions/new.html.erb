@@ -27,6 +27,7 @@
                            label: "Adresse électronique",
                            field_id: "user_email",
                            wrapper_class: "fr-mb-3w",
+                           inline_error: flash[:sign_in_error],
                            html_options: { required: true } %>
 
                 <%= render "shared/accessible_password_field",
@@ -44,8 +45,8 @@
                   </div>
                 <% end %>
 
-                <div class="fr-btns-group fr-btns-group--inline">
-                  <%= f.submit "Se connecter", class: "fr-btn" %>
+                <div class="fr-btns-group">
+                  <%= f.button "Se connecter", type: "submit", class: "fr-btn" %>
                 </div>
               <% end %>
 

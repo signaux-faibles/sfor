@@ -26,10 +26,12 @@
   <div class="fr-input-group <%= @contact.errors[:role].any? ? 'fr-input-group--error' : '' %>">
     <%= f.label :role, "Fonction", class: "fr-label" %>
     <%= f.select :role, ['Dirigeant', 'DAF', 'DRH', 'Autre'], {},
-                 class: "fr-select #{ @contact.errors[:role].any? ? 'fr-input--error' : '' }" %>
+                 class: "fr-select #{ @contact.errors[:role].any? ? 'fr-input--error' : '' }",
+                 'aria-describedby': @contact.errors[:role].any? ? "role-error" : nil,
+                 'aria-invalid': @contact.errors[:role].any? ? "true" : nil %>
     <% if @contact.errors[:role].any? %>
-      <p class="fr-error-text">
-        <%= @contact.errors[:role].join(', ') %>
+      <p id="role-error" class="fr-error-text">
+        <%= @contact.errors.full_messages_for(:role).join(', ') %>
       </p>
     <% end %>
   </div>

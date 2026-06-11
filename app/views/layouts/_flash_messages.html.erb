@@ -1,4 +1,5 @@
 <% flash.delete(:timedout).each do |type, msg| %>
+  <% next if type.to_s == "sign_in_error" %>
   <% alert_role = %w[error alert].include?(type.to_s) ? "alert" : "status" %>
   <div class="fr-alert fr-alert--<%= dsfr_class_for(type) %> fr-alert--sm<%= ' fr-mt-2w' if local_assigns.fetch(:margin, false) %>" role="<%= alert_role %>">
     <p><%= msg %></p>

@@ -17,11 +17,18 @@ class Devise::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "div[role=alert]", false
   end
 
-  test "failed login renders flash message with alert role below focus anchor" do
+  test "failed login shows inline error on email field without top flash" do
     post user_session_path, params: { user: { email: "wrong@example.com", password: "WrongPass1!" } }
 
-    assert_response :unprocessable_content
-    assert_select "#page-start + #flash div[role=alert]"
+    assert_redirected_to new_user_session_path
+    follow_redirect!
+
+    assert_response :success
+    assert_select "#flash div[role=alert]", false
+    assert_select "#user_email-error", text: "Email et/ou mot de passe incorrect(s)."
+    assert_select "#user_email[aria-describedby=?]", "user_email-format user_email-error"
+    assert_select "#user_email[aria-invalid=?]", "true"
+    assert_select ".fr-input-group--error #user_email"
   end
 
   test "unauthenticated access redirects to login with flash below focus anchor" do

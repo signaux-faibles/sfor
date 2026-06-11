@@ -584,3 +584,31 @@ This pattern is used widely in the app (search filters, multiselect value fields
 **Do not remove this file** unless Rails stops adding `autocomplete` on hidden inputs upstream, or you replace it with an equivalent fix. After upgrading Rails, re-check generated HTML for hidden inputs and confirm the initializer still matches the framework’s helpers.
 
 **Note:** Rails may still add `autocomplete="off"` on other hidden inputs it generates directly (for example the CSRF token, checkbox “unchecked” companions, or `_method` spoofing). Those are separate code paths. If an audit reports remaining violations on those tags, extend the fix in the same spirit (strip `autocomplete` only, keep Rails’ naming and behaviour) rather than duplicating helper logic by hand.
+
+## Form field errors and `field_error_proc`
+
+By default, when a form field has a validation error, Rails wraps its HTML in a `<div class="field_with_errors">` container. That wrapper is not part of the DSFR design system and conflicts with the accessible field partials used in this application.
+
+**File:** [`config/initializers/field_error_proc.rb`](config/initializers/field_error_proc.rb)
+
+The initializer replaces Rails’ default behaviour with a **proc** (a reusable anonymous block of Ruby code) assigned to `ActionView::Base.field_error_proc`. Rails calls this proc for every field in error, passing:
+
+| Argument | Role |
+|----------|------|
+| `html_tag` | The rendered HTML of the field (`<input>`, `<label>`, etc.) |
+| `_instance` | The form object (e.g. `User`) — unused here |
+
+Our proc simply returns `html_tag` unchanged, which disables the `field_with_errors` wrapper.
+
+**Why:** accessible field partials (`app/views/shared/_accessible_email_field.html.erb`, `_accessible_password_field.html.erb`, etc.) already handle error display explicitly:
+
+- DSFR classes (`fr-input-group--error`, `fr-input--error`)
+- inline error message with a stable `id` (e.g. `user_email-error`)
+- `aria-describedby` linking the input to the hint and error
+- `aria-invalid="true"` when the field is invalid
+
+Without this initializer, Rails would add an extra wrapper around inputs, producing invalid DSFR markup and redundant error signalling.
+
+**Convention:** when adding a new form field that can fail validation, handle errors in the view (or a shared partial) — do not rely on Rails to style or wrap invalid fields automatically.
+
+**Do not remove this file** unless every form in the application handles field errors explicitly. Removing it would silently reintroduce `field_with_errors` wrappers across the app.

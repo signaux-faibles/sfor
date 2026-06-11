@@ -4,13 +4,18 @@
     label:      visible label text
     field_id:   unique HTML id for the input
     html_options: extra options passed to email_field (optional)
+    inline_error: optional error message displayed below the field (not from model)
 %>
 <% field_id = local_assigns.fetch(:field_id) %>
 <% html_options = local_assigns.fetch(:html_options, {}) %>
+<% inline_error = local_assigns[:inline_error] %>
 <% email_errors = form.object.errors[:email] %>
-<% input_classes = ["fr-input", html_options[:class], ("fr-input--error" if email_errors.any?)].compact.join(" ") %>
+<% has_error = email_errors.any? || inline_error.present? %>
+<% input_classes = ["fr-input", html_options[:class], ("fr-input--error" if has_error)].compact.join(" ") %>
+<% extra_describedby = Array(local_assigns[:extra_describedby]) %>
+<% aria_invalid = has_error ? "true" : field_aria_invalid(form.object, :email) %>
 
-<div class="fr-input-group<%= " fr-input-group--error" if email_errors.any? %><%= " #{local_assigns[:wrapper_class]}" if local_assigns[:wrapper_class] %>">
+<div class="fr-input-group<%= " fr-input-group--error" if has_error %><%= " #{local_assigns[:wrapper_class]}" if local_assigns[:wrapper_class] %>">
   <%= form.label :email, label, class: "fr-label", for: field_id %>
   <p id="<%= field_id %>-format" class="fr-hint-text"><%= email_format_hint %></p>
   <%= form.email_field :email,
@@ -18,7 +23,13 @@
                          id: field_id,
                          class: input_classes,
                          autocomplete: "email",
-                         "aria-describedby": email_field_describedby(field_id, object: form.object),
+                         "aria-describedby": email_field_describedby(
+                           field_id,
+                           object: form.object,
+                           extra_ids: extra_describedby,
+                           include_error: has_error
+                         ),
+                         "aria-invalid": aria_invalid,
                          data: {
                            controller: "email-field",
                            email_field_invalid_message_value: email_invalid_message
@@ -26,7 +37,11 @@
                        }.deep_merge(html_options.except(:class)) %>
   <% if email_errors.any? %>
     <p id="<%= field_id %>-error" class="fr-error-text">
-      <%= email_errors.join(", ") %>
+      <%= field_error_messages(form.object, :email).join(", ") %>
+    </p>
+  <% elsif inline_error.present? %>
+    <p id="<%= field_id %>-error" class="fr-error-text">
+      <%= inline_error %>
     </p>
   <% end %>
 </div>

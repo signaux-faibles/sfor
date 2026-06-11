@@ -600,3 +600,55 @@
 .sf-fieldset-container .fr-h2 {
   margin-bottom: 0;
 }
+
+/* WCAG 1.4.10 — reflow at 320px without horizontal scrolling */
+@media (max-width: 47.9375em) {
+  .fr-btns-group--inline .fr-btn,
+  .fr-btns-group--inline > input.fr-btn {
+    width: calc(100% - 1rem);
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    height: auto;
+    min-height: 2.5rem;
+  }
+
+  .fr-btns-group--inline > li {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.sf-devise-layout {
+  overflow-x: clip;
+
+  .fr-btns-group .fr-btn {
+    white-space: normal;
+    text-align: center;
+    height: auto;
+    min-height: 2.5rem;
+  }
+
+  .fr-notice__body {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  p,
+  .fr-link {
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 47.9375em) {
+    .fr-background-alt--grey .fr-grid-row--gutters {
+      margin-left: 0;
+      margin-right: 0;
+
+      > [class*="fr-col-"] {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+}
