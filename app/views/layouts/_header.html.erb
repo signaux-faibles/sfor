@@ -81,7 +81,7 @@
           <div class="fr-header__tools-links">
             <ul class="fr-btns-group">
               <li>
-                <button class="fr-btn fr-icon-theme-fill" aria-controls="fr-theme-modal" data-fr-opened="false" data-action="click->theme#open" data-theme-target="button" data-turbo-permanent>Paramètres d'affichage</button>
+                <button id="header-theme-btn" class="fr-btn fr-icon-theme-fill" type="button" aria-haspopup="dialog" aria-controls="sf-theme-modal" aria-expanded="false" data-action="click->theme#open" data-turbo-permanent>Paramètres d'affichage</button>
               </li>
               <% if current_user != true_user && current_user&.segment&.name != "sf" %>
                 <li>
@@ -120,7 +120,7 @@
       <div class="fr-header__menu-links">
         <ul class="fr-btns-group">
           <li>
-            <button class="fr-btn fr-icon-theme-fill" aria-controls="fr-theme-modal" data-fr-opened="false" data-action="click->theme#open" data-theme-target="button" data-turbo-permanent>Paramètres d'affichage</button>
+            <button id="header-menu-theme-btn" class="fr-btn fr-icon-theme-fill" type="button" aria-haspopup="dialog" aria-controls="sf-theme-modal" aria-expanded="false" data-action="click->theme#open" data-turbo-permanent>Paramètres d'affichage</button>
           </li>
           <% if current_user != true_user && current_user&.segment&.name != "sf" %>
             <li>
