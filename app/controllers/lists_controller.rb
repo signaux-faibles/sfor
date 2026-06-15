@@ -606,7 +606,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     first_time_sirens = sirens.to_set - sirens_in_recent_lists
 
     results.each do |result|
-      result["is_first_alert"] = first_time_sirens.include?(result["siren"])
+      result["is_first_alert"] = CompanyList.meaningful_alert?(result["alert"]) &&
+                                 first_time_sirens.include?(result["siren"])
     end
   end
 
@@ -709,7 +710,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                             .where(company_score_entries: { alert: CompanyList::STANDARD_ALERT_VALUES })
                             .exists?
 
-    enrichment[:is_first_alert] = !siren_in_recent_lists
+    enrichment[:is_first_alert] = CompanyList.meaningful_alert?(alert_entry&.alert) && !siren_in_recent_lists
 
     # Get establishment count
     enrichment[:nombre_etablissements_ouverts] = Establishment

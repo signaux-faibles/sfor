@@ -178,15 +178,17 @@ module Excel
         first_alert_sirens AS (
           SELECT ts_filter.siren
           FROM target_sirens ts_filter
-          WHERE NOT EXISTS (
-            SELECT 1 FROM company_score_entries cse_other
-            INNER JOIN lists l ON l.label = cse_other.list_name
-            WHERE cse_other.siren = ts_filter.siren
-              AND cse_other.list_name != ?
-              AND l.list_date > ?
-              AND l.list_date < ?
-              AND cse_other.alert IN (?)
-          )
+          INNER JOIN list_scores ls_current ON ls_current.siren = ts_filter.siren
+          WHERE ls_current.alert IN (?)
+            AND NOT EXISTS (
+              SELECT 1 FROM company_score_entries cse_other
+              INNER JOIN lists l ON l.label = cse_other.list_name
+              WHERE cse_other.siren = ts_filter.siren
+                AND cse_other.list_name != ?
+                AND l.list_date > ?
+                AND l.list_date < ?
+                AND cse_other.alert IN (?)
+            )
         ),
         latest_inpi_bce_ratios AS (
           SELECT DISTINCT ON (ibr.siren)
@@ -233,19 +235,21 @@ module Excel
       SQL
 
       # Parameters order (matching SQL placeholders in order) — sirens are in the
-      # embedded AR subquery, not as bind params, so only 7 values remain:
+      # embedded AR subquery, not as bind params, so only 8 values remain:
       #   1. @list.id   (list_scores WHERE list_id = ?)
       #   2. list_label (sjcf_companies WHERE clause)
       #   3. list_date  (company_metadata: delai_urssaf_until > ?)
-      #   4. list_label (first_alert_sirens: list_name != current list)
-      #   5. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
-      #   6. list_date  (first_alert_sirens: l.list_date < current list date)
-      #   7. F1/F2 alerts (first_alert_sirens: prior detection; Plans/Ratios/Pas d'alerte excluded)
+      #   4. MEANINGFUL_ALERT_VALUES (first_alert_sirens: current alert required)
+      #   5. list_label (first_alert_sirens: list_name != current list)
+      #   6. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
+      #   7. list_date  (first_alert_sirens: l.list_date < current list date)
+      #   8. F1/F2 alerts (first_alert_sirens: prior detection; Plans/Ratios/Pas d'alerte excluded)
       list_date = @list.list_date || Date.current
       cutoff_date = list_date - 18.months
       all_params = [@list.id,      # list_scores WHERE list_id = ?
                     list_label,    # sjcf_companies WHERE
                     list_date,     # company_metadata: delai_urssaf_until > ?
+                    CompanyList::MEANINGFUL_ALERT_VALUES, # first_alert_sirens: current alert
                     list_label,    # first_alert_sirens: list_name !=
                     cutoff_date,   # first_alert_sirens: l.list_date >
                     list_date,     # first_alert_sirens: l.list_date <

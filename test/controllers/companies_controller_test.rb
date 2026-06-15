@@ -170,6 +170,18 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_response :success
     assert_not_includes @response.body, "Détection Signaux faibles"
     assert_not_includes @response.body, "Historique des alertes"
+    assert_select "p.fr-badge", text: "1ère alerte", count: 0
+  end
+
+  test "show hides first alert badge when latest list entry has no alert" do
+    sign_in @user
+
+    company_score_entries(:one_paris_list_test_2025).update!(alert: nil)
+
+    get company_path(@company_paris.siren)
+
+    assert_response :success
+    assert_select "p.fr-badge", text: "1ère alerte", count: 0
   end
 
   test "feedback_detection_widget creates useful rating" do

@@ -566,6 +566,18 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_select "p.fr-badge", text: "1ère alerte"
   end
 
+  test "enrich_company hides first alert badge when current alert is Pas d'alerte" do
+    sign_in @user
+
+    company_lists(:paris_list_2025).update!(alert: "Pas d'alerte")
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Pas d'alerte")
+
+    get enrich_company_list_path(@list_2025), params: { siren: "123456789" }
+
+    assert_response :success
+    assert_select "p.fr-badge", text: "1ère alerte", count: 0
+  end
+
   test "enrich_company shows establishment count when company has active establishments" do
     sign_in @user
 

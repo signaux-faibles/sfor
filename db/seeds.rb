@@ -15,7 +15,11 @@ unless Rails.env.production?
   require_relative 'seeds/establishments_seeds'
   require_relative 'seeds/users_seeds'
   require_relative 'seeds/trackings_seeds'
-  
+
+  if Rails.env.development?
+    require_relative 'seeds/first_alert_scenarios_seeds'
+  end
+
   # Test establishments for OSF sync testing (only in development)
   if Rails.env.development? && ENV['CREATE_TEST_ESTABLISHMENTS'] == 'true'
     require_relative 'seeds/test_establishments_seeds'
