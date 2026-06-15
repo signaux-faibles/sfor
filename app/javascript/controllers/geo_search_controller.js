@@ -13,17 +13,15 @@ export default class extends Controller {
     this.allLocations = null
     this.loadAllLocations()
 
-    // Bind the click outside handler
     this.handleClickOutside = this.handleClickOutside.bind(this)
-    document.addEventListener('click', this.handleClickOutside)
+    document.addEventListener("click", this.handleClickOutside)
   }
 
   async loadAllLocations() {
     try {
-      // Load all departments and regions
       const [departments, regions] = await Promise.all([
-        fetch('https://geo.api.gouv.fr/departements?fields=nom,code&zone=metro,drom,com').then(r => r.json()),
-        fetch('https://geo.api.gouv.fr/regions?fields=nom,code').then(r => r.json())
+        fetch("https://geo.api.gouv.fr/departements?fields=nom,code&zone=metro,drom,com").then(r => r.json()),
+        fetch("https://geo.api.gouv.fr/regions?fields=nom,code").then(r => r.json())
       ])
 
       this.allLocations = {
@@ -51,180 +49,136 @@ export default class extends Controller {
       clearTimeout(this.debounceTimeout)
     }
 
-    // Remove the click outside listener
-    document.removeEventListener('click', this.handleClickOutside)
+    document.removeEventListener("click", this.handleClickOutside)
   }
 
   handleClickOutside(event) {
-    // Check if the click is outside the geo-search component.
     if (!this.element.contains(event.target)) {
-      // Close the listbox if it's open.
       this.clearResults()
     }
   }
 
   handleKeydown(event) {
-    if (event.key === 'ArrowDown') {
+    if (event.key === "ArrowDown") {
       event.preventDefault()
       if (event.altKey) {
         this.handleAltArrowDown()
       } else {
         this.handleArrowDown()
       }
-    } else if (event.key === 'ArrowUp') {
+    } else if (event.key === "ArrowUp") {
       event.preventDefault()
       this.handleArrowUp()
-    } else if (event.key === 'Enter') {
+    } else if (event.key === "Enter") {
       event.preventDefault()
       this.handleEnter()
-    } else if (event.key === 'Escape') {
+    } else if (event.key === "Escape") {
       this.handleEscape()
-    } else if (event.key === 'Tab') {
+    } else if (event.key === "Tab") {
       this.handleTab(event)
-    } else if (event.key === 'ArrowRight') {
-      this.handleArrowRight()
-    } else if (event.key === 'ArrowLeft') {
-      this.handleArrowLeft()
-    } else if (event.key === 'Home') {
-      this.handleHome()
-    } else if (event.key === 'End') {
-      this.handleEnd()
+    } else if (["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) {
+      this.clearActiveOption()
     }
   }
 
+  getOptions() {
+    return Array.from(this.resultsTarget.querySelectorAll('[role="option"]'))
+  }
+
   handleAltArrowDown() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
-    if (isListboxDisplayed) return
+    if (this.isListboxDisplayed()) return
 
     const query = this.inputTarget.value.trim()
     if (query === "") {
       this.displayAllLocations()
     } else {
-      // If there's a query, trigger a search to display results.
       this.performSearch(query)
     }
-
-    // focusedOptionIndex remains unchanged (no selection change)
   }
 
   handleArrowDown() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
+    const options = this.getOptions()
 
-    if (!isListboxDisplayed && this.inputTarget.value.trim() === "") {
+    if (!this.isListboxDisplayed() && this.inputTarget.value.trim() === "") {
       this.displayAllLocations()
       this.focusedOptionIndex = 0
-      setTimeout(() => {
-        const options = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
-        this.updateVisualFocus(options)
-      }, 0)
+      setTimeout(() => this.updateVisualFocus(this.getOptions()), 0)
       return
     }
 
-    if (allOptions.length === 0) return
+    if (options.length === 0) return
 
     if (this.focusedOptionIndex === -1) {
       this.focusedOptionIndex = 0
     } else {
-      this.focusedOptionIndex++
-      if (this.focusedOptionIndex >= allOptions.length) {
-        this.focusedOptionIndex = 0 // Loop back to first
-      }
+      this.focusedOptionIndex = (this.focusedOptionIndex + 1) % options.length
     }
 
-    this.updateVisualFocus(allOptions)
+    this.updateVisualFocus(options)
   }
 
   handleArrowUp() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
+    const options = this.getOptions()
 
-     if (!isListboxDisplayed && this.inputTarget.value.trim() === "") {
+    if (!this.isListboxDisplayed() && this.inputTarget.value.trim() === "") {
       this.displayAllLocations()
       setTimeout(() => {
-        const options = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
-        this.focusedOptionIndex = options.length - 1
-        this.updateVisualFocus(options)
+        const renderedOptions = this.getOptions()
+        this.focusedOptionIndex = renderedOptions.length - 1
+        this.updateVisualFocus(renderedOptions)
       }, 0)
       return
     }
 
-    if (allOptions.length === 0) return
+    if (options.length === 0) return
 
     if (this.focusedOptionIndex === -1) {
-      this.focusedOptionIndex = allOptions.length - 1
+      this.focusedOptionIndex = options.length - 1
     } else {
-      this.focusedOptionIndex--
-      if (this.focusedOptionIndex < 0) {
-        this.focusedOptionIndex = allOptions.length - 1 // Loop back to last
-      }
+      this.focusedOptionIndex = (this.focusedOptionIndex - 1 + options.length) % options.length
     }
 
-    this.updateVisualFocus(allOptions)
+    this.updateVisualFocus(options)
   }
 
   handleEnter() {
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
+    const options = this.getOptions()
+    if (this.focusedOptionIndex === -1 || options.length === 0) return
 
-    if (this.focusedOptionIndex === -1 || allOptions.length === 0) return
-
-    const focusedOption = allOptions[this.focusedOptionIndex]
-
-    if (focusedOption) {
-      focusedOption.click()
-    }
+    options[this.focusedOptionIndex]?.click()
   }
 
   handleEscape() {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
-
-    if (isListboxDisplayed) {
+    if (this.isListboxDisplayed()) {
       this.clearResults()
     } else {
       this.clearSelection()
     }
   }
 
-  handleTab(event) {
-    const isListboxDisplayed = this.resultsTarget.querySelector('.sf-geo-search-results') !== null
-
-    if (isListboxDisplayed) {
+  handleTab() {
+    if (this.isListboxDisplayed()) {
       this.clearResults()
     }
   }
 
-  handleArrowRight() {
-    this.clearActiveOption()
-  }
-
-  handleArrowLeft() {
-    this.clearActiveOption()
-  }
-
-  handleHome() {
-    this.clearActiveOption()
-  }
-
-  handleEnd() {
-    this.clearActiveOption()
+  isListboxDisplayed() {
+    return this.getOptions().length > 0
   }
 
   clearActiveOption() {
     this.focusedOptionIndex = -1
-    const allOptions = Array.from(this.resultsTarget.querySelectorAll('.sf-geo-search-result-item button'))
-    allOptions.forEach(option => {
-      option.classList.remove('sf-geo-search-focused')
-    })
-    this.inputTarget.removeAttribute('aria-activedescendant')
+    this.getOptions().forEach(option => option.classList.remove("sf-geo-search-focused"))
+    this.inputTarget.removeAttribute("aria-activedescendant")
   }
 
   setListboxOpen(isOpen) {
-    this.inputTarget.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+    this.inputTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")
   }
 
   displayAllLocations() {
     if (!this.allLocations) {
-      this.displayError("Chargement des localisations en cours...")
+      this.displayMessage("Chargement des localisations en cours...", "info")
       return
     }
 
@@ -235,35 +189,31 @@ export default class extends Controller {
     this.renderAllResults()
   }
 
-  updateVisualFocus(allOptions) {
-    allOptions.forEach((option, index) => {
+  updateVisualFocus(options) {
+    options.forEach((option, index) => {
       if (index === this.focusedOptionIndex) {
-        option.classList.add('sf-geo-search-focused')
-        option.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-        const listItem = option.closest('[role="option"]')
-        if (listItem?.id) {
-          this.inputTarget.setAttribute('aria-activedescendant', listItem.id)
+        option.classList.add("sf-geo-search-focused")
+        option.scrollIntoView({ block: "nearest", behavior: "smooth" })
+        if (option.id) {
+          this.inputTarget.setAttribute("aria-activedescendant", option.id)
         }
       } else {
-        option.classList.remove('sf-geo-search-focused')
+        option.classList.remove("sf-geo-search-focused")
       }
     })
   }
 
   search() {
     const query = this.inputTarget.value.trim()
-    // Clear previous timeout
     if (this.debounceTimeout) {
       clearTimeout(this.debounceTimeout)
     }
 
-    // Clear selection and hidden fields when the visible input is emptied
     if (query === "") {
       this.clearSelection()
       return
     }
 
-    // Debounce the search
     this.debounceTimeout = setTimeout(() => {
       this.performSearch(query)
     }, this.debounceDelay)
@@ -274,10 +224,8 @@ export default class extends Controller {
 
     try {
       if (isNumericOnly && query.length === 5) {
-        // French postal codes: search communes by code postal
         await this.searchCommunesByPostalCode(query)
       } else if (isNumericOnly) {
-        // Department codes (2–3 digits)
         await this.searchDepartmentsByCode(query)
       } else {
         await Promise.all([
@@ -288,7 +236,7 @@ export default class extends Controller {
       }
     } catch (error) {
       console.error("Error performing geo search:", error)
-      this.displayError("Une erreur est survenue lors de la recherche")
+      this.displayMessage("Une erreur est survenue lors de la recherche", "error")
     }
   }
 
@@ -296,9 +244,6 @@ export default class extends Controller {
     const postalCodes = item.codesPostaux?.filter(Boolean) || []
     const nom = item.nom || ""
 
-    // Cities with several postal codes (Paris, Lyon, Marseille…): one option per code.
-    // The recherche-entreprises API indexes establishments by arrondissement INSEE code
-    // (e.g. 75101) or postal code, not the municipality code (e.g. 75056 for Paris).
     if (postalCodes.length > 1) {
       return postalCodes.map(postalCode => ({
         type: "cp",
@@ -424,90 +369,63 @@ export default class extends Controller {
   displayResults(results, category) {
     if (!this.resultsTarget) return
 
-    // Store results by category
     this.resultsContainer[category] = results
-
-    // Render all results
     this.renderAllResults()
   }
 
   renderAllResults() {
     if (!this.resultsTarget) return
 
-    const allResults = []
-
-    // Combine all results in order: communes, departments, regions
     const categories = ["communes", "departements", "regions"]
+    const categoryLabels = {
+      communes: "Communes",
+      departements: "Départements",
+      regions: "Régions"
+    }
+
+    let optionIndex = 0
+    let html = '<ul class="sf-geo-search-results fr-list" role="presentation">'
 
     categories.forEach(category => {
-      if (this.resultsContainer && this.resultsContainer[category]) {
-        this.resultsContainer[category].forEach(result => {
-          allResults.push({ ...result, category })
-        })
-      }
+      const categoryResults = this.resultsContainer?.[category]
+      if (!categoryResults?.length) return
+
+      html += `<li class="sf-geo-search-category-label" role="presentation" aria-hidden="true">${categoryLabels[category] || category}</li>`
+
+      categoryResults.forEach(result => {
+        const optionId = `${this.resultsTarget.id}-option-${optionIndex}`
+        optionIndex += 1
+        html += `<li id="${optionId}" class="sf-geo-search-result-item" role="option" tabindex="-1"`
+        html += ` data-action="click->geo-search#selectResult"`
+        html += ` data-result-type="${result.type}"`
+        html += ` data-result-code="${result.code}"`
+        html += ` data-result-label="${this.escapeHtml(result.label)}"`
+        html += ` data-result-full-label="${this.escapeHtml(result.fullLabel)}">`
+        html += `${this.escapeHtml(result.label)}`
+        html += `</li>`
+      })
     })
 
-    if (allResults.length === 0) {
-      this.resultsTarget.innerHTML = '<div class="fr-alert fr-alert--info fr-mt-2w"><p>Aucun résultat trouvé.</p></div>'
-      this.setListboxOpen(true)
-      this.focusedOptionIndex = -1
-      this.inputTarget.removeAttribute('aria-activedescendant')
+    html += "</ul>"
+
+    if (optionIndex === 0) {
+      this.displayMessage("Aucun résultat trouvé.", "info")
       return
     }
 
-    // Group by category for better display
-    let html = '<div class="sf-geo-search-results">'
-    let optionIndex = 0
-
-    categories.forEach(category => {
-      const categoryResults = allResults.filter(r => r.category === category)
-      if (categoryResults.length > 0) {
-        const categoryLabel = {
-          communes: "Communes",
-          departements: "Départements",
-          regions: "Régions"
-        }[category] || category
-
-        html += `<div class="sf-geo-search-category">`
-        html += `<h3 class="fr-text--lead">${categoryLabel}</h3>`
-        html += `<ul class="fr-list">`
-
-        categoryResults.forEach(result => {
-          const optionId = `${this.resultsTarget.id}-option-${optionIndex}`
-          optionIndex += 1
-          html += `<li id="${optionId}" class="sf-geo-search-result-item" role="option">`
-          html += `<button type="button" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" `
-          html += `data-action="click->geo-search#selectResult" `
-          html += `data-result-type="${result.type}" `
-          html += `data-result-code="${result.code}" `
-          html += `data-result-label="${this.escapeHtml(result.label)}" `
-          html += `data-result-full-label="${this.escapeHtml(result.fullLabel)}">`
-          html += `${this.escapeHtml(result.label)}`
-          html += `</button>`
-          html += `</li>`
-        })
-
-        html += `</ul>`
-        html += `</div>`
-      }
-    })
-
-    html += '</div>'
     this.resultsTarget.innerHTML = html
     this.setListboxOpen(true)
-
-    // Reset visual focus when new results are displayed
     this.focusedOptionIndex = -1
-    this.inputTarget.removeAttribute('aria-activedescendant')
+    this.inputTarget.removeAttribute("aria-activedescendant")
   }
 
   selectResult(event) {
-    const type = event.currentTarget.dataset.resultType
-    const code = event.currentTarget.dataset.resultCode
-    const label = event.currentTarget.dataset.resultLabel
-    const fullLabel = event.currentTarget.dataset.resultFullLabel
+    const option = event.currentTarget
+    const type = option.dataset.resultType
+    const code = option.dataset.resultCode
+    const label = option.dataset.resultLabel
+    const fullLabel = option.dataset.resultFullLabel
 
-    // Update hidden fields
     if (this.hasHiddenTypeTarget) {
       this.hiddenTypeTarget.value = type
     }
@@ -518,14 +436,10 @@ export default class extends Controller {
       this.hiddenLabelTarget.value = fullLabel
     }
 
-    // Update input field with selected label
     this.inputTarget.value = label
-
-    // Clear results
     this.clearResults()
-
-    // Store selected result
     this.selectedResult = { type, code, label: fullLabel }
+    this.inputTarget.focus()
   }
 
   clearResults() {
@@ -535,7 +449,7 @@ export default class extends Controller {
     this.resultsContainer = {}
     this.focusedOptionIndex = -1
     this.setListboxOpen(false)
-    this.inputTarget.removeAttribute('aria-activedescendant')
+    this.inputTarget.removeAttribute("aria-activedescendant")
   }
 
   clearSelection() {
@@ -559,12 +473,13 @@ export default class extends Controller {
     return div.innerHTML
   }
 
-  displayError(message) {
-    if (this.resultsTarget) {
-      this.resultsTarget.innerHTML = `<div class="fr-alert fr-alert--error fr-mt-2w"><p>${message}</p></div>`
-      this.setListboxOpen(true)
-      this.focusedOptionIndex = -1
-      this.inputTarget.removeAttribute('aria-activedescendant')
-    }
+  displayMessage(message, type) {
+    if (!this.resultsTarget) return
+
+    const alertClass = type === "error" ? "fr-alert--error" : "fr-alert--info"
+    this.resultsTarget.innerHTML = `<div class="fr-alert ${alertClass} fr-mt-2w" role="status"><p>${message}</p></div>`
+    this.setListboxOpen(true)
+    this.focusedOptionIndex = -1
+    this.inputTarget.removeAttribute("aria-activedescendant")
   }
 }
