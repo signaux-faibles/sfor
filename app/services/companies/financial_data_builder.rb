@@ -88,7 +88,7 @@ module Companies
     end
 
     def colors
-      ["#6A6AF4", "#E1000F", "#B7A73F", "#E18B76", "#00A95F"]
+      ["#6A6AF4", "#E1000F", "#8B6914", "#B85050", "#18753C"]
     end
   end
 end

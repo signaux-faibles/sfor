@@ -21,11 +21,11 @@
                       <li class="sf-detection-list--item <%= 'fr-mt-1w' unless index == 0 %>">
                         <% case item[:alert_level]
                            when 'high' %>
-                          <span class="fr-icon-warning-fill sf-high-alert" title="Alerte élevée"></span>
+                          <span class="fr-icon-error-warning-fill sf-high-alert" role="img" aria-label="Alerte élevée"></span>
                         <% when 'moderate' %>
-                          <span class="fr-icon-warning-fill sf-moderated-alert" title="Alerte modérée"></span>
+                          <span class="fr-icon-error-warning-line sf-moderated-alert" role="img" aria-label="Alerte modérée"></span>
                         <% else %>
-                          <span class="fr-icon-success-fill sf-no-alert" title="Pas d'alerte"></span>
+                          <span class="fr-icon-success-fill sf-no-alert" role="img" aria-label="Pas d'alerte"></span>
                         <% end %>
                         <%= item[:list_name] %>
                       </li>

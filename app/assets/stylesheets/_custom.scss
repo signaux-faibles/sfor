@@ -67,11 +67,11 @@
 /* Comments */
 
 .comment-container {
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-default-grey);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 16px;
-    background-color: #f9f9f9;
+    background-color: var(--background-contrast-grey);
 }
 
 .comment-header {
@@ -88,14 +88,15 @@
 .avatar {
     width: 40px;
     height: 40px;
-    background-color: #d8d8d8;
+    background-color: var(--background-default-grey);
+    border: 1px solid var(--border-default-grey);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     margin-right: 8px;
-    color: #fff;
+    color: var(--text-default-grey);
 }
 
 .author-details strong {
@@ -115,7 +116,7 @@
 
 .comment-footer {
     font-size: 12px;
-    color: #6c757d;
+    color: var(--text-mention-grey);
 }
 
 .comment-footer a {
@@ -482,8 +483,9 @@
   color: var(--error-425-625);
 }
 
+// #8B6914 — ratio ~5:1 on white, replaces #C8AA39 (~2.3:1).
 .sf-moderated-alert {
-  color: var(--border-default-yellow-tournesol);
+  color: #8b6914;
 }
 
 .sf-no-alert {
@@ -511,23 +513,23 @@
 }
 
 .sf-ratio-financiers-color--chiffre_d_affaires {
-  background-color: var(--blue-france-main-525);
+  background-color: #6a6af4;
 }
 
 .sf-ratio-financiers-color--ebe {
-  background-color: var(--red-marianne-main-472);
+  background-color: #e1000f;
 }
 
 .sf-ratio-financiers-color--ebit {
-  background-color: var(--green-tilleul-verveine-main-707);
+  background-color: #8b6914;
 }
 
 .sf-ratio-financiers-color--marge_brute {
-  background-color: var(--pink-macaron-main-689);
+  background-color: #b85050;
 }
 
 .sf-ratio-financiers-color--resultat_net {
-  background-color: var(--green-emeraude-main-632);
+  background-color: #18753c;
 }
 
 .sf-label--tooltip {
