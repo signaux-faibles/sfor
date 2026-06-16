@@ -12,15 +12,14 @@ module FirstAlertScenarioFixtures
     { label: "Liste FA test 2025", code: "#{LIST_CODE_PREFIX}2025", list_date: Date.new(2025, 1, 15) }
   ].freeze
 
-  # rubocop:disable Layout/LineLength
   SCENARIOS = [
     { id: "FA01", siren: "900000001", entries: { "Liste FA test 2025" => "Alerte seuil F1" }, badge_crp: true, badge_non_crp: true },
     { id: "FA02", siren: "900000002", entries: { "Liste FA test 2024" => "Plans", "Liste FA test 2025" => "Alerte seuil F1" }, badge_crp: true, badge_non_crp: true },
     { id: "FA03", siren: "900000003", entries: { "Liste FA test 2024" => "Alerte seuil F1", "Liste FA test 2025" => "Alerte seuil F1" }, badge_crp: false, badge_non_crp: false },
     { id: "FA04", siren: "900000004", entries: { "Liste FA test 2023" => "Alerte seuil F1", "Liste FA test 2025" => "Alerte seuil F1" }, badge_crp: true, badge_non_crp: true },
-    { id: "FA05", siren: "900000005", entries: { "Liste FA test 2024" => "Plans", "Liste FA test 2025" => "Plans" }, badge_crp: true, badge_non_crp: false, crp_only_list: true },
-    { id: "FA06", siren: "900000006", entries: { "Liste FA test 2025" => "Plans" }, badge_crp: true, badge_non_crp: false, crp_only_list: true },
-    { id: "FA07", siren: "900000007", entries: { "Liste FA test 2024" => "Ratios", "Liste FA test 2025" => "Ratios" }, badge_crp: true, badge_non_crp: false, crp_only_list: true },
+    { id: "FA05", siren: "900000005", entries: { "Liste FA test 2024" => "Plans", "Liste FA test 2025" => "Plans" }, badge_crp: false, badge_non_crp: false, crp_only_list: true },
+    { id: "FA06", siren: "900000006", entries: { "Liste FA test 2025" => "Plans" }, badge_crp: false, badge_non_crp: false, crp_only_list: true },
+    { id: "FA07", siren: "900000007", entries: { "Liste FA test 2024" => "Ratios", "Liste FA test 2025" => "Ratios" }, badge_crp: false, badge_non_crp: false, crp_only_list: true },
     { id: "FA08", siren: "900000008", entries: { "Liste FA test 2024" => "Ratios", "Liste FA test 2025" => "Alerte seuil F1" }, badge_crp: true, badge_non_crp: true },
     { id: "FA09", siren: "900000009", entries: { "Liste FA test 2025" => "Pas d'alerte" }, badge_crp: false, badge_non_crp: false, crp_only_list: true },
     { id: "FA10", siren: "900000010", entries: { "Liste FA test 2024" => "Pas d'alerte", "Liste FA test 2025" => "Alerte seuil F1" }, badge_crp: true, badge_non_crp: true },
@@ -52,7 +51,7 @@ module FirstAlertScenarioFixtures
     end
   end
 
-  def upsert_company!(scenario:, department:)
+  def upsert_company!(scenario:, department:) # rubocop:disable Metrics/MethodLength
     now = Time.current
     Company.upsert(
       {

@@ -23,4 +23,12 @@ class CompanyList < ApplicationRecord
 
     MEANINGFUL_ALERT_VALUES.any? { |meaningful| meaningful.casecmp?(value) }
   end
+
+  # True when the company can carry a "1ère alerte" badge: F1/F2 only (Plans/Ratios excluded).
+  def self.first_alert_eligible?(alert)
+    value = alert.to_s.strip
+    return false if value.blank?
+
+    STANDARD_ALERT_VALUES.any? { |standard| standard.casecmp?(value) }
+  end
 end

@@ -387,7 +387,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def calculate_is_first_alert
     last_list, entry = fetch_last_list_and_entry
     return false unless last_list
-    return false unless meaningful_alert?(entry)
+    return false unless CompanyList.first_alert_eligible?(entry&.alert)
     return false if hide_detection_for_current_user?(entry)
 
     # A company is a "première alerte" if it has NOT appeared in any other list

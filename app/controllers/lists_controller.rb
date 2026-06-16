@@ -449,10 +449,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       cutoff_date = (@list.list_date || Date.current) - 18.months
       current_list_date = @list.list_date || Date.current
 
-      # A company is a "première alerte" if it has NOT appeared in any other list
-      # within the last 18 months before the current list date with a meaningful alert.
-      # company_lists is much smaller than company_score_entries (one row per siren per list,
-      # no history) and has an index on list_id, making the IN() subquery very fast.
+      # A company is a "première alerte" if it has a current F1/F2 alert and has NOT appeared
+      # in any other list within the last 18 months before the current list date with F1/F2.
+      # Plans/Ratios never qualify and never count as prior detections.
+      companies = companies.where(company_lists: { alert: CompanyList::STANDARD_ALERT_VALUES })
+
       recent_list_ids = List
         .where("list_date > ? AND list_date < ?", cutoff_date, current_list_date)
         .where.not(label: @list.label)
@@ -606,7 +607,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     first_time_sirens = sirens.to_set - sirens_in_recent_lists
 
     results.each do |result|
-      result["is_first_alert"] = CompanyList.meaningful_alert?(result["alert"]) &&
+      result["is_first_alert"] = CompanyList.first_alert_eligible?(result["alert"]) &&
                                  first_time_sirens.include?(result["siren"])
     end
   end
@@ -710,7 +711,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
                             .where(company_score_entries: { alert: CompanyList::STANDARD_ALERT_VALUES })
                             .exists?
 
-    enrichment[:is_first_alert] = CompanyList.meaningful_alert?(alert_entry&.alert) && !siren_in_recent_lists
+    enrichment[:is_first_alert] = CompanyList.first_alert_eligible?(alert_entry&.alert) && !siren_in_recent_lists
 
     # Get establishment count
     enrichment[:nombre_etablissements_ouverts] = Establishment

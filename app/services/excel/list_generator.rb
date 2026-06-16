@@ -239,7 +239,7 @@ module Excel
       #   1. @list.id   (list_scores WHERE list_id = ?)
       #   2. list_label (sjcf_companies WHERE clause)
       #   3. list_date  (company_metadata: delai_urssaf_until > ?)
-      #   4. MEANINGFUL_ALERT_VALUES (first_alert_sirens: current alert required)
+      #   4. STANDARD_ALERT_VALUES (first_alert_sirens: current alert F1/F2 only; Plans/Ratios excluded)
       #   5. list_label (first_alert_sirens: list_name != current list)
       #   6. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
       #   7. list_date  (first_alert_sirens: l.list_date < current list date)
@@ -249,7 +249,7 @@ module Excel
       all_params = [@list.id,      # list_scores WHERE list_id = ?
                     list_label,    # sjcf_companies WHERE
                     list_date,     # company_metadata: delai_urssaf_until > ?
-                    CompanyList::MEANINGFUL_ALERT_VALUES, # first_alert_sirens: current alert
+                    CompanyList::STANDARD_ALERT_VALUES, # first_alert_sirens: current alert F1/F2
                     list_label,    # first_alert_sirens: list_name !=
                     cutoff_date,   # first_alert_sirens: l.list_date >
                     list_date,     # first_alert_sirens: l.list_date <
