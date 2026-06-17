@@ -18,18 +18,17 @@
   </nav>
 </div>
 
-<div class="fr-container fr-mt-2w fr-mb-5w">
+<div class="fr-container fr-mt-2w fr-mb-5w" data-controller="view-toggle">
   <div class="grid-row">
     <div>
       <h1 style="display: inline-block;">Accompagnements</h1>
       <%= render 'filters' %>
     </div>
   </div>
-  <div class="grid-row" data-controller="view-toggle">
+  <div class="grid-row">
     <div class="fr-mt-5w fr-mb-7w">
       <%= render 'establishment_trackings_table' %>
     </div>
-
   </div>
 </div>
 

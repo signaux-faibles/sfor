@@ -653,7 +653,8 @@
   }
 }
 
-.sf-theme-modal {
+.sf-theme-modal,
+.sf-confidentiality-modal {
   border: none;
   padding: 0;
   margin: 0;
@@ -665,15 +666,20 @@
   height: 100%;
 }
 
-.sf-theme-modal::backdrop {
+.sf-theme-modal::backdrop,
+.sf-confidentiality-modal::backdrop {
   background-color: rgba(22, 22, 22, 0.64);
 }
 
-.sf-theme-modal:focus {
+.sf-theme-modal:focus,
+.sf-confidentiality-modal:focus {
   outline: none;
 }
 
-.sf-theme-modal > .fr-container {
+.sf-theme-modal > .fr-container,
+.sf-confidentiality-modal > .fr-container {
   pointer-events: none;
   height: 100%;
+  display: flex;
+  align-items: center;
 }

@@ -4,7 +4,7 @@ export default class extends Controller {
     static targets = ["hiddenInput", "tableView", "cardsView", "pagination"];
 
     connect() {
-        const currentView = this.hiddenInputTarget.value;
+        const currentView = this.hasHiddenInputTarget ? this.hiddenInputTarget.value : "table";
         this.switchView(currentView);
         // We need to include the selected view dynamically into pagination request
         this.updatePaginationLinks(currentView);
