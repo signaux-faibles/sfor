@@ -24,6 +24,9 @@ class Admin::ZonesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes @response.body, "Zones editables"
+    assert_includes @response.body, "Zones référencées dans l'application"
+    assert_includes @response.body, Zone::SUPPORT_PAGE_BODY_KEY
+    assert_includes @response.body, Zone::DETECTION_WIDGET_INTRO_KEY
     assert_includes @response.body, @zone.key
   end
 

@@ -1,0 +1,30 @@
+<div class="fr-callout fr-callout--information fr-mb-4w">
+  <h2 class="fr-callout__title">Zones référencées dans l'application</h2>
+  <p class="fr-callout__text">
+    Certaines zones sont utilisées directement dans le code. Pour modifier le contenu affiché à un emplacement donné,
+    créez ou éditez une zone en reprenant <strong>exactement</strong> la clé technique indiquée ci-dessous.
+    Le contenu est interprété en Markdown (les liens HTML avec classes CSS ne sont pas pris en charge).
+  </p>
+
+  <div class="fr-table fr-table--bordered fr-mt-3w">
+    <table>
+      <caption class="fr-text--sm">Clés techniques et emplacements dans l'interface</caption>
+      <thead>
+        <tr>
+          <th scope="col">Clé</th>
+          <th scope="col">Emplacement</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% Zone::KNOWN_ZONES.each do |known_zone| %>
+          <tr>
+            <td><code><%= known_zone[:key] %></code></td>
+            <td><%= known_zone[:location] %></td>
+            <td><%= known_zone[:description] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -15,4 +15,20 @@ class ApplicationHelperTest < ActionView::TestCase
 
     assert_includes html, "<h3>Actions</h3>"
   end
+
+  test "detection_widget_intro_content returns fallback when zone is missing" do
+    Zone.stub(:find_by, nil) do
+      assert_equal "Contenu en cours de construction",
+                   detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024")
+    end
+  end
+
+  test "detection_widget_intro_content substitutes dynamic values" do
+    content = detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024")
+
+    assert_includes content, "élevé"
+    assert_includes content, "31 décembre 2024"
+    assert_not_includes content, "%<criticite>s"
+    assert_not_includes content, "%<data_date>s"
+  end
 end
