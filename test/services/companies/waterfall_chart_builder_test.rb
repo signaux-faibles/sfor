@@ -20,7 +20,7 @@ module Companies
 
       data = WaterfallChartBuilder.new(@entry).build
 
-      assert_equal ["Santé financière", "Variation de l'effectif de l'entreprise", "Dettes sociales"], data[:labels]
+      assert_equal ["Santé financière", "Effectif de l'entreprise", "Dettes sociales"], data[:labels]
       assert_in_delta 50.0, data[:values][0][1] - data[:values][0][0], 0.01
       assert_in_delta 100.0, data[:values].last[1], 0.01
     end
@@ -38,7 +38,7 @@ module Companies
       stub_const(WaterfallChartBuilder, :CONTRIBUTION_THRESHOLD, 0.4) do
         data = WaterfallChartBuilder.new(@entry).build
 
-        assert_equal ["Santé financière", "Variation de l'effectif de l'entreprise"], data[:labels]
+        assert_equal ["Santé financière", "Effectif de l'entreprise"], data[:labels]
         assert_equal [[0.0, 75.0], [75.0, 100.0]], data[:values]
       end
     end

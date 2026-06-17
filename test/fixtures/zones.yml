@@ -3,6 +3,15 @@ support_page_body:
   content: |
     Contenu fixture support.
 
+waterfall_detection_motifs:
+  key: waterfall_detection_motifs
+  content: |
+    ## Détail sur les motifs explicatifs de la détection
+
+    * **Dettes sociales** : Contenu fixture dettes.
+
+    * **Âge de l'entreprise** : Contenu fixture âge.
+
 other_zone:
   key: homepage_secondary_block
   content: |

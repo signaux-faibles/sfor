@@ -1,0 +1,6 @@
+<% motifs_content = local_assigns.fetch(:motifs_content) { waterfall_detection_motifs_content } %>
+<% if motifs_content.present? %>
+  <section id="waterfall-detection-motifs" class="fr-mt-4w">
+    <%= markdown(motifs_content) %>
+  </section>
+<% end %>

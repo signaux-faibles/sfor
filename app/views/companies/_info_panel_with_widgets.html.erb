@@ -118,4 +118,8 @@
       <% end %>
     </div>
   </div>
+
+  <% if @show_detection_widgets %>
+    <%= render "waterfall_detection_motifs" %>
+  <% end %>
 </div>

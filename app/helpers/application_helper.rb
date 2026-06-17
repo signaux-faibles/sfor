@@ -71,6 +71,10 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     render_markdown(text, ::Redcarpet::Render::HTML)
   end
 
+  def waterfall_detection_motifs_content
+    Zone.content_for(Zone::WATERFALL_DETECTION_MOTIFS_KEY)
+  end
+
   def summary_markdown(text)
     render_markdown(text, SummaryMarkdownRenderer)
   end

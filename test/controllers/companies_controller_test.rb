@@ -333,6 +333,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_response :success
     assert_includes @response.body, "data-waterfall-chart-widget-values-value="
     assert_includes @response.body, "Éléments constitutifs de cette alerte"
+    assert_includes @response.body, "Plus de détail sur les motifs explicatifs de la détection en bas de page."
+    assert_not_includes @response.body, 'id="waterfall-detection-motifs"'
   end
 
   test "waterfall_detection_widget renders empty when entry missing" do
@@ -501,6 +503,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_response :success
     assert_includes @response.body, "Plans"
     assert_includes @response.body, "Détection Signaux faibles"
+    assert_includes @response.body, 'id="waterfall-detection-motifs"'
+    assert_includes @response.body, "Détail sur les motifs explicatifs de la détection"
   end
 
   test "CRP user sees Ratios label and detection for latest Ratios alert" do

@@ -65,6 +65,14 @@
           </strong>
         </p>
 
+        <% if waterfall_detection_motifs_content.present? %>
+          <p class="fr-mb-1w">
+            <a class="fr-link" href="#waterfall-detection-motifs" data-turbo="false">
+              Plus de détail sur les motifs explicatifs de la détection en bas de page.
+            </a>
+          </p>
+        <% end %>
+
         <p class="fr-mb-3w fr-text--sm"><strong>Source :</strong> Signaux faibles — <strong>Mise à jour : </strong><%= @data_date %></p>
       </div>
 
@@ -118,6 +126,14 @@
         <p class="fr-mt-1w">
           <strong>Le risque de défaillance de l'entreprise apparaît comme <%= @criticite %>.</strong>
         </p>
+
+        <% if waterfall_detection_motifs_content.present? %>
+          <p class="fr-mb-1w">
+            <a class="fr-link" href="#waterfall-detection-motifs" data-turbo="false">
+              Plus de détail sur les motifs explicatifs de la détection en bas de page.
+            </a>
+          </p>
+        <% end %>
 
         <p class="fr-mb-4w fr-text--sm"><strong>Source :</strong> Signaux faibles — <strong>Mise à jour : </strong><%= @data_date %></p>
       </div>

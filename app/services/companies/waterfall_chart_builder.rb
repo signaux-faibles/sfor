@@ -48,11 +48,11 @@ module Companies
 
     def waterfall_key_mapping
       {
-        "Autres" => { key: "autres", label: "Autres" },
+        "Autres" => { key: "autres", label: "Âge de l'entreprise" },
         "Dettes-sociales" => { key: "dettes_sociales", label: "Dettes sociales" },
         "Données-financières" => { key: "sante_financiere", label: "Santé financière" },
         "Recours-à-l'activité-partielle" => { key: "ap", label: "Recours à l'activité partielle" },
-        "Variation-de-l'effectif-de-l'entreprise" => { key: "effectif", label: "Variation de l'effectif de l'entreprise" }
+        "Variation-de-l'effectif-de-l'entreprise" => { key: "effectif", label: "Effectif de l'entreprise" }
       }
     end
 
