@@ -57,8 +57,7 @@ module DetectionWidgetable
   def format_detection_score(entry)
     return "non disponible" if entry&.score.nil?
 
-    score = entry.score
-    score == score.to_i ? score.to_i.to_s : score.to_s.tr(".", ",")
+    entry.score.round.to_s
   end
 
   # Format data_date as the last day of the month preceding the month of list_date
