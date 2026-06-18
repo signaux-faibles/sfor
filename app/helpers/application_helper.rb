@@ -75,13 +75,14 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     Zone.content_for(Zone::WATERFALL_DETECTION_MOTIFS_KEY)
   end
 
-  def detection_widget_intro_content(criticite:, data_date:)
+  def detection_widget_intro_content(criticite:, data_date:, score:)
     content = Zone.find_by(key: Zone::DETECTION_WIDGET_INTRO_KEY)&.content.presence
     return "Contenu en cours de construction" unless content
 
     content
       .gsub("%<criticite>s", criticite.to_s)
       .gsub("%<data_date>s", data_date.to_s)
+      .gsub("%<score>s", score.to_s)
   end
 
   def summary_markdown(text)

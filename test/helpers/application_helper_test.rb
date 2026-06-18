@@ -19,16 +19,18 @@ class ApplicationHelperTest < ActionView::TestCase
   test "detection_widget_intro_content returns fallback when zone is missing" do
     Zone.stub(:find_by, nil) do
       assert_equal "Contenu en cours de construction",
-                   detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024")
+                   detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024", score: "75,5")
     end
   end
 
   test "detection_widget_intro_content substitutes dynamic values" do
-    content = detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024")
+    content = detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024", score: "75,5")
 
     assert_includes content, "élevé"
     assert_includes content, "31 décembre 2024"
+    assert_includes content, "75,5"
     assert_not_includes content, "%<criticite>s"
     assert_not_includes content, "%<data_date>s"
+    assert_not_includes content, "%<score>s"
   end
 end

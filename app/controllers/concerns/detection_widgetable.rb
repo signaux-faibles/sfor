@@ -51,6 +51,16 @@ module DetectionWidgetable
     end
   end
 
+  # Format the company score for the detection widget intro zone.
+  # @param entry [CompanyScoreEntry] The company score entry
+  # @return [String] Formatted score or "non disponible"
+  def format_detection_score(entry)
+    return "non disponible" if entry&.score.nil?
+
+    score = entry.score
+    score == score.to_i ? score.to_i.to_s : score.to_s.tr(".", ",")
+  end
+
   # Format data_date as the last day of the month preceding the month of list_date
   # @param list [List] The list
   # @param _entry [CompanyScoreEntry] The company score entry (unused, kept for compatibility)
