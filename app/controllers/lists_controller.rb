@@ -444,7 +444,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where("company_lists.alert = ?", @search_params[:niveau_alerte])
     end
 
-    # Filter by premieres_alertes (no detection in the last 18 months before this list)
+    # Filter by premieres_alertes (no F1/F2 detection in the last 18 months before this list)
     if @search_params[:premieres_alertes].present? && @search_params[:premieres_alertes] == "1"
       cutoff_date = (@list.list_date || Date.current) - 18.months
       current_list_date = @list.list_date || Date.current
@@ -452,21 +452,25 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       # A company is a "première alerte" if it has a current F1/F2 alert and has NOT appeared
       # in any other list within the last 18 months before the current list date with F1/F2.
       # Plans/Ratios never qualify and never count as prior detections.
-      companies = companies.where(company_lists: { alert: CompanyList::STANDARD_ALERT_VALUES })
-
-      recent_list_ids = List
-        .where("list_date > ? AND list_date < ?", cutoff_date, current_list_date)
-        .where.not(label: @list.label)
-        .pluck(:id)
-
-      if recent_list_ids.present?
-        recently_appeared_sirens = CompanyList
-          .where(list_id: recent_list_ids)
-          .where(alert: CompanyList::STANDARD_ALERT_VALUES)
-          .select(:siren)
-        companies = companies.where.not(siren: recently_appeared_sirens)
+      # Non-CRP users are already limited to F1/F2 by alerts_visible_to_user above.
+      if crp_network_member?
+        companies = companies.where("company_lists.alert IN (?)", CompanyList::STANDARD_ALERT_VALUES)
       end
-      # If no recent list IDs found, all companies are first alerts — no filter needed.
+
+      # NOT EXISTS (same pattern as enrich_single_company / Excel export) avoids a large
+      # NOT IN subquery that can time out on alert_breakdown counts in production.
+      companies = companies.where(<<~SQL.squish, @list.label, cutoff_date, current_list_date, CompanyList::STANDARD_ALERT_VALUES)
+        NOT EXISTS (
+          SELECT 1
+          FROM company_score_entries cse_prior
+          INNER JOIN lists l ON l.label = cse_prior.list_name
+          WHERE cse_prior.siren = companies.siren
+            AND cse_prior.list_name != ?
+            AND l.list_date > ?
+            AND l.list_date < ?
+            AND cse_prior.alert IN (?)
+        )
+      SQL
     end
 
     # Filter by sans_entreprises_recentes (exclude companies created after threshold date)
