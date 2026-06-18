@@ -155,7 +155,7 @@ module Excel
           #{sirens_subquery}
         ),
         list_scores AS (
-          SELECT cl.siren, cl.score, cl.alert
+          SELECT cl.siren, cl.score, cl.alert, cl.is_first_alert
           FROM company_lists cl
           WHERE cl.list_id = ?
         ),
@@ -174,21 +174,6 @@ module Excel
             (c.delai_urssaf_until IS NOT NULL AND c.delai_urssaf_until > CAST(? AS date)) AS has_delai_urssaf
           FROM companies c
           INNER JOIN target_sirens ts_filter ON ts_filter.siren = c.siren
-        ),
-        first_alert_sirens AS (
-          SELECT ts_filter.siren
-          FROM target_sirens ts_filter
-          INNER JOIN list_scores ls_current ON ls_current.siren = ts_filter.siren
-          WHERE ls_current.alert IN (?)
-            AND NOT EXISTS (
-              SELECT 1 FROM company_score_entries cse_other
-              INNER JOIN lists l ON l.label = cse_other.list_name
-              WHERE cse_other.siren = ts_filter.siren
-                AND cse_other.list_name != ?
-                AND l.list_date > ?
-                AND l.list_date < ?
-                AND cse_other.alert IN (?)
-            )
         ),
         latest_inpi_bce_ratios AS (
           SELECT DISTINCT ON (ibr.siren)
@@ -213,7 +198,7 @@ module Excel
         SELECT ts.siren, cm.siret_siege, ls.score, ls.alert,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
-          CASE WHEN fa.siren IS NOT NULL THEN true ELSE false END AS is_first_alert,
+          CASE WHEN ls.is_first_alert THEN true ELSE false END AS is_first_alert,
           COALESCE(cm.current_procol_status, 'In Bonis') AS procol_status,
           COALESCE(cm.latest_effectif, 0) AS effectif,
           cm.social_debt_total,
@@ -229,31 +214,17 @@ module Excel
         LEFT JOIN list_scores ls ON ts.siren = ls.siren
         LEFT JOIN sjcf_companies sc ON ts.siren = sc.siren
         LEFT JOIN company_metadata cm ON ts.siren = cm.siren
-        LEFT JOIN first_alert_sirens fa ON ts.siren = fa.siren
         LEFT JOIN latest_inpi_bce_ratios libr ON ts.siren = libr.siren
         ORDER BY ts.siren
       SQL
 
       # Parameters order (matching SQL placeholders in order) — sirens are in the
-      # embedded AR subquery, not as bind params, so only 8 values remain:
+      # embedded AR subquery, not as bind params, so only 3 values remain:
       #   1. @list.id   (list_scores WHERE list_id = ?)
       #   2. list_label (sjcf_companies WHERE clause)
       #   3. list_date  (company_metadata: delai_urssaf_until > ?)
-      #   4. STANDARD_ALERT_VALUES (first_alert_sirens: current alert F1/F2 only; Plans/Ratios excluded)
-      #   5. list_label (first_alert_sirens: list_name != current list)
-      #   6. cutoff_date (first_alert_sirens: l.list_date > 18-month window start)
-      #   7. list_date  (first_alert_sirens: l.list_date < current list date)
-      #   8. F1/F2 alerts (first_alert_sirens: prior detection; Plans/Ratios/Pas d'alerte excluded)
       list_date = @list.list_date || Date.current
-      cutoff_date = list_date - 18.months
-      all_params = [@list.id,      # list_scores WHERE list_id = ?
-                    list_label,    # sjcf_companies WHERE
-                    list_date,     # company_metadata: delai_urssaf_until > ?
-                    CompanyList::STANDARD_ALERT_VALUES, # first_alert_sirens: current alert F1/F2
-                    list_label,    # first_alert_sirens: list_name !=
-                    cutoff_date,   # first_alert_sirens: l.list_date >
-                    list_date,     # first_alert_sirens: l.list_date <
-                    CompanyList::STANDARD_ALERT_VALUES]
+      all_params = [@list.id, list_label, list_date]
       sanitized_sql = ActiveRecord::Base.sanitize_sql_array([sql] + all_params)
       Rails.logger.info "[ListGenerator] Full query for EXPLAIN ANALYZE:\nEXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)\n#{sanitized_sql};"
 

@@ -6,6 +6,7 @@ paris_list_2025:
   list: list_test_2025
   score: 75.5
   alert: "Alerte seuil F1"
+  is_first_alert: true
   score_effectif: 80
   score_financier: 70
   score_dettes: 90
@@ -16,6 +17,7 @@ finistere_list_2025:
   list: list_test_2025
   score: 62.0
   alert: "Alerte seuil F2"
+  is_first_alert: true
   score_effectif: 65
   score_financier: 55
   score_dettes: 70
@@ -25,14 +27,17 @@ paris_list_2024:
   siren: "123456789"
   list: list_test_2024
   score: 80.0
+  is_first_alert: false
 
 ancien_list_2025:
   siren: "222222222"
   list: list_test_2025
   score: 70.0
   alert: "Alerte seuil F2"
+  is_first_alert: true
 
 ancien_list_2023:
   siren: "222222222"
   list: list_test_2023
   score: 65.0
+  is_first_alert: false

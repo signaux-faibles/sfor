@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_18_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -167,6 +167,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_120000) do
   create_table "company_lists", force: :cascade do |t|
     t.string "alert"
     t.datetime "created_at", null: false
+    t.boolean "is_first_alert", default: false, null: false
     t.bigint "list_id", null: false
     t.decimal "score", precision: 20, scale: 10
     t.integer "score_ap"
@@ -175,6 +176,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_28_120000) do
     t.integer "score_financier"
     t.string "siren", limit: 9, null: false
     t.datetime "updated_at", null: false
+    t.index ["list_id", "is_first_alert"], name: "index_company_lists_on_list_id_first_alert", where: "(is_first_alert = true)"
     t.index ["list_id", "score"], name: "index_company_lists_on_list_id_score_covering", include: ["siren", "alert", "score_effectif", "score_financier", "score_dettes", "score_ap"]
     t.index ["list_id"], name: "index_company_lists_on_list_id"
     t.index ["siren", "list_id"], name: "index_company_lists_on_siren_and_list_id", unique: true

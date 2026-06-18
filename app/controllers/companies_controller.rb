@@ -391,19 +391,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
     return false unless CompanyList.first_alert_eligible?(entry&.alert)
     return false if hide_detection_for_current_user?(entry)
 
-    # A company is a "première alerte" if it has NOT appeared in any other list
-    # within the last 18 months before the current list date.
-    current_list_date = last_list.list_date || Date.current
-    cutoff_date = current_list_date - 18.months
-
-    siren_in_recent_lists = CompanyScoreEntry
-                            .joins(:list)
-                            .where(siren: @company.siren)
-                            .where.not(list_name: last_list.label)
-                            .exists?(["lists.list_date > ? AND lists.list_date < ? AND " \
-                                      "company_score_entries.alert IN (?)", cutoff_date, current_list_date, CompanyList::STANDARD_ALERT_VALUES])
-
-    !siren_in_recent_lists
+    CompanyList.find_by(siren: @company.siren, list_id: last_list.id)&.is_first_alert == true
   end
 
   def load_company_active_trackings

@@ -444,33 +444,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where("company_lists.alert = ?", @search_params[:niveau_alerte])
     end
 
-    # Filter by premieres_alertes (no F1/F2 detection in the last 18 months before this list)
+    # Filter by premieres_alertes — denormalized on company_lists.is_first_alert at rebuild time.
     if @search_params[:premieres_alertes].present? && @search_params[:premieres_alertes] == "1"
-      cutoff_date = (@list.list_date || Date.current) - 18.months
-      current_list_date = @list.list_date || Date.current
-
-      # A company is a "première alerte" if it has a current F1/F2 alert and has NOT appeared
-      # in any other list within the last 18 months before the current list date with F1/F2.
-      # Plans/Ratios never qualify and never count as prior detections.
-      # Non-CRP users are already limited to F1/F2 by alerts_visible_to_user above.
-      if crp_network_member?
-        companies = companies.where("company_lists.alert IN (?)", CompanyList::STANDARD_ALERT_VALUES)
-      end
-
-      # NOT EXISTS (same pattern as enrich_single_company / Excel export) avoids a large
-      # NOT IN subquery that can time out on alert_breakdown counts in production.
-      companies = companies.where(<<~SQL.squish, @list.label, cutoff_date, current_list_date, CompanyList::STANDARD_ALERT_VALUES)
-        NOT EXISTS (
-          SELECT 1
-          FROM company_score_entries cse_prior
-          INNER JOIN lists l ON l.label = cse_prior.list_name
-          WHERE cse_prior.siren = companies.siren
-            AND cse_prior.list_name != ?
-            AND l.list_date > ?
-            AND l.list_date < ?
-            AND cse_prior.alert IN (?)
-        )
-      SQL
+      companies = companies.where(company_lists: { is_first_alert: true })
     end
 
     # Filter by sans_entreprises_recentes (exclude companies created after threshold date)
@@ -593,26 +569,13 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     sirens = results.pluck("siren").compact.uniq
     return if sirens.blank?
 
-    cutoff_date = (@list.list_date || Date.current) - 18.months
-    current_list_date = @list.list_date || Date.current
-
-    # A company is a "première alerte" if it has NOT appeared in any other list
-    # within the last 18 months before the current list date with a meaningful alert.
-    sirens_in_recent_lists = CompanyScoreEntry
-                             .joins(:list)
-                             .where(siren: sirens)
-                             .where.not(list_name: @list.label)
-                             .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
-                             .where(company_score_entries: { alert: CompanyList::STANDARD_ALERT_VALUES })
-                             .distinct
-                             .pluck(:siren)
-                             .to_set
-
-    first_time_sirens = sirens.to_set - sirens_in_recent_lists
+    flags = CompanyList
+            .where(list_id: @list.id, siren: sirens)
+            .pluck(:siren, :is_first_alert)
+            .to_h
 
     results.each do |result|
-      result["is_first_alert"] = CompanyList.first_alert_eligible?(result["alert"]) &&
-                                 first_time_sirens.include?(result["siren"])
+      result["is_first_alert"] = flags[result["siren"]] == true
     end
   end
 
@@ -704,18 +667,9 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       end
     end
 
-    # Get first alert flag (no detection in the last 18 months before this list)
-    cutoff_date = (@list.list_date || Date.current) - 18.months
-    current_list_date = @list.list_date || Date.current
-    siren_in_recent_lists = CompanyScoreEntry
-                            .joins(:list)
-                            .where(siren: siren)
-                            .where.not(list_name: @list.label)
-                            .where("lists.list_date > ? AND lists.list_date < ?", cutoff_date, current_list_date)
-                            .where(company_score_entries: { alert: CompanyList::STANDARD_ALERT_VALUES })
-                            .exists?
-
-    enrichment[:is_first_alert] = CompanyList.first_alert_eligible?(alert_entry&.alert) && !siren_in_recent_lists
+    # Get first alert flag from denormalized company_lists.is_first_alert
+    company_list = CompanyList.find_by(siren: siren, list_id: @list.id)
+    enrichment[:is_first_alert] = company_list&.is_first_alert == true
 
     # Get establishment count
     enrichment[:nombre_etablissements_ouverts] = Establishment

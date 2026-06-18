@@ -65,6 +65,8 @@ module FirstAlertScenariosSeeds
         upsert_company_lists!(scenario:, lists_by_label:)
       end
 
+      lists_by_label.each_value { |list| CompanyLists::FirstAlertComputer.backfill_list!(list) }
+
       print_summary(lists_by_label)
     end
   end

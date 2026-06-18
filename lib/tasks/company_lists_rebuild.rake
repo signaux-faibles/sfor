@@ -42,6 +42,24 @@ namespace :lists do # rubocop:disable Metrics/BlockLength
 
       elapsed = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start).round(2)
       puts "  Done — #{CompanyList.where(list_id: list.id).count} entries in #{elapsed}s"
+
+      CompanyLists::FirstAlertComputer.backfill_list!(list)
+      first_alert_count = CompanyList.where(list_id: list.id, is_first_alert: true).count
+      puts "  is_first_alert backfill — #{first_alert_count} première(s) alerte(s)"
+    end
+  end
+
+  desc "Backfill company_lists.is_first_alert for all lists (or one list by label)"
+  task :backfill_is_first_alert, [:list_name] => :environment do |_task, args|
+    lists = args[:list_name].present? ? [List.find_by!(label: args[:list_name])] : List.all
+
+    lists.each do |list|
+      puts "Backfilling is_first_alert for '#{list.label}'..."
+      start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      CompanyLists::FirstAlertComputer.backfill_list!(list)
+      elapsed = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start).round(2)
+      count = CompanyList.where(list_id: list.id, is_first_alert: true).count
+      puts "  Done — #{count} première(s) alerte(s) in #{elapsed}s"
     end
   end
 end

@@ -399,6 +399,12 @@ bin/rails lists:rebuild_company_lists               # all lists
 bin/rails "lists:rebuild_company_lists[Janvier 2026]" # one list
 ```
 
+> Rebuild also backfills `company_lists.is_first_alert`. To refresh that column alone:
+```
+bin/rails lists:backfill_is_first_alert             # all lists
+bin/rails "lists:backfill_is_first_alert[Janvier 2026]" # one list
+```
+
 > After running `osf:sync_delai`, update the denormalized URSSAF delay column:
 ```
 bin/rails companies:update_delai_urssaf_until ~ 6mins

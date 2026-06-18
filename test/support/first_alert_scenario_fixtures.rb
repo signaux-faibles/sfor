@@ -39,6 +39,8 @@ module FirstAlertScenarioFixtures
       upsert_company_lists!(scenario:, lists_by_label:)
     end
 
+    lists_by_label.each_value { |list| CompanyLists::FirstAlertComputer.backfill_list!(list) }
+
     lists_by_label.fetch("Liste FA test 2025")
   end
 
