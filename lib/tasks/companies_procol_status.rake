@@ -3,17 +3,18 @@
 # Run after every osf:sync_procol to keep the value fresh.
 # usage: rake companies:update_procol_status
 
-# Latest active libelle_procol per siren (matches procol_at_date action_procol filter).
+# Latest active libelle_procol per siren (matches procol_at_date stade_procol filter).
 ACTIVE_PROCOL_STATUSES_SQL = <<~SQL.squish
   SELECT DISTINCT ON (siren) siren, libelle_procol
   FROM (
     SELECT DISTINCT ON (siren, action_procol)
-      siren, action_procol, libelle_procol
+      siren, action_procol, stade_procol, date_effet, libelle_procol
     FROM osf_procols
     WHERE date_effet <= CURRENT_DATE
     ORDER BY siren, action_procol, date_effet DESC
   ) last_actions
-  WHERE action_procol NOT IN ('fin_procedure', 'inclusion_autre_procedure')
+  WHERE stade_procol NOT IN ('fin_procedure', 'inclusion_autre_procedure')
+    AND NOT (stade_procol = 'plan_continuation' AND AGE(CURRENT_DATE, date_effet) >= INTERVAL '10 years')
   ORDER BY siren, action_procol
 SQL
 
