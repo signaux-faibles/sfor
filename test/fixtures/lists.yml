@@ -5,6 +5,8 @@ list_test_2025:
   code: "LIST_TEST_2025"
   list_date: 2025-01-15
   sjcf_filter_active: false
+  precision_alerte_elevee: 85.5
+  precision_alerte_moderee: 72.25
 
 list_test_2024:
   label: "Liste test 2024"

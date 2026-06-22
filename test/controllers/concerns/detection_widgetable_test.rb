@@ -5,19 +5,42 @@ require "test_helper"
 class DetectionWidgetableTest < ActiveSupport::TestCase
   include DetectionWidgetable
 
-  test "format_detection_score rounds to nearest integer" do
-    entry = CompanyScoreEntry.new(score: 98.1147164549)
-
-    assert_equal "98", send(:format_detection_score, entry)
+  setup do
+    @list = lists(:list_test_2025)
+    @list.update!(precision_alerte_elevee: 85.5, precision_alerte_moderee: 72.25)
   end
 
-  test "format_detection_score rounds half up" do
-    entry = CompanyScoreEntry.new(score: 75.5)
+  test "format_detection_precision uses elevee precision for F1 alert" do
+    entry = CompanyScoreEntry.new(alert: "Alerte seuil F1")
 
-    assert_equal "76", send(:format_detection_score, entry)
+    assert_equal "85,5%", send(:format_detection_precision, @list, entry)
   end
 
-  test "format_detection_score returns non disponible when score is nil" do
-    assert_equal "non disponible", send(:format_detection_score, CompanyScoreEntry.new)
+  test "format_detection_precision uses moderee precision for F2 alert" do
+    entry = CompanyScoreEntry.new(alert: "Alerte seuil F2")
+
+    assert_equal "72,25%", send(:format_detection_precision, @list, entry)
+  end
+
+  test "format_detection_precision omits decimals for whole numbers" do
+    @list.update!(precision_alerte_elevee: 45)
+
+    entry = CompanyScoreEntry.new(alert: "Alerte seuil F1")
+
+    assert_equal "45%", send(:format_detection_precision, @list, entry)
+  end
+
+  test "format_detection_precision returns non disponible when precision is missing" do
+    @list.update!(precision_alerte_elevee: nil)
+
+    entry = CompanyScoreEntry.new(alert: "Alerte seuil F1")
+
+    assert_equal "non disponible", send(:format_detection_precision, @list, entry)
+  end
+
+  test "format_detection_precision returns non disponible for unsupported alerts" do
+    entry = CompanyScoreEntry.new(alert: "Plans")
+
+    assert_equal "non disponible", send(:format_detection_precision, @list, entry)
   end
 end

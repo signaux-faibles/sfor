@@ -60,6 +60,28 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_response :success
   end
 
+  test "detection_widget displays list precision for elevee alert" do
+    sign_in @user
+
+    get detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, "85,5%"
+    assert_not_includes @response.body, "72,25%"
+  end
+
+  test "detection_widget displays list precision for moderee alert" do
+    sign_in @user
+
+    company_score_entries(:one_paris_list_test_2025).update!(alert: "Alerte seuil F2")
+
+    get detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_includes @response.body, "72,25%"
+    assert_not_includes @response.body, "85,5%"
+  end
+
   test "establishments_widget returns success" do
     sign_in @user
 

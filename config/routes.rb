@@ -36,6 +36,7 @@ Rails.application.routes.draw do
     resources :app_settings
     resources :notifications
     resources :zones, only: %i[index new create edit update]
+    resources :lists, only: %i[index edit update]
 
     root to: "users#index"
   end

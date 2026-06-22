@@ -1,0 +1,48 @@
+<h1 class="fr-h4 fr-mb-3w">Précision des alertes par liste</h1>
+
+<p class="fr-text--sm fr-mb-3w">
+  Définissez le niveau de précision (en pourcentage) des alertes élevées et modérées pour chaque liste.
+</p>
+
+<% if @lists.any? %>
+  <div class="fr-table fr-table--bordered">
+    <table>
+      <thead>
+        <tr>
+          <th>Liste</th>
+          <th>Code</th>
+          <th>Précision alerte élevée</th>
+          <th>Précision alerte modérée</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @lists.each do |list| %>
+          <tr>
+            <td><%= list.label %></td>
+            <td><code><%= list.code %></code></td>
+            <td>
+              <% if list.precision_alerte_elevee.present? %>
+                <%= number_to_percentage(list.precision_alerte_elevee, precision: 2, strip_insignificant_zeros: true) %>
+              <% else %>
+                <span class="fr-text--sm">—</span>
+              <% end %>
+            </td>
+            <td>
+              <% if list.precision_alerte_moderee.present? %>
+                <%= number_to_percentage(list.precision_alerte_moderee, precision: 2, strip_insignificant_zeros: true) %>
+              <% else %>
+                <span class="fr-text--sm">—</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to "Modifier", edit_admin_list_path(list), class: "fr-link" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p>Aucune liste disponible.</p>
+<% end %>

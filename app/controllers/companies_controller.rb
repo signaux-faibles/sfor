@@ -36,7 +36,7 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
 
     @criticite = calculate_criticite(entry)
     @data_date = format_data_date(last_list, entry)
-    @score = format_detection_score(entry)
+    @precision = format_detection_precision(last_list, entry)
 
     render partial: "detection_widget"
   end

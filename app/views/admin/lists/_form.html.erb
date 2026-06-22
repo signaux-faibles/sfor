@@ -1,0 +1,37 @@
+<%= form_with model: [:admin, @list], local: true, class: "fr-mb-3w" do |form| %>
+  <% if @list.errors.any? %>
+    <div class="fr-alert fr-alert--error fr-mb-2w">
+      <p class="fr-alert__title"><%= pluralize(@list.errors.count, "erreur") %> ont empeche l'enregistrement :</p>
+      <ul>
+        <% @list.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :precision_alerte_elevee, "Précision alerte élevée (%)", class: "fr-label" %>
+    <%= form.number_field :precision_alerte_elevee,
+                          class: "fr-input",
+                          step: 0.01,
+                          min: List::PRECISION_ALERTE_RANGE.min,
+                          max: List::PRECISION_ALERTE_RANGE.max %>
+    <p class="fr-hint-text">Valeur entre 0 et 100. Laissez vide pour ne pas renseigner.</p>
+  </div>
+
+  <div class="fr-input-group fr-mb-2w">
+    <%= form.label :precision_alerte_moderee, "Précision alerte modérée (%)", class: "fr-label" %>
+    <%= form.number_field :precision_alerte_moderee,
+                          class: "fr-input",
+                          step: 0.01,
+                          min: List::PRECISION_ALERTE_RANGE.min,
+                          max: List::PRECISION_ALERTE_RANGE.max %>
+    <p class="fr-hint-text">Valeur entre 0 et 100. Laissez vide pour ne pas renseigner.</p>
+  </div>
+
+  <div class="fr-btns-group">
+    <%= form.submit "Enregistrer", class: "fr-btn" %>
+    <%= link_to "Annuler", admin_lists_path, class: "fr-btn fr-btn--secondary" %>
+  </div>
+<% end %>

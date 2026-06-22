@@ -17,7 +17,7 @@ class Zone < ApplicationRecord
     {
       key: DETECTION_WIDGET_INTRO_KEY,
       location: "Fiche entreprise (/entreprises/:siren) — encadré bleu du widget « Détection Signaux faibles »",
-      description: "Texte d'introduction de la détection (Markdown). Placeholders disponibles : %<criticite>s (niveau de risque), %<data_date>s (date des données), %<score>s (score de l'entreprise dans la liste en cours). Affiche « Contenu en cours de construction » tant que la zone n'est pas créée."
+      description: "Texte d'introduction de la détection (Markdown). Placeholders disponibles : %<criticite>s (niveau de risque), %<data_date>s (date des données), %<precision>s (précision de l'alerte, selon le niveau élevé ou modéré de la liste en cours). Affiche « Contenu en cours de construction » tant que la zone n'est pas créée."
     }
   ].freeze
 

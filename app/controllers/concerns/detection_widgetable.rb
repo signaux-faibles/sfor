@@ -3,6 +3,7 @@
 # Provides methods to calculate detection widget data (criticite, data_date, etc.)
 module DetectionWidgetable
   extend ActiveSupport::Concern
+  include ActiveSupport::NumberHelper
 
   private
 
@@ -51,13 +52,26 @@ module DetectionWidgetable
     end
   end
 
-  # Format the company score for the detection widget intro zone.
+  # Format the alert precision for the detection widget intro zone.
+  # @param list [List] The current list
   # @param entry [CompanyScoreEntry] The company score entry
-  # @return [String] Formatted score or "non disponible"
-  def format_detection_score(entry)
-    return "non disponible" if entry&.score.nil?
+  # @return [String] Formatted precision percentage or "non disponible"
+  def format_detection_precision(list, entry)
+    precision_value = detection_precision_for(list, entry)
+    return "non disponible" if precision_value.nil?
 
-    entry.score.round.to_s
+    number_to_percentage(precision_value, precision: 2, strip_insignificant_zeros: true)
+  end
+
+  def detection_precision_for(list, entry)
+    return nil unless list && entry&.alert
+
+    case entry.alert.downcase
+    when "alerte seuil f1"
+      list.precision_alerte_elevee
+    when "alerte seuil f2"
+      list.precision_alerte_moderee
+    end
   end
 
   # Format data_date as the last day of the month preceding the month of list_date
