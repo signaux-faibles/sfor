@@ -88,7 +88,7 @@ class EstablishmentTrackingsController < ApplicationController # rubocop:disable
     end
   end
 
-  def update
+  def update # rubocop:disable Metrics/MethodLength
     @establishment_tracking.modifier = current_user
     parse_multiselect_tracking_params
 
