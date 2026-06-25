@@ -413,7 +413,7 @@ module Excel
     end
 
     def format_sjcf(siren)
-      @sjcf_companies.include?(siren) ? "Oui" : "Non"
+      @sjcf_companies.include?(siren) ? "Oui" : "-"
     end
 
     def format_delai_urssaf(siren)
