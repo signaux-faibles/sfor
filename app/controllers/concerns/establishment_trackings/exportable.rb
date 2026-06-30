@@ -11,7 +11,9 @@ module EstablishmentTrackings::Exportable
   end
 
   def export_establishment_trackings(establishment_trackings, query)
-    all_establishment_trackings = establishment_trackings.includes(:establishment, :referents)
+    all_establishment_trackings = establishment_trackings.includes(
+      Excel::EstablishmentTrackingGenerator::EXPORT_INCLUDES
+    )
     response.headers["Cache-Control"] = "no-store"
     send_data generate_excel(all_establishment_trackings, query),
               filename: "accompagnements.xlsx",

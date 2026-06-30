@@ -84,23 +84,23 @@ module Excel
     end
 
     def format_department_value(value)
-      value.split(",").map { |code| Department.find_by(code: code)&.name || code }.join(", ")
+      value.split(",").map { |code| lookup_department_name(code) }.join(", ")
     end
 
     def format_tracking_labels_value(value)
-      value.split(",").map { |id| TrackingLabel.find_by(id: id)&.name || id }.join(", ")
+      value.split(",").map { |id| lookup_tracking_label_name(id) }.join(", ")
     end
 
     def format_sectors_value(value)
-      value.split(",").map { |id| Sector.find_by(id: id)&.name || id }.join(", ")
+      value.split(",").map { |id| lookup_sector_name(id) }.join(", ")
     end
 
     def format_size_value(value)
-      Size.find_by(id: value)&.name || value
+      lookup_size_name(value)
     end
 
     def format_criticality_value(value)
-      Criticality.find_by(id: value)&.name || value
+      lookup_criticality_name(value)
     end
 
     def format_date_value(value)
@@ -108,26 +108,65 @@ module Excel
     rescue StandardError
       value
     end
+
+    def lookup_department_name(code)
+      @department_names ||= {}
+      @department_names[code] ||= Department.find_by(code: code)&.name || code
+    end
+
+    def lookup_tracking_label_name(id)
+      @tracking_label_names ||= {}
+      @tracking_label_names[id] ||= TrackingLabel.find_by(id: id)&.name || id
+    end
+
+    def lookup_sector_name(id)
+      @sector_names ||= {}
+      @sector_names[id] ||= Sector.find_by(id: id)&.name || id
+    end
+
+    def lookup_size_name(id)
+      @size_names ||= {}
+      @size_names[id] ||= Size.find_by(id: id)&.name || id
+    end
+
+    def lookup_criticality_name(id)
+      @criticality_names ||= {}
+      @criticality_names[id] ||= Criticality.find_by(id: id)&.name || id
+    end
   end
 
   class EstablishmentTrackingGenerator # rubocop:disable Metrics/ClassLength
     include Excel::Styles
     include FilterHelpers
 
+    EXPORT_INCLUDES = [
+      :criticality, :size, :participants, :user_actions, :sectors, :summaries,
+      { referents: :entity,
+        establishment: { company: [], department: :region } }
+    ].freeze
+
+    ROW_TYPES = [:string, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+                 :string, :string].freeze
+
     def initialize(establishment_trackings, filters, user)
       @establishment_trackings = establishment_trackings
       @filters = filters
       @user = user
+      @user_network = user.non_codefi_network
+      @codefi_network = Network.find_by(name: "CODEFI")
     end
 
     def generate
-      package = Axlsx::Package.new
+      package = Axlsx::Package.new(use_shared_strings: false)
       workbook = package.workbook
 
       add_tracking_details_sheet(workbook)
       add_filter_details_sheet(workbook)
 
-      package.to_stream.read
+      t = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result = package.to_stream.read
+      Rails.logger.info "[EstablishmentTrackingGenerator] to_stream.read: #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t).round(2)}s"
+      result
     end
 
     private
@@ -135,12 +174,16 @@ module Excel
     def add_tracking_details_sheet(workbook)
       workbook.add_worksheet(name: "Accompagnements") do |sheet|
         add_header_row(sheet)
+
+        t = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         add_tracking_rows(sheet)
+        Rails.logger.info "[EstablishmentTrackingGenerator] add_tracking_rows (#{@establishment_trackings.size} trackings): #{(Process.clock_gettime(Process::CLOCK_MONOTONIC) - t).round(2)}s"
+
         format_sheet(sheet)
       end
     end
 
-    def add_header_row(sheet)
+    def add_header_row(sheet) # rubocop:disable Metrics/MethodLength
       headers = [
         "Raison sociale",
         "Siret",
@@ -160,19 +203,22 @@ module Excel
         "Synthèse de mon administration",
         "Synthèse CODEFI"
       ]
-      sheet.add_row headers, style: Array.new(17) { header_style(sheet) }
+      header_style_obj = header_style(sheet)
+      sheet.add_row headers, style: Array.new(17, header_style_obj)
     end
 
     def add_tracking_rows(sheet)
+      centered = centered_style(sheet)
+      wrap = wrap_text_style(sheet)
+      summary = summary_style(sheet)
+      row_style = Array.new(4, centered) + [wrap, wrap] + Array.new(10, centered) + [summary, summary]
+
       @establishment_trackings.each do |tracking|
-        sheet.add_row prepare_tracking_row(tracking, sheet),
-                      style: Array.new(15, centered_style(sheet)) + [summary_style(sheet)] + [summary_style(sheet)],
-                      types: [:string, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
-                              :string, :string]
+        sheet.add_row prepare_tracking_row(tracking), style: row_style, types: ROW_TYPES
       end
     end
 
-    def prepare_tracking_row(tracking, _sheet)
+    def prepare_tracking_row(tracking)
       [
         tracking.establishment&.raison_sociale.to_s,
         tracking.establishment.siret.to_s,
@@ -189,13 +235,16 @@ module Excel
         tracking.establishment&.department&.region&.libelle, # rubocop:disable Style/SafeNavigationChainLength
         tracking.referents.filter_map { |referent| referent&.entity&.name }.uniq.join(", "),
         tracking.size&.name,
-        fetch_summary_content(tracking, @user.non_codefi_network),
-        fetch_summary_content(tracking, Network.find_by(name: "CODEFI"))
+        fetch_summary_content(tracking, @user_network),
+        fetch_summary_content(tracking, @codefi_network)
       ]
     end
 
     def fetch_summary_content(tracking, network)
-      tracking.summaries.find_by(network: network)&.content || default_summary_text(network)
+      return default_summary_text(network) unless network
+
+      summary = tracking.summaries.find { |entry| entry.network_id == network.id }
+      summary&.content || default_summary_text(network)
     end
 
     def default_summary_text(network)
@@ -222,7 +271,6 @@ module Excel
       column_count = sheet.rows.first&.cells&.size.to_i
       return if column_count <= 2
 
-      # Autosize toutes les colonnes sauf les colonnes avec largeur fixe
       sheet.column_widths(*Array.new(column_count - 2, nil), 50)
     end
 
@@ -232,34 +280,15 @@ module Excel
       last_row = sheet.rows.size
       last_column = sheet.rows.first&.cells&.size.to_i
 
-      # Appliquer les bordures à partir de la première colonne
-      if last_column.positive? && last_row > 2
-        range = "A1:#{('A'.ord + last_column - 1).chr}#{last_row}"
-        sheet.add_style(range, border: { style: :thick, color: "000000" })
-      end
+      return unless last_column.positive? && last_row > 2
+
+      range = "A1:#{('A'.ord + last_column - 1).chr}#{last_row}"
+      sheet.add_style(range, border: { style: :thick, color: "000000" })
     end
 
     def fixed_width_columns(sheet)
-      column_widths(sheet)
-      apply_wrap_text_styles(sheet)
-    end
-
-    def column_widths(sheet)
       sheet.column_info[4].width = 30
       sheet.column_info[5].width = 30
-    end
-
-    def apply_wrap_text_styles(sheet)
-      sheet.rows.each_with_index do |row, index|
-        next if index < 3 # Ignorer les marges et l'en-tête
-
-        apply_wrap_text_style(row, sheet)
-      end
-    end
-
-    def apply_wrap_text_style(row, sheet)
-      row.cells[4]&.style = wrap_text_style(sheet)
-      row.cells[5]&.style = wrap_text_style(sheet)
     end
 
     def add_filter_details_sheet(workbook)
