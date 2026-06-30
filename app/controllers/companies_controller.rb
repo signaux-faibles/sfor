@@ -429,6 +429,8 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   end
 
   def detection_visible_for_entry?(entry)
+    return false if entry&.alert&.casecmp?("Plans")
+
     meaningful_alert?(entry) && !hide_detection_for_current_user?(entry)
   end
 

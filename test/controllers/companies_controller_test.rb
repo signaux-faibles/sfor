@@ -516,7 +516,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_equal "Liste test 2025", list_2025.label
   end
 
-  test "CRP user sees Plans label and detection for latest Plans alert" do
+  test "CRP user sees Plans label but not detection widgets for latest Plans alert" do
     company_score_entries(:one_paris_list_test_2025).update!(alert: "Plans")
 
     sign_in @user
@@ -524,9 +524,18 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
 
     assert_response :success
     assert_includes @response.body, "Plans"
-    assert_includes @response.body, "Détection Signaux faibles"
-    assert_includes @response.body, 'id="waterfall-detection-motifs"'
-    assert_includes @response.body, "Détail sur les motifs explicatifs de la détection"
+    assert_not_includes @response.body, "Détection Signaux faibles"
+    assert_not_includes @response.body, 'id="waterfall-detection-motifs"'
+    assert_not_includes @response.body, "Détail sur les motifs explicatifs de la détection"
+
+    get detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
+
+    get feedback_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
+
+    get waterfall_detection_widget_company_path(@company_paris.siren), headers: { "Accept" => "text/html" }
+    assert_response :no_content
   end
 
   test "CRP user sees Ratios label and detection for latest Ratios alert" do
