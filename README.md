@@ -378,6 +378,8 @@ bin/rails osf:sync_sirene                     # Sync establishments from SIRENE 
 bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL clean view ~ 1 hour
 ```
 
+> After OSF sync and score import, run all denormalization updates with `bin/rails denormalize:all` (see below). Or run individually:
+
 > Then update the freshly created companies table with the consolidated social debt :
 ```
 bin/rails companies:update_social_debt_total ~ 10mins
@@ -393,6 +395,16 @@ bin/rails companies:update_latest_effectif ~ 5mins
 bin/rails companies:update_procol_status ~ quelques secondes
 ```
 
+> Update the denormalized URSSAF delay column:
+```
+bin/rails companies:update_delai_urssaf_until ~ 6mins
+```
+
+> One-time backfill for the tracking status column (afterwards kept current via callbacks):
+```
+bin/rails companies:update_tracking_status ~ 4mins
+```
+
 > After importing a new JSON score file, rebuild the company_lists join table :
 ```
 bin/rails lists:rebuild_company_lists               # all lists
@@ -405,14 +417,10 @@ bin/rails lists:backfill_is_first_alert             # all lists
 bin/rails "lists:backfill_is_first_alert[Janvier 2026]" # one list
 ```
 
-> After running `osf:sync_delai`, update the denormalized URSSAF delay column:
+> To run all denormalization updates at once (companies columns + `company_lists` rebuild, including `is_first_alert` backfill):
 ```
-bin/rails companies:update_delai_urssaf_until ~ 6mins
-```
-
-> One-time backfill for the tracking status column (afterwards kept current via callbacks):
-```
-bin/rails companies:update_tracking_status ~ 4mins
+bin/rails denormalize:all                              # all lists ~ 25 mins + list rebuild
+bin/rails "denormalize:all[Janvier 2026]"              # one list only
 ```
 
 > For `osf_effectif` don't forget to update the `data_freshness` attribute of the corresponding line of the `import.rb` model. You can do this using the app admin panel. You can get the value by doing `select Max(oe.periode) from osf_effectifs oe` . This will be hopefully automaticaly done at import time one day.
