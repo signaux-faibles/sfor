@@ -7,6 +7,8 @@ module Api
   class BaseApiService
     HOST = Rails.env.production? ? "entreprise.api.gouv.fr" : "staging.entreprise.api.gouv.fr"
     BASE_URL = "https://#{HOST}".freeze
+    OPEN_TIMEOUT = 10
+    READ_TIMEOUT = 15
 
     def initialize
       @token = ENV.fetch("API_ENTREPRISES_TOKEN", nil)
@@ -49,6 +51,8 @@ module Api
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      http.open_timeout = OPEN_TIMEOUT
+      http.read_timeout = READ_TIMEOUT
 
       request = Net::HTTP::Get.new(uri)
       request["Authorization"] = "Bearer #{@token}"
@@ -60,8 +64,17 @@ module Api
       # Exécution de la requête
       response = http.request(request)
 
-      JSON.parse(response.body) if response.is_a?(Net::HTTPSuccess)
-    rescue StandardError
+      unless response.is_a?(Net::HTTPSuccess)
+        Rails.logger.warn("[#{self.class.name}] API request failed (#{response.code}) for #{endpoint}")
+        return nil
+      end
+
+      JSON.parse(response.body)
+    rescue Net::OpenTimeout, Net::ReadTimeout, Timeout::Error => e
+      Rails.logger.warn("[#{self.class.name}] API request timed out for #{endpoint}: #{e.message}")
+      nil
+    rescue StandardError => e
+      Rails.logger.warn("[#{self.class.name}] API request error for #{endpoint}: #{e.message}")
       nil
     end
   end

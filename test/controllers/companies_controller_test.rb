@@ -90,6 +90,54 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest # rubocop:disabl
     assert_response :success
   end
 
+  test "insee_widget always returns turbo frame even when API fails" do
+    sign_in @user
+
+    fake_service = Object.new
+    def fake_service.fetch_unite_legale_by_siren(_siren)
+      nil
+    end
+
+    Api::InseeApiService.stub(:new, fake_service) do
+      get insee_widget_company_path(@company_paris.siren),
+          headers: { "Accept" => "text/html", "Turbo-Frame" => "insee_widget" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, 'turbo-frame id="insee_widget"'
+    assert_includes @response.body, "Erreur lors de la récupération des données"
+  end
+
+  test "insee_widget renders INSEE data when API responds" do
+    sign_in @user
+
+    insee_response = {
+      "data" => {
+        "activite_principale" => { "libelle" => "Commerce de détail", "code" => "47.11A" },
+        "forme_juridique" => { "libelle" => "SAS", "code" => "5710" },
+        "date_creation" => Time.zone.local(2010, 3, 15).to_i
+      }
+    }
+    fake_service = Struct.new(:response) do
+      def fetch_unite_legale_by_siren(_siren)
+        response
+      end
+
+      def fetch_unite_legale_by_siren_siege(_siren)
+        nil
+      end
+    end.new(insee_response)
+
+    Api::InseeApiService.stub(:new, fake_service) do
+      get insee_widget_company_path(@company_paris.siren),
+          headers: { "Accept" => "text/html", "Turbo-Frame" => "insee_widget" }
+    end
+
+    assert_response :success
+    assert_includes @response.body, "Commerce de détail"
+    assert_includes @response.body, "SAS"
+  end
+
   test "establishments_widget renders labels and data for enriched establishments" do
     sign_in @user
 

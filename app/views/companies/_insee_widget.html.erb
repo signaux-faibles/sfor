@@ -1,85 +1,87 @@
-  <%= turbo_frame_tag "insee_widget" do %>
-    <div class="sf-entreprise-subtitle fr-mb-3w">
-      <h3 class="fr-h2 fr-mb-0">
-        Informations générales
-      </h3>
+<%= turbo_frame_tag "insee_widget" do %>
+  <div class="sf-entreprise-subtitle fr-mb-3w">
+    <h3 class="fr-h2 fr-mb-0">
+      Informations générales
+    </h3>
 
-      <div>
-        <button aria-describedby="tooltip-infos-generales" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-        <span class="fr-tooltip fr-placement" id="tooltip-infos-generales" role="tooltip">
-          Les données d’identité de l’entreprise sont principalement issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.
-        </span>
-      </div>
-
-      <% if @date_fermeture_formatted.present? %>
-        <p class="fr-badge fr-badge--pink-macaron fr-mb-0">
-          Fermé le <%= @date_fermeture_formatted %>
-        </p>
-      <% end %>
+    <div>
+      <button aria-describedby="tooltip-infos-generales" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+      <span class="fr-tooltip fr-placement" id="tooltip-infos-generales" role="tooltip">
+        Les données d’identité de l’entreprise sont principalement issues de la base Sirene des entreprises et de leurs établissements produite par l’Insee.
+      </span>
     </div>
-    <dl class="sf-keyvalue-list">
-      <dt class="sf-keyvalue-list__key">SIREN : </dt>
-      <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
-      <% if @insee_data.present? %>
-        <% if @insee_data["data"].present? && @insee_data["data"]["activite_principale"].present? %>
-          <dt class="sf-keyvalue-list__key">
-              Activité principale (NAF/APE) :
-          </dt>
-          <dd class="sf-keyvalue-list__value">
-            <button aria-describedby="tooltip-activite-principale" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-            <span class="fr-tooltip fr-placement" id="tooltip-activite-principale" role="tooltip">
-                Le niveau de secteur indiqué correspond à la sous-classe de la nomenclature Insee. Il s'agit d'une donnée déclarative fournie par l’entreprise lors de sa création. Il est suivi du code NAF.
-            </span>
-            <%= @insee_data["data"]["activite_principale"]["libelle"]%> - <%= @insee_data["data"]["activite_principale"]["code"]%>
 
-          </dd>
-        <% end %>
+    <% if @date_fermeture_formatted.present? %>
+      <p class="fr-badge fr-badge--pink-macaron fr-mb-0">
+        Fermé le <%= @date_fermeture_formatted %>
+      </p>
+    <% end %>
+  </div>
 
-        <% if @insee_data["data"].present? && @insee_data["data"]["forme_juridique"].present? %>
-          <dt class="sf-keyvalue-list__key">Forme juridique : </dt>
-          <dd class="sf-keyvalue-list__value">
-            <button aria-describedby="tooltip-forme-juridique" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
-            <span class="fr-tooltip fr-placement" id="tooltip-forme-juridique" role="tooltip">
-              La donnée correspond à la catégorie juridique de niveau III.
-            </span>
-            <%= @insee_data["data"]["forme_juridique"]["libelle"] %>
-          </dd>
-        <% end %>
+  <dl class="sf-keyvalue-list">
+    <dt class="sf-keyvalue-list__key">SIREN : </dt>
+    <dd class="sf-keyvalue-list__value"><%= @company.siren %></dd>
 
+    <% if @insee_data.present? %>
+      <% if @insee_data["data"].present? && @insee_data["data"]["activite_principale"].present? %>
+        <dt class="sf-keyvalue-list__key">
+          Activité principale (NAF/APE) :
+        </dt>
+        <dd class="sf-keyvalue-list__value">
+          <button aria-describedby="tooltip-activite-principale" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+          <span class="fr-tooltip fr-placement" id="tooltip-activite-principale" role="tooltip">
+            Le niveau de secteur indiqué correspond à la sous-classe de la nomenclature Insee. Il s'agit d'une donnée déclarative fournie par l’entreprise lors de sa création. Il est suivi du code NAF.
+          </span>
+          <%= @insee_data["data"]["activite_principale"]["libelle"] %> - <%= @insee_data["data"]["activite_principale"]["code"] %>
+        </dd>
+      <% end %>
 
-        <% if @insee_data["data"].present? && @insee_data["data"]["date_creation"].present? %>
-          <dt class="sf-keyvalue-list__key">Date de création de l'entreprise : </dt>
-          <dd class="sf-keyvalue-list__value">
-            <%= format_date_with_age(@insee_data["data"]["date_creation"]) %>
-          </dd>
-        <% end %>
+      <% if @insee_data["data"].present? && @insee_data["data"]["forme_juridique"].present? %>
+        <dt class="sf-keyvalue-list__key">Forme juridique : </dt>
+        <dd class="sf-keyvalue-list__value">
+          <button aria-describedby="tooltip-forme-juridique" type="button" class="fr-btn--tooltip fr-btn">infobulle</button>
+          <span class="fr-tooltip fr-placement" id="tooltip-forme-juridique" role="tooltip">
+            La donnée correspond à la catégorie juridique de niveau III.
+          </span>
+          <%= @insee_data["data"]["forme_juridique"]["libelle"] %>
+        </dd>
+      <% end %>
 
-        <% if @insee_data["data"].present? && @insee_data["data"]["adresse"].present? %>
-          <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
-          <dd class="sf-keyvalue-list__value">
-            <%= [
-                  @insee_data["data"]["adresse"]["numero_voie"],
-                  @insee_data["data"]["adresse"]["indice_repetition_voie"],
-                  @insee_data["data"]["adresse"]["type_voie"],
-                  @insee_data["data"]["adresse"]["libelle_voie"],
-                  @insee_data["data"]["adresse"]["complement_adresse"],
-                  @insee_data["data"]["adresse"]["code_postal"],
-                  @insee_data["data"]["adresse"]["libelle_commune"]
-                ].select(&:present?).join(" ") %>
-          </dd>
-        <% end %>
-    </dl>
-      <% else %>
-        <div class="fr-col-12 fr-col-xl-8">
-          <div role="notice" class="fr-notice fr-notice--alert fr-mt-3w">
-            <div class="fr-container">
-              <div class="fr-notice__body">
-                <p>
-                  <span class="fr-notice__title">Erreur lors de la récupération des données</span>
-                </p>
-              </div>
-            </div>
+      <% if @insee_data["data"].present? && @insee_data["data"]["date_creation"].present? %>
+        <dt class="sf-keyvalue-list__key">Date de création de l'entreprise : </dt>
+        <dd class="sf-keyvalue-list__value">
+          <%= format_date_with_age(@insee_data["data"]["date_creation"]) %>
+        </dd>
+      <% end %>
+
+      <% if @insee_data["data"].present? && @insee_data["data"]["adresse"].present? %>
+        <dt class="sf-keyvalue-list__key">Adresse postale du siège : </dt>
+        <dd class="sf-keyvalue-list__value">
+          <%= [
+                @insee_data["data"]["adresse"]["numero_voie"],
+                @insee_data["data"]["adresse"]["indice_repetition_voie"],
+                @insee_data["data"]["adresse"]["type_voie"],
+                @insee_data["data"]["adresse"]["libelle_voie"],
+                @insee_data["data"]["adresse"]["complement_adresse"],
+                @insee_data["data"]["adresse"]["code_postal"],
+                @insee_data["data"]["adresse"]["libelle_commune"]
+              ].select(&:present?).join(" ") %>
+        </dd>
+      <% end %>
+    <% end %>
+  </dl>
+
+  <% if @insee_data.blank? %>
+    <div class="fr-col-12 fr-col-xl-8">
+      <div role="notice" class="fr-notice fr-notice--alert fr-mt-3w">
+        <div class="fr-container">
+          <div class="fr-notice__body">
+            <p>
+              <span class="fr-notice__title">Erreur lors de la récupération des données</span>
+            </p>
           </div>
         </div>
-      <% end %>
+      </div>
+    </div>
   <% end %>
+<% end %>

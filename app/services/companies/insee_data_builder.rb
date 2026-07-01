@@ -27,6 +27,9 @@ module Companies
     end
 
     def merge_siege_address!(insee_data, service)
+      return if insee_data.blank?
+      return if insee_data.dig("data", "adresse").present?
+
       siege_data = service.fetch_unite_legale_by_siren_siege(@company.siren)
       return if siege_data&.dig("data", "adresse").blank?
 

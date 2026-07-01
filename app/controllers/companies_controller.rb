@@ -27,6 +27,11 @@ class CompaniesController < ApplicationController # rubocop:disable Metrics/Clas
   def insee_widget
     fetch_insee_data
     render partial: "insee_widget"
+  rescue StandardError => e
+    Rails.logger.error("[CompaniesController#insee_widget] #{e.class}: #{e.message}")
+    @insee_data = nil
+    @date_fermeture_formatted = nil
+    render partial: "insee_widget", status: :ok
   end
 
   def detection_widget
