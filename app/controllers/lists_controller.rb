@@ -47,8 +47,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
     @companies = companies_in_list(@list)
 
-    # Apply policy scope to restrict to user's departments
-    @companies = policy_scope(@companies)
+    # Apply geo scope via denormalized company_lists.department (avoids joining companies for policy filter)
+    @companies = apply_list_geo_scope(@companies)
 
     # Apply all database filters
     @companies = apply_database_filters(@companies)
@@ -119,7 +119,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     @per_page = 20
 
     @companies = companies_in_list(@list)
-    @companies = policy_scope(@companies)
+    @companies = apply_list_geo_scope(@companies)
     @companies = apply_database_filters(@companies)
 
     respond_to do |format|
@@ -181,7 +181,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Start with companies in this list
     @companies = companies_in_list(@list)
-    @companies = policy_scope(@companies)
+    @companies = apply_list_geo_scope(@companies)
     @companies = apply_database_filters(@companies)
 
     # Join with company_score_entries to get score and order by score DESC
@@ -274,8 +274,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
     @companies = companies_in_list(@list)
 
-    # Apply policy scope to restrict to user's departments
-    @companies = policy_scope(@companies)
+    # Apply geo scope via denormalized company_lists.department (avoids joining companies for policy filter)
+    @companies = apply_list_geo_scope(@companies)
 
     # Apply all database filters
     @companies = apply_database_filters(@companies)
@@ -296,8 +296,8 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
     @companies = companies_in_list(@list)
 
-    # Apply policy scope to restrict to user's departments
-    @companies = policy_scope(@companies)
+    # Apply geo scope via denormalized company_lists.department (avoids joining companies for policy filter)
+    @companies = apply_list_geo_scope(@companies)
 
     # Apply all database filters
     @companies = apply_database_filters(@companies)
@@ -317,7 +317,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
   def filtered_company_count(list)
     companies = companies_in_list(list)
-    companies = policy_scope(companies)
+    companies = apply_list_geo_scope(companies)
     companies = companies.where(
       "company_lists.alert IN (?)",
       CompanyList.alerts_visible_to_user(crp_member: crp_network_member?)
@@ -365,6 +365,14 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     Company.joins(:company_lists).where(company_lists: { list_id: list.id })
   end
 
+  # Mirrors CompanyPolicy::Scope but filters on denormalized company_lists.department
+  # so list counts and breakdowns can use index_company_lists_on_list_id_department_alert.
+  def apply_list_geo_scope(companies)
+    return companies if current_user.geo_access.name.downcase == "france entière"
+
+    companies.where(company_lists: { department: current_user.departments.pluck(:code) })
+  end
+
   def export_list(companies)
     track_list_export(@list, @search_params, companies.count)
     response.headers["Cache-Control"] = "no-store"
@@ -409,10 +417,10 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       companies = companies.where(statut_juridique: statut_codes) if statut_codes.any?
     end
 
-    # Filter by department (company level)
+    # Filter by department — uses denormalized company_lists.department
     if @search_params[:departement_in].present? && @search_params[:departement_in].is_a?(Array)
       department_codes = @search_params[:departement_in].compact_blank
-      companies = companies.where(department: department_codes) if department_codes.any?
+      companies = companies.where(company_lists: { department: department_codes }) if department_codes.any?
     end
 
     # Filter by minimum effectif — uses the denormalized companies.latest_effectif

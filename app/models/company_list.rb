@@ -9,6 +9,7 @@ class CompanyList < ApplicationRecord
 
   validates :siren, presence: true, length: { is: 9 }
   validates :siren, uniqueness: { scope: :list_id }
+  validates :department, length: { maximum: 10 }
 
   # Alerts shown in list search/results for the current user (F1/F2; + Plans/Ratios for CRP).
   def self.alerts_visible_to_user(crp_member:)

@@ -4,21 +4,21 @@
 #   rake denormalize:all
 #   rake "denormalize:all[Janvier 2026]"  # optional list name for company_lists rebuild
 
-namespace :denormalize do
-  COMPANIES_TASKS = %w[
-    companies:update_social_debt_total
-    companies:update_latest_effectif
-    companies:update_procol_status
-    companies:update_delai_urssaf_until
-    companies:update_tracking_status
-  ].freeze
+DENORMALIZE_COMPANIES_TASKS = %w[
+  companies:update_social_debt_total
+  companies:update_latest_effectif
+  companies:update_procol_status
+  companies:update_delai_urssaf_until
+  companies:update_tracking_status
+].freeze
 
+namespace :denormalize do
   desc "Run all denormalization updates (companies columns + company_lists rebuild)"
   task :all, [:list_name] => :environment do |_task, args|
     puts "Starting denormalization..."
     start_time = Time.current
 
-    COMPANIES_TASKS.each do |task_name|
+    DENORMALIZE_COMPANIES_TASKS.each do |task_name|
       puts "\n#{'-' * 50}"
       Rake::Task[task_name].invoke
       Rake::Task[task_name].reenable

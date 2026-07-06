@@ -405,19 +405,13 @@ bin/rails companies:update_delai_urssaf_until ~ 6mins
 bin/rails companies:update_tracking_status ~ 4mins
 ```
 
-> After importing a new JSON score file, rebuild the company_lists join table :
+> After importing a new JSON score file, rebuild the `company_lists` join table (copies score, alert, score breakdown, `department` from `companies`, and backfills `is_first_alert`) :
 ```
 bin/rails lists:rebuild_company_lists               # all lists
 bin/rails "lists:rebuild_company_lists[Janvier 2026]" # one list
 ```
 
-> Rebuild also backfills `company_lists.is_first_alert`. To refresh that column alone:
-```
-bin/rails lists:backfill_is_first_alert             # all lists
-bin/rails "lists:backfill_is_first_alert[Janvier 2026]" # one list
-```
-
-> To run all denormalization updates at once (companies columns + `company_lists` rebuild, including `is_first_alert` backfill):
+> To run all denormalization updates at once (companies columns + `company_lists` rebuild):
 ```
 bin/rails denormalize:all                              # all lists ~ 25 mins + list rebuild
 bin/rails "denormalize:all[Janvier 2026]"              # one list only

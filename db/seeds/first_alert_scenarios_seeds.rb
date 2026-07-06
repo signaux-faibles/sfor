@@ -209,7 +209,8 @@ module FirstAlertScenariosSeeds
       company_list = CompanyList.find_or_initialize_by(siren: scenario[:siren], list_id: list.id)
       company_list.assign_attributes(
         score: default_score_for(alert),
-        alert:
+        alert:,
+        department: DEPARTMENT_CODE
       )
       company_list.save!
     end
