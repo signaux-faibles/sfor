@@ -65,17 +65,25 @@ module Api
       response = http.request(request)
 
       unless response.is_a?(Net::HTTPSuccess)
-        Rails.logger.warn("[#{self.class.name}] API request failed (#{response.code}) for #{endpoint}")
+        message = "[#{self.class.name}] API request failed (#{response.code}) for #{endpoint}"
+        Rails.logger.warn(message)
+        Sentry.capture_message(message, level: :warning, extra: api_error_context(endpoint, response_code: response.code))
         return nil
       end
 
       JSON.parse(response.body)
-    rescue Net::OpenTimeout, Net::ReadTimeout, Timeout::Error => e
+    rescue Timeout::Error => e
       Rails.logger.warn("[#{self.class.name}] API request timed out for #{endpoint}: #{e.message}")
+      Sentry.capture_exception(e, extra: api_error_context(endpoint))
       nil
     rescue StandardError => e
       Rails.logger.warn("[#{self.class.name}] API request error for #{endpoint}: #{e.message}")
+      Sentry.capture_exception(e, extra: api_error_context(endpoint))
       nil
+    end
+
+    def api_error_context(endpoint, **extra)
+      { endpoint: endpoint, service: self.class.name }.merge(extra)
     end
   end
 end
