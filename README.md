@@ -382,38 +382,38 @@ bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL cl
 
 > Then update the freshly created companies table with the consolidated social debt :
 ```
-bin/rails companies:update_social_debt_total ~ 10mins
+bin/rails companies:update_social_debt_total ~ 10 mins
 ```
 
 > And update the denormalized latest effectif :
 ```
-bin/rails companies:update_latest_effectif ~ 5mins
+bin/rails companies:update_latest_effectif ~ 2 mins
 ```
 
 > And update the denormalized procol status :
 ```
-bin/rails companies:update_procol_status ~ quelques secondes
+bin/rails companies:update_procol_status ~ 32 mins
 ```
 
 > Update the denormalized URSSAF delay column:
 ```
-bin/rails companies:update_delai_urssaf_until ~ 6mins
+bin/rails companies:update_delai_urssaf_until ~ 6 mins
 ```
 
 > One-time backfill for the tracking status column (afterwards kept current via callbacks):
 ```
-bin/rails companies:update_tracking_status ~ 4mins
+bin/rails companies:update_tracking_status ~ 4 mins
 ```
 
 > After importing a new JSON score file, rebuild the `company_lists` join table (copies score, alert, score breakdown, `department` from `companies`, and backfills `is_first_alert`) :
 ```
-bin/rails lists:rebuild_company_lists               # all lists
-bin/rails "lists:rebuild_company_lists[Janvier 2026]" # one list
+bin/rails lists:rebuild_company_lists               # all lists ~ 13 mins
+bin/rails "lists:rebuild_company_lists[Janvier 2026]" # one list (~ 9 s for Janvier 2026, up to ~ 72 s for large lists)
 ```
 
 > To run all denormalization updates at once (companies columns + `company_lists` rebuild):
 ```
-bin/rails denormalize:all                              # all lists ~ 25 mins + list rebuild
+bin/rails denormalize:all                              # all lists ~ 68 mins (~ 55 mins companies + ~ 13 mins list rebuild)
 bin/rails "denormalize:all[Janvier 2026]"              # one list only
 ```
 
