@@ -125,6 +125,8 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     # user_crp_paris sees only department 75 → company_paris
     assert_includes @response.body, "Company Paris"
     assert_includes @response.body, "123456789"
+    assert_includes @response.body, "Chargement en cours"
+    assert_select ".sf-loading-ellipsis"
     assert_not_includes @response.body, "Aucun résultat trouvé"
   end
 

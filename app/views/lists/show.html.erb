@@ -50,10 +50,10 @@
         </div>
       </div>
       <p class="fr-mt-2w">
-        <%= turbo_frame_tag "alert_breakdown", 
+        <%= turbo_frame_tag "alert_breakdown",
             src: alert_breakdown_list_path(@list, search: @search_params),
             loading: "lazy" do %>
-          <!-- Loading total count and alert breakdown... -->
+          <%= render "shared/loading_ellipsis", text: "Chargement en cours" %>
         <% end %>
       </p>
 
