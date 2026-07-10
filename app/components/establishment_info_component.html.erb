@@ -19,9 +19,9 @@
           <span class="fr-sr-only">Information sur la taille de l'entreprise</span>
         </button>
         <span class="fr-tooltip fr-placement" id="tooltip-tracking-info-size" role="tooltip">
-          La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
+          La "taille de l'entreprise" est calculée automatiquement à partir de l'effectif (TPE, PME, ETI, GE). Retrouvez les définitions des "tailles" dans le guide utilisateur.
         </span>
-        <%= @establishment_tracking.size&.name || 'Non renseigné' %>
+        <%= establishment.company.size&.name || 'Non renseigné' %>
       </dd>
 
       <dt class="sf-keyvalue-list__key">Effectif de l'établissement :</dt>

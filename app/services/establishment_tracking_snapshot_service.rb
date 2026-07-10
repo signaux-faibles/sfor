@@ -35,7 +35,7 @@ class EstablishmentTrackingSnapshotService
       user_action_names: @tracking.user_actions.pluck(:name),
       codefi_redirect_names: @tracking.codefi_redirects.pluck(:name),
       sector_names: @tracking.sectors.pluck(:name),
-      size_name: @tracking.size&.name,
+      size_name: @tracking.establishment.company.size&.name,
       establishment_siret: @tracking.establishment.siret,
       establishment_department_code: @tracking.establishment.department&.code,
       establishment_department_name: @tracking.establishment.department&.name,

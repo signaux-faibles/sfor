@@ -183,15 +183,15 @@
             </div>
             <div class="fr-col-3">
               <div class="fr-input-group">
-                <%= f.label :size_id_eq, "Taille" %>
+                <%= f.label :establishment_company_size_id_eq, "Taille" %>
                 <button class="fr-btn--tooltip fr-btn" type="button" id="button-size" aria-describedby="tooltip-size">
                   <span class="fr-icon-information-line" aria-hidden="true"></span>
                   <span class="fr-sr-only">Information sur la taille</span>
                 </button>
                 <span class="fr-tooltip fr-placement" id="tooltip-size" role="tooltip">
-                  La "taille de l'entreprise" indique la taille (par effectif et Chiffre d'affaires) du groupement auquel se rattache l'entreprise. Les statiques par "taille" permettent d'identifier les typologies d'entreprises accompagnées (filiale de groupe, PME, etc.). Retrouvez les définitions des "tailles" dans le guide utilisateur.
+                  La "taille de l'entreprise" est calculée automatiquement à partir de l'effectif (TPE, PME, ETI, GE). Retrouvez les définitions des "tailles" dans le guide utilisateur.
                 </span>
-                <%= f.select :size_id_eq,
+                <%= f.select :establishment_company_size_id_eq,
                              Size.pluck(:name, :id),
                              { include_blank: "Tous" },
                              { class: "fr-select" } %>

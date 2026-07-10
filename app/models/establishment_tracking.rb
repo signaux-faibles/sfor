@@ -29,7 +29,6 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
   has_many :tracking_events, dependent: :destroy
   has_many :establishment_tracking_snapshots, foreign_key: :original_tracking_id, dependent: :destroy
 
-  belongs_to :size, optional: true
   belongs_to :criticality, optional: true
 
   has_and_belongs_to_many :sectors, join_table: :establishment_tracking_sectors
@@ -83,7 +82,7 @@ class EstablishmentTracking < ApplicationRecord # rubocop:disable Metrics/ClassL
 
   def self.ransackable_attributes(_auth_object = nil)
     %w[created_at creator_id end_date establishment_siret id id_value start_date state
-       criticality_id size_id updated_at modified_at]
+       criticality_id updated_at modified_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)

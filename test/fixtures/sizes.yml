@@ -1,8 +1,11 @@
-small:
-  name: "Petite entreprise"
+tpe:
+  name: "TPE"
 
-medium:
-  name: "Moyenne entreprise"
+pme:
+  name: "PME"
 
-large:
-  name: "Grande entreprise"
+eti:
+  name: "ETI"
+
+ge:
+  name: "GE"

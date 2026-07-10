@@ -42,7 +42,7 @@ module Excel
         "state" => "Statuts",
         "tracking_labels_id" => "Étiquettes",
         "sectors_id" => "Filières",
-        "size_id" => "Taille",
+        "establishment_company_size_id" => "Taille",
         "criticality_id" => "Criticité",
         "start_date" => "Date de début"
       }[attribute] || attribute
@@ -72,7 +72,7 @@ module Excel
       when "establishment_departement_eq", "establishment_departement_in" then format_department_value(value)
       when "tracking_labels_id" then format_tracking_labels_value(value)
       when "sectors_id" then format_sectors_value(value)
-      when "size_id" then format_size_value(value)
+      when "establishment_company_size_id" then format_size_value(value)
       when "criticality_id" then format_criticality_value(value)
       when "start_date" then format_date_value(value)
       else value
@@ -140,9 +140,9 @@ module Excel
     include FilterHelpers
 
     EXPORT_INCLUDES = [
-      :criticality, :size, :participants, :user_actions, :sectors, :summaries,
+      :criticality, :participants, :user_actions, :sectors, :summaries,
       { referents: :entity,
-        establishment: { company: [], department: :region } }
+        establishment: { company: :size, department: :region } }
     ].freeze
 
     ROW_TYPES = [:string, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
@@ -234,7 +234,7 @@ module Excel
         tracking.sectors.map(&:name).uniq.join(", "),
         tracking.establishment&.department&.region&.libelle, # rubocop:disable Style/SafeNavigationChainLength
         tracking.referents.filter_map { |referent| referent&.entity&.name }.uniq.join(", "),
-        tracking.size&.name,
+        company_size_name(tracking),
         fetch_summary_content(tracking, @user_network),
         fetch_summary_content(tracking, @codefi_network)
       ]
@@ -257,6 +257,11 @@ module Excel
 
     def format_date(date)
       date.present? ? date.strftime("%d/%m/%Y") : "-"
+    end
+
+    def company_size_name(tracking)
+      company = tracking.establishment&.company
+      company&.size&.name
     end
 
     def format_sheet(sheet)

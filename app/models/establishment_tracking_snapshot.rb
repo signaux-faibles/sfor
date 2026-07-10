@@ -34,6 +34,6 @@ class EstablishmentTrackingSnapshot < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[original_tracking tracking_event establishment creator criticality size]
+    %w[original_tracking tracking_event establishment creator criticality]
   end
 end

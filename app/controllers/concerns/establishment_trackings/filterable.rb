@@ -61,7 +61,7 @@ module EstablishmentTrackings::Filterable
   end
 
   def paginate_trackings(trackings)
-    trackings.includes(:referents, :criticality, establishment: %i[department company])
+    trackings.includes(:referents, :criticality, establishment: { company: :size, department: [] })
              .page(params[:page])
              .per(15)
   end

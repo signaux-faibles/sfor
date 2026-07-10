@@ -1,6 +1,7 @@
 class Company < ApplicationRecord
   belongs_to :activity_sector, optional: true
   belongs_to :department, foreign_key: :department, primary_key: :code, optional: false
+  belongs_to :size, optional: true
   has_many :establishments, foreign_key: :siren, primary_key: :siren, dependent: :nullify
 
   has_many :campaign_companies, dependent: :destroy
@@ -17,11 +18,11 @@ class Company < ApplicationRecord
   validates :department, presence: true, length: { maximum: 10 }
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[created_at id id_value siren raison_sociale statut_juridique creation updated_at]
+    %w[created_at id id_value siren raison_sociale statut_juridique creation updated_at size_id]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[campaign_companies campaigns company_lists establishments lists]
+    %w[campaign_companies campaigns company_lists establishments lists size]
   end
 
   def establishments_ordered
