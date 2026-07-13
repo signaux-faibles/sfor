@@ -65,10 +65,6 @@ module Companies
       ALL.map(&:score_column)
     end
 
-    def self.excel_headers
-      ALL.map(&:label)
-    end
-
     def self.sql_string_literal(value)
       ActiveRecord::Base.connection.quote(value)
     end

@@ -12,18 +12,8 @@ module Excel
 
       rows = generated_rows(list, company)
 
-      assert_equal "Accompagnement", rows.first[25]
-      assert_equal "Accompagnement en cours", rows.second[25]
-    end
-
-    test "exports macro_expl score breakdown columns from company_lists" do
-      company = companies(:company_paris)
-      list = lists(:list_test_2025)
-
-      rows = generated_rows(list, company)
-
-      assert_equal Companies::MacroExplGroups.excel_headers, rows.first[16, 6]
-      assert_equal %w[12 8 90 70 60 80], rows.second[16, 6]
+      assert_equal "Accompagnement", rows.first[19]
+      assert_equal "Accompagnement en cours", rows.second[19]
     end
 
     test "exports latest INPI BCE ratios for each company" do
@@ -33,16 +23,16 @@ module Excel
       create_inpi_bce_ratios(company)
       rows = generated_rows(list, company)
 
-      assert_equal "Taux endettement", rows.first[26]
-      assert_equal "CA", rows.first[27]
-      assert_equal "Résultat net", rows.first[28]
-      assert_equal "Résultat d'exploitation", rows.first[29]
-      assert_equal "Ratio de liquidité", rows.first[30]
-      assert_equal "45.12", rows.second[26]
-      assert_equal "1234567", rows.second[27]
-      assert_equal "-12345", rows.second[28]
-      assert_equal "67890", rows.second[29]
-      assert_equal "98.77", rows.second[30]
+      assert_equal "Taux endettement", rows.first[20]
+      assert_equal "CA", rows.first[21]
+      assert_equal "Résultat net", rows.first[22]
+      assert_equal "Résultat d'exploitation", rows.first[23]
+      assert_equal "Ratio de liquidité", rows.first[24]
+      assert_equal "45.12", rows.second[20]
+      assert_equal "1234567", rows.second[21]
+      assert_equal "-12345", rows.second[22]
+      assert_equal "67890", rows.second[23]
+      assert_equal "98.77", rows.second[24]
     end
 
     private
