@@ -12,6 +12,8 @@ waterfall_detection_motifs:
 
     * **Âge de l'entreprise** : Contenu fixture âge.
 
+    * **Secteur d'activité** : Contenu fixture secteur.
+
 detection_widget_intro:
   key: detection_widget_intro
   content: |

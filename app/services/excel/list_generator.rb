@@ -53,6 +53,7 @@ module Excel
       @has_delai_urssaf = Set.new
       @company_data = {} # Cache for company metadata (raison_sociale, department, etc.)
       @inpi_bce_ratios = {}
+      @score_breakdowns = {}
     end
 
     def generate
@@ -102,6 +103,7 @@ module Excel
         "Libellé NAF/APE",
         "Niveau d'alerte",
         "Fréquence d'alerte",
+        *Companies::MacroExplGroups.excel_headers,
         "Liste retraitée (Oui / Non)",
         "Délai de paiement Urssaf",
         "Entreprises récentes",
@@ -112,9 +114,9 @@ module Excel
         "Résultat d'exploitation",
         "Ratio de liquidité"
       ]
-      # Reuse single style object instead of creating 25
+      # Reuse single style object instead of creating one per column
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(25, header_style_obj)
+      sheet.add_row headers, style: Array.new(headers.length, header_style_obj)
     end
 
     def add_company_rows(sheet)
@@ -155,7 +157,9 @@ module Excel
           #{sirens_subquery}
         ),
         list_scores AS (
-          SELECT cl.siren, cl.score, cl.alert, cl.is_first_alert
+          SELECT cl.siren, cl.score, cl.alert, cl.is_first_alert,
+            cl.score_age, cl.score_cluster_economique,
+            cl.score_dettes, cl.score_financier, cl.score_ap, cl.score_effectif
           FROM company_lists cl
           WHERE cl.list_id = ?
         ),
@@ -196,6 +200,8 @@ module Excel
             ibr.id DESC
         )
         SELECT ts.siren, cm.siret_siege, ls.score, ls.alert,
+          ls.score_age, ls.score_cluster_economique,
+          ls.score_dettes, ls.score_financier, ls.score_ap, ls.score_effectif,
           cm.raison_sociale, cm.department, cm.creation, cm.libelle_categorie_juridique,
           cm.naf_section, cm.libelle_activite_principale, cm.naf_code, cm.libelle_naf_section,
           CASE WHEN ls.is_first_alert THEN true ELSE false END AS is_first_alert,
@@ -275,6 +281,10 @@ module Excel
         # Alert frequency
         @alert_frequencies[siren] = row["is_first_alert"] ? "1ère alerte" : "-"
 
+        @score_breakdowns[siren] = Companies::MacroExplGroups::ALL.to_h do |entry|
+          [entry.score_column, row[entry.score_column.to_s]]
+        end
+
         # Delai URSSAF
         @has_delai_urssaf.add(siren) if row["has_delai_urssaf"]
 
@@ -333,6 +343,7 @@ module Excel
         company_data[:libelle_activite_principale] || "-",
         format_alert_level(score_entry),
         format_alert_frequency(siren),
+        *format_score_breakdown(siren),
         format_sjcf(siren),
         format_delai_urssaf(siren),
         format_entreprise_recente(company_data[:creation]),
@@ -410,6 +421,15 @@ module Excel
 
       # If no other entries, it's a first alert; otherwise nothing
       other_entries_exist ? "-" : "1ère alerte"
+    end
+
+    def format_score_breakdown(siren)
+      breakdown = @score_breakdowns[siren] || {}
+
+      Companies::MacroExplGroups::ALL.map do |entry|
+        value = breakdown[entry.score_column]
+        value.nil? ? "-" : value
+      end
     end
 
     def format_sjcf(siren)

@@ -25,13 +25,27 @@ module Companies
       assert_in_delta 100.0, data[:values].last[1], 0.01
     end
 
+    test "includes cluster economique and age groups with display labels" do
+      @entry.update!(
+        macro_expl: {
+          "Cluster-économique" => 0.2,
+          "Age-de-l'entreprise" => 0.3,
+          "Dettes-sociales" => 0.5
+        }
+      )
+
+      data = WaterfallChartBuilder.new(@entry).build
+
+      assert_equal ["Dettes sociales", "Âge de l'entreprise", "Secteur d'activité"], data[:labels]
+    end
+
     test "matches slide example with threshold 0.4" do
       @entry.update!(
         macro_expl: {
           "Dettes-sociales" => -0.2,
           "Variation-de-l'effectif-de-l'entreprise" => 0.5,
           "Données-financières" => 1.5,
-          "Autres" => 0.3
+          "Age-de-l'entreprise" => 0.3
         }
       )
 
@@ -48,7 +62,7 @@ module Companies
         macro_expl: {
           "Dettes-sociales" => 0.01,
           "Données-financières" => 0.02,
-          "Autres" => 0.03
+          "Age-de-l'entreprise" => 0.03
         }
       )
 
@@ -67,10 +81,38 @@ module Companies
       assert_empty data[:values]
     end
 
+    test "supports legacy Autres key for age on older lists" do
+      @entry.update!(
+        macro_expl: {
+          "Autres" => 0.6,
+          "Dettes-sociales" => 0.4
+        }
+      )
+
+      data = WaterfallChartBuilder.new(@entry).build
+
+      assert_equal ["Âge de l'entreprise", "Dettes sociales"], data[:labels]
+      assert_in_delta 60.0, data[:values][0][1] - data[:values][0][0], 0.01
+    end
+
+    test "prefers Age-de-l'entreprise over legacy Autres when both are present" do
+      @entry.update!(
+        macro_expl: {
+          "Autres" => 0.2,
+          "Age-de-l'entreprise" => 0.6,
+          "Dettes-sociales" => 0.4
+        }
+      )
+
+      data = WaterfallChartBuilder.new(@entry).build
+
+      assert_in_delta 60.0, data[:values].first[1] - data[:values].first[0], 0.01
+    end
+
     test "score does not affect bar heights" do
       @entry.update!(
         score: 10.0,
-        macro_expl: { "Autres" => 0.6, "Dettes-sociales" => 0.4 }
+        macro_expl: { "Age-de-l'entreprise" => 0.6, "Dettes-sociales" => 0.4 }
       )
 
       data_low_score = WaterfallChartBuilder.new(@entry).build

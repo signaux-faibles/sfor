@@ -12,6 +12,8 @@ paris_list_2025:
   score_financier: 70
   score_dettes: 90
   score_ap: 60
+  score_age: 12
+  score_cluster_economique: 8
 
 finistere_list_2025:
   siren: "987654321"

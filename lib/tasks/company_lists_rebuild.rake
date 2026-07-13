@@ -19,19 +19,21 @@ namespace :lists do # rubocop:disable Metrics/BlockLength
 
         # JSONB breakdown extracted once here so the Excel export never needs to read
         # macro_expl from company_score_entries at query time.
+        score_columns = Companies::MacroExplGroups.score_columns.join(", ")
+        score_selects = Companies::MacroExplGroups::ALL.map do |entry|
+          Companies::MacroExplGroups.macro_expl_value_sql(entry)
+        end.join(", ")
+
         ActiveRecord::Base.connection.execute(
           ActiveRecord::Base.sanitize_sql_array([<<~SQL.squish, list.id, list.label])
             INSERT INTO company_lists (
               siren, list_id, score, alert,
-              score_effectif, score_financier, score_dettes, score_ap,
+              #{score_columns},
               department, created_at, updated_at
             )
             SELECT DISTINCT ON (cse.siren)
               cse.siren, ?, cse.score, cse.alert,
-              ROUND((cse.macro_expl->>'Variation-de-l''effectif-de-l''entreprise')::numeric),
-              ROUND((cse.macro_expl->>'Données-financières')::numeric),
-              ROUND((cse.macro_expl->>'Dettes-sociales')::numeric),
-              ROUND((cse.macro_expl->>'Recours-à-l''activité-partielle')::numeric),
+              #{score_selects},
               COALESCE(c.department, ''),
               NOW(), NOW()
             FROM company_score_entries cse

@@ -47,17 +47,11 @@ module Companies
     private
 
     def waterfall_key_mapping
-      {
-        "Autres" => { key: "autres", label: "Âge de l'entreprise" },
-        "Dettes-sociales" => { key: "dettes_sociales", label: "Dettes sociales" },
-        "Données-financières" => { key: "sante_financiere", label: "Santé financière" },
-        "Recours-à-l'activité-partielle" => { key: "ap", label: "Recours à l'activité partielle" },
-        "Variation-de-l'effectif-de-l'entreprise" => { key: "effectif", label: "Effectif de l'entreprise" }
-      }
+      MacroExplGroups.waterfall_key_mapping
     end
 
     def waterfall_data_from_entry(key_mapping)
-      macro_expl = @entry.macro_expl || {}
+      macro_expl = MacroExplGroups.normalize(@entry.macro_expl)
 
       # Step 1 — apply threshold per group (Δp_j → Δp'_j).
       thresholded = macro_expl.each_with_object({}) do |(macro_key, delta_p), data|
