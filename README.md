@@ -385,8 +385,9 @@ bin/rails osf:sync_sirene_ul                  # Sync companies from SIRENE_UL cl
 bin/rails companies:update_social_debt_total ~ 10 mins
 ```
 
-> And update the denormalized latest effectif :
+> And update the denormalized latest effectif (establishments, then companies) :
 ```
+bin/rails establishments:update_latest_effectif ~ 3 mins
 bin/rails companies:update_latest_effectif ~ 2 mins
 ```
 

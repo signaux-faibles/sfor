@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_17_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -138,6 +138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.text "raison_sociale"
     t.string "siren", limit: 9
     t.string "siret_siege", limit: 14
+    t.bigint "size_id"
     t.decimal "social_debt_total", precision: 15, scale: 2
     t.string "statut_juridique", limit: 10
     t.string "tracking_status"
@@ -145,6 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.index ["department"], name: "index_companies_on_department"
     t.index ["naf_code"], name: "index_companies_on_naf_code"
     t.index ["siren"], name: "index_companies_on_siren", unique: true
+    t.index ["size_id"], name: "index_companies_on_size_id"
   end
 
   create_table "company_list_ratings", force: :cascade do |t|
@@ -171,7 +173,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.boolean "is_first_alert", default: false, null: false
     t.bigint "list_id", null: false
     t.decimal "score", precision: 20, scale: 10
+    t.integer "score_age"
     t.integer "score_ap"
+    t.integer "score_cluster_economique"
     t.integer "score_dettes"
     t.integer "score_effectif"
     t.integer "score_financier"
@@ -179,7 +183,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.datetime "updated_at", null: false
     t.index ["list_id", "department", "alert"], name: "index_company_lists_on_list_id_department_alert"
     t.index ["list_id", "is_first_alert"], name: "index_company_lists_on_list_id_first_alert", where: "(is_first_alert = true)"
-    t.index ["list_id", "score"], name: "index_company_lists_on_list_id_score_covering", include: ["siren", "alert", "score_effectif", "score_financier", "score_dettes", "score_ap"]
+    t.index ["list_id", "score"], name: "index_company_lists_on_list_id_score_covering", include: ["siren", "alert", "score_age", "score_cluster_economique", "score_effectif", "score_financier", "score_dettes", "score_ap"]
     t.index ["list_id"], name: "index_company_lists_on_list_id"
     t.index ["siren", "list_id"], name: "index_company_lists_on_siren_and_list_id", unique: true
     t.index ["siren"], name: "index_company_lists_on_siren"
@@ -353,7 +357,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.date "end_date"
     t.string "establishment_siret", null: false
     t.date "modified_at"
-    t.bigint "size_id"
     t.date "start_date"
     t.string "state"
     t.datetime "updated_at", null: false
@@ -363,7 +366,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.index ["establishment_siret", "discarded_at"], name: "index_establishment_trackings_on_siret_and_discarded_at", where: "(discarded_at IS NULL)"
     t.index ["establishment_siret", "state"], name: "index_single_in_progress_per_establishment", unique: true, where: "((state)::text = 'in_progress'::text)"
     t.index ["establishment_siret"], name: "index_establishment_trackings_on_establishment_siret"
-    t.index ["size_id"], name: "index_establishment_trackings_on_size_id"
   end
 
   create_table "establishments", force: :cascade do |t|
@@ -375,6 +377,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.date "date_creation"
     t.string "departement", limit: 10
     t.boolean "is_active", default: false, null: false
+    t.integer "latest_effectif"
     t.float "latitude"
     t.float "longitude"
     t.boolean "siege"
@@ -866,6 +869,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
   add_foreign_key "comments", "establishment_trackings"
   add_foreign_key "comments", "networks"
   add_foreign_key "comments", "users"
+  add_foreign_key "companies", "sizes"
   add_foreign_key "company_lists", "lists", on_delete: :cascade
   add_foreign_key "department_geo_accesses", "departments"
   add_foreign_key "department_geo_accesses", "geo_accesses"
@@ -881,7 +885,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
   add_foreign_key "establishment_tracking_supporting_services", "establishment_trackings"
   add_foreign_key "establishment_tracking_supporting_services", "supporting_services"
   add_foreign_key "establishment_trackings", "criticalities"
-  add_foreign_key "establishment_trackings", "sizes"
   add_foreign_key "establishment_trackings", "users", column: "creator_id"
   add_foreign_key "network_memberships", "networks"
   add_foreign_key "network_memberships", "users"

@@ -3,6 +3,7 @@ establishment_paris:
   siret: '12345678900001'
   departement: '75'
   siege: true
+  latest_effectif: 42
 
 establishment_paris2:
   siren: '123456789'

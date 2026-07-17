@@ -6,6 +6,7 @@
 
 DENORMALIZE_COMPANIES_TASKS = %w[
   companies:update_social_debt_total
+  establishments:update_latest_effectif
   companies:update_latest_effectif
   companies:update_procol_status
   companies:update_delai_urssaf_until
