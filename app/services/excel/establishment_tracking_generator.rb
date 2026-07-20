@@ -145,7 +145,7 @@ module Excel
         establishment: { company: :size, department: :region } }
     ].freeze
 
-    ROW_TYPES = [:string, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
+    ROW_TYPES = [:string, :string, :string, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil,
                  :string, :string].freeze
 
     def initialize(establishment_trackings, filters, user)
@@ -200,25 +200,27 @@ module Excel
         "Région",
         "Administrations",
         "Taille",
+        "Effectif entreprise",
+        "Effectif établissement",
         "Synthèse de mon administration",
         "Synthèse CODEFI"
       ]
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(17, header_style_obj)
+      sheet.add_row headers, style: Array.new(19, header_style_obj)
     end
 
     def add_tracking_rows(sheet)
       centered = centered_style(sheet)
       wrap = wrap_text_style(sheet)
       summary = summary_style(sheet)
-      row_style = Array.new(4, centered) + [wrap, wrap] + Array.new(10, centered) + [summary, summary]
+      row_style = Array.new(4, centered) + [wrap, wrap] + Array.new(12, centered) + [summary, summary]
 
       @establishment_trackings.each do |tracking|
         sheet.add_row prepare_tracking_row(tracking), style: row_style, types: ROW_TYPES
       end
     end
 
-    def prepare_tracking_row(tracking)
+    def prepare_tracking_row(tracking) # rubocop:disable Metrics/MethodLength
       [
         tracking.establishment&.raison_sociale.to_s,
         tracking.establishment.siret.to_s,
@@ -235,6 +237,8 @@ module Excel
         tracking.establishment&.department&.region&.libelle, # rubocop:disable Style/SafeNavigationChainLength
         tracking.referents.filter_map { |referent| referent&.entity&.name }.uniq.join(", "),
         company_size_name(tracking),
+        format_effectif(tracking.establishment&.company&.latest_effectif),
+        format_effectif(tracking.establishment&.latest_effectif),
         fetch_summary_content(tracking, @user_network),
         fetch_summary_content(tracking, @codefi_network)
       ]
@@ -257,6 +261,10 @@ module Excel
 
     def format_date(date)
       date.present? ? date.strftime("%d/%m/%Y") : "-"
+    end
+
+    def format_effectif(value)
+      value.presence || "-"
     end
 
     def company_size_name(tracking)

@@ -17,8 +17,10 @@ module Excel
       assert_equal "Company Paris", data_row[0]
       assert_equal "12345678900001", data_row[1]
       assert_equal "Paris", data_row[2]
-      assert_equal "Dummy content", data_row[15]
-      assert_equal "Aucune synthèse CODEFI rédigée", data_row[16]
+      assert_equal "50", data_row[15]
+      assert_equal "42", data_row[16]
+      assert_equal "Dummy content", data_row[17]
+      assert_equal "Aucune synthèse CODEFI rédigée", data_row[18]
     end
 
     test "export preload scope keeps query count stable as rows grow" do
