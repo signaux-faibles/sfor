@@ -248,21 +248,51 @@
 
 .sf-fiche-title {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
 
   > h1 {
     margin: 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .fr-badges-group {
+    margin-bottom: 0;
+    max-width: 100%;
+  }
+
+  .fr-badge {
+    white-space: normal;
+    height: auto;
+  }
+
+  @media (min-width: 48em) {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
   }
 }
 
 .sf-entreprise-subtitle {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
+  min-width: 0;
+  max-width: 100%;
 
   & p {
     margin-bottom: 1.5rem;
+  }
+
+  > * {
+    min-width: 0;
+    max-width: 100%;
   }
 }
 
@@ -601,6 +631,9 @@
 .sf-establishment-trackings-radio--inline {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  max-width: 100%;
 }
 
 .sf-fieldset-container {
@@ -609,6 +642,10 @@
 
   &:not(:last-child) {
     margin-bottom: 2rem;
+  }
+
+  @media (max-width: 47.9375em) {
+    padding: 1rem;
   }
 }
 
@@ -619,7 +656,9 @@
 /* WCAG 1.4.10 — reflow at 320px without horizontal scrolling */
 @media (max-width: 47.9375em) {
   .fr-btns-group--inline .fr-btn,
-  .fr-btns-group--inline > input.fr-btn {
+  .fr-btns-group--inline > input.fr-btn,
+  .fr-btns-group--inline-md .fr-btn,
+  .fr-btns-group--inline-md > input.fr-btn {
     width: calc(100% - 1rem);
     max-width: 100%;
     white-space: normal;
@@ -628,10 +667,41 @@
     min-height: 2.5rem;
   }
 
-  .fr-btns-group--inline > li {
+  .fr-btns-group--inline > li,
+  .fr-btns-group--inline-md > li,
+  .fr-btns-group--inline-lg > li {
     display: flex;
     width: 100%;
     max-width: 100%;
+  }
+
+  .fr-btns-group--inline-lg .fr-btn,
+  .fr-btns-group--inline-lg > input.fr-btn {
+    width: calc(100% - 1rem);
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    height: auto;
+    min-height: 2.5rem;
+  }
+
+  .establishment_trackings .fr-fieldset__element--inline,
+  .establishment_search .fr-fieldset__element--inline {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .establishment_trackings .fr-card,
+  .establishment_search .fr-card,
+  .sf-establishment-search .fr-card {
+    overflow-x: clip;
+  }
+
+  .establishment_trackings .fr-container--fluid,
+  .establishment_search .fr-container--fluid {
+    margin-left: 0.5rem !important;
+    margin-right: 0.5rem !important;
   }
 }
 

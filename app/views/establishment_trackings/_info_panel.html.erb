@@ -14,7 +14,7 @@
   <% end %>
   <div>
     <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-6">
+      <div class="fr-col-12 fr-col-md-6">
         <%= render(TrackingInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment_tracking.establishment, current_user: current_user)) %>
 
         <%= render(EstablishmentInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment_tracking.establishment, current_user: current_user)) %>
@@ -22,7 +22,7 @@
         <%= render 'establishment_trackings/info_panel/contacts_list', establishment: @establishment, establishment_tracking: @establishment_tracking %>
       </div>
 
-      <div class="fr-col-6">
+      <div class="fr-col-12 fr-col-md-6">
         <%= render ContributorsInfoComponent.new(establishment_tracking: @establishment_tracking, establishment: @establishment, current_user: current_user) %>
 
         <div class="fr-grid-row">

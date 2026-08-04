@@ -21,47 +21,65 @@
   <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
     <div class="fr-container sf-fiche-title">
       <h1>Fiche entreprise <%= @company.raison_sociale %></h1>
-      <div class="fr-ml-3w">
+      <ul class="fr-badges-group">
         <%# Entreprise fermée %>
         <% if @company.is_active == false %>
-          <p class="fr-badge fr-badge--pink-macaron fr-ml-1w">Fermé</p>
+          <li>
+            <p class="fr-badge fr-badge--pink-macaron">Fermé</p>
+          </li>
         <% end %>
 
         <%# Accompagnement en cours %>
         <% if @in_progress_trackings.present? %>
-          <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement en cours</p>
+          <li>
+            <p class="fr-badge fr-badge--purple-glycine">Accompagnement en cours</p>
+          </li>
         <% end %>
         <%# Sous surveillance %>
         <% if @under_surveillance_trackings.present? %>
-          <p class="fr-badge fr-badge--brown-caramel fr-ml-1w">Accompagnement sous surveillance</p>
+          <li>
+            <p class="fr-badge fr-badge--brown-caramel">Accompagnement sous surveillance</p>
+          </li>
         <% end %>
         <%# Niveau d'alerte %>
         <% if @alert_level == "elevee" %>
-          <p class="fr-badge fr-badge--error fr-badge--no-icon fr-ml-1w">Alerte élevée</p>
+          <li>
+            <p class="fr-badge fr-badge--error fr-badge--no-icon">Alerte élevée</p>
+          </li>
         <% end %>
 
         <% if @alert_level == "moderee" %>
-          <p class="fr-badge fr-badge--yellow-tournesol fr-ml-1w">Alerte modérée</p>
+          <li>
+            <p class="fr-badge fr-badge--yellow-tournesol">Alerte modérée</p>
+          </li>
         <% end %>
 
         <% if @alert_level == "plans" %>
-          <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">Plans</p>
+          <li>
+            <p class="fr-badge fr-badge--info fr-badge--no-icon">Plans</p>
+          </li>
         <% end %>
 
         <% if @alert_level == "ratios" %>
-          <p class="fr-badge fr-badge--warning fr-badge--no-icon fr-ml-1w">Ratios</p>
+          <li>
+            <p class="fr-badge fr-badge--warning fr-badge--no-icon">Ratios</p>
+          </li>
         <% end %>
 
         <%# Statut procédure collective (si différent de in bonis) %>
         <% if @procol_status && @procol_status != "In Bonis" %>
-          <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
+          <li>
+            <p class="fr-badge fr-badge--purple-glycine"><%= @procol_status %></p>
+          </li>
         <% end %>
 
         <%# Première alerte %>
         <% if @is_first_alert %>
-          <p class="fr-badge fr-badge--info fr-badge--no-icon fr-ml-1w">1ère alerte</p>
+          <li>
+            <p class="fr-badge fr-badge--info fr-badge--no-icon">1ère alerte</p>
+          </li>
         <% end %>
-      </div>
+      </ul>
     </div>
   </div>
   </div>

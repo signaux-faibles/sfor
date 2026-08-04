@@ -21,20 +21,26 @@
   <div class="fr-pb-4w fr-pt-4w sf-alt-background sf-title-above-tabs">
     <div class="fr-container sf-fiche-title">
       <h1>Fiche établissement <%= @establishment.raison_sociale %></h1>
-      <div class="fr-ml-3w">
+      <ul class="fr-badges-group">
         <%# Accompagnement en cours %>
         <% if @in_progress_trackings.present? %>
-          <p class="fr-badge fr-badge--purple-glycine fr-ml-1w">Accompagnement en cours</p>
+          <li>
+            <p class="fr-badge fr-badge--purple-glycine">Accompagnement en cours</p>
+          </li>
         <% end %>
         <%# Sous surveillance %>
         <% if @under_surveillance_trackings.present? %>
-          <p class="fr-badge fr-badge--brown-caramel fr-ml-1w">Accompagnement sous surveillance</p>
+          <li>
+            <p class="fr-badge fr-badge--brown-caramel">Accompagnement sous surveillance</p>
+          </li>
         <% end %>
         <%# Statut procédure collective (si différent de in bonis) %>
         <% if @procol_status && @procol_status != "In Bonis" %>
-          <p class="fr-badge fr-badge fr-badge--purple-glycine fr-ml-1w"><%= @procol_status %></p>
+          <li>
+            <p class="fr-badge fr-badge--purple-glycine"><%= @procol_status %></p>
+          </li>
         <% end %>
-      </div>
+      </ul>
     </div>
   </div>
 
