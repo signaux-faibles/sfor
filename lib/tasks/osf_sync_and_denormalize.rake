@@ -7,7 +7,7 @@
 
 namespace :osf do
   desc "Sync all OSF data then run all denormalization updates"
-  task :sync_and_denormalize, [:months_back, :list_name] => :environment do |_task, args|
+  task :sync_and_denormalize, %i[months_back list_name] => :environment do |_task, args|
     puts "Starting OSF sync + denormalization..."
     start_time = Time.current
 
