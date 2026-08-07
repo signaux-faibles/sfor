@@ -293,6 +293,8 @@ fr:
     email:
       format_hint: "Format attendu : nom.prenom@domaine.fr"
       invalid_message: "Veuillez saisir une adresse e-mail valide, par exemple : john.doe@signaux-faibles.gouv.fr"
+    date:
+      invalid_message: "Veuillez saisir une date valide, par exemple : 12/05/1984"
     password:
       format_hint: "Format attendu : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -). Exemple : Test1234#dev"
       sign_in_hint: "Mot de passe personnel : %{count} caractères minimum, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial (# ? ! @ $ % ^ & * -)."

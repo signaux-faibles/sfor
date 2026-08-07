@@ -232,7 +232,12 @@
                 <span class="fr-tooltip fr-placement" id="tooltip-modified-at-gteq" role="tooltip">
                   Retrouvez les accompagnements modifiés entre deux dates : pour lesquels au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité. 
                 </span>
-                <%= f.date_field :modified_at_gteq, class: "fr-input" %>
+                <%= f.date_field :modified_at_gteq,
+                                 class: "fr-input",
+                                 data: {
+                                   controller: "date-field",
+                                   date_field_invalid_message_value: date_invalid_message
+                                 } %>
               </div>
             </div>
 
@@ -246,7 +251,12 @@
                 <span class="fr-tooltip fr-placement" id="tooltip-modified-at-lteq" role="tooltip">
                   Retrouvez les accompagnements modifiés entre deux dates : pour lesquels au moins une des trois actions suivantes a été réalisée : ajout d'un commentaire, modification de la synthèse ou de la criticité. 
                 </span>
-                <%= f.date_field :modified_at_lteq, class: "fr-input" %>
+                <%= f.date_field :modified_at_lteq,
+                                 class: "fr-input",
+                                 data: {
+                                   controller: "date-field",
+                                   date_field_invalid_message_value: date_invalid_message
+                                 } %>
               </div>
             </div>
           </div>

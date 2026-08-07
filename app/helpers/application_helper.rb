@@ -13,6 +13,10 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
     I18n.t("helpers.email.invalid_message")
   end
 
+  def date_invalid_message
+    I18n.t("helpers.date.invalid_message")
+  end
+
   def email_field_describedby(field_id, object:, attribute: :email, extra_ids: [], include_error: nil)
     ids = ["#{field_id}-format"]
     show_error = include_error.nil? ? object.errors[attribute].any? : include_error

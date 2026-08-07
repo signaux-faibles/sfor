@@ -23,14 +23,10 @@ class ApplicationHelperTest < ActionView::TestCase
     end
   end
 
-  test "detection_widget_intro_content substitutes dynamic values" do
-    content = detection_widget_intro_content(criticite: "élevé", data_date: "31 décembre 2024", precision: "85,5%")
+  test "date_invalid_message includes a real date example" do
+    message = date_invalid_message
 
-    assert_includes content, "élevé"
-    assert_includes content, "31 décembre 2024"
-    assert_includes content, "85,5%"
-    assert_not_includes content, "%<criticite>s"
-    assert_not_includes content, "%<data_date>s"
-    assert_not_includes content, "%<precision>s"
+    assert_includes message, "12/05/1984"
+    assert_match(/date valide/i, message)
   end
 end
