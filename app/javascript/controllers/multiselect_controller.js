@@ -293,9 +293,10 @@ export default class extends Controller {
 
   addRequiredMarker() {
     const label = this.element.querySelector(".fr-label")
-    if (label) {
+    // Prefer a server-rendered visible "*" in the label (RGAA). Only add one if missing.
+    if (label && !/\*/.test(label.textContent) && !label.querySelector("[data-required-marker]")) {
       const asterisk = document.createElement("span")
-      asterisk.setAttribute("aria-hidden", "true")
+      asterisk.dataset.requiredMarker = "true"
       asterisk.textContent = " *"
       label.appendChild(asterisk)
     }
@@ -303,13 +304,41 @@ export default class extends Controller {
   }
 
   updateRequiredValidity() {
+    // Keep aria-required for assistive tech, but avoid native HTML5 popups that are not
+    // linked via aria-describedby. Server-side errors render a visible linked message.
+    this.inputTarget.setAttribute("aria-required", "true")
+    this.inputTarget.removeAttribute("required")
+    this.inputTarget.setCustomValidity("")
+
     if (this.selectedItems.length === 0) {
-      this.inputTarget.setAttribute("required", "")
-      this.inputTarget.setCustomValidity("Veuillez sélectionner au moins un élément.")
-    } else {
-      this.inputTarget.removeAttribute("required")
-      this.inputTarget.setCustomValidity("")
+      return
     }
+
+    this.clearRequiredErrorState()
+  }
+
+  clearRequiredErrorState() {
+    this.inputTarget.removeAttribute("aria-invalid")
+    const errorId = this.requiredErrorId()
+    if (errorId) {
+      const describedby = (this.inputTarget.getAttribute("aria-describedby") || "")
+        .split(/\s+/)
+        .filter(id => id && id !== errorId)
+      if (describedby.length > 0) {
+        this.inputTarget.setAttribute("aria-describedby", describedby.join(" "))
+      } else {
+        this.inputTarget.removeAttribute("aria-describedby")
+      }
+      document.getElementById(errorId)?.remove()
+    }
+
+    const group = this.inputTarget.closest(".fr-input-group")
+    group?.classList.remove("fr-input-group--error")
+    this.inputTarget.classList.remove("fr-input--error")
+  }
+
+  requiredErrorId() {
+    return this.inputTarget.id ? `${this.inputTarget.id}-error` : null
   }
 
   renderTags() {

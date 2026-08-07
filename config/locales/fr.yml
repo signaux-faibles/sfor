@@ -140,6 +140,7 @@ fr:
         establishment_tracking:
           attributes:
             referents:
+              blank: "doit comporter au moins un référent"
               at_least_one_active_required: "Un référent non archivé est requis"
       messages:
         record_invalid: 'La validation a échoué : %{errors}'

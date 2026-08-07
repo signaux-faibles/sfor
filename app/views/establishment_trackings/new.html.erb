@@ -4,18 +4,20 @@
 
   <div class="fr-container">
     <h1>Nouvel accompagnement pour <%= @establishment_tracking&.establishment&.raison_sociale %></h1>
+    <p class="fr-text--sm">Les champs suivis d'un astérisque (*) sont obligatoires.</p>
 
     <div class="sf-fieldset-container">
       <fieldset class="fr-grid-row fr-fieldset">
         <legend class="fr-h2 fr-fieldset__legend--regular fr-fieldset__legend">Contributeurs de l'accompagnement</legend>
         <div class="fr-col-6">
           <% current_referent_ids = @establishment_tracking.referent_ids.map(&:to_s) %>
+          <% has_referents_error = @establishment_tracking.errors[:referents].any? %>
 
           <div class="fr-fieldset__element">
-            <div class="fr-input-group">
+            <div class="fr-input-group<%= ' fr-input-group--error' if has_referents_error %>">
               <div class="sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @users_options.to_json %>" data-multiselect-label-value="Référents" data-multiselect-required-value="true">
                 <div class="fr-label-wrapper">
-                  <%= form.label :referent_ids_input, 'Référents', class: "fr-label" %>
+                  <%= form.label :referent_ids_input, "Référents *", class: "fr-label", for: "referent-ids-input" %>
                   <button class="fr-btn--tooltip fr-btn" type="button" id="button-new-tracking-referents" aria-describedby="tooltip-new-tracking-referents">
                     <span class="fr-icon-information-line" aria-hidden="true"></span>
                     <span class="fr-sr-only">Information sur les référents</span>
@@ -32,13 +34,15 @@
                   <%= form.text_field :referent_ids_input,
                                       value: "",
                                       id: "referent-ids-input",
-                                      class: "fr-input",
+                                      class: "fr-input#{' fr-input--error' if has_referents_error}",
                                       placeholder: "",
                                       aria: {
                                         autocomplete: "list",
                                         controls: "sf-multiselect-referents-list",
                                         expanded: "false",
-                                        describedby: @establishment_tracking.errors[:referents].any? ? "referents-error" : nil
+                                        required: true,
+                                        invalid: (has_referents_error ? true : nil),
+                                        describedby: (has_referents_error ? "referent-ids-input-error" : nil)
                                       },
                                       role: "combobox",
                                       data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
@@ -49,9 +53,9 @@
                                       data: { multiselect_target: "hiddenValues" } %>
                 <div id="sf-multiselect-referents-list" data-multiselect-target="results" class="sf-multiselect-results-container" role="listbox" aria-multiselectable="true"></div>
               </div>
-              <% if @establishment_tracking.errors[:referents].any? %>
-                <p id="referents-error" class="fr-error-text">
-                  <%= @establishment_tracking.errors[:referents].join(", ") %>
+              <% if has_referents_error %>
+                <p id="referent-ids-input-error" class="fr-error-text">
+                  <%= field_error_messages(@establishment_tracking, :referents).join(", ") %>
                 </p>
               <% end %>
             </div>

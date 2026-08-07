@@ -101,6 +101,9 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
   test "should get new" do
     get new_establishment_establishment_tracking_url(@establishment_paris)
     assert_response :success
+    assert_includes response.body, "Les champs suivis d'un astérisque (*) sont obligatoires."
+    assert_select "label[for=referent-ids-input]", text: /Référents \*/
+    assert_select "#referent-ids-input[aria-required=true]"
   end
 
   test "should create establishment_tracking" do
@@ -124,6 +127,30 @@ class EstablishmentTrackingsCrudTest < EstablishmentTrackingsControllerTest # ru
 
     assert_redirected_to [@establishment_paris7, tracking]
     assert_equal "L'accompagnement a été créé avec succès.", flash[:success]
+  end
+
+  test "should re-render new with accessible referents error when referents are missing" do
+    assert_no_difference("EstablishmentTracking.count") do
+      post establishment_establishment_trackings_url(@establishment_paris7), params: {
+        establishment_tracking: {
+          state: "in_progress",
+          start_date: Time.zone.today,
+          referent_ids_values: "[]",
+          tracking_label_ids: [],
+          user_action_ids: [],
+          sector_ids: [],
+          participant_ids: [],
+          difficulty_ids: [],
+          codefi_redirect_ids: []
+        }
+      }
+    end
+
+    assert_response :unprocessable_entity
+    assert_select ".fr-input-group--error"
+    assert_select "#referent-ids-input[aria-invalid=true]"
+    assert_select "#referent-ids-input[aria-describedby=referent-ids-input-error]"
+    assert_select "#referent-ids-input-error.fr-error-text", text: /référent/
   end
 
   test "should not create establishment_tracking with invalid params" do
