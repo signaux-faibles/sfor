@@ -266,6 +266,7 @@ export default class extends Controller {
       this.selectedItems.splice(existingIndex, 1)
     }
 
+    this.inputTarget.value = ''
     this.updateHiddenField()
     this.renderTags()
     if (wasAdded) {
