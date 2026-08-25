@@ -3,11 +3,11 @@
 }
 
 .sf-title-above-tabs {
-  padding-bottom: calc(2rem + 48px) !important;
+  padding-bottom: calc(2rem + 3rem) !important;
 
   + .fr-container > .fr-tabs {
-    margin-top: -44px;
-    margin-bottom: 1px;
+    margin-top: -2.75rem;
+    margin-bottom: 0.0625rem;
 
     &:before {
       box-shadow: inset 0 1px 0 0 var(--grey-1000-50), inset 1px 0 0 0 var(--grey-1000-50), inset -1px 0 0 0 var(--grey-1000-50);
@@ -68,26 +68,32 @@
 
 .comment-container {
     border: 1px solid var(--border-default-grey);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
     background-color: var(--background-contrast-grey);
+    min-width: 0;
+    height: auto !important; // never lock card height (breaks 200% text zoom)
+    overflow: visible;
 }
 
 .comment-header {
     list-style: none;
     padding-left: 0;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .comment-header__item {
     display: flex;
     align-items: center;
+    min-width: 0;
+    gap: 0.5rem;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
     background-color: var(--background-default-grey);
     border: 1px solid var(--border-default-grey);
     border-radius: 50%;
@@ -95,18 +101,25 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    margin-right: 8px;
     color: var(--text-default-grey);
 }
 
+.author-details {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .author-details strong {
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 .comment-content {
-    font-size: 14px;
+    font-size: 0.875rem;
     line-height: 1.6;
-    margin-bottom: 12px;
+    margin-bottom: 0.75rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 
     > :first-child {
       margin-top: 0;
@@ -114,6 +127,16 @@
 
     > :last-child {
       margin-bottom: 0;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.25rem;
+      overflow-wrap: anywhere;
+    }
+
+    li {
+      margin-bottom: 0.25rem;
     }
 }
 
@@ -123,6 +146,10 @@
 }
 
 .summary-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
   > :first-child {
     margin-top: 0;
   }
@@ -130,15 +157,21 @@
   > :last-child {
     margin-bottom: 0;
   }
+
+  ul,
+  ol {
+    padding-left: 1.25rem;
+  }
 }
 
 .comment-footer {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--text-mention-grey);
+    overflow-wrap: anywhere;
 }
 
 .comment-footer a {
-    margin-left: 8px;
+    margin-left: 0.5rem;
     color: var(--text-action-high-blue-france);
     text-decoration: none;
 }

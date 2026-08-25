@@ -110,7 +110,15 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
 
     renderer = renderer_class.new(options)
     markdown = ::Redcarpet::Markdown.new(renderer, extensions)
-    strip_empty_markdown_paragraphs(markdown.render(text.to_s)).html_safe
+    normalized = normalize_markdown_list_markers(text.to_s)
+    strip_empty_markdown_paragraphs(markdown.render(normalized)).html_safe
+  end
+
+  # Normalize exotic bullets (Word/Outlook copies) so Redcarpet builds real lists.
+  def normalize_markdown_list_markers(text)
+    text
+      .gsub(/^[ \t]*[•▪◦►]+[ \t]*-?[ \t]*/u, "- ")
+      .gsub(/^[ \t]*[•▪◦►]+(?=\S)/u, "- ")
   end
 
   # Remove empty <p> tags that only create visual spacing (RGAA presentation criterion).

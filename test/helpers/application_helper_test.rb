@@ -29,6 +29,21 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_equal "\n<p>Contenu</p>\n\n", html
   end
 
+  test "normalize_markdown_list_markers converts exotic bullets to markdown lists" do
+    source = "\tCharge exceptionnelle\n•\tPoint de vigilance\n- Packaging"
+
+    assert_equal "- Charge exceptionnelle\n- Point de vigilance\n- Packaging",
+                 normalize_markdown_list_markers(source)
+  end
+
+  test "markdown renders normalized exotic bullets as list items" do
+    html = markdown(" Augmentation énergie\n• Masse salariale")
+
+    assert_includes html, "<ul>"
+    assert_includes html, "<li>Augmentation énergie"
+    assert_includes html, "<li>Masse salariale"
+  end
+
   test "detection_widget_intro_content returns fallback when zone is missing" do
     Zone.stub(:find_by, nil) do
       assert_equal "Contenu en cours de construction",

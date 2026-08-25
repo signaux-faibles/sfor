@@ -4,16 +4,21 @@ export default class extends Controller {
     static targets = ["textarea"];
 
     connect() {
-        this.resize(); // Adjust the textarea height on load if it has pre-filled content
+        // Only auto-size textareas. Applying height to comment cards breaks zoom (WCAG 1.4.4).
+        if (this.element.matches("textarea")) {
+            this.resize();
+        }
     }
 
     resize() {
-        this.element.style.height = "auto"; // Reset the height
-        this.element.style.height = `${this.element.scrollHeight}px`; // Adjust height based on content
+        if (!this.element.matches("textarea")) return;
+
+        this.element.style.height = "auto";
+        this.element.style.height = `${this.element.scrollHeight}px`;
     }
 
     adjust() {
-        this.resize(); // Adjust the height dynamically as the user types
+        this.resize();
     }
 
     focus(event) {
