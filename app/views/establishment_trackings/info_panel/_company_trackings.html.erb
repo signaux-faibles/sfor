@@ -11,11 +11,12 @@
     </span>
     <% if @company_trackings.any? %>
 
-      <div class="fr-table" id="table-md-component">
+      <div class="fr-table fr-table--no-caption" id="table-md-component">
         <div class="fr-table__wrapper">
           <div class="fr-table__container">
             <div class="fr-table__content">
               <table id="table-md">
+                <caption>Tous les accompagnements de l'entreprise <%= @establishment&.company&.siren %></caption>
                 <thead>
                 <tr>
                   <th scope="col">Raison sociale</th>
