@@ -110,7 +110,12 @@ module ApplicationHelper # rubocop:disable Metrics/ModuleLength
 
     renderer = renderer_class.new(options)
     markdown = ::Redcarpet::Markdown.new(renderer, extensions)
-    markdown.render(text).html_safe
+    strip_empty_markdown_paragraphs(markdown.render(text.to_s)).html_safe
+  end
+
+  # Remove empty <p> tags that only create visual spacing (RGAA presentation criterion).
+  def strip_empty_markdown_paragraphs(html)
+    html.gsub(%r{<p>\s*(?:<br\s*/?>|&nbsp;|\u00a0|\s)*</p>}i, "")
   end
 
   private

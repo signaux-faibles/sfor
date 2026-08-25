@@ -16,6 +16,19 @@ class ApplicationHelperTest < ActionView::TestCase
     assert_includes html, "<h3>Actions</h3>"
   end
 
+  test "markdown does not wrap content in an outer empty paragraph" do
+    html = markdown("Bonjour")
+
+    assert_equal "<p>Bonjour</p>\n", html
+    assert_no_match(%r{<p>\s*</p>}, html)
+  end
+
+  test "render_markdown strips empty paragraphs used for spacing" do
+    html = strip_empty_markdown_paragraphs("<p></p>\n<p>Contenu</p>\n<p><br></p>\n")
+
+    assert_equal "\n<p>Contenu</p>\n\n", html
+  end
+
   test "detection_widget_intro_content returns fallback when zone is missing" do
     Zone.stub(:find_by, nil) do
       assert_equal "Contenu en cours de construction",
