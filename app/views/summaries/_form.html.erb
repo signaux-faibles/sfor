@@ -22,9 +22,15 @@
         <% end %>
       </div>
       <% if summary.persisted? %>
-        <%= link_to "Annuler", cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary), class: "fr-btn fr-btn--secondary", data: { turbo_stream: true, confirm: "Êtes-vous sûr de vouloir annuler ?" } %>
+        <%= link_to "Annuler",
+                    cancel_establishment_establishment_tracking_summary_path(@establishment, @establishment_tracking, summary),
+                    class: "fr-btn fr-btn--secondary",
+                    title: "Annuler la modification de la synthèse",
+                    data: { turbo_stream: true, confirm: "Êtes-vous sûr de vouloir annuler ?" } %>
       <% end %>
-      <%= form.submit "Sauvegarder", class: "fr-btn fr-btn--primary" %>
+      <%= form.submit "Sauvegarder",
+                      class: "fr-btn fr-btn--primary",
+                      title: "Sauvegarder la modification de la synthèse" %>
     <% end %>
   </div>
 <% end %>
