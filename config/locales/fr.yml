@@ -15,7 +15,7 @@ fr:
         content: Contenu
       comment:
         network: Réseau
-        content: Contenu
+        content: Commentaire
       establishment_tracking:
         referents: Référents
         state:

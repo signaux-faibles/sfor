@@ -1,9 +1,14 @@
 <% if policy(@establishment_tracking).edit? %>
+  <%
+    comment_field_id = "comment-content-#{network.id}"
+    comment_error_id = "#{comment_field_id}-error"
+    has_comment_error = comment.errors[:content].any? || comment.errors[:network].any?
+  %>
   <%= form_with(model: [ @establishment, @establishment_tracking, comment ], local: false, class: 'fr-mb-3w') do |form| %>
     <%= form.hidden_field :network_id, value: network.id, id:nil %>
-    <div class="fr-input-group <%= 'fr-input-group--error' if comment.errors[:content].any? %>">
+    <div class="fr-input-group<%= ' fr-input-group--error' if has_comment_error %>">
       <div class="fr-pb-2w">
-        <label class="fr-h3" for="comment-content-<%= network.id %>">
+        <label class="fr-h3" for="<%= comment_field_id %>">
           Commentaires
         </label>
 
@@ -16,16 +21,21 @@
       </span>
       </div>
       <%= form.text_area :content,
-                         class: "fr-input",
+                         class: "fr-input#{' fr-input--error' if has_comment_error}",
                          placeholder: "Taper votre nouveau commentaire",
-                         data: { controller: "auto-resize", action: "input->auto-resize#resize" },
-                         id: "comment-content-#{network.id}" %>
-      <% comment.errors.each do |error| %>
-        <% if error.attribute == :content || error.attribute == :network %>
-          <p id=<%= "comment_#{error.attribute}_error_#{network.name.parameterize}" %> class="fr-error-text">
-            <%= error.full_message %>
-          </p>
-        <% end %>
+                         id: comment_field_id,
+                         aria: {
+                           invalid: (true if has_comment_error),
+                           describedby: (comment_error_id if has_comment_error)
+                         },
+                         data: { controller: "auto-resize", action: "input->auto-resize#resize" } %>
+      <% if has_comment_error %>
+        <p id="<%= comment_error_id %>" class="fr-error-text">
+          <%= [
+            *field_error_messages(comment, :content),
+            *field_error_messages(comment, :network)
+          ].join(", ") %>
+        </p>
       <% end %>
     </div>
     <%= form.submit "Envoyer", class: "fr-btn", title: "Envoyer le commentaire" %>
