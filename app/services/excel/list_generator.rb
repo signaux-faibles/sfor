@@ -474,7 +474,8 @@ module Excel
         "sans_entreprises_recentes" => "Sans entreprises récentes",
         "departement_in" => "Départements",
         "forme_juridique" => "Forme juridique",
-        "section_activite_principale" => "Section activité principale"
+        "section_activite_principale" => "Section activité principale",
+        "libelle_procol" => "Statut de procédure collective"
       }[key.to_s] || key.to_s.humanize
     end
   end

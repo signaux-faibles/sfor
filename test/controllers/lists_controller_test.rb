@@ -88,6 +88,9 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     assert_response :success
     assert_select "h1", text: "Liste #{@list_2025.label}"
     assert_select "h2", text: "Résultats de recherche"
+    assert_select "label", text: "Statut de procédure collective"
+    assert_select "#sf-multiselect-procol-list"
+    assert_select "#sf-multiselect-section-list"
   end
 
   test "show does not display outdated list notice for latest list" do
@@ -267,7 +270,7 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     sign_in @user
 
     # company_paris has current_procol_status "Redressement judiciaire"
-    get list_path(@list_2025), params: { search: { libelle_procol: "Redressement judiciaire" } }
+    get list_path(@list_2025), params: { search: { libelle_procol: ["Redressement judiciaire"] } }
 
     assert_response :success
     assert_includes @response.body, "Company Paris"
@@ -277,10 +280,32 @@ class ListsControllerTest < ActionDispatch::IntegrationTest # rubocop:disable Me
     sign_in @user
 
     # company_paris has current_procol_status set, so "In bonis" (NULL) excludes it
-    get list_path(@list_2025), params: { search: { libelle_procol: "In bonis" } }
+    get list_path(@list_2025), params: { search: { libelle_procol: ["In bonis"] } }
 
     assert_response :success
     assert_not_includes @response.body, "Company Paris"
+    assert_includes @response.body, "Company Ancien"
+  end
+
+  test "show filter libelle_procol with non-matching value excludes company" do
+    sign_in @user
+
+    get list_path(@list_2025), params: { search: { libelle_procol: ["Sauvegarde"] } }
+
+    assert_response :success
+    assert_not_includes @response.body, "Company Paris"
+    assert_not_includes @response.body, "Company Ancien"
+  end
+
+  test "show filter libelle_procol with multiple values includes matching companies" do
+    sign_in @user
+
+    get list_path(@list_2025), params: {
+      search: { libelle_procol: ["In bonis", "Redressement judiciaire"] }
+    }
+
+    assert_response :success
+    assert_includes @response.body, "Company Paris"
     assert_includes @response.body, "Company Ancien"
   end
 

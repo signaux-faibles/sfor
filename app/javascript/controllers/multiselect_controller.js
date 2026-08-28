@@ -187,10 +187,6 @@ export default class extends Controller {
   search() {
     const query = this.inputTarget.value.trim()
     if (this.debounceTimeout) clearTimeout(this.debounceTimeout)
-    if (query === "") {
-      this.clearResults()
-      return
-    }
     this.debounceTimeout = setTimeout(() => this.performSearch(query), this.debounceDelay)
   }
 
@@ -204,7 +200,7 @@ export default class extends Controller {
 
     const withSelection = filtered.map(opt => ({
       ...opt,
-      selected: this.selectedItems.some(sel => sel.value === opt.value)
+      selected: this.selectedItems.some(sel => String(sel.value) === String(opt.value))
     }))
 
     const sorted = [
@@ -231,6 +227,9 @@ export default class extends Controller {
     }
 
     let html = '<ul class="sf-multiselect-results fr-list" role="presentation">'
+    if (this.shouldShowSelectAll(options)) {
+      html += this.selectAllOptionHtml()
+    }
     options.forEach((opt, index) => {
       const selectedClass = opt.selected ? " sf-multiselect-result-item--selected fr-icon-success-fill" : ""
       const optionId = `${this.resultsTarget.id}-option-${index}`
@@ -256,7 +255,7 @@ export default class extends Controller {
     const option = event.currentTarget
     const value = option.dataset.resultValue
     const label = option.dataset.resultLabel
-    const existingIndex = this.selectedItems.findIndex(item => item.value === value)
+    const existingIndex = this.selectedItems.findIndex(item => String(item.value) === String(value))
     const wasAdded = existingIndex === -1
 
     if (wasAdded) {
@@ -268,20 +267,58 @@ export default class extends Controller {
 
     this.updateHiddenField()
     this.renderTags()
-    if (wasAdded) {
-      this.clearResults()
-    } else {
-      this.refreshResultsIfOpen()
-    }
+    this.refreshResultsIfOpen()
     this.inputTarget.focus()
+  }
+
+  toggleSelectAll(event) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (this.areAllSelected()) {
+      this.selectedItems = []
+    } else {
+      this.selectedItems = this.allOptions.map(opt => ({
+        value: String(opt.value),
+        label: opt.label
+      }))
+    }
+
+    this.inputTarget.value = ""
+    this.updateHiddenField()
+    this.renderTags()
+    this.refreshResultsIfOpen()
+    this.inputTarget.focus()
+  }
+
+  areAllSelected() {
+    return this.allOptions.length > 0 && this.allOptions.every(opt =>
+      this.selectedItems.some(sel => String(sel.value) === String(opt.value))
+    )
+  }
+
+  shouldShowSelectAll(options) {
+    return this.inputTarget.value.trim() === "" && this.allOptions.length > 0 && options.length > 0
+  }
+
+  selectAllOptionHtml() {
+    const allSelected = this.areAllSelected()
+    const label = allSelected ? "Tout désélectionner" : "Tout sélectionner"
+    const optionId = `${this.resultsTarget.id}-select-all`
+    let html = `<li id="${optionId}" class="sf-multiselect-result-item sf-multiselect-result-item--select-all" role="option" tabindex="-1" aria-checked="${allSelected}"`
+    html += ` data-action="click->multiselect#toggleSelectAll">`
+    html += this.escapeHtml(label)
+    html += `</li>`
+    return html
   }
 
   removeItem(event) {
     event.stopPropagation()
     const value = event.currentTarget.dataset.itemValue
-    this.selectedItems = this.selectedItems.filter(item => item.value !== value)
+    this.selectedItems = this.selectedItems.filter(item => String(item.value) !== String(value))
     this.updateHiddenField()
     this.renderTags()
+    this.refreshResultsIfOpen()
   }
 
   updateHiddenField() {

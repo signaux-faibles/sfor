@@ -136,21 +136,28 @@
                 %>
               </div>
             </div>
-            <div class="fr-col-12 fr-col-lg-4">
+            <div class="fr-col-12 fr-col-lg-4 sf-multiselect" data-controller="multiselect" data-multiselect-options-value="<%= @procol_options.to_json %>" data-multiselect-label-value="Statut de procédure collective">
               <div class="fr-input-group">
                 <%= f.label :libelle_procol, "Statut de procédure collective", class: "fr-label" %>
-                <%= f.select :libelle_procol,
-                             [
-                               ["Tous", ""],
-                               ["In bonis", "In bonis"],
-                               ["Redressement judiciaire", "Redressement judiciaire"],
-                               ["Plan de redressement", "Plan de redressement"],
-                               ["Sauvegarde", "Sauvegarde"],
-                               ["Plan de sauvegarde", "Plan de sauvegarde"],
-                               ["Liquidation judiciaire", "Liquidation judiciaire"],
-                             ],
-                             { selected: search_params[:libelle_procol] || "" },
-                             { class: "fr-select" } %>
+                <div class="fr-input-wrap sf-multiselect-input-wrap" data-action="click->multiselect#focusInput">
+                  <div data-multiselect-target="tags" class="sf-multiselect-tags-container"></div>
+                  <%= f.text_field :libelle_procol,
+                                  value: "",
+                                  class: "fr-input",
+                                  placeholder: "",
+                                  aria: { autocomplete: "list", controls: "sf-multiselect-procol-list", expanded: "false" },
+                                  role: "combobox",
+                                  data: { multiselect_target: "input", action: "input->multiselect#search keydown->multiselect#handleKeydown focus->multiselect#handleFocus" },
+                                  autocomplete: "off" %>
+                </div>
+                <%= f.hidden_field :libelle_procol_values,
+                                  value: @selected_procol_json,
+                                  data: { multiselect_target: "hiddenValues" } %>
+                <div id="sf-multiselect-procol-list"
+                     data-multiselect-target="results"
+                     class="sf-multiselect-results-container"
+                     role="listbox"
+                     aria-multiselectable="true"></div>
               </div>
             </div>
             <div class="fr-col-12 fr-col-lg-4">

@@ -455,6 +455,11 @@
     color: var(--text-action-high-blue-france);
     font-weight: 500;
   }
+
+  &.sf-multiselect-result-item--select-all {
+    font-weight: 700;
+    border-bottom: 1px solid var(--border-default-grey);
+  }
 }
 
 .sf-multiselect-focused {

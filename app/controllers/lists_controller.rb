@@ -19,22 +19,11 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     parse_multiselect_params
 
-    # Get search params
-    @search_params = params.require(:search).permit(:q,
-                                                    :effectif_min,
-                                                    :dette_sociale_min, :libelle_procol,
-                                                    :frequence_alerte, :niveau_alerte,
-                                                    :premieres_alertes, :sans_entreprises_recentes,
-                                                    :sans_delai_urssaf, :liste_retraitee,
-                                                    :filters_open,
-                                                    :cursor, :per_page,
-                                                    departement_in: [],
-                                                    forme_juridique: [],
-                                                    section_activite_principale: []) if params[:search].present?
-    @search_params ||= {}
+    @search_params = permitted_search_params
     @selected_departements_json = @departements_options.select { |o| Array(@search_params[:departement_in]).include?(o[:value]) }.to_json
     @selected_sections_json = @section_options.select { |o| Array(@search_params[:section_activite_principale]).include?(o[:value]) }.to_json
     @selected_formes_json = @forme_options.select { |o| Array(@search_params[:forme_juridique]).include?(o[:value]) }.to_json
+    @selected_procol_json = @procol_options.select { |o| Array(@search_params[:libelle_procol]).include?(o[:value]) }.to_json
 
     # Parse cursor: format is "score:id" or just "id" for backward compatibility
     @cursor_score, @cursor_id = parse_cursor(@search_params[:cursor])
@@ -158,19 +147,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     parse_multiselect_params
 
-    # Get search params (same as show action)
-    @search_params = params.require(:search).permit(:q,
-                                                    :effectif_min,
-                                                    :dette_sociale_min, :libelle_procol,
-                                                    :frequence_alerte, :niveau_alerte,
-                                                    :premieres_alertes, :sans_entreprises_recentes,
-                                                    :sans_delai_urssaf, :liste_retraitee,
-                                                    :filters_open,
-                                                    :cursor, :per_page,
-                                                    departement_in: [],
-                                                    forme_juridique: [],
-                                                    section_activite_principale: []) if params[:search].present?
-    @search_params ||= {}
+    @search_params = permitted_search_params
 
     # Parse cursor: format is "score:id" or just "id" for backward compatibility
     @cursor_score, @cursor_id = parse_cursor(@search_params[:cursor])
@@ -257,18 +234,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     parse_multiselect_params
 
-    # Get search params (same as show action)
-    @search_params = params.require(:search).permit(:q,
-                                                    :effectif_min,
-                                                    :dette_sociale_min, :libelle_procol,
-                                                    :niveau_alerte,
-                                                    :premieres_alertes, :sans_entreprises_recentes,
-                                                    :sans_delai_urssaf, :liste_retraitee,
-                                                    :filters_open,
-                                                    departement_in: [],
-                                                    forme_juridique: [],
-                                                    section_activite_principale: []) if params[:search].present?
-    @search_params ||= {}
+    @search_params = permitted_search_params
 
     # Start with companies in this list (from company_score_entries)
     # Use EXISTS subquery instead of JOIN + DISTINCT for better performance
@@ -326,7 +292,28 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
   end
 
   def parse_multiselect_params
-    parse_multiselect(:search, %w[departement_in section_activite_principale forme_juridique])
+    parse_multiselect(:search, %w[departement_in section_activite_principale forme_juridique libelle_procol])
+  end
+
+  def permitted_search_params
+    return {} if params[:search].blank?
+
+    params.require(:search).permit(:q,
+                                   :effectif_min,
+                                   :dette_sociale_min,
+                                   :frequence_alerte,
+                                   :niveau_alerte,
+                                   :premieres_alertes,
+                                   :sans_entreprises_recentes,
+                                   :sans_delai_urssaf,
+                                   :liste_retraitee,
+                                   :filters_open,
+                                   :cursor,
+                                   :per_page,
+                                   departement_in: [],
+                                   forme_juridique: [],
+                                   section_activite_principale: [],
+                                   libelle_procol: [])
   end
 
   def set_multiselect_options
@@ -355,6 +342,15 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
       { value: "U", label: "U - Activités extra-territoriales" }
     ]
     @forme_options = helpers.legal_forms_options.map { |code, label| { value: code, label: "#{code} - #{label}" } }
+    @procol_options = [
+      { value: "In bonis", label: "In bonis" },
+      { value: "Redressement judiciaire", label: "Redressement judiciaire" },
+      { value: "Plan de redressement", label: "Plan de redressement" },
+      { value: "Sauvegarde", label: "Sauvegarde" },
+      { value: "Plan de sauvegarde", label: "Plan de sauvegarde" },
+      { value: "Liquidation judiciaire", label: "Liquidation judiciaire" }
+    ]
+    @selected_procol_json = "[]"
   end
 
   # Build base query for companies in a list via the company_lists join table.
@@ -438,13 +434,7 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
 
     # Filter by libelle_procol — uses the denormalized companies.current_procol_status
     # (NULL means "In bonis"; kept in sync by rake companies:update_procol_status after each osf:sync_procol)
-    if @search_params[:libelle_procol].present? && @search_params[:libelle_procol] != ""
-      companies = if @search_params[:libelle_procol] == "In bonis"
-                    companies.where(current_procol_status: nil)
-                  else
-                    companies.where(current_procol_status: @search_params[:libelle_procol])
-                  end
-    end
+    companies = apply_procol_filter(companies)
 
     # Filter by niveau_alerte — company_lists.alert is already joined by companies_in_list,
     # no need to hit company_score_entries at all.
@@ -484,6 +474,25 @@ class ListsController < ApplicationController # rubocop:disable Metrics/ClassLen
     end
 
     companies
+  end
+
+  def apply_procol_filter(companies)
+    statuses = Array(@search_params[:libelle_procol]).flatten.compact_blank
+    return companies if statuses.empty?
+
+    include_in_bonis = statuses.include?("In bonis")
+    procol_labels = statuses - ["In bonis"]
+
+    if include_in_bonis && procol_labels.any?
+      companies.where(
+        "companies.current_procol_status IS NULL OR companies.current_procol_status IN (?)",
+        procol_labels
+      )
+    elsif include_in_bonis
+      companies.where(current_procol_status: nil)
+    else
+      companies.where(current_procol_status: procol_labels)
+    end
   end
 
   def enrich_results_with_tracking_status(results) # rubocop:disable Metrics/MethodLength
