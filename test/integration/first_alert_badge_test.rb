@@ -84,7 +84,7 @@ class FirstAlertBadgeTest < ActionDispatch::IntegrationTest
     rows_by_siren = worksheet_rows_by_siren(xlsx)
 
     assert_equal "1ère alerte", rows_by_siren["900000001"]["Fréquence d'alerte"]
-    assert_equal "-", rows_by_siren["900000003"]["Fréquence d'alerte"]
+    assert_equal "alerte renouvelée", rows_by_siren["900000003"]["Fréquence d'alerte"]
   end
 
   private

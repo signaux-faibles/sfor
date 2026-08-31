@@ -95,7 +95,7 @@ module Excel
         "Forme juridique",
         "Statut de procédure collective",
         "Dernier effectif entreprise",
-        "Montant de la dette sociale",
+        "Montant de la dette sociale (€)",
         "Code secteur d'activité",
         "Libellé secteur d'activité",
         "Code NAF/APE",
@@ -103,18 +103,17 @@ module Excel
         "Niveau d'alerte",
         "Fréquence d'alerte",
         "Liste retraitée (Oui / Non)",
-        "Délai de paiement Urssaf",
+        "Bénéficie d'un délai de paiement Urssaf",
         "Entreprises récentes",
-        "Accompagnement",
+        "Accompagnements existants",
         "Taux endettement",
         "CA",
         "Résultat net",
         "Résultat d'exploitation",
         "Ratio de liquidité"
       ]
-      # Reuse single style object instead of creating 25
       header_style_obj = header_style(sheet)
-      sheet.add_row headers, style: Array.new(25, header_style_obj)
+      sheet.add_row headers, style: Array.new(headers.length, header_style_obj)
     end
 
     def add_company_rows(sheet)
@@ -273,7 +272,7 @@ module Excel
         @tracking_statuses[siren] = row["tracking_status"] if row["tracking_status"]
 
         # Alert frequency
-        @alert_frequencies[siren] = row["is_first_alert"] ? "1ère alerte" : "-"
+        @alert_frequencies[siren] = row["is_first_alert"] ? "1ère alerte" : "alerte renouvelée"
 
         # Delai URSSAF
         @has_delai_urssaf.add(siren) if row["has_delai_urssaf"]
@@ -369,7 +368,7 @@ module Excel
       total = @social_debts[siren]
       return "-" unless total&.positive?
 
-      total.round(2)
+      total.round.to_i
     end
 
     def format_insee_sector(company_data)
@@ -403,13 +402,13 @@ module Excel
 
       # Use preloaded score entries data if alert frequency not in cache
       entries = @score_entries_by_siren[siren] || []
-      return "-" if entries.empty?
+      return "alerte renouvelée" if entries.empty?
 
       # Check if company appears in other lists (excluding current list)
       other_entries_exist = entries.any? { |entry| entry[:list_name] != @list.label }
 
-      # If no other entries, it's a first alert; otherwise nothing
-      other_entries_exist ? "-" : "1ère alerte"
+      # If no other entries, it's a first alert; otherwise a renewed alert
+      other_entries_exist ? "alerte renouvelée" : "1ère alerte"
     end
 
     def format_sjcf(siren)

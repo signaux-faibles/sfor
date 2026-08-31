@@ -12,8 +12,27 @@ module Excel
 
       rows = generated_rows(list, company)
 
-      assert_equal "Accompagnement", rows.first[19]
+      assert_equal "Accompagnements existants", rows.first[19]
       assert_equal "Accompagnement en cours", rows.second[19]
+    end
+
+    test "exports social debt as an integer euro amount" do
+      company = companies(:company_paris)
+      list = lists(:list_test_2025)
+
+      rows = generated_rows(list, company)
+
+      assert_equal "Montant de la dette sociale (€)", rows.first[9]
+      assert_equal "3001", rows.second[9]
+    end
+
+    test "exports renamed urssaf delay header" do
+      company = companies(:company_paris)
+      list = lists(:list_test_2025)
+
+      rows = generated_rows(list, company)
+
+      assert_equal "Bénéficie d'un délai de paiement Urssaf", rows.first[17]
     end
 
     test "exports latest INPI BCE ratios for each company" do
