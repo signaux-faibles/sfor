@@ -1,0 +1,31 @@
+<% content_for :title, t("two_factor.verify.title") %>
+
+<div class="fr-pt-md-14v">
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+          <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <h1><%= t("two_factor.verify.title") %></h1>
+              <p><%= t("two_factor.verify.intro") %></p>
+
+              <%= form_with url: validate_two_factor_path, method: :post, html: { class: "fr-mt-4w" } do %>
+                <%= render "users/two_factor/otp_field",
+                           hint: t("two_factor.verify.hint"),
+                           otp_error: @otp_error %>
+                <div class="fr-btns-group">
+                  <%= button_tag t("two_factor.verify.submit"), type: "submit", class: "fr-btn" %>
+                </div>
+              <% end %>
+
+              <p class="fr-mt-4w">
+                <%= link_to t("two_factor.back_to_login"), new_user_session_path, class: "fr-link" %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

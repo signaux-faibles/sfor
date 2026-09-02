@@ -93,6 +93,8 @@ gem "redcarpet"
 
 # Authentication
 gem "devise"
+gem "devise-two-factor"
+gem "rqrcode"
 
 # View component (4.x for Rails 8)
 gem "view_component", "~> 4.0"

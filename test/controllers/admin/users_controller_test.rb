@@ -163,6 +163,35 @@ class Admin::UsersControllerTest < ActionDispatch::IntegrationTest # rubocop:dis
     assert_includes @response.body, "email,first_name,last_name,segment_name,geo_access,entity,description,ambassador,trained,feedbacks,last_contact"
   end
 
+  test "reset two factor clears enrollment" do
+    sign_in @admin
+    enable_two_factor!(@target_user)
+    codes = @target_user.generate_otp_backup_codes!
+    @target_user.save!
+    assert_predicate @target_user, :otp_required_for_login?
+    assert codes.any?
+
+    post reset_two_factor_admin_user_path(@target_user)
+
+    assert_redirected_to admin_user_path(@target_user)
+    @target_user.reload
+    assert_not @target_user.otp_required_for_login?
+    assert_nil @target_user.otp_secret
+    assert_empty @target_user.otp_backup_codes
+  end
+
+  test "impersonation skips the target user TOTP" do
+    sign_in @admin
+    enable_two_factor!(@target_user)
+
+    get impersonate_admin_user_path(@target_user)
+
+    assert_redirected_to root_path
+    follow_redirect!
+    assert_response :success
+    assert_includes @response.body, "Réinitialiser les filtres"
+  end
+
   test "export downloads csv" do
     sign_in @admin
 

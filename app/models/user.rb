@@ -1,8 +1,10 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable
-  devise :database_authenticatable,
-         :recoverable, :rememberable, :validatable,
+  # :two_factor_authenticatable replaces :database_authenticatable (do not load both).
+  devise :two_factor_authenticatable,
+         :two_factor_backupable,
+         :recoverable, :validatable,
          :trackable
 
   # Users can be soft deleted
@@ -78,6 +80,19 @@ class User < ApplicationRecord
     Notification.for_user(self)
                 .where.not(id: notification_reads.where.not(read_at: nil).select(:notification_id))
                 .count
+  end
+
+  def otp_configured?
+    otp_required_for_login?
+  end
+
+  def reset_two_factor!
+    update!(
+      otp_required_for_login: false,
+      otp_secret: nil,
+      consumed_timestep: nil,
+      otp_backup_codes: []
+    )
   end
 
   def self.generate_admin_password

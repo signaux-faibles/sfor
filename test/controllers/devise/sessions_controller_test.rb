@@ -11,14 +11,16 @@ class Devise::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "#page-start + #flash"
     assert_select "#user_email-format", text: /Format attendu : nom.prenom@domaine.fr/
     assert_select "#user_email[aria-describedby=?]", "user_email-format"
-    assert_select "#user_password-format", text: /12 caractères minimum/
-    assert_select "#user_password[aria-describedby=?]", "user_password-format"
+    assert_select "#user_password-format", text: /12 caractères minimum/ # pragma: allowlist secret
+    assert_select "#user_password[aria-describedby=?]", "user_password-format" # pragma: allowlist secret
     assert_select "input[type=email][autofocus]", false
     assert_select "div[role=alert]", false
+    assert_select "p", text: /code de double authentification/
+    assert_select "input[name='user[remember_me]']", false
   end
 
   test "failed login shows inline error on email field without top flash" do
-    post user_session_path, params: { user: { email: "wrong@example.com", password: "WrongPass1!" } }
+    post user_session_path, params: { user: { email: "wrong@example.com", password: "WrongPass1!" } } # pragma: allowlist secret
 
     assert_redirected_to new_user_session_path
     follow_redirect!

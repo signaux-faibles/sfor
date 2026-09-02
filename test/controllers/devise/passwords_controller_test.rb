@@ -58,4 +58,21 @@ class Devise::PasswordsControllerTest < ActionDispatch::IntegrationTest
                   "user_password_confirmation-format user_password_confirmation-error"
     assert_select "#user_password_confirmation[aria-invalid=?]", "true"
   end
+
+  test "successful password reset does not sign the user in" do # pragma: allowlist secret
+    user = users(:user_crp_paris)
+    token = user.send(:set_reset_password_token) # pragma: allowlist secret
+
+    put user_password_path, params: { # pragma: allowlist secret
+      user: {
+        reset_password_token: token, # pragma: allowlist secret
+        password: "Test1234#dev", # pragma: allowlist secret
+        password_confirmation: "Test1234#dev" # pragma: allowlist secret
+      }
+    }
+
+    assert_redirected_to new_user_session_path
+    get root_path
+    assert_redirected_to new_user_session_path
+  end
 end

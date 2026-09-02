@@ -28,6 +28,21 @@ module SignauxFaiblesV2
     config.i18n.default_locale = :fr
     config.i18n.available_locales = %i[fr en]
 
+    # Active Record encryption (OTP secrets). Production requires env vars.
+    encryption_key = lambda do |env_name, fallback|
+      value = ENV[env_name].presence
+      next value if value
+      raise KeyError, "Missing environment variable: #{env_name}" if Rails.env.production?
+
+      fallback
+    end
+    config.active_record.encryption.primary_key =
+      encryption_key.call("ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY", "abcdefghijklmnopqrstuvwxyz012345")
+    config.active_record.encryption.deterministic_key =
+      encryption_key.call("ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY", "abcdefghijklmnopqrstuvwxyz678901")
+    config.active_record.encryption.key_derivation_salt =
+      encryption_key.call("ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT", "zyxwvutsrqponmlkjihgfedcba987654")
+
     # Route 404s through the app so we can redirect with a flash.
     config.exceptions_app = routes
   end

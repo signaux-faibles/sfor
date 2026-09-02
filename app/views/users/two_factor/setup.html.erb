@@ -1,0 +1,45 @@
+<% content_for :title, t("two_factor.setup.title") %>
+
+<div class="fr-pt-md-14v">
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+          <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <h1><%= t("two_factor.setup.title") %></h1>
+              <p><%= t("two_factor.setup.intro") %></p>
+              <ol class="fr-mb-3w">
+                <li><%= t("two_factor.setup.step_app") %></li>
+                <li><%= t("two_factor.setup.step_scan") %></li>
+                <li><%= t("two_factor.setup.step_code") %></li>
+              </ol>
+
+              <div class="sf-totp-qr fr-mb-2w" role="img" aria-label="<%= t("two_factor.setup.qr_alt") %>">
+                <%= two_factor_qr_svg(pending_two_factor_user).html_safe %>
+              </div>
+
+              <p class="fr-text--sm">
+                <%= t("two_factor.setup.manual_secret_label") %>
+                <code class="fr-text--bold"><%= two_factor_manual_secret(pending_two_factor_user) %></code>
+              </p>
+
+              <%= form_with url: confirm_two_factor_path, method: :post, html: { class: "fr-mt-4w" } do %>
+                <%= render "users/two_factor/otp_field",
+                           hint: t("two_factor.setup.hint"),
+                           otp_error: @otp_error %>
+                <div class="fr-btns-group">
+                  <%= button_tag t("two_factor.setup.submit"), type: "submit", class: "fr-btn" %>
+                </div>
+              <% end %>
+
+              <p class="fr-mt-4w">
+                <%= link_to t("two_factor.back_to_login"), new_user_session_path, class: "fr-link" %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

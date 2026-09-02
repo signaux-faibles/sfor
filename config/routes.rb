@@ -9,6 +9,15 @@ Rails.application.routes.draw do
     sessions: "users/sessions"
   }, skip: [:registrations]
 
+  resource :two_factor, only: [], controller: "users/two_factor" do
+    get :setup
+    post :confirm
+    get :backup_codes
+    post :acknowledge_backup_codes
+    get :verify
+    post :validate
+  end
+
   get "unauthorized", to: "pages#unauthorized"
   get "accueil", to: "pages#home", as: :home
   get "recherche", to: "pages#search", as: :search
@@ -20,7 +29,8 @@ Rails.application.routes.draw do
     resources :users do
       member do
         get :impersonate
-        post :reset_password
+        post :reset_password # pragma: allowlist secret
+        post :reset_two_factor
         get :duplicate
         delete :discard, action: :destroy
         patch :restore

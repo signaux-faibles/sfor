@@ -1,0 +1,23 @@
+<%#
+  locals:
+    hint: format hint shown under the label
+    otp_error: optional error message
+%>
+<% has_error = local_assigns[:otp_error].present? %>
+<div class="fr-input-group<%= " fr-input-group--error" if has_error %> fr-mb-3w">
+  <label class="fr-label" for="otp_attempt"><%= t("two_factor.otp_label") %></label>
+  <p id="otp_attempt-format" class="fr-hint-text"><%= hint %></p>
+  <%= text_field_tag :otp_attempt,
+                     params[:otp_attempt],
+                     id: "otp_attempt",
+                     class: ["fr-input", ("fr-input--error" if has_error)].compact.join(" "),
+                     autocomplete: "one-time-code",
+                     autocapitalize: "off",
+                     spellcheck: false,
+                     required: true,
+                     "aria-describedby": ["otp_attempt-format", ("otp_attempt-error" if has_error)].compact.join(" "),
+                     "aria-invalid": ("true" if has_error) %>
+  <% if has_error %>
+    <p id="otp_attempt-error" class="fr-error-text"><%= otp_error %></p>
+  <% end %>
+</div>

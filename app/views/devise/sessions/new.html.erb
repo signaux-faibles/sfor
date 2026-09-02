@@ -19,6 +19,7 @@
                 </div>
               </div>
               <h1>Connexion à Signaux Faibles</h1>
+              <p class="fr-text--sm"><%= t("two_factor.login_notice") %></p>
 
               <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "fr-mt-4w" }) do |f| %>
                 <p class="fr-text--sm">Tous les champs sont obligatoires.</p>

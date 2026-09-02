@@ -20,6 +20,7 @@ class ApplicationController < ActionController::Base
   def check_maintenance_mode
     # Allow health check, Devise flows (login, password reset, etc.) and admin
     return if devise_controller?
+    return if controller_path == "users/two_factor"
     return if request.path.start_with?("/admin")
     return if request.path == "/up"
 

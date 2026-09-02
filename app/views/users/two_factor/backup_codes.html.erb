@@ -1,0 +1,33 @@
+<% content_for :title, t("two_factor.backup_codes.title") %>
+
+<div class="fr-pt-md-14v">
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+          <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <h1><%= t("two_factor.backup_codes.title") %></h1>
+              <div class="fr-alert fr-alert--warning fr-mb-3w">
+                <p><%= t("two_factor.backup_codes.warning") %></p>
+              </div>
+              <p><%= t("two_factor.backup_codes.intro") %></p>
+
+              <ul class="sf-totp-backup-codes fr-mb-3w">
+                <% @backup_codes.each do |code| %>
+                  <li><code><%= code %></code></li>
+                <% end %>
+              </ul>
+
+              <%= form_with url: acknowledge_backup_codes_two_factor_path, method: :post do %>
+                <div class="fr-btns-group">
+                  <%= button_tag t("two_factor.backup_codes.submit"), type: "submit", class: "fr-btn" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
