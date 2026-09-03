@@ -18,4 +18,27 @@ class UserTest < ActiveSupport::TestCase
     assert_includes user.errors.full_messages_for(:password),
                     "Mot de passe #{I18n.t('activerecord.errors.models.user.attributes.password.complexity')}"
   end
+
+  test "reset_two_factor! clears TOTP state" do
+    enable_two_factor!(@user)
+    @user.generate_otp_backup_codes!
+    @user.save!
+
+    @user.reset_two_factor!
+
+    assert_not @user.otp_required_for_login?
+    assert_nil @user.otp_secret
+    assert_nil @user.consumed_timestep
+    assert_empty @user.otp_backup_codes
+  end
+
+  test "otp_provisioning_uri includes the issuer" do
+    enable_two_factor!(@user)
+
+    uri = @user.otp_provisioning_uri(@user.email, issuer: "Signaux Faibles")
+
+    assert_match %r{\Aotpauth://totp/}, uri
+    assert_includes uri, "Signaux"
+    assert_includes uri, "test%40crp_paris.com"
+  end
 end

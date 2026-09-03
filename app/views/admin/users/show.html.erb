@@ -120,6 +120,15 @@
           <%= @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short) : "Jamais" %>
         </dd>
         
+        <dt class="fr-text--sm fr-text--bold">Double authentification</dt>
+        <dd class="fr-mb-2w">
+          <% if @user.otp_configured? %>
+            <span class="fr-badge fr-badge--sm fr-badge--success">Configurée</span>
+          <% else %>
+            <span class="fr-badge fr-badge--sm fr-badge--warning">À configurer à la prochaine connexion</span>
+          <% end %>
+        </dd>
+        
         <dt class="fr-text--sm fr-text--bold">Compte créé le</dt>
         <dd class="fr-mb-2w">
           <%= @user.created_at ? l(@user.created_at, format: :short) : "Non renseigné" %>
@@ -189,6 +198,27 @@
             class: "fr-btn fr-btn--secondary",
             data: { 
               confirm: "Générer un nouveau lien de réinitialisation pour #{@user.email} ?" 
+            } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fr-card fr-mb-3w">
+  <div class="fr-card__body">
+    <div class="fr-card__content">
+      <h2 class="fr-h3 fr-mb-2w">Double authentification</h2>
+      <p class="fr-text--sm fr-mb-2w">
+        Réinitialisez la double authentification si l'utilisateur a perdu son téléphone et ses codes de secours.
+        Il devra la configurer à nouveau à sa prochaine connexion.
+      </p>
+      <div class="fr-btns-group">
+        <%= button_to "Réinitialiser la double authentification",
+            reset_two_factor_admin_user_path(@user),
+            method: :post,
+            class: "fr-btn fr-btn--secondary",
+            data: {
+              confirm: "Réinitialiser la double authentification de #{@user.email} ?"
             } %>
       </div>
     </div>

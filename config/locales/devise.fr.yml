@@ -33,7 +33,7 @@ fr:
       send_instructions: "Vous allez recevoir les instructions de réinitialisation du mot de passe dans quelques instants."
       send_paranoid_instructions: "Si votre e-mail existe dans notre base de données, vous allez recevoir un lien de réinitialisation par e-mail."
       updated: "Votre mot de passe a été édité avec succès, vous êtes maintenant connecté."
-      updated_not_active: "Votre mot de passe a été changé avec succès."
+      updated_not_active: "Votre mot de passe a été changé avec succès. Veuillez vous connecter."
     registrations:
       destroyed: "Votre compte a été supprimé avec succès. Nous espérons vous revoir bientôt."
       signed_up: "Bienvenue, vous êtes connecté."

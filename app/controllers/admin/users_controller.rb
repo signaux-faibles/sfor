@@ -1,7 +1,7 @@
 require "csv"
 
 class Admin::UsersController < Admin::ApplicationController # rubocop:disable Metrics/ClassLength
-  before_action :set_user, only: %i[show impersonate reset_password edit update destroy duplicate restore]
+  before_action :set_user, only: %i[show impersonate reset_password reset_two_factor edit update destroy duplicate restore] # pragma: allowlist secret
 
   def index
     @users = if params[:include_discarded] == "1"
@@ -103,6 +103,12 @@ class Admin::UsersController < Admin::ApplicationController # rubocop:disable Me
     flash[:reset_password_url] = reset_url
     redirect_to admin_user_path(@user),
                 notice: "Lien de réinitialisation généré. Vous pouvez le copier depuis la page de l'utilisateur." # rubocop:disable Rails/I18nLocaleTexts
+  end
+
+  def reset_two_factor
+    @user.reset_two_factor!
+    redirect_to admin_user_path(@user),
+                notice: "La double authentification a été réinitialisée. L'utilisateur devra la configurer à sa prochaine connexion." # rubocop:disable Rails/I18nLocaleTexts
   end
 
   def import

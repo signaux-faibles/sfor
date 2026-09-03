@@ -789,6 +789,32 @@
   }
 }
 
+.sf-totp-qr {
+  display: inline-block;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid var(--border-default-grey);
+
+  svg {
+    width: 180px;
+    height: auto;
+    display: block;
+  }
+}
+
+.sf-totp-backup-codes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+  list-style: none;
+  padding-left: 0;
+
+  code {
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+}
+
 .sf-theme-modal,
 .sf-confidentiality-modal {
   border: none;

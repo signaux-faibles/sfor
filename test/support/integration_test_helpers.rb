@@ -1,16 +1,24 @@
 module IntegrationTestHelpers
-  def login_user(user)
-    # Use standard Devise email/password authentication
-    post "/users/sign_in", params: {
-      user: {
-        email: user.email,
-        password: "password"
-      }
-    }
-    # Devise redirects after successful login (302), so we check for redirect or success
-    assert_response :redirect,
-                    "Failed to sign in user #{user.email}. Response: #{@response.status} - #{@response.body[0..200]}"
+  TEST_USER_PASSWORD = "Test1234#dev".freeze # pragma: allowlist secret
 
-    follow_redirect! if @response.redirect?
+  def login_user(user)
+    sign_in user
+  end
+
+  # pragma: allowlist secret
+  def assign_user_password(user, password = TEST_USER_PASSWORD)
+    user.password = password # pragma: allowlist secret
+    user.password_confirmation = password # pragma: allowlist secret
+    user.save!
+    password # pragma: allowlist secret
+  end
+
+  def enable_two_factor!(user)
+    user.update!(
+      otp_secret: User.generate_otp_secret,
+      otp_required_for_login: true,
+      consumed_timestep: nil
+    )
+    user
   end
 end

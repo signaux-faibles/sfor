@@ -1,15 +1,57 @@
 class Users::SessionsController < Devise::SessionsController
-  def create
-    self.resource = warden.authenticate(auth_options)
+  include PendingTwoFactor
 
-    if resource
-      set_flash_message!(:notice, :signed_in) if is_navigational_format?
-      sign_in(resource_name, resource)
-      yield resource if block_given?
-      respond_with resource, location: after_sign_in_path_for(resource)
+  # Devise and ApplicationController callbacks call current_user / warden.authenticate,
+  # which would sign the user in from email+credentials params before TOTP.
+  skip_before_action :require_no_authentication, only: :create
+  skip_around_action :set_time_zone, only: :create
+  skip_before_action :set_sentry_user, only: :create
+  skip_before_action :set_notification_flash, only: :create
+  skip_after_action :track_action, only: :create
+
+  def new
+    clear_pending_two_factor!
+    super
+  end
+
+  def create
+    if warden.authenticated?(scope: :user)
+      redirect_to after_sign_in_path_for(warden.user(:user)), status: :see_other
+      return
+    end
+
+    user = find_user_from_sign_in_params
+
+    if user&.valid_password?(sign_in_password) && user.active_for_authentication? # pragma: allowlist secret
+      start_pending_two_factor!(user)
+      redirect_to after_password_path_for(user), status: :see_other # pragma: allowlist secret
     else
       flash[:sign_in_error] = I18n.t("devise.failure.invalid")
-      redirect_to new_user_session_path
+      redirect_to new_user_session_path, status: :see_other
+    end
+  end
+
+  private
+
+  def find_user_from_sign_in_params
+    email = params.dig(:user, :email).presence
+    return if email.blank?
+
+    User.find_for_authentication(email: email)
+  end
+
+  # pragma: allowlist secret
+  def sign_in_password
+    params.dig(:user, :password) # pragma: allowlist secret
+  end
+
+  # pragma: allowlist secret
+  def after_password_path_for(user)
+    if user.otp_required_for_login?
+      verify_two_factor_path
+    else
+      user.update!(otp_secret: User.generate_otp_secret, consumed_timestep: nil)
+      setup_two_factor_path
     end
   end
 end

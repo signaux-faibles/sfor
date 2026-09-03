@@ -28,6 +28,25 @@ module SignauxFaiblesV2
     config.i18n.default_locale = :fr
     config.i18n.available_locales = %i[fr en]
 
+    # Active Record encryption (OTP secrets).
+    # Production runtime requires env vars from deploy (Ansible/Terraform).
+    # Docker/CI asset precompile uses SECRET_KEY_BASE_DUMMY=1 and must boot
+    # without those secrets; dummy keys are never used to encrypt user data.
+    dummy_encryption_ok = !Rails.env.production? || ENV["SECRET_KEY_BASE_DUMMY"].present?
+    encryption_key = lambda do |env_name, fallback|
+      value = ENV[env_name].presence
+      next value if value
+      raise KeyError, "Missing environment variable: #{env_name}" unless dummy_encryption_ok
+
+      fallback
+    end
+    config.active_record.encryption.primary_key =
+      encryption_key.call("ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY", "abcdefghijklmnopqrstuvwxyz012345")
+    config.active_record.encryption.deterministic_key =
+      encryption_key.call("ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY", "abcdefghijklmnopqrstuvwxyz678901")
+    config.active_record.encryption.key_derivation_salt =
+      encryption_key.call("ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT", "zyxwvutsrqponmlkjihgfedcba987654")
+
     # Route 404s through the app so we can redirect with a flash.
     config.exceptions_app = routes
   end
