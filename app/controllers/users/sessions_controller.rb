@@ -40,11 +40,13 @@ class Users::SessionsController < Devise::SessionsController
     User.find_for_authentication(email: email)
   end
 
-  def sign_in_password # pragma: allowlist secret
+  # pragma: allowlist secret
+  def sign_in_password
     params.dig(:user, :password) # pragma: allowlist secret
   end
 
-  def after_password_path_for(user) # pragma: allowlist secret
+  # pragma: allowlist secret
+  def after_password_path_for(user)
     if user.otp_required_for_login?
       verify_two_factor_path
     else

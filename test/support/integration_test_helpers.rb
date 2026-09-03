@@ -5,7 +5,8 @@ module IntegrationTestHelpers
     sign_in user
   end
 
-  def assign_user_password(user, password = TEST_USER_PASSWORD) # pragma: allowlist secret
+  # pragma: allowlist secret
+  def assign_user_password(user, password = TEST_USER_PASSWORD)
     user.password = password # pragma: allowlist secret
     user.password_confirmation = password # pragma: allowlist secret
     user.save!
